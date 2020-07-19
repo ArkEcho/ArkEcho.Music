@@ -1,0 +1,17 @@
+{
+  "name": "ark-echo.server",
+  "version": "0.0.0",
+  "description": "ArkEcho.Server",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
+  },
+  "devDependencies": {
+    "@types/node": "^8.10.61",
+    "typescript": "^3.9.7"
+  }
+}
