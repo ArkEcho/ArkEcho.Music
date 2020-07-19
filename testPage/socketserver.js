@@ -26,9 +26,9 @@ function onClose(e){
 }
 
 function onMessage(e){
-	var json = JSON.parse(e.data);
-	var out = "Typ: " + json.Typ + " Message: " + json.Message;
-	alert(out);
+	//var json = JSON.parse(e.data);
+	//var out = "Typ: " + json.Typ + " Message: " + json.Message;
+	alert('Server:' + e.data);
 }
 
 function onError(e){
@@ -37,7 +37,7 @@ function onError(e){
 
 function send() {
     var type = document.getElementById("type");
-    var valTyp = type.value;
+    var valType = type.value;
 
     var msg = document.getElementById("msg");
     var valMsg = msg.value;
