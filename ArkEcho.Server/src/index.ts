@@ -1,9 +1,6 @@
 import { WebsocketService }from './websocketservice';
+import { HttpServerService } from './httpserverservice';
 
-let wsservice = new WebsocketService();
+let wsservice : WebsocketService = new WebsocketService(8080);
 
-import http = require('http');
-http.createServer((request, response) => {
-    response.write('Hello World from Node.js!');
-    response.end();
-}).listen(3000);
+let httpservice : HttpServerService = new HttpServerService(3000);

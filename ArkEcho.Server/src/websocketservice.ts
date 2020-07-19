@@ -5,9 +5,9 @@ export class WebsocketService {
     
     private wss : WebSocket.Server;
     
-    constructor()
+    constructor(port: number)
     { 
-        this.wss = new WebSocket.Server({port:8080});
+        this.wss = new WebSocket.Server({port: port});
                 
         this.wss.on('connection', function connection(ws, req) 
         {      
@@ -24,8 +24,7 @@ export class WebsocketService {
         });
     }
 
-    public stop()
-    {
+    public CloseServer(){
         this.wss.close();
     }
 }
