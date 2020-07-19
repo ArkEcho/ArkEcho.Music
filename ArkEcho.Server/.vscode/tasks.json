@@ -1,9 +1,9 @@
 {
-	"version": "2.0.0",
+	"version": "2.0.0",	
 	"tasks": [
 		{
 			"type": "typescript",
-			"tsconfig": "config/tsconfig.json",			
+			"tsconfig": "tsconfig.json",			
 			"problemMatcher": [
 				"$tsc"
 			],
@@ -11,7 +11,8 @@
 				"kind": "build",
 				"isDefault": true				
 			},
-			"label": "tsc: build - config/tsconfig.json"
+			"label": "tsc: build - tsconfig.json",
+			
 		}
 	]
 }

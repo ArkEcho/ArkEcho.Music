@@ -3,9 +3,9 @@
         "module": "commonjs",
         "sourceMap": true,
         "watch": true,
-        "outDir": "../out/",
+        "outDir": "out/",
         "removeComments": true
     },
-    "include": ["../src/**/*"],
+    "include": ["src/**/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
