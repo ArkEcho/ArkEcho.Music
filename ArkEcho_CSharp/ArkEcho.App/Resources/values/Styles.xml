@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  <style name="ArkEcho.Main" parent="@android:style/Theme.Material">
+    <item name="android:actionBarStyle">@style/ArkEcho.ActionBar</item>
+    
+    <item name="android:windowBackground">@color/cMainBackground</item>
+    <item name="android:fontFamily">sans-serif-condensed</item>
+    <item name="android:textStyle">normal</item>
+    <item name="android:textColor">@color/cMainTextColor</item>
+  </style>
+
+  <style name="ArkEcho.ActionBar" parent="@android:style/Theme.Material">
+    <item name="android:background">@color/cActionBarBackground</item>
+    <item name="android:fontFamily">sans-serif-black</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/cActionBarTextColor</item>
+  </style>
+  
+  <style name="ArkEcho.SplashScreen" parent="ArkEcho.Main">
+    <item name="android:windowNoTitle">true</item>
+  </style>
+</resources>
+    
+    <!-- <item name="android:colorBackground">@color/colorColorBackground</item> -->
+    <!-- <item name="android:background">@color/colorBackground</item> -->

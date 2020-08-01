@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <TextView
+        android:text="@string/MainActivityTextViewHeader"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvHeader"
+        android:layout_marginBottom="5.0dp"
+        android:layout_marginTop="10.0dp" />
+    <TextView
+        android:text="@string/MainActivityTextViewAddress"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvAddress" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/teAddress"
+        android:inputType="text"
+        android:digits="0123456789.:" />
+    <Button
+        android:text="@string/MainActivityPushButtonConnectManual"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pbConnectManually" />
+    <Button
+        android:text="@string/MainActivityPushButtonConnectQr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pbConnectWithQr"
+        android:layout_marginTop="10.0dp" />
+</LinearLayout>

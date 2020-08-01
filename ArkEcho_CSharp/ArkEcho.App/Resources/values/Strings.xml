@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="ApplicationName">arkecho_app</string>
+  <string name="ApplicationTitle">ArkEcho</string>
+
+  <!-- Main Activity -->
+  <string name="MainActivityTitle">Verbinden</string>
+  <string name="MainActivityTextViewHeader">Verbindung zum Player herstellen</string>
+  <string name="MainActivityTextViewAddress">Adresse:</string>
+  <string name="MainActivityPushButtonConnectQr">Mit Qr-Code verbinden</string>
+  <string name="MainActivityPushButtonConnectManual">Manuell verbinden</string>
+
+  <!-- Player Activity -->
+  <string name="PlayerActivityTitle">Player</string>
+  <string name="PlayerActivityTextViewTitleDefault">Titel</string>
+  <string name="PlayerActivityTextViewInterpretDefault">Interpret</string>
+  <string name="PlayerActivityButtonBackward">Zurück</string>
+  <string name="PlayerActivityButtonPlay_Pause">Play/Pause</string>
+  <string name="PlayerActivityButtonForward">Weiter</string>
+
+  <!-- Impressum Activity -->
+  <string name="ImpressumActivityTitle">Impressum</string>
+  <string name="ImpressumActivityTextViewHeader">Impressum:</string>
+
+  <!-- Help Activity -->
+  <string name="HelpActivityTitle">Hilfe</string>
+  <string name="HelpActivityTextViewHeader">ArkEcho-Hilfe:</string>
+
+  <!-- Qr Scanner -->
+  <string name="QrScannerTextTop">Qr-Code Scanner</string>
+  <string name="QrScannerTextBottom">Halten sie den Strich über den Qr-Code!</string>
+
+  <!-- Message Box -->
+  <string name="MsgBoxTitleError">Fehler:</string>
+  <string name="MsgBoxTextConnectionEnded">Verbindung zum ArkEcho Player unterbrochen!</string>
+
+  <!-- Toast -->
+  <string name="ToastQrScanFailed">Der Qr-Code wurde nicht korrekt gescannt!</string>  
+  <string name="ToastNoConnection">Keine Verbindung zum ArkEcho Player möglich!</string>
+  <string name="ToastEmptyWrongAddress">Bitte füllen sie das Feld Adresse korrekt und vollständig aus!</string>
+
+  <!-- Menu -->
+  <string name="TopMenuImpressum">Impressum</string>
+  <string name="TopMenuHelp">Hilfe</string>
+</resources>
