@@ -3,7 +3,7 @@ using Android.OS;
 
 using System.Threading.Tasks;
 
-namespace arkecho_app.source.activity
+namespace ArkEcho.App
 {
     [Activity(Theme = "@style/ArkEcho.SplashScreen", MainLauncher = true, NoHistory = true)]
     public class SplashActivity : BaseActivity
@@ -23,7 +23,7 @@ namespace arkecho_app.source.activity
             Websockets.Droid.WebsocketConnection.Link();
 
             // Bisschen Verzögerung
-            await Task.Delay(3000);
+            await Task.Delay(1500);
 
             StartActivity(typeof(MainActivity));
         }

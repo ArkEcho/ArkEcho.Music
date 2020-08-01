@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ArkEcho.Server.Controllers
+namespace ArkEcho.Server
 {
     [ApiController]
     [Route("[controller]")]

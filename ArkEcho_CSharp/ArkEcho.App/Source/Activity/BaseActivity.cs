@@ -1,7 +1,7 @@
 using Android.App;
 using Android.OS;
 
-namespace arkecho_app.source.activity
+namespace ArkEcho.App
 {
     [Activity(Label = "@string/ApplicationTitle", Icon = "@drawable/arkecho_logo_small_blue")]
     public class BaseActivity : Activity

@@ -5,9 +5,10 @@ using Android.OS;
 using System;
 using System.Threading.Tasks;
 
-using arkecho_app.source.connection;
+using ArkEcho.Core;
+using ArkEcho.App.Connection;
 
-namespace arkecho_app.source.activity
+namespace ArkEcho.App
 {
     [Activity]
     public class MainActivity : ExtendedActivity
@@ -47,6 +48,9 @@ namespace arkecho_app.source.activity
 
         private void onPbConnectManuallyClicked(object sender, EventArgs e)
         {
+            //ArkEchoRest rest = new ArkEchoRest();
+            //string test = rest.getWeather();
+
             setElementsEnabled(false);
             string address = FindViewById<TextView>(Resource.Id.teAddress).Text;
 

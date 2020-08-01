@@ -4,7 +4,7 @@ using Android.App;
 using Android.OS;
 using Android.Widget;
 
-namespace arkecho_app.source.activity
+namespace ArkEcho.App
 {
     [Activity]
     public class ExtendedActivity : BaseActivity

@@ -1,7 +1,7 @@
 using Android.App;
 using Android.OS;
 
-namespace arkecho_app.source.activity
+namespace ArkEcho.App
 {
     [Activity]
     public class HelpActivity : ExtendedActivity

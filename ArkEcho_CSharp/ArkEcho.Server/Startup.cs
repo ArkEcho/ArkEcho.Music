@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ArkEcho
+namespace ArkEcho.Server
 {
     public class Startup
     {
@@ -21,6 +21,7 @@ namespace ArkEcho
         {
             services.AddDbContext<MusicFileContext>(opt =>
                opt.UseInMemoryDatabase("ArkEchoDB"));
+
             services.AddControllers();
         }
 

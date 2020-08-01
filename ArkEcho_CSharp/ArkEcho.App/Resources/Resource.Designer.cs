@@ -8,9 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("arkecho_app.source.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("ArkEcho.App.Resource", IsApplication=true)]
 
-namespace arkecho_app.source
+namespace ArkEcho.App
 {
 	
 	

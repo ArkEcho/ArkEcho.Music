@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using ArkEcho.Core;
 
-namespace arkecho_app.source.connection
+namespace ArkEcho.App.Connection
 {
     public static class ArkEchoWebSocket
     {
-        private static Websockets.IWebSocketConnection socket_;
-        private static bool failed_;
+        private static Websockets.IWebSocketConnection socket;
+        private static bool failed;
 
         public delegate void WebSocketDelegateMessage(string message);
         public static event WebSocketDelegateMessage newMessageReceived;
@@ -16,62 +17,63 @@ namespace arkecho_app.source.connection
 
         static ArkEchoWebSocket()
         {
-            socket_ = Websockets.WebSocketFactory.Create();
-            socket_.OnMessage += onWebSocketMessage;
-            socket_.OnError += onWebSocketError;
-            socket_.OnClosed += onWebSocketClosed;
+            socket = Websockets.WebSocketFactory.Create();
+            socket.OnMessage += onWebSocketMessage;
+            socket.OnError += onWebSocketError;
+            socket.OnClosed += onWebSocketClosed;
         }
 
         private static void emitNewMessageReceived(string message)
         {
-            if (newMessageReceived != null) newMessageReceived(message);
+            newMessageReceived?.Invoke(message);
         }
 
         private static void emitWebSocketConnectionClosed()
         {
-            if (webSocketConnectionClosed != null) webSocketConnectionClosed();
+            webSocketConnectionClosed?.Invoke();
         }
 
         public static async Task connectWebSocket(string address)
         {
-            failed_ = false;
+            failed = false;
             timeOut();
 
-            socket_.Open("ws://" + address);
+            socket.Open("ws://" + address);
 
-            while (!socket_.IsOpen && !failed_)
-            {
-                await Task.Delay(10);
-            }
+            while (!socket.IsOpen && !failed)            
+                await Task.Delay(10);            
         }
 
         public static void sendMessage(int messageType, string message)
         {
-            if (!socket_.IsOpen) return;
-            socket_.Send(MessageHandler.createMessage(messageType, message));
+            if (!socket.IsOpen) return;
+            socket.Send(MessageHandler.createMessage(messageType, message));
         }
 
         public static bool checkIfConnectionIsOpen()
         {
-            return socket_.IsOpen;
+            return socket.IsOpen;
         }
         
         public static bool checkIfURIAddressIsCorrect(string address)
         {
-            if (address == "") return false;
-            var regex = @"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,2}\:[0-9]{4}";
+            if (!string.IsNullOrEmpty(address))
+                return false;
+
+            string regex = @"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,2}\:[0-9]{4}";
+
             return Regex.Match(address, regex).Success;
         }
 
         public static void disconnectWebSocket()
         {
-            socket_.Close();
+            socket.Close();
         }
 
         private static async void timeOut()
         {
             await Task.Delay(2000);
-            failed_ = true;
+            failed = true;
         }
 
         private static void onWebSocketMessage(string message)
@@ -81,7 +83,7 @@ namespace arkecho_app.source.connection
 
         private static void onWebSocketError(string error)
         {
-            failed_ = true;
+            failed = true;
         }
 
         private static void onWebSocketClosed()

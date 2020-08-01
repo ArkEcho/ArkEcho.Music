@@ -1,6 +1,7 @@
+using ArkEcho.Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArkEcho
+namespace ArkEcho.Server
 {
     public class MusicFileContext : DbContext
     {
@@ -9,6 +10,6 @@ namespace ArkEcho
         {
         }
 
-        public DbSet<MusicFile> TodoItems { get; set; }
+        public DbSet<MusicFile> MusicFiles { get; set; }
     }
 }

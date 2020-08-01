@@ -1,38 +1,36 @@
 ﻿using System;
 using RestSharp;
 
-namespace App.Source.Connection
+namespace ArkEcho.App.Connection
 {
-    class GesundhaitREST
+    public class ArkEchoRest
     {
-        private const string USERSSQLTABLE = "users";
+        private const string WEATHERFORECAST = "WeatherForecast";
 
-        private RestClient client_;
+        private RestClient client;
 
-        public GesundhaitREST()
+        public ArkEchoRest()
         {
-            client_ = new RestClient("http://192.168.178.20/gesundhait_backend/backend/src/index.php");
+            client = new RestClient("https://192.168.0.65:5001");
         }
 
-        public string getAllUsers()
+        public string getWeather()
         {
-            var request = new RestRequest(USERSSQLTABLE, Method.GET);
+            RestRequest request = new RestRequest("/WeatherForecast", Method.GET);
 
             // execute the request
-            IRestResponse response = client_.Execute(request);
-            var content = response.Content;
-            return content.ToString();
+            IRestResponse response = client.Execute(request);
+            return response.Content;
         }
 
         public string getUserByID(int ID)
         {
-            var request = new RestRequest(USERSSQLTABLE + "/{id}", Method.GET);
+            RestRequest request = new RestRequest(WEATHERFORECAST + "/{id}", Method.GET);
             request.AddUrlSegment("id", ID.ToString()); // replaces matching token in request.Resource
 
             // execute the request
-            IRestResponse response = client_.Execute(request);
-            var content = response.Content;
-            return content.ToString();
+            IRestResponse response = client.Execute(request);
+            return response.Content;
         }
     }
 }
