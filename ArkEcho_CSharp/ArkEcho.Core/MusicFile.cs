@@ -4,7 +4,9 @@ namespace ArkEcho.Core
 {
     public class MusicFile
     {
-        public string Title { get; private set; } = string.Empty;
+        public long ID { get; set; } = 0;
+
+        public string Title { get; set; } = string.Empty;
 
         public MusicFile()
         {
