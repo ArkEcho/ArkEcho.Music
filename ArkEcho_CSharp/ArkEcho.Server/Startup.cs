@@ -31,7 +31,7 @@ namespace ArkEcho.Server
             }
 
             app.UseHttpsRedirection();
-
+                        
             app.UseRouting();
 
             app.UseAuthorization();

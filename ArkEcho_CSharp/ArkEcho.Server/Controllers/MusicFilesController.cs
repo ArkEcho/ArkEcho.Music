@@ -8,13 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using ArkEcho.Core;
 using ArkEcho.Server;
 
-namespace ArkEcho.Server.Controllers
+namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
     public class MusicFilesController : ControllerBase
     {
         List<MusicFile> files = new List<MusicFile>();
+
         public MusicFilesController()
         {
             files.Add(new MusicFile() { ID = 1, Title = "Tick" });
@@ -24,23 +25,27 @@ namespace ArkEcho.Server.Controllers
 
         // GET: api/MusicFiles
         [HttpGet]
-        public IEnumerable<MusicFile> GetMusicFiles()
+        public async Task<IEnumerable<MusicFile>> GetMusicFiles()
         {
-            return files;
+            return await Task.FromResult(files);
         }
 
         // GET: api/MusicFiles/5
         [HttpGet("{id}")]
-        public MusicFile GetMusicFile(long id)
+        public async Task<ActionResult<MusicFile>> GetMusicFile(long id)
         {
             MusicFile musicFile = files.Find(x => x.ID == id);
+            await verifyRequest(HttpContext.Request);
 
-            //if (musicFile == null)
-            //{
-            //    return NotFound();
-            //}
-
+            if (musicFile == null)            
+                return NotFound();
+            
             return musicFile;
+        }
+
+        public async Task<bool> verifyRequest(HttpRequest request)
+        {
+            return true;
         }
 
         // PUT: api/MusicFiles/5
