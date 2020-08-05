@@ -5,16 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ArkEcho.Server.Controllers
+namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
     public class InfoController : ControllerBase
     {
+        ArkEchoServer server = ArkEchoServer.Server;
+
         [HttpGet("MusicFiles")]
         public int MusicFileCount()
         {
-            return 3;
+            return server.GetAllFiles().Count;
         }
     }
 }

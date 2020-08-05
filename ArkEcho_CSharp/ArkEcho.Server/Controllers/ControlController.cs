@@ -11,6 +11,8 @@ namespace ArkEcho.Server
     [ApiController]
     public class ControlController : ControllerBase
     {
+        ArkEchoServer server = ArkEchoServer.Server;
+
         [HttpGet("{id}")]
         public ActionResult ApiControl(int id)
         {

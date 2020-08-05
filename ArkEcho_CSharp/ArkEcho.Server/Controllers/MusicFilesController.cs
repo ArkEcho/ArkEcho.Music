@@ -14,27 +14,20 @@ namespace ArkEcho.Server
     [ApiController]
     public class MusicFilesController : ControllerBase
     {
-        List<MusicFile> files = new List<MusicFile>();
-
-        public MusicFilesController()
-        {
-            files.Add(new MusicFile() { ID = 1, Title = "Tick" });
-            files.Add(new MusicFile() { ID = 2, Title = "Trick" });
-            files.Add(new MusicFile() { ID = 3, Title = "Track" });
-        }
+        ArkEchoServer server = ArkEchoServer.Server;
 
         // GET: api/MusicFiles
         [HttpGet]
         public async Task<IEnumerable<MusicFile>> GetMusicFiles()
         {
-            return await Task.FromResult(files);
+            return await Task.FromResult(server.GetAllFiles());
         }
 
         // GET: api/MusicFiles/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MusicFile>> GetMusicFile(long id)
         {
-            MusicFile musicFile = files.Find(x => x.ID == id);
+            MusicFile musicFile = server.GetAllFiles().Find(x => x.ID == id);
             await verifyRequest(HttpContext.Request);
 
             if (musicFile == null)            
