@@ -14,30 +14,31 @@ namespace ArkEcho.Server.Controllers
     [ApiController]
     public class MusicFilesController : ControllerBase
     {
-        private readonly MusicFileContext context;
-
-        public MusicFilesController(MusicFileContext Context)
+        List<MusicFile> files = new List<MusicFile>();
+        public MusicFilesController()
         {
-            this.context = Context;
+            files.Add(new MusicFile() { ID = 1, Title = "Tick" });
+            files.Add(new MusicFile() { ID = 2, Title = "Trick" });
+            files.Add(new MusicFile() { ID = 3, Title = "Track" });
         }
 
         // GET: api/MusicFiles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MusicFile>>> GetMusicFiles()
+        public IEnumerable<MusicFile> GetMusicFiles()
         {
-            return await context.MusicFiles.ToListAsync();
+            return files;
         }
 
         // GET: api/MusicFiles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MusicFile>> GetMusicFile(long id)
+        public MusicFile GetMusicFile(long id)
         {
-            var musicFile = await context.MusicFiles.FindAsync(id);
+            MusicFile musicFile = files.Find(x => x.ID == id);
 
-            if (musicFile == null)
-            {
-                return NotFound();
-            }
+            //if (musicFile == null)
+            //{
+            //    return NotFound();
+            //}
 
             return musicFile;
         }
@@ -45,66 +46,66 @@ namespace ArkEcho.Server.Controllers
         // PUT: api/MusicFiles/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMusicFile(long id, MusicFile musicFile)
-        {
-            if (id != musicFile.ID)
-            {
-                return BadRequest();
-            }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> PutMusicFile(long id, MusicFile musicFile)
+        //{
+        //    if (id != musicFile.ID)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            context.Entry(musicFile).State = EntityState.Modified;
+        //    context.Entry(musicFile).State = EntityState.Modified;
 
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MusicFileExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    try
+        //    {
+        //        await context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!MusicFileExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         // POST: api/MusicFiles
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<MusicFile>> PostMusicFile(MusicFile musicFile)
-        {
-            context.MusicFiles.Add(musicFile);
-            await context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<ActionResult<MusicFile>> PostMusicFile(MusicFile musicFile)
+        //{
+        //    context.MusicFiles.Add(musicFile);
+        //    await context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMusicFile", new { id = musicFile.ID }, musicFile);
-        }
+        //    return CreatedAtAction("GetMusicFile", new { id = musicFile.ID }, musicFile);
+        //}
 
         // DELETE: api/MusicFiles/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<MusicFile>> DeleteMusicFile(long id)
-        {
-            var musicFile = await context.MusicFiles.FindAsync(id);
-            if (musicFile == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<MusicFile>> DeleteMusicFile(long id)
+        //{
+        //    var musicFile = await context.MusicFiles.FindAsync(id);
+        //    if (musicFile == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            context.MusicFiles.Remove(musicFile);
-            await context.SaveChangesAsync();
+        //    context.MusicFiles.Remove(musicFile);
+        //    await context.SaveChangesAsync();
 
-            return musicFile;
-        }
+        //    return musicFile;
+        //}
 
-        private bool MusicFileExists(long id)
-        {
-            return context.MusicFiles.Any(e => e.ID == id);
-        }
+        //private bool MusicFileExists(long id)
+        //{
+        //    return context.MusicFiles.Any(e => e.ID == id);
+        //}
     }
 }
