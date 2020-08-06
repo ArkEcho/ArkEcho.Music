@@ -52,13 +52,18 @@ namespace ArkEcho.Server
 
         public void Stop()
         {
-            Stopping = true;
             host.StopAsync();
+        }
+
+        public void Restart()
+        {
+            RestartRequested = true;
+            Stop();
         }
 
         public bool Initialized { get; private set; } = false;
 
-        public bool Stopping { get; private set; } = false;
+        public bool RestartRequested { get; private set; } = false;
 
         #region TCP Server
 

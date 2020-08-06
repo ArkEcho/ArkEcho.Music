@@ -16,7 +16,13 @@ namespace ArkEcho.Server
         [HttpGet("Stop")]
         public void ControlStopServer()
         {
-            //server.Stop();
+            server.Stop();
+        }
+
+        [HttpGet("Restart")]
+        public void ControlRestartServer()
+        {
+            server.Restart();
         }
 
         [HttpGet("{id}")]
