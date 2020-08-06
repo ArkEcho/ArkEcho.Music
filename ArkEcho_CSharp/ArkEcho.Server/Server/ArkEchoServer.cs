@@ -34,9 +34,9 @@ namespace ArkEcho.Server
 
             host = Host;
 
-            files.Add(new MusicFile() { ID = 1, Title = "Tick" });
-            files.Add(new MusicFile() { ID = 2, Title = "Trick" });
-            files.Add(new MusicFile() { ID = 3, Title = "Track" });
+            files.Add(new MusicFile(string.Empty) { ID = 1, Title = "Tick" });
+            files.Add(new MusicFile(string.Empty) { ID = 2, Title = "Trick" });
+            files.Add(new MusicFile(string.Empty) { ID = 3, Title = "Track" });
 
             //Task.Factory.StartNew(() => StartListening());
 
