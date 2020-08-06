@@ -21,6 +21,7 @@ namespace ArkEcho.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // This may take a while
             Task.Factory.StartNew(() => ArkEchoServer.Server.Init());
 
             services.AddSingleton(ArkEchoServer.Server);
@@ -42,7 +43,7 @@ namespace ArkEcho.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });            
         }
     }
 }

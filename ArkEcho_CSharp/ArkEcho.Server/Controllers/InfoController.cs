@@ -13,6 +13,12 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Server;
 
+        [HttpGet("Server")]
+        public bool ServerRunning()
+        {
+            return server.Initialized;
+        }
+
         [HttpGet("MusicFiles")]
         public int MusicFileCount()
         {
