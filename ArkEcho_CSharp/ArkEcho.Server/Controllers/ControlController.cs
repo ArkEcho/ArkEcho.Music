@@ -11,10 +11,16 @@ namespace ArkEcho.Server
     [ApiController]
     public class ControlController : ControllerBase
     {
-        ArkEchoServer server = ArkEchoServer.Server;
+        ArkEchoServer server = ArkEchoServer.Instance;
+
+        [HttpGet("Stop")]
+        public void ControlStopServer()
+        {
+            //server.Stop();
+        }
 
         [HttpGet("{id}")]
-        public ActionResult ApiControl(int id)
+        public ActionResult ControlServer(int id)
         {
             switch (id)
             {

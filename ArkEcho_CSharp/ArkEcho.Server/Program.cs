@@ -15,7 +15,16 @@ namespace ArkEcho.Server
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            using (ArkEchoServer.Instance)
+            {
+                // Start the WebHost, Server and Controllers
+                IWebHost host = CreateWebHostBuilder(args).Build();
+
+                // This may take a while
+                Task.Factory.StartNew(() => ArkEchoServer.Instance.Init(host));
+
+                host.Run();
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

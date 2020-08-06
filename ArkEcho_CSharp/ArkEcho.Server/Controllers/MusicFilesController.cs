@@ -14,7 +14,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class MusicFilesController : ControllerBase
     {
-        ArkEchoServer server = ArkEchoServer.Server;
+        ArkEchoServer server = ArkEchoServer.Instance;
 
         // GET: api/MusicFiles
         [HttpGet]

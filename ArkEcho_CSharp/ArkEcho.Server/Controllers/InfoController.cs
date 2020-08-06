@@ -11,7 +11,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class InfoController : ControllerBase
     {
-        ArkEchoServer server = ArkEchoServer.Server;
+        ArkEchoServer server = ArkEchoServer.Instance;
 
         [HttpGet("Server")]
         public bool ServerRunning()
