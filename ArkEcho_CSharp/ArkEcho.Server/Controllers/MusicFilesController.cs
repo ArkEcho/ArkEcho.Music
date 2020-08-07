@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using ArkEcho.Core;
 using ArkEcho.Server;
 using System.Threading;
+using System.IO;
 
 namespace ArkEcho.Server
 {
@@ -19,9 +20,9 @@ namespace ArkEcho.Server
 
         // GET: api/MusicFiles
         [HttpGet]
-        public async Task<IEnumerable<MusicFile>> GetMusicFiles()
+        public IEnumerable<MusicFile> GetMusicFiles()
         {
-            return await Task.FromResult(server.GetAllFiles());
+            return server.GetAllFiles();
         }
 
         // GET: api/MusicFiles/5
@@ -29,17 +30,17 @@ namespace ArkEcho.Server
         public async Task<ActionResult<MusicFile>> GetMusicFile(Guid id)
         {
             MusicFile musicFile = server.GetAllFiles().Find(x => x.ID == id);
-            await verifyRequest(HttpContext.Request);
+
+            using (FileStream fs = new FileStream(musicFile.FilePath, FileMode.Open))
+            {
+                musicFile.Content = new byte[fs.Length];
+                await fs.ReadAsync(musicFile.Content);
+            }
 
             if (musicFile == null)            
                 return NotFound();
             
             return musicFile;
-        }
-
-        public async Task<bool> verifyRequest(HttpRequest request)
-        {
-            return true;
         }
 
         // PUT: api/MusicFiles/5

@@ -25,6 +25,8 @@ namespace ArkEcho.Core
 
         public string FilePath { get; set; } = string.Empty;
 
+        public byte[] Content { get; set; }
+
         public MusicFile(string FilePath)
         {
             this.FilePath = FilePath;

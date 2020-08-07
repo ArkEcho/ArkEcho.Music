@@ -68,6 +68,7 @@ namespace ArkEcho.Server
                         Track = tagFile.Tag.Track,
                         Year = tagFile.Tag.Year
                     };
+                                      
                     list.Add(music);
 
                     if (music.Disc > album.DiscCount)
