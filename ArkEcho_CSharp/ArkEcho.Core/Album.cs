@@ -17,7 +17,7 @@ namespace ArkEcho.Core
 
         public Guid AlbumArtist { get; set; } = Guid.Empty;
 
-        public string AlbumName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         public uint TrackCount { get; set; } = 0;
 

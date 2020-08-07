@@ -21,7 +21,14 @@ namespace ArkEcho.Server
             using (ArkEchoServer.Instance)
             {
                 // Start the WebHost, Server and Controllers
-                IWebHost host = CreateWebHostBuilder(args).Build();
+                IWebHost host = WebHost.CreateDefaultBuilder(args)
+                                .UseUrls("https://*:5001")
+                                .UseKestrel()
+                                .UseStartup<Startup>()
+                                .Build();
+
+                if (host == null)
+                    return;
 
                 // This may take a while
                 Task.Factory.StartNew(() => ArkEchoServer.Instance.Init(host));
@@ -39,11 +46,5 @@ namespace ArkEcho.Server
 
             Environment.Exit(0);
         }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseUrls("https://*:5001")
-                .UseKestrel()
-                .UseStartup<Startup>();
     }
 }

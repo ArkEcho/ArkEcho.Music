@@ -20,7 +20,7 @@ namespace ArkEcho.Server
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
         private List<MusicFile> musicFiles = null;
-        private MusicWorker musicWorker;
+        private MusicWorker musicWorker = null;
         private IWebHost host = null;
 
         private ArkEchoServer()
@@ -221,7 +221,8 @@ namespace ArkEcho.Server
             {
                 if (disposing)
                 {
-                    
+                    musicWorker?.Dispose();
+                    musicWorker = null;
                 }
 
                 disposed = true;

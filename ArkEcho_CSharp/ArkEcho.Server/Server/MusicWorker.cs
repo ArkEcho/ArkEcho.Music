@@ -48,10 +48,10 @@ namespace ArkEcho.Server
                         artists.Add(albumArtist);
                     }
 
-                    album = albums.Find(x => x.AlbumName.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                    album = albums.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
                     if (album == null)
                     {
-                        album = new Album() { AlbumArtist = albumArtist.ID, AlbumName = tagFile.Tag.Album };
+                        album = new Album() { AlbumArtist = albumArtist.ID, Name = tagFile.Tag.Album };
                         albums.Add(album);
 
                         albumArtist.AlbumID.Add(album.ID);
@@ -86,6 +86,7 @@ namespace ArkEcho.Server
         }
 
         public string MusicDirectoryPath { get; private set; } = string.Empty;
+
         public bool Initialized { get; private set; } = false;
 
         bool disposed = false;
