@@ -26,7 +26,7 @@ namespace ArkEcho.Server
 
         // GET: api/MusicFiles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MusicFile>> GetMusicFile(long id)
+        public async Task<ActionResult<MusicFile>> GetMusicFile(Guid id)
         {
             MusicFile musicFile = server.GetAllFiles().Find(x => x.ID == id);
             await verifyRequest(HttpContext.Request);

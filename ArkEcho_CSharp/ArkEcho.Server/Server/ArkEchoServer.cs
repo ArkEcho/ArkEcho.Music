@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -18,13 +19,14 @@ namespace ArkEcho.Server
     {
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
-        private List<MusicFile> files = null;
-
+        private List<MusicFile> musicFiles = null;
+        private MusicWorker musicWorker;
         private IWebHost host = null;
 
         private ArkEchoServer()
         {
-            files = new List<MusicFile>();
+            musicFiles = new List<MusicFile>();
+            musicWorker = new MusicWorker();
         }
 
         public bool Init(IWebHost Host)
@@ -34,20 +36,25 @@ namespace ArkEcho.Server
 
             host = Host;
 
-            files.Add(new MusicFile(string.Empty) { ID = 1, Title = "Tick" });
-            files.Add(new MusicFile(string.Empty) { ID = 2, Title = "Trick" });
-            files.Add(new MusicFile(string.Empty) { ID = 3, Title = "Track" });
+            musicWorker.Init(@"C:\Work\music");
+            musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
 
-            //Task.Factory.StartNew(() => StartListening());
+            musicWorker.RunWorkerAsync();
 
             Initialized = true;
 
             return Initialized;
         }
 
+        private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            Console.WriteLine($"Worker Completed!");
+            musicFiles = (List<MusicFile>)e.Result;
+        }
+
         public List<MusicFile> GetAllFiles()
         {
-            return files;
+            return musicFiles;
         }
 
         public void Stop()
