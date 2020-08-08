@@ -9,6 +9,7 @@ using ArkEcho.Core;
 using ArkEcho.Server;
 using System.Threading;
 using System.IO;
+using System.Net.Http;
 
 namespace ArkEcho.Server
 {
@@ -27,20 +28,18 @@ namespace ArkEcho.Server
 
         // GET: api/MusicFiles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MusicFile>> GetMusicFile(Guid id)
+        public async Task<FileContentResult> GetMusicFile(Guid id)
         {
             MusicFile musicFile = server.GetAllFiles().Find(x => x.ID == id);
 
-            using (FileStream fs = new FileStream(musicFile.FilePath, FileMode.Open))
-            {
-                musicFile.Content = new byte[fs.Length];
-                await fs.ReadAsync(musicFile.Content);
-            }
+            //if (musicFile == null)            
+            //    return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
 
-            if (musicFile == null)            
-                return NotFound();
-            
-            return musicFile;
+            byte[] content = System.IO.File.ReadAllBytes(musicFile.FilePath);
+            FileContentResult result = new FileContentResult(content, "application/mp3");
+            result.FileDownloadName = Path.GetFileName(musicFile.FilePath);
+
+            return result;
         }
 
         // PUT: api/MusicFiles/5
