@@ -19,13 +19,14 @@ namespace ArkEcho.Server
     {
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
-        private List<MusicFile> musicFiles = null;
+        private MusicLibrary library = null;
         private MusicWorker musicWorker = null;
+
         private IWebHost host = null;
 
         private ArkEchoServer()
         {
-            musicFiles = new List<MusicFile>();
+            library = new MusicLibrary();
             musicWorker = new MusicWorker();
         }
 
@@ -49,12 +50,12 @@ namespace ArkEcho.Server
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             Console.WriteLine($"Worker Completed!");
-            musicFiles = (List<MusicFile>)e.Result;
+            library = (MusicLibrary)e.Result;
         }
 
         public List<MusicFile> GetAllFiles()
         {
-            return musicFiles;
+            return library.MusicFiles;
         }
 
         public void Stop()

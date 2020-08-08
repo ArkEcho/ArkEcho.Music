@@ -6,14 +6,11 @@ namespace ArkEcho.Core
 {
     public class Album
     {
-        public Album()
-        {
+        public Album(){ }
 
-        }
+        public Guid ID { get; private set; } = Guid.NewGuid();
 
-        public Guid ID { get; } = Guid.NewGuid();
-
-        public List<Guid> MusicFiles { get; set; } = new List<Guid>();
+        public List<Guid> MusicFiles { get; private set; } = new List<Guid>();
 
         public Guid AlbumArtist { get; set; } = Guid.Empty;
 

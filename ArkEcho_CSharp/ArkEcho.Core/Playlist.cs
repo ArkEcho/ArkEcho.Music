@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ArkEcho.Core
+{
+    public class Playlist
+    {
+        public string Name { get; private set; } = string.Empty;
+
+        public Guid ID { get; private set; } = new Guid();
+
+        public SortedSet<Guid> MusicFiles { get; private set; } = new SortedSet<Guid>();
+
+        public Playlist(string Name)
+        {
+            this.Name = Name;
+        }
+    }
+}

@@ -21,7 +21,7 @@ namespace ArkEcho.Server
             using (ArkEchoServer.Instance)
             {
                 // Start the WebHost, Server and Controllers
-                IWebHost host = WebHost.CreateDefaultBuilder(args)
+                using IWebHost host = WebHost.CreateDefaultBuilder(args)
                                 .UseUrls("https://*:5001")
                                 .UseKestrel()
                                 .UseStartup<Startup>()
@@ -30,15 +30,15 @@ namespace ArkEcho.Server
                 if (host == null)
                     return;
 
-                // This may take a while
-                Task.Factory.StartNew(() => ArkEchoServer.Instance.Init(host));
+                if (!ArkEchoServer.Instance.Init(host))
+                {
+                    Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
+                    return;
+                }
 
                 host.Run();
 
                 restart = ArkEchoServer.Instance.RestartRequested;
-
-                host.Dispose();
-                host = null;
             }
 
             if (restart)

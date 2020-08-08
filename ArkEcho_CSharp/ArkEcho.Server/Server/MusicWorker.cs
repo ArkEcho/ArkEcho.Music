@@ -27,32 +27,42 @@ namespace ArkEcho.Server
             return Initialized;
         }
 
+        private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter)
+        {            
+            List<string> results = new List<string>();
+
+            List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
+            results.AddRange(filesInDirectory.FindAll(x => FileExtensionFilter.Find(y => y.Equals(Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)) != null));
+
+            foreach (string subdirectory in Directory.GetDirectories(DirectoryPath))
+                results.AddRange(getAllFilesSubSearch(subdirectory, FileExtensionFilter));
+
+            return results;
+        }
+
         private void MusicWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            List<AlbumArtist> artists = new List<AlbumArtist>();
-            List<Album> albums = new List<Album>();
-            List<MusicFile> list = new List<MusicFile>();
+            MusicLibrary library = new MusicLibrary();
 
-            // TODO: Subdirectories 
-            foreach (string FilePath in Directory.EnumerateFiles(MusicDirectoryPath))
+            foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, new List<string>() { ".mp3"}))
             {
                 AlbumArtist albumArtist = null;
                 Album album = null;
 
                 using (TagLib.File tagFile = TagLib.File.Create(FilePath))
                 {
-                    albumArtist = artists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
+                    albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
                     if (albumArtist == null)
                     {
                         albumArtist = new AlbumArtist() { Name = tagFile.Tag.FirstAlbumArtist };
-                        artists.Add(albumArtist);
+                        library.AlbumArtists.Add(albumArtist);
                     }
 
-                    album = albums.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                    album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
                     if (album == null)
                     {
                         album = new Album() { AlbumArtist = albumArtist.ID, Name = tagFile.Tag.Album };
-                        albums.Add(album);
+                        library.Album.Add(album);
 
                         albumArtist.AlbumID.Add(album.ID);
                     }
@@ -69,7 +79,7 @@ namespace ArkEcho.Server
                         Year = tagFile.Tag.Year
                     };
                                       
-                    list.Add(music);
+                    library.MusicFiles.Add(music);
 
                     if (music.Disc > album.DiscCount)
                         album.DiscCount = music.Disc;
@@ -83,7 +93,7 @@ namespace ArkEcho.Server
 
             // TODO: Media Player Playlist parsen und in neues Format
 
-            e.Result = list;
+            e.Result = library;
         }
 
         public string MusicDirectoryPath { get; private set; } = string.Empty;
