@@ -37,7 +37,7 @@ namespace ArkEcho.Server
 
             host = Host;
 
-            musicWorker.Init(@"C:\Work\music");
+            musicWorker.Init(@"C:\Users\steph\Music");
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
 
             musicWorker.RunWorkerAsync();

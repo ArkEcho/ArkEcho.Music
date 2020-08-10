@@ -1,36 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using ArkEcho.Core;
 using RestSharp;
 
 namespace ArkEcho.App.Connection
 {
     public class ArkEchoRest
     {
-        private const string WEATHERFORECAST = "WeatherForecast";
-
         private RestClient client;
 
         public ArkEchoRest()
         {
-            client = new RestClient("https://192.168.0.65:5001");
+            client = new RestClient("https://192.168.0.65:5001/api");
         }
 
-        public string getWeather()
+        public async Task<IRestResponse> getMusic()
         {
-            RestRequest request = new RestRequest("/WeatherForecast", Method.GET);
+            RestRequest request = new RestRequest("/MusicFiles", Method.GET);
 
             // execute the request
-            IRestResponse response = client.Execute(request);
-            return response.Content;
-        }
-
-        public string getUserByID(int ID)
-        {
-            RestRequest request = new RestRequest(WEATHERFORECAST + "/{id}", Method.GET);
-            request.AddUrlSegment("id", ID.ToString()); // replaces matching token in request.Resource
-
-            // execute the request
-            IRestResponse response = client.Execute(request);
-            return response.Content;
+            IRestResponse response = null;
+            await Task.Run(()=> response = client.Execute(request));
+            return response;
         }
     }
 }

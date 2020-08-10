@@ -1,6 +1,6 @@
 using Android.App;
 using Android.OS;
-
+using ArkEcho.App.Source;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -21,6 +21,8 @@ namespace ArkEcho.App
             
             // Prepare WebSockets Connection
             Websockets.Droid.WebsocketConnection.Link();
+
+            await ArkEchoApp.Instance.Init();
 
             // Bisschen Verzögerung
             await Task.Delay(1500);
