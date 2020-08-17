@@ -44,7 +44,7 @@ namespace ArkEcho.Server
         {
             MusicLibrary library = new MusicLibrary();
 
-            foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, new List<string>() { ".mp3"}))
+            foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, new List<string>() { ".mp3", ".m4a", ".mwa"}))
             {
                 AlbumArtist albumArtist = null;
                 Album album = null;
