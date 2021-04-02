@@ -42,7 +42,7 @@ namespace ArkEcho.Server
         [HttpGet("MusicFile/{id}")]
         public async Task<FileContentResult> GetMusicFile(Guid id)
         {
-            MusicFile musicFile = server.GetAllMusicFiles().Find(x => x.ID == id);
+            MusicFile musicFile = server.GetAllMusicFiles().Find(x => x.GUID == id);
 
             if (musicFile == null)            
                 return new FileContentResult(null, string.Empty);

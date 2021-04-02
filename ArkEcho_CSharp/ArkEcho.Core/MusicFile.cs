@@ -7,7 +7,7 @@ namespace ArkEcho.Core
 {
     public class MusicFile
     {
-        public Guid ID { get; } = Guid.NewGuid();
+        public Guid GUID { get; } = Guid.NewGuid();
 
         public Guid Album { get; set; } = Guid.Empty;
 
@@ -40,8 +40,7 @@ namespace ArkEcho.Core
             if (Resources.SupportedFileFormats.Contains(extensionCleared))
                 FileFormat = extensionCleared;
             else
-                FileFormat = "ERROR";
-            
+                FileFormat = "ERROR";            
         }
 
         public string GetFullFilePath()

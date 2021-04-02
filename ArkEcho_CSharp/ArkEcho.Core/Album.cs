@@ -8,7 +8,7 @@ namespace ArkEcho.Core
     {
         public Album(){ }
 
-        public Guid ID { get; private set; } = Guid.NewGuid();
+        public Guid GUID { get; private set; } = Guid.NewGuid();
 
         public List<Guid> MusicFiles { get; private set; } = new List<Guid>();
 

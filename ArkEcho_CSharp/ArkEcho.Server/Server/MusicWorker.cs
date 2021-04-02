@@ -61,16 +61,16 @@ namespace ArkEcho.Server
                     album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
                     if (album == null)
                     {
-                        album = new Album() { AlbumArtist = albumArtist.ID, Name = tagFile.Tag.Album };
+                        album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
                         library.Album.Add(album);
 
-                        albumArtist.AlbumID.Add(album.ID);
+                        albumArtist.AlbumID.Add(album.GUID);
                     }
 
                     MusicFile music = new MusicFile(FilePath)
                     {
-                        Album = album.ID,
-                        AlbumArtist = albumArtist.ID,
+                        Album = album.GUID,
+                        AlbumArtist = albumArtist.GUID,
 
                         Title = tagFile.Tag.Title,
                         Performer = tagFile.Tag.FirstPerformer,
@@ -87,8 +87,8 @@ namespace ArkEcho.Server
                     if (music.Track > album.TrackCount)
                         album.TrackCount = music.Track;
 
-                    album.MusicFiles.Add(music.ID);
-                    albumArtist.MusicFileIDs.Add(music.ID);
+                    album.MusicFiles.Add(music.GUID);
+                    albumArtist.MusicFileIDs.Add(music.GUID);
                 }
             }
 
