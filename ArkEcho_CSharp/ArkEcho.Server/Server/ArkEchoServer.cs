@@ -38,7 +38,10 @@ namespace ArkEcho.Server
             host = Host;
 
             // TODO: Konfigurierbar
-            musicWorker.Init(@"C:\Users\steph\Music");
+            string musicPath = @"C:\Users\steph\Music";
+            Console.WriteLine($"Music Folder: {musicPath}");
+
+            musicWorker.Init(musicPath);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
 
             musicWorker.RunWorkerAsync();
@@ -54,9 +57,19 @@ namespace ArkEcho.Server
             library = (MusicLibrary)e.Result;
         }
 
-        public List<MusicFile> GetAllFiles()
+        public List<MusicFile> GetAllMusicFiles()
         {
             return library.MusicFiles;
+        }
+
+        public List<AlbumArtist> GetAllAlbumArtists()
+        {
+            return library.AlbumArtists;
+        }
+
+        public List<Album> GetAllAlbum()
+        {
+            return library.Album;
         }
 
         public void Stop()
