@@ -51,44 +51,47 @@ namespace ArkEcho.Server
 
                 using (TagLib.File tagFile = TagLib.File.Create(FilePath))
                 {
-                    albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
-                    if (albumArtist == null)
-                    {
-                        albumArtist = new AlbumArtist() { Name = tagFile.Tag.FirstAlbumArtist };
-                        library.AlbumArtists.Add(albumArtist);
-                    }
-
-                    album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
-                    if (album == null)
-                    {
-                        album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
-                        library.Album.Add(album);
-
-                        albumArtist.AlbumID.Add(album.GUID);
-                    }
-
                     MusicFile music = new MusicFile(FilePath)
                     {
-                        Album = album.GUID,
-                        AlbumArtist = albumArtist.GUID,
-
                         Title = tagFile.Tag.Title,
                         Performer = tagFile.Tag.FirstPerformer,
                         Disc = tagFile.Tag.Disc,
                         Track = tagFile.Tag.Track,
                         Year = tagFile.Tag.Year,
                     };
-                                      
+
+                    if (tagFile.Tag.FirstAlbumArtist != null && tagFile.Tag.Album != null)
+                    {
+                        albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
+                        if (albumArtist == null)
+                        {
+                            albumArtist = new AlbumArtist() { Name = tagFile.Tag.FirstAlbumArtist };
+                            library.AlbumArtists.Add(albumArtist);
+                        }
+
+                        album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                        if (album == null)
+                        {
+                            album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
+                            library.Album.Add(album);
+
+                            albumArtist.AlbumID.Add(album.GUID);
+                        }
+
+                        music.Album = album.GUID;
+                        music.AlbumArtist = albumArtist.GUID;
+
+                        if (music.Disc > album.DiscCount)
+                            album.DiscCount = music.Disc;
+
+                        if (music.Track > album.TrackCount)
+                            album.TrackCount = music.Track;
+
+                        album.MusicFiles.Add(music.GUID);
+                        albumArtist.MusicFileIDs.Add(music.GUID);
+                    }
+
                     library.MusicFiles.Add(music);
-
-                    if (music.Disc > album.DiscCount)
-                        album.DiscCount = music.Disc;
-
-                    if (music.Track > album.TrackCount)
-                        album.TrackCount = music.Track;
-
-                    album.MusicFiles.Add(music.GUID);
-                    albumArtist.MusicFileIDs.Add(music.GUID);
                 }
             }
 
