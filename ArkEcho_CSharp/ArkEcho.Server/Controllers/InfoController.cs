@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ArkEcho.Server
 {
+    // TODO: Zusammenführen mit Control und MusicFiles Controller
     [Route("api/[controller]")]
     [ApiController]
     public class InfoController : ControllerBase

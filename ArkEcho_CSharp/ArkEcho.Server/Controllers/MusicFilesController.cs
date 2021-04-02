@@ -32,12 +32,13 @@ namespace ArkEcho.Server
         {
             MusicFile musicFile = server.GetAllFiles().Find(x => x.ID == id);
 
-            //if (musicFile == null)            
-            //    return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+            if (musicFile == null)            
+                return new FileContentResult(null, string.Empty);
 
-            byte[] content = System.IO.File.ReadAllBytes(musicFile.FilePath);
-            FileContentResult result = new FileContentResult(content, "application/mp3");
-            result.FileDownloadName = Path.GetFileName(musicFile.FilePath);
+            byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());
+
+            FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
+            result.FileDownloadName = Path.GetFileName(musicFile.FileName);
 
             return result;
         }

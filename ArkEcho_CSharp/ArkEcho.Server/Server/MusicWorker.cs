@@ -32,7 +32,7 @@ namespace ArkEcho.Server
             List<string> results = new List<string>();
 
             List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
-            results.AddRange(filesInDirectory.FindAll(x => FileExtensionFilter.Find(y => y.Equals(Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)) != null));
+            results.AddRange(filesInDirectory.FindAll(x => FileExtensionFilter.Find(y => $".{y}".Equals(Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)) != null));
 
             foreach (string subdirectory in Directory.GetDirectories(DirectoryPath))
                 results.AddRange(getAllFilesSubSearch(subdirectory, FileExtensionFilter));
@@ -44,7 +44,7 @@ namespace ArkEcho.Server
         {
             MusicLibrary library = new MusicLibrary();
 
-            foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, new List<string>() { ".mp3", ".m4a", ".mwa"}))
+            foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, Resources.SupportedFileFormats))
             {
                 AlbumArtist albumArtist = null;
                 Album album = null;
@@ -76,13 +76,14 @@ namespace ArkEcho.Server
                         Performer = tagFile.Tag.FirstPerformer,
                         Disc = tagFile.Tag.Disc,
                         Track = tagFile.Tag.Track,
-                        Year = tagFile.Tag.Year
+                        Year = tagFile.Tag.Year,
                     };
                                       
                     library.MusicFiles.Add(music);
 
                     if (music.Disc > album.DiscCount)
                         album.DiscCount = music.Disc;
+
                     if (music.Track > album.TrackCount)
                         album.TrackCount = music.Track;
 

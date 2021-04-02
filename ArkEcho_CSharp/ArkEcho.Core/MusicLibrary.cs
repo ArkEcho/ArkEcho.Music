@@ -4,6 +4,7 @@ using System.Text;
 
 namespace ArkEcho.Core
 {
+    // TODO: Alles Serializable
     public class MusicLibrary
     {
         public MusicLibrary(){}

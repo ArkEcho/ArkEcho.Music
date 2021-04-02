@@ -37,6 +37,7 @@ namespace ArkEcho.Server
 
             host = Host;
 
+            // TODO: Konfigurierbar
             musicWorker.Init(@"C:\Users\steph\Music");
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
 
