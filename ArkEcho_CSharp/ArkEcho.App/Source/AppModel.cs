@@ -13,26 +13,26 @@ using ArkEcho.App.Connection;
 
 namespace ArkEcho.App.Source
 {
-    public class ArkEchoApp : IDisposable
+    public class AppModel : IDisposable
     {
-        public static ArkEchoApp Instance { get; } = new ArkEchoApp();
+        public static AppModel Instance { get; } = new AppModel();
 
-        public ArkEchoApp()
+        private AppModel()
         {
-
+            rest = new Connection.ArkEchoRest();
         }
 
         public async Task<bool> Init()
         {
-            rest = new Connection.ArkEchoRest();
+            // Prepare WebSockets Connection
+            Websockets.Droid.WebsocketConnection.Link();
+
             await rest.getMusic();
 
             return true;
         }
 
         private ArkEchoRest rest;
-
-
 
         private bool disposed;
 

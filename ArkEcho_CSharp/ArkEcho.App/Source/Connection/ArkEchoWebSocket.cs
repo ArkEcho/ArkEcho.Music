@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using ArkEcho.Core;
+using ArkEcho.Core.Connection;
 
 namespace ArkEcho.App.Connection
 {

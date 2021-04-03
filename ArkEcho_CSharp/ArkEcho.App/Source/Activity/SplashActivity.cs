@@ -19,10 +19,7 @@ namespace ArkEcho.App
         {
             base.OnResume();
             
-            // Prepare WebSockets Connection
-            Websockets.Droid.WebsocketConnection.Link();
-
-            await ArkEchoApp.Instance.Init();
+            await AppModel.Instance.Init();
 
             // Bisschen Verzögerung
             await Task.Delay(1500);

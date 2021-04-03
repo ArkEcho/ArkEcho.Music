@@ -13,12 +13,12 @@ namespace ArkEcho.App.Connection
 
         public ArkEchoRest()
         {
-            client = new RestClient("https://192.168.0.65:5001/api");
+            client = new RestClient("https://192.168.178.21:5001/api");
         }
 
         public async Task<IRestResponse> getMusic()
         {
-            RestRequest request = new RestRequest("/MusicFiles", Method.GET);
+            RestRequest request = new RestRequest("/Music/MusicFile", Method.GET);
 
             // execute the request
             IRestResponse response = null;

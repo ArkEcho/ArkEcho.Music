@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace ArkEcho.Core
+namespace ArkEcho.Core.Connection
 {
     public class MessageHandler
     {
