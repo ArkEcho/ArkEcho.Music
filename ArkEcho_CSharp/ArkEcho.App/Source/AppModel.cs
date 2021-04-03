@@ -27,7 +27,7 @@ namespace ArkEcho.App.Source
             // Prepare WebSockets Connection
             Websockets.Droid.WebsocketConnection.Link();
 
-            await rest.getMusic();
+            await rest.getMusicFileInfo();
 
             return true;
         }

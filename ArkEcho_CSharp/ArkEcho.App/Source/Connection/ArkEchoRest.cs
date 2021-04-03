@@ -16,7 +16,7 @@ namespace ArkEcho.App.Connection
             client = new RestClient("https://192.168.178.21:5001/api");
         }
 
-        public async Task<IRestResponse> getMusic()
+        public async Task<IRestResponse> getMusicFileInfo()
         {
             RestRequest request = new RestRequest("/Music/MusicFile", Method.GET);
 
