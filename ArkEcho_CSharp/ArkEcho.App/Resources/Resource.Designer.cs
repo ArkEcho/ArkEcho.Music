@@ -25,6 +25,7 @@ namespace ArkEcho.App
 		
 		public static void UpdateIdValues()
 		{
+			global::LibVLCSharp.Resource.String.app_name = global::ArkEcho.App.Resource.String.app_name;
 		}
 		
 		public partial class Attribute
@@ -260,6 +261,9 @@ namespace ArkEcho.App
 			
 			// aapt resource value: 0x7F060001
 			public const int ApplicationTitle = 2131099649;
+			
+			// aapt resource value: 0x7F06001A
+			public const int app_name = 2131099674;
 			
 			// aapt resource value: 0x7F060002
 			public const int HelpActivityTextViewHeader = 2131099650;

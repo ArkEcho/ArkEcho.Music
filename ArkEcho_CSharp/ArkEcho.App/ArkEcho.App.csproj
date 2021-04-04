@@ -53,6 +53,13 @@
     <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Java.Interop" />
+    <Reference Include="LibVLCSharp, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibVLCSharp.3.5.0\lib\monoandroid81\LibVLCSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="LibVLCSharp.Android.AWindow, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibVLCSharp.3.5.0\lib\monoandroid81\LibVLCSharp.Android.AWindow.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -178,6 +185,10 @@
       <Project>{34dfb0f4-7aea-4458-891c-bbd38e067e5d}</Project>
       <Name>ArkEcho.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ArkEcho.Player\ArkEcho.Player.csproj">
+      <Project>{2a4bb1bc-3129-4f39-8c44-98991ab058bb}</Project>
+      <Name>ArkEcho.Player</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
@@ -186,7 +197,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+    <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.Android.3.2.0\build\VideoLAN.LibVLC.Android.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.Android.3.2.0\build\VideoLAN.LibVLC.Android.targets'))" />
   </Target>
+  <Import Project="..\packages\VideoLAN.LibVLC.Android.3.2.0\build\VideoLAN.LibVLC.Android.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.Android.3.2.0\build\VideoLAN.LibVLC.Android.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.
 		<Target Name="BeforeBuild">

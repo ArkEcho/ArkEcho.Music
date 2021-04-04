@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using ArkEcho.App.Connection;
+using ArkEcho.Player;
 
 namespace ArkEcho.App.Source
 {
@@ -20,6 +21,7 @@ namespace ArkEcho.App.Source
         private AppModel()
         {
             rest = new Connection.ArkEchoRest();
+            player = new Player.ArkEchoPlayer();
         }
 
         public async Task<bool> Init()
@@ -27,13 +29,21 @@ namespace ArkEcho.App.Source
             // Prepare WebSockets Connection
             Websockets.Droid.WebsocketConnection.Link();
 
-            await rest.getMusicFileInfo();
+            //await rest.getMusicFileInfo();
+
+            string pathnew = @"/storage/0000-0000/Android/Music/Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+
+            player.Play(pathnew);
+
+            await Task.Delay(10000);
+
+            player.Stop();
 
             return true;
         }
 
-        private ArkEchoRest rest;
-
+        private ArkEchoRest rest = null;
+        private ArkEchoPlayer player = null;
         private bool disposed;
 
         protected virtual void Dispose(bool disposing)
