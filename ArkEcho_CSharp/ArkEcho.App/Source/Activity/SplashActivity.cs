@@ -1,6 +1,5 @@
 using Android.App;
 using Android.OS;
-using ArkEcho.App.Source;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App

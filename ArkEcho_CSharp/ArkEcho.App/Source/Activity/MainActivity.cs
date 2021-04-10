@@ -51,17 +51,19 @@ namespace ArkEcho.App
             //ArkEchoRest rest = new ArkEchoRest();
             //string test = rest.getWeather();
 
-            setElementsEnabled(false);
-            string address = FindViewById<TextView>(Resource.Id.teAddress).Text;
+            //setElementsEnabled(false);
+            //string address = FindViewById<TextView>(Resource.Id.teAddress).Text;
 
-            if (!ArkEchoWebSocket.checkIfURIAddressIsCorrect(address))
-            {
-                showMessageBoxEmptyWrongAddressField();
-                setElementsEnabled(true);
-                return;
-            }
+            //if (!ArkEchoWebSocket.checkIfURIAddressIsCorrect(address))
+            //{
+            //    showMessageBoxEmptyWrongAddressField();
+            //    setElementsEnabled(true);
+            //    return;
+            //}
 
-            connectAndOpenPlayer(address);
+            //connectAndOpenPlayer(address);
+
+            AppModel.Instance.PlayPause();
         }
         
         //private async void onPbConnectWithQrClicked(object sender, System.EventArgs e)

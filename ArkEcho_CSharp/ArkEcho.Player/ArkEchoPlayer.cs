@@ -17,11 +17,17 @@ namespace ArkEcho.Player
             mediaplayer = new MediaPlayer(libvlc);
         }
 
+        public bool Playing { get { return mediaplayer.IsPlaying; } }
+
         public void Play(string Path)
         {
             Media media = new Media(libvlc, Path);
-
             mediaplayer.Play(media);
+        }
+
+        public void Pause()
+        {
+            mediaplayer.Pause();
         }
 
         public void Stop()
