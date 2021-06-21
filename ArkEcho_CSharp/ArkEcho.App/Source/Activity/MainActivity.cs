@@ -84,19 +84,17 @@ namespace ArkEcho.App
 
         private async void connectAndOpenPlayer(string address)
         {
-            Task connect = ArkEchoWebSocket.connectWebSocket(address);
-            await connect;
-
+            await Task.Delay(10);
             setElementsEnabled(true);
 
-            if (ArkEchoWebSocket.checkIfConnectionIsOpen())
-            {
-                Vibrator vibrator = (Vibrator)this.GetSystemService(VibratorService);
-                vibrator.Vibrate(VibrationEffect.CreateOneShot(500, 10));
-                StartActivity(typeof(PlayerActivity));
-            }
-            else
-                showMessageBoxNoConnection();
+            //if (ArkEchoWebSocket.checkIfConnectionIsOpen())
+            //{
+            //    Vibrator vibrator = (Vibrator)this.GetSystemService(VibratorService);
+            //    vibrator.Vibrate(VibrationEffect.CreateOneShot(500, 10));
+            //    StartActivity(typeof(PlayerActivity));
+            //}
+            //else
+            //    showMessageBoxNoConnection();
         }
 
         //private void showMessageBoxQrScanFailed()

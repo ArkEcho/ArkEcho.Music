@@ -40,11 +40,7 @@ namespace ArkEcho.App
 
         public async Task<bool> Init()
         {
-            // Prepare WebSockets Connection
-            Websockets.Droid.WebsocketConnection.Link();
-
-            //await rest.getMusicFileInfo();
-
+            await Task.Delay(10);
             return true;
         }
 
