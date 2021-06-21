@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ArkEcho.Core;
 using ArkEcho.Server;
 using System.Threading;
@@ -19,26 +18,28 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
-        // GET: api/MusicFiles
+        // GET: api/Music/MusicFile
         [HttpGet("MusicFile")]
         public IEnumerable<MusicFile> GeAlltMusicFiles()
         {
             return server.GetAllMusicFiles();
         }
 
+        // GET: api/Music/AlbumArtist
         [HttpGet("AlbumArtist")]
         public IEnumerable<AlbumArtist> GetAllAlbumArtist()
         {
             return server.GetAllAlbumArtists();
         }
 
+        // GET: api/Music/Album
         [HttpGet("Album")]
         public IEnumerable<Album> GetAllAlbum()
         {
             return server.GetAllAlbum();
         }
 
-        // GET: api/MusicFiles/5
+        // GET: api/Music/MusicFile/[GUID]
         [HttpGet("MusicFile/{id}")]
         public async Task<FileContentResult> GetMusicFile(Guid id)
         {
