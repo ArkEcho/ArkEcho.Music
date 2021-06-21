@@ -1,5 +1,4 @@
 ﻿using ArkEcho.Core;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

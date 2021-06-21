@@ -13,18 +13,21 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
+        // GET: api/Control/Stop
         [HttpGet("Stop")]
         public void ControlStopServer()
         {
             server.Stop();
         }
 
+        // GET: api/Control/Restart
         [HttpGet("Restart")]
         public void ControlRestartServer()
         {
             server.Restart();
         }
 
+        // GET: api/Control/[ID]
         [HttpGet("{id}")]
         public ActionResult ControlServer(int id)
         {
