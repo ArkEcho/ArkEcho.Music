@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -18,6 +19,8 @@ namespace ArkEcho.Server
     public sealed class ArkEchoServer : IDisposable
     {
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
+
+        public ServerConfig Config { get; private set; } = null;
 
         private MusicLibrary library = null;
         private MusicWorker musicWorker = null;
@@ -37,11 +40,23 @@ namespace ArkEcho.Server
 
             host = Host;
 
-            // TODO: Konfigurierbar
-            string musicPath = @"C:\Users\steph\Music";
-            Console.WriteLine($"Music Folder: {musicPath}");
+            Console.WriteLine("Initializing ArkEcho.Server");
 
-            musicWorker.Init(musicPath);
+            Config = new ServerConfig(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            if(!Config.Load())
+            {
+                Console.WriteLine("No Config File found -> created new one, please configure. Stopping Server");
+                return false;
+            }
+            else if(string.IsNullOrEmpty(Config.MusicFolder) || !Directory.Exists(Config.MusicFolder))
+            {
+                Console.WriteLine("Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
+                return false;
+            }
+            else            
+                Config.WriteOutputToConsole();            
+
+            musicWorker.Init(Config.MusicFolder);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
 
             musicWorker.RunWorkerAsync();

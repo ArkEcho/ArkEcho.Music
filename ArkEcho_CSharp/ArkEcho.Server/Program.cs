@@ -35,14 +35,14 @@ namespace ArkEcho.Server
                     Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
                     return;
                 }
+                else
+                {
+                    host.Run(); // Starts normal Event Cycle and API
 
-                host.Run();
-
-                restart = ArkEchoServer.Instance.RestartRequested;
+                    if (ArkEchoServer.Instance.RestartRequested)
+                        System.Diagnostics.Process.Start("ArkEcho.Server.exe");
+                }
             }
-
-            if (restart)
-                System.Diagnostics.Process.Start("ArkEcho.Server.exe");
 
             Environment.Exit(0);
         }
