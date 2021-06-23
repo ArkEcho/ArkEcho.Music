@@ -22,19 +22,16 @@ namespace ArkEcho.Server
 
         public class JsonProperty : Attribute
         {
-            public JsonProperty()
-            {
-            }
-
+            public string StandardValue { get; set; } = string.Empty;
         }
 
         public string FilePath { get; private set; } = string.Empty;
 
         [JsonProperty]
-        public string MusicFolder { get; set; } = string.Empty;
+        public string MusicFolder { get; set; }
 
-        [JsonProperty]
-        public bool Authorization { get; private set; } = false;
+        [JsonProperty(StandardValue = "false")]
+        public bool Authorization { get; private set; }
 
         public bool Load()
         {
@@ -61,16 +58,12 @@ namespace ArkEcho.Server
                                 if (authAttr != null)
                                 {
                                     if (propInfo.PropertyType == typeof(string))
-                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (string)load[propInfo.Name] : string.Empty);
+                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (string)load[propInfo.Name] : authAttr.StandardValue);
                                     else if(propInfo.PropertyType == typeof(bool))
-                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (bool)load[propInfo.Name] : false);
+                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (bool)load[propInfo.Name] : authAttr.StandardValue.Equals("true", StringComparison.OrdinalIgnoreCase));
                                 }
                             }
                         }
-
-                        // Check if Key exist before Accessing
-                        //MusicFolder = load.ContainsKey(JSON_MusicFolder) ? (string)load[JSON_MusicFolder] : string.Empty;
-                        //Authorization = load.ContainsKey(JSON_AUTHORIZATION) ? (bool)load[JSON_AUTHORIZATION] : false;
 
                         foundCorrectExistingFile = true;
                     }
