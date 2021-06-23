@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -19,10 +20,20 @@ namespace ArkEcho.Server
             this.FilePath = $"{Folder}\\{FileName}";
         }
 
+        public class JsonProperty : Attribute
+        {
+            public JsonProperty()
+            {
+            }
+
+        }
+
         public string FilePath { get; private set; } = string.Empty;
 
-        public string MusicFolder { get; private set; } = string.Empty;
+        [JsonProperty]
+        public string MusicFolder { get; set; } = string.Empty;
 
+        [JsonProperty]
         public bool Authorization { get; private set; } = false;
 
         public bool Load()
@@ -42,9 +53,24 @@ namespace ArkEcho.Server
 
                     if (load != null)
                     {
+                        foreach (PropertyInfo propInfo in typeof(ServerConfig).GetProperties())
+                        {
+                            foreach (object attr in propInfo.GetCustomAttributes(true))
+                            {
+                                JsonProperty authAttr = attr as JsonProperty;
+                                if (authAttr != null)
+                                {
+                                    if (propInfo.PropertyType == typeof(string))
+                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (string)load[propInfo.Name] : string.Empty);
+                                    else if(propInfo.PropertyType == typeof(bool))
+                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (bool)load[propInfo.Name] : false);
+                                }
+                            }
+                        }
+
                         // Check if Key exist before Accessing
-                        MusicFolder = load.ContainsKey(JSON_MusicFolder) ? load[JSON_MusicFolder].ToString() : string.Empty;
-                        Authorization = load.ContainsKey(JSON_AUTHORIZATION) ? load[JSON_AUTHORIZATION].ToString().Equals(true.ToString(), StringComparison.OrdinalIgnoreCase) : false;
+                        //MusicFolder = load.ContainsKey(JSON_MusicFolder) ? (string)load[JSON_MusicFolder] : string.Empty;
+                        //Authorization = load.ContainsKey(JSON_AUTHORIZATION) ? (bool)load[JSON_AUTHORIZATION] : false;
 
                         foundCorrectExistingFile = true;
                     }
@@ -54,7 +80,7 @@ namespace ArkEcho.Server
             JObject save = new JObject
             {
                 [JSON_MusicFolder] = MusicFolder,
-                [JSON_AUTHORIZATION] = Authorization.ToString()
+                [JSON_AUTHORIZATION] = Authorization
             };
 
             string saveContent = save.ToString();
