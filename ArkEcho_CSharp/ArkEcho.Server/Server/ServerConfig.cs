@@ -17,7 +17,6 @@ namespace ArkEcho.Server
             this.FilePath = $"{Folder}\\{FileName}";
         }
 
-        public readonly List<Type> SupportedTypes = new List<Type>() { typeof(string), typeof(bool), typeof(int) };
         public class JsonProperty : Attribute
         {
             public object StandardValue { get; set; } = string.Empty;
@@ -61,33 +60,17 @@ namespace ArkEcho.Server
             else
                 data = new JObject();
 
-            foreach (PropertyInfo propInfo in typeof(ServerConfig).GetProperties())
+            foreach (PropertyInfo info in typeof(ServerConfig).GetProperties())
             {
-                foreach (object attr in propInfo.GetCustomAttributes(true))
+                foreach (object attr in info.GetCustomAttributes(true))
                 {
-                    JsonProperty authAttr = attr as JsonProperty;
-                    if (authAttr != null)
-                    {
-                        if (propInfo.PropertyType == typeof(string))
-                        {
-                            if (data.ContainsKey(propInfo.Name))
-                                propInfo.SetValue(this, (string)data[propInfo.Name]);
-                            else
-                            {
-                                propInfo.SetValue(this, authAttr.StandardValue);
-                                data[propInfo.Name] = (string)authAttr.StandardValue;
-                            }
-                        }
-                        else if (propInfo.PropertyType == typeof(bool))
-                        {
-                            if (data.ContainsKey(propInfo.Name))
-                                propInfo.SetValue(this, (bool)data[propInfo.Name]);
-                            else
-                            {
-                                propInfo.SetValue(this, authAttr.StandardValue);
-                                data[propInfo.Name] = (bool)authAttr.StandardValue;
-                            }
-                        }
+                    JsonProperty attribute = (JsonProperty)attr;
+                    if (attribute != null)
+                    {                        
+                        if (info.PropertyType == typeof(string))
+                            checkKeyAndSetProperty<string>(attribute, data, info);
+                        else if (info.PropertyType == typeof(bool))                        
+                            checkKeyAndSetProperty<bool>(attribute, data, info);                                                   
                     }
                 }
             }
@@ -97,6 +80,17 @@ namespace ArkEcho.Server
             File.WriteAllText(FilePath, saveContent, System.Text.Encoding.UTF8);
 
             return foundCorrectExistingFile;
+        }
+
+        public void checkKeyAndSetProperty<T>(JsonProperty attribute, JObject data, PropertyInfo info)
+        {
+            if (!data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
+                data[info.Name] = (dynamic)(T)(object)attribute.StandardValue;
+            info.SetValue(this, Convert.ChangeType(data[info.Name],typeof(T)));
+
+            //if (!data.ContainsKey(info.Name))
+            //    data[info.Name] = (bool)attribute.StandardValue;
+            //info.SetValue(this, (bool)data[info.Name]); 
         }
 
         public void WriteOutputToConsole()

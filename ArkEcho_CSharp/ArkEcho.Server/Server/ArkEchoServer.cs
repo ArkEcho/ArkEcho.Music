@@ -69,7 +69,13 @@ namespace ArkEcho.Server
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             Console.WriteLine($"Worker Completed!");
-            library = (MusicLibrary)e.Result;
+            if (e.Result != null)
+                library = (MusicLibrary)e.Result;
+            else
+            {
+                Console.WriteLine("### Error loading Music Library, stopping!");
+                Stop();
+            }
         }
 
         public List<MusicFile> GetAllMusicFiles()
