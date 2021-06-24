@@ -12,17 +12,15 @@ namespace ArkEcho.Server
     {
         public const string FileName = "Config.json";
 
-        private const string JSON_MusicFolder = "MusicFolder";
-        private const string JSON_AUTHORIZATION = "Authorization";
-
         public ServerConfig(string Folder)
         {
             this.FilePath = $"{Folder}\\{FileName}";
         }
 
+        public readonly List<Type> SupportedTypes = new List<Type>() { typeof(string), typeof(bool), typeof(int) };
         public class JsonProperty : Attribute
         {
-            public string StandardValue { get; set; } = string.Empty;
+            public object StandardValue { get; set; } = string.Empty;
         }
 
         public string FilePath { get; private set; } = string.Empty;
@@ -30,13 +28,14 @@ namespace ArkEcho.Server
         [JsonProperty]
         public string MusicFolder { get; set; }
 
-        [JsonProperty(StandardValue = "false")]
+        [JsonProperty(StandardValue = false)]
         public bool Authorization { get; private set; }
 
         public bool Load()
         {
             Console.WriteLine($"Loading Config File {FilePath}");
             bool foundCorrectExistingFile = false;
+            JObject data = null;
 
             if (File.Exists(FilePath))
             {
@@ -46,37 +45,54 @@ namespace ArkEcho.Server
                 {
                     // Handling for File path in JSON -.-
                     content=content.Replace("\\", "\\\\");
-                    JObject load = JObject.Parse(content);
-
-                    if (load != null)
+                    try
                     {
-                        foreach (PropertyInfo propInfo in typeof(ServerConfig).GetProperties())
-                        {
-                            foreach (object attr in propInfo.GetCustomAttributes(true))
-                            {
-                                JsonProperty authAttr = attr as JsonProperty;
-                                if (authAttr != null)
-                                {
-                                    if (propInfo.PropertyType == typeof(string))
-                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (string)load[propInfo.Name] : authAttr.StandardValue);
-                                    else if(propInfo.PropertyType == typeof(bool))
-                                        propInfo.SetValue(this, load.ContainsKey(propInfo.Name) ? (bool)load[propInfo.Name] : authAttr.StandardValue.Equals("true", StringComparison.OrdinalIgnoreCase));
-                                }
-                            }
-                        }
-
-                        foundCorrectExistingFile = true;
+                        data = JObject.Parse(content);
+                    }
+                    catch(Exception)
+                    {
+                        Console.WriteLine($"### Exception parsing Config File!");
                     }
                 }
             }
 
-            JObject save = new JObject
-            {
-                [JSON_MusicFolder] = MusicFolder,
-                [JSON_AUTHORIZATION] = Authorization
-            };
+            if (data != null)
+                foundCorrectExistingFile = true;
+            else
+                data = new JObject();
 
-            string saveContent = save.ToString();
+            foreach (PropertyInfo propInfo in typeof(ServerConfig).GetProperties())
+            {
+                foreach (object attr in propInfo.GetCustomAttributes(true))
+                {
+                    JsonProperty authAttr = attr as JsonProperty;
+                    if (authAttr != null)
+                    {
+                        if (propInfo.PropertyType == typeof(string))
+                        {
+                            if (data.ContainsKey(propInfo.Name))
+                                propInfo.SetValue(this, (string)data[propInfo.Name]);
+                            else
+                            {
+                                propInfo.SetValue(this, authAttr.StandardValue);
+                                data[propInfo.Name] = (string)authAttr.StandardValue;
+                            }
+                        }
+                        else if (propInfo.PropertyType == typeof(bool))
+                        {
+                            if (data.ContainsKey(propInfo.Name))
+                                propInfo.SetValue(this, (bool)data[propInfo.Name]);
+                            else
+                            {
+                                propInfo.SetValue(this, authAttr.StandardValue);
+                                data[propInfo.Name] = (bool)authAttr.StandardValue;
+                            }
+                        }
+                    }
+                }
+            }
+
+            string saveContent = data.ToString();
             saveContent = saveContent.Replace("\\\\", "\\");
             File.WriteAllText(FilePath, saveContent, System.Text.Encoding.UTF8);
 
