@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
-using ArkEcho.Core;
-using ArkEcho.Server;
-using System.Threading;
+using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -45,7 +40,7 @@ namespace ArkEcho.Server
         {
             MusicFile musicFile = server.GetAllMusicFiles().Find(x => x.GUID == id);
 
-            if (musicFile == null)            
+            if (musicFile == null)
                 return new FileContentResult(null, string.Empty);
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());

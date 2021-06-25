@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization;
 
 namespace ArkEcho.Core
 {
@@ -39,7 +38,7 @@ namespace ArkEcho.Core
             if (Resources.SupportedFileFormats.Contains(extensionCleared))
                 FileFormat = extensionCleared;
             else
-                FileFormat = "ERROR";            
+                FileFormat = "ERROR";
         }
 
         public string GetFullFilePath()

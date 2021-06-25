@@ -1,18 +1,9 @@
 ﻿using ArkEcho.Core;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
-using System.Security.Principal;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -43,18 +34,18 @@ namespace ArkEcho.Server
             Console.WriteLine("Initializing ArkEcho.Server");
 
             Config = new ServerConfig(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            if(!Config.Load())
+            if (!Config.Load())
             {
                 Console.WriteLine("No Config File found -> created new one, please configure. Stopping Server");
                 return false;
             }
-            else if(string.IsNullOrEmpty(Config.MusicFolder) || !Directory.Exists(Config.MusicFolder))
+            else if (string.IsNullOrEmpty(Config.MusicFolder) || !Directory.Exists(Config.MusicFolder))
             {
                 Console.WriteLine("Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
-            else            
-                Config.WriteOutputToConsole();            
+            else
+                Config.WriteOutputToConsole();
 
             musicWorker.Init(Config.MusicFolder);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;

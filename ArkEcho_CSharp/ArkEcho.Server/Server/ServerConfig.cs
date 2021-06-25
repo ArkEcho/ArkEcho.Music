@@ -1,10 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -43,12 +40,12 @@ namespace ArkEcho.Server
                 if (!string.IsNullOrEmpty(content))
                 {
                     // Handling for File path in JSON -.-
-                    content=content.Replace("\\", "\\\\");
+                    content = content.Replace("\\", "\\\\");
                     try
                     {
                         data = JObject.Parse(content);
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         Console.WriteLine($"### Exception parsing Config File!");
                     }
@@ -66,11 +63,17 @@ namespace ArkEcho.Server
                 {
                     JsonProperty attribute = (JsonProperty)attr;
                     if (attribute != null)
-                    {                        
+                    {
                         if (info.PropertyType == typeof(string))
                             checkKeyAndSetProperty<string>(attribute, data, info);
-                        else if (info.PropertyType == typeof(bool))                        
-                            checkKeyAndSetProperty<bool>(attribute, data, info);                                                   
+                        else if (info.PropertyType == typeof(bool))
+                            checkKeyAndSetProperty<bool>(attribute, data, info);
+                        else if (info.PropertyType == typeof(Guid))
+                            checkKeyAndSetProperty<Guid>(attribute, data, info);
+                        else if (info.PropertyType == typeof(int))
+                            checkKeyAndSetProperty<int>(attribute, data, info);
+                        else if (info.PropertyType == typeof(double))
+                            checkKeyAndSetProperty<double>(attribute, data, info);
                     }
                 }
             }
@@ -85,8 +88,8 @@ namespace ArkEcho.Server
         public void checkKeyAndSetProperty<T>(JsonProperty attribute, JObject data, PropertyInfo info)
         {
             if (!data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
-                data[info.Name] = (dynamic)(T)(object)attribute.StandardValue;
-            info.SetValue(this, Convert.ChangeType(data[info.Name],typeof(T)));
+                data[info.Name] = (dynamic)(T)attribute.StandardValue;
+            info.SetValue(this, Convert.ChangeType(data[info.Name], typeof(T)));
 
             //if (!data.ContainsKey(info.Name))
             //    data[info.Name] = (bool)attribute.StandardValue;
