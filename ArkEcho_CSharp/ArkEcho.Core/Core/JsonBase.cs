@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Reflection;
 
 namespace ArkEcho.Core
@@ -45,6 +46,12 @@ namespace ArkEcho.Core
             return correctJson;
         }
 
+        private void LoadJsonFromJObjectAndSetProperties(JObject Object)
+        {
+            data = Object;
+            loadProperties();
+        }
+
         private void loadProperties()
         {
             foreach (PropertyInfo info in this.GetType().GetProperties())
@@ -60,23 +67,38 @@ namespace ArkEcho.Core
                             checkKeyAndSetProperty<bool>(attribute, info);
                         else if (info.PropertyType == typeof(Guid))
                             checkKeyAndSetProperty<Guid>(attribute, info);
+                        else if (info.PropertyType == typeof(DateTime))
+                            checkKeyAndSetProperty<DateTime>(attribute, info);
+                        else if (info.PropertyType == typeof(TimeSpan))
+                            checkKeyAndSetProperty<TimeSpan>(attribute, info);
+                        else if (info.PropertyType == typeof(uint))
+                            checkKeyAndSetProperty<uint>(attribute, info);
                         else if (info.PropertyType == typeof(int))
                             checkKeyAndSetProperty<int>(attribute, info);
                         else if (info.PropertyType == typeof(double))
                             checkKeyAndSetProperty<double>(attribute, info);
-                        // TODO
-                        //else if (info.PropertyType.IsClass && info.PropertyType.IsSubclassOf())
-                        //{
-                        //  foreach (JProperty prop in data.Properties())
-                        //  {
-                        //      if (prop.Value.Type == JTokenType.Object)
-                        //      {
-                        //          JObject ib = (JObject)prop.Value;
-                        //          int testint = (int)ib["TestInt"];
-                        //          double testdouble = (double)ib["TestDouble"];
-                        //      }
-                        //  }
-                        //}
+                        else if (info.PropertyType == typeof(long))
+                            checkKeyAndSetProperty<long>(attribute, info);
+                        else if (info.PropertyType == typeof(float))
+                            checkKeyAndSetProperty<float>(attribute, info);
+                        else if (info.PropertyType.IsClass)
+                        {
+                            if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
+                            {
+                                JsonBase instance = (JsonBase)Activator.CreateInstance(info.PropertyType);
+                                info.SetValue(this, instance);
+
+                                if (!data.ContainsKey(info.Name))
+                                    data[info.Name] = new JObject();
+                                JObject obj = (JObject)data[info.Name];
+
+                                instance.LoadJsonFromJObjectAndSetProperties(obj);
+                            }
+                            else if (info.PropertyType.IsSubclassOf(typeof(IEnumerable)))
+                            {
+                                // TODO
+                            }
+                        }
                     }
                 }
             }

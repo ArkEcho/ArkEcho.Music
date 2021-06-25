@@ -18,6 +18,9 @@ namespace ArkEcho.Server
         [JsonProperty(StandardValue = false)]
         public bool Authorization { get; private set; }
 
+        [JsonProperty]
+        public TestClass TestClass { get; private set; }
+
         public bool Load(string Folder)
         {
             string filepath = $"{Folder}\\{FileName}";
