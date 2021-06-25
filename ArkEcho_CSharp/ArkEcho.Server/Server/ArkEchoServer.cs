@@ -33,8 +33,8 @@ namespace ArkEcho.Server
 
             Console.WriteLine("Initializing ArkEcho.Server");
 
-            Config = new ServerConfig(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            if (!Config.Load())
+            Config = new ServerConfig();
+            if (!Config.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
             {
                 Console.WriteLine("No Config File found -> created new one, please configure. Stopping Server");
                 return false;
