@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Reflection;
 
 namespace ArkEcho.Core
@@ -9,6 +8,7 @@ namespace ArkEcho.Core
     {
         protected class JsonProperty : Attribute
         {
+            // TODO: Rausschmeissen? Nur bei Config sinnvoll
             public object StandardValue { get; set; } = string.Empty;
         }
 
@@ -94,11 +94,25 @@ namespace ArkEcho.Core
 
                                 instance.LoadJsonFromJObjectAndSetProperties(obj);
                             }
-                            else if (info.PropertyType.IsSubclassOf(typeof(IEnumerable)))
-                            {
-                                // TODO
-                            }
+                            //else if (info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                            //{
+                            //    var instance = Activator.CreateInstance(info.PropertyType);
+                            //    info.SetValue(this, instance);
+
+                            //    if (!data.ContainsKey(info.Name))
+                            //        data[info.Name] = new JObject();
+
+                            //    //data[info.Name].AsEnumerable().ToList().ForEach(x => x.ToObject());
+
+                            //    info.PropertyType.GetMethod("Add").Invoke(instance, new object[] { Guid.NewGuid() });
+                            //}
                         }
+                        //else if (info.PropertyType.IsArray)
+                        //{
+                        //    // TODO
+                        //    int[] bla = new int[10];
+
+                        //}
                     }
                 }
             }

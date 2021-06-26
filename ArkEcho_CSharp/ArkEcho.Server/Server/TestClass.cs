@@ -1,4 +1,6 @@
 ﻿using ArkEcho.Core;
+using System;
+using System.Collections.Generic;
 
 namespace ArkEcho.Server
 {
@@ -9,5 +11,11 @@ namespace ArkEcho.Server
 
         [JsonProperty(StandardValue = 123.45)]
         public double TestDouble { get; set; }
+
+        [JsonProperty]
+        public List<Guid> TestList { get; set; }
+
+        [JsonProperty]
+        public int[] TestArray { get; set; }
     }
 }
