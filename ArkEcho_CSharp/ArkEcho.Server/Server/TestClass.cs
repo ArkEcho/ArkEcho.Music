@@ -6,11 +6,11 @@ namespace ArkEcho.Server
 {
     public class TestClass : JsonBase
     {
-        [JsonProperty(StandardValue = 123)]
-        public int TestInt { get; set; }
+        [JsonProperty]
+        public int TestInt { get; set; } = 123;
 
-        [JsonProperty(StandardValue = 123.45)]
-        public double TestDouble { get; set; }
+        [JsonProperty]
+        public double TestDouble { get; set; } = 123.45;
 
         [JsonProperty]
         public List<Guid> TestList { get; set; }

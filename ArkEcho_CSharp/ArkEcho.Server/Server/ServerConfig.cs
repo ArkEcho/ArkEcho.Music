@@ -13,10 +13,10 @@ namespace ArkEcho.Server
         }
 
         [JsonProperty]
-        public string MusicFolder { get; set; }
+        public string MusicFolder { get; set; } = string.Empty;
 
-        [JsonProperty(StandardValue = false)]
-        public bool Authorization { get; private set; }
+        [JsonProperty]
+        public bool Authorization { get; private set; } = false;
 
         [JsonProperty]
         public TestClass TestClass { get; private set; }
@@ -31,9 +31,10 @@ namespace ArkEcho.Server
             if (File.Exists(filepath))
                 content = File.ReadAllText(filepath);
 
-            bool foundCorrectExistingFile = LoadJsonFromStringAndSetProperties(content);
+            bool foundCorrectExistingFile = LoadPropertiesFromJsonString(content);
 
-            File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+            // Todo
+            //File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
 
             return foundCorrectExistingFile;
         }

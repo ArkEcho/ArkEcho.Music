@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace ArkEcho.Core
@@ -8,20 +10,24 @@ namespace ArkEcho.Core
     {
         protected class JsonProperty : Attribute
         {
-            // TODO: Rausschmeissen? Nur bei Config sinnvoll
-            public object StandardValue { get; set; } = string.Empty;
+            //public object StandardValue { get; set; } = string.Empty;
         }
-
-        private JObject data { get; set; } = null;
 
         protected string GetJsonAsString()
         {
+            JObject data = new JObject();
+            setJsonData(data);
             return data.ToString().Replace("\\\\", "\\");
         }
 
-        protected bool LoadJsonFromStringAndSetProperties(string Json)
+        private void setJsonData(JObject data)
         {
-            bool correctJson = false;
+
+        }
+
+        protected bool LoadPropertiesFromJsonString(string Json)
+        {
+            JObject data = null;
 
             if (!string.IsNullOrEmpty(Json))
             {
@@ -37,92 +43,80 @@ namespace ArkEcho.Core
             }
 
             if (data != null)
-                correctJson = true;
-            else
-                data = new JObject();
-
-            loadProperties();
-
-            return correctJson;
-        }
-
-        private void LoadJsonFromJObjectAndSetProperties(JObject Object)
-        {
-            data = Object;
-            loadProperties();
-        }
-
-        private void loadProperties()
-        {
-            foreach (PropertyInfo info in this.GetType().GetProperties())
             {
-                foreach (object attr in info.GetCustomAttributes(true))
+                setProperties(data);
+                return true;
+            }
+            else
+                return false;
+        }
+
+        private void setProperties(JObject Data)
+        {
+            foreach (PropertyInfo info in getJsonProperties())
+            {
+                if (info.PropertyType == typeof(string))
+                    setProperty<string>(Data, info);
+                else if (info.PropertyType == typeof(bool))
+                    setProperty<bool>(Data, info);
+                else if (info.PropertyType == typeof(Guid))
+                    setProperty<Guid>(Data, info);
+                else if (info.PropertyType == typeof(DateTime))
+                    setProperty<DateTime>(Data, info);
+                else if (info.PropertyType == typeof(TimeSpan))
+                    setProperty<TimeSpan>(Data, info);
+                else if (info.PropertyType == typeof(uint))
+                    setProperty<uint>(Data, info);
+                else if (info.PropertyType == typeof(int))
+                    setProperty<int>(Data, info);
+                else if (info.PropertyType == typeof(double))
+                    setProperty<double>(Data, info);
+                else if (info.PropertyType == typeof(long))
+                    setProperty<long>(Data, info);
+                else if (info.PropertyType == typeof(float))
+                    setProperty<float>(Data, info);
+                else if (info.PropertyType.IsClass)
                 {
-                    JsonProperty attribute = (JsonProperty)attr;
-                    if (attribute != null)
+                    if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
                     {
-                        if (info.PropertyType == typeof(string))
-                            checkKeyAndSetProperty<string>(attribute, info);
-                        else if (info.PropertyType == typeof(bool))
-                            checkKeyAndSetProperty<bool>(attribute, info);
-                        else if (info.PropertyType == typeof(Guid))
-                            checkKeyAndSetProperty<Guid>(attribute, info);
-                        else if (info.PropertyType == typeof(DateTime))
-                            checkKeyAndSetProperty<DateTime>(attribute, info);
-                        else if (info.PropertyType == typeof(TimeSpan))
-                            checkKeyAndSetProperty<TimeSpan>(attribute, info);
-                        else if (info.PropertyType == typeof(uint))
-                            checkKeyAndSetProperty<uint>(attribute, info);
-                        else if (info.PropertyType == typeof(int))
-                            checkKeyAndSetProperty<int>(attribute, info);
-                        else if (info.PropertyType == typeof(double))
-                            checkKeyAndSetProperty<double>(attribute, info);
-                        else if (info.PropertyType == typeof(long))
-                            checkKeyAndSetProperty<long>(attribute, info);
-                        else if (info.PropertyType == typeof(float))
-                            checkKeyAndSetProperty<float>(attribute, info);
-                        else if (info.PropertyType.IsClass)
-                        {
-                            if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
-                            {
-                                JsonBase instance = (JsonBase)Activator.CreateInstance(info.PropertyType);
-                                info.SetValue(this, instance);
+                        JsonBase instance = (JsonBase)Activator.CreateInstance(info.PropertyType);
+                        info.SetValue(this, instance);
 
-                                if (!data.ContainsKey(info.Name))
-                                    data[info.Name] = new JObject();
-                                JObject obj = (JObject)data[info.Name];
-
-                                instance.LoadJsonFromJObjectAndSetProperties(obj);
-                            }
-                            //else if (info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)))
-                            //{
-                            //    var instance = Activator.CreateInstance(info.PropertyType);
-                            //    info.SetValue(this, instance);
-
-                            //    if (!data.ContainsKey(info.Name))
-                            //        data[info.Name] = new JObject();
-
-                            //    //data[info.Name].AsEnumerable().ToList().ForEach(x => x.ToObject());
-
-                            //    info.PropertyType.GetMethod("Add").Invoke(instance, new object[] { Guid.NewGuid() });
-                            //}
-                        }
-                        //else if (info.PropertyType.IsArray)
-                        //{
-                        //    // TODO
-                        //    int[] bla = new int[10];
-
-                        //}
+                        if (Data.ContainsKey(info.Name))
+                            instance.setProperties((JObject)Data[info.Name]);
                     }
+                    //else if (info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)))
+                    //{
+                    //    var instance = Activator.CreateInstance(info.PropertyType);
+                    //    info.SetValue(this, instance);
+
+                    //    if (!data.ContainsKey(info.Name))
+                    //        data[info.Name] = new JObject();
+
+                    //    //data[info.Name].AsEnumerable().ToList().ForEach(x => x.ToObject());
+
+                    //    info.PropertyType.GetMethod("Add").Invoke(instance, new object[] { Guid.NewGuid() });
+                    //}
                 }
+                //else if (info.PropertyType.IsArray)
+                //{
+                //    // TODO
+                //    int[] bla = new int[10];
+
+                //}
             }
         }
 
-        private void checkKeyAndSetProperty<T>(JsonProperty attribute, PropertyInfo info)
+        private List<PropertyInfo> getJsonProperties()
         {
-            if (!data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
-                data[info.Name] = (dynamic)(T)attribute.StandardValue;
-            info.SetValue(this, Convert.ChangeType(data[info.Name], typeof(T)));
+            return this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
+        }
+
+        private void setProperty<T>(JObject Data, PropertyInfo info)
+        {
+            if (Data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
+                                             //Data[info.Name] = (dynamic)(T)attribute.StandardValue;
+                info.SetValue(this, Convert.ChangeType(Data[info.Name], typeof(T)));
 
             //if (!data.ContainsKey(info.Name))
             //    data[info.Name] = (bool)attribute.StandardValue;
