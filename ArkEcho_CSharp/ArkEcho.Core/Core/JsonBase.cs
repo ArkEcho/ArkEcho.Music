@@ -8,6 +8,12 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
+        private enum FillMode
+        {
+            PropertiesToJson = 0,
+            JsonToProperties
+        }
+
         protected class JsonProperty : Attribute
         {
             //public object StandardValue { get; set; } = string.Empty;
@@ -16,13 +22,10 @@ namespace ArkEcho.Core
         protected string GetJsonAsString()
         {
             JObject data = new JObject();
-            setJsonData(data);
+
+            setProperties(data, FillMode.PropertiesToJson);
+
             return data.ToString().Replace("\\\\", "\\");
-        }
-
-        private void setJsonData(JObject data)
-        {
-
         }
 
         protected bool LoadPropertiesFromJsonString(string Json)
@@ -44,37 +47,37 @@ namespace ArkEcho.Core
 
             if (data != null)
             {
-                setProperties(data);
+                setProperties(data, FillMode.JsonToProperties);
                 return true;
             }
             else
                 return false;
         }
 
-        private void setProperties(JObject Data)
+        private void setProperties(JObject Data, FillMode Mode)
         {
             foreach (PropertyInfo info in getJsonProperties())
             {
                 if (info.PropertyType == typeof(string))
-                    setProperty<string>(Data, info);
+                    setProperty<string>(Data, info, Mode);
                 else if (info.PropertyType == typeof(bool))
-                    setProperty<bool>(Data, info);
+                    setProperty<bool>(Data, info, Mode);
                 else if (info.PropertyType == typeof(Guid))
-                    setProperty<Guid>(Data, info);
+                    setProperty<Guid>(Data, info, Mode);
                 else if (info.PropertyType == typeof(DateTime))
-                    setProperty<DateTime>(Data, info);
+                    setProperty<DateTime>(Data, info, Mode);
                 else if (info.PropertyType == typeof(TimeSpan))
-                    setProperty<TimeSpan>(Data, info);
+                    setProperty<TimeSpan>(Data, info, Mode);
                 else if (info.PropertyType == typeof(uint))
-                    setProperty<uint>(Data, info);
+                    setProperty<uint>(Data, info, Mode);
                 else if (info.PropertyType == typeof(int))
-                    setProperty<int>(Data, info);
+                    setProperty<int>(Data, info, Mode);
                 else if (info.PropertyType == typeof(double))
-                    setProperty<double>(Data, info);
+                    setProperty<double>(Data, info, Mode);
                 else if (info.PropertyType == typeof(long))
-                    setProperty<long>(Data, info);
+                    setProperty<long>(Data, info, Mode);
                 else if (info.PropertyType == typeof(float))
-                    setProperty<float>(Data, info);
+                    setProperty<float>(Data, info, Mode);
                 else if (info.PropertyType.IsClass)
                 {
                     if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
@@ -83,7 +86,7 @@ namespace ArkEcho.Core
                         info.SetValue(this, instance);
 
                         if (Data.ContainsKey(info.Name))
-                            instance.setProperties((JObject)Data[info.Name]);
+                            instance.setProperties((JObject)Data[info.Name], Mode);
                     }
                     //else if (info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)))
                     //{
@@ -112,7 +115,7 @@ namespace ArkEcho.Core
             return this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
         }
 
-        private void setProperty<T>(JObject Data, PropertyInfo info)
+        private void setProperty<T>(JObject Data, PropertyInfo info, FillMode Mode)
         {
             if (Data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
                                              //Data[info.Name] = (dynamic)(T)attribute.StandardValue;
