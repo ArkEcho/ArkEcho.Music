@@ -31,10 +31,11 @@ namespace ArkEcho.Server
             if (File.Exists(filepath))
                 content = File.ReadAllText(filepath);
 
+            // Load Props from JSON
             bool foundCorrectExistingFile = LoadPropertiesFromJsonString(content);
 
-            // Todo
-            //File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+            // Write back to add missing Params
+            File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
 
             return foundCorrectExistingFile;
         }

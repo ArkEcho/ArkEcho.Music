@@ -8,6 +8,8 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
+        // TODO: Listen und Arrays
+        // TODO: Was wenn Class null
         private enum FillMode
         {
             PropertiesToJson = 0,
@@ -23,7 +25,7 @@ namespace ArkEcho.Core
         {
             JObject data = new JObject();
 
-            setProperties(data, FillMode.PropertiesToJson);
+            handleProperties(data, FillMode.PropertiesToJson);
 
             return data.ToString().Replace("\\\\", "\\");
         }
@@ -47,47 +49,42 @@ namespace ArkEcho.Core
 
             if (data != null)
             {
-                setProperties(data, FillMode.JsonToProperties);
+                handleProperties(data, FillMode.JsonToProperties);
                 return true;
             }
             else
                 return false;
         }
 
-        private void setProperties(JObject Data, FillMode Mode)
+        private void handleProperties(JObject Data, FillMode Mode)
         {
             foreach (PropertyInfo info in getJsonProperties())
             {
                 if (info.PropertyType == typeof(string))
-                    setProperty<string>(Data, info, Mode);
+                    handleGenericType<string>(Data, info, Mode);
                 else if (info.PropertyType == typeof(bool))
-                    setProperty<bool>(Data, info, Mode);
+                    handleGenericType<bool>(Data, info, Mode);
                 else if (info.PropertyType == typeof(Guid))
-                    setProperty<Guid>(Data, info, Mode);
+                    handleGenericType<Guid>(Data, info, Mode);
                 else if (info.PropertyType == typeof(DateTime))
-                    setProperty<DateTime>(Data, info, Mode);
+                    handleGenericType<DateTime>(Data, info, Mode);
                 else if (info.PropertyType == typeof(TimeSpan))
-                    setProperty<TimeSpan>(Data, info, Mode);
+                    handleGenericType<TimeSpan>(Data, info, Mode);
                 else if (info.PropertyType == typeof(uint))
-                    setProperty<uint>(Data, info, Mode);
+                    handleGenericType<uint>(Data, info, Mode);
                 else if (info.PropertyType == typeof(int))
-                    setProperty<int>(Data, info, Mode);
+                    handleGenericType<int>(Data, info, Mode);
                 else if (info.PropertyType == typeof(double))
-                    setProperty<double>(Data, info, Mode);
+                    handleGenericType<double>(Data, info, Mode);
                 else if (info.PropertyType == typeof(long))
-                    setProperty<long>(Data, info, Mode);
+                    handleGenericType<long>(Data, info, Mode);
                 else if (info.PropertyType == typeof(float))
-                    setProperty<float>(Data, info, Mode);
+                    handleGenericType<float>(Data, info, Mode);
                 else if (info.PropertyType.IsClass)
                 {
                     if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
-                    {
-                        JsonBase instance = (JsonBase)Activator.CreateInstance(info.PropertyType);
-                        info.SetValue(this, instance);
+                        handleJsonClass(Data, info, Mode); // Recursion!
 
-                        if (Data.ContainsKey(info.Name))
-                            instance.setProperties((JObject)Data[info.Name], Mode);
-                    }
                     //else if (info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>)))
                     //{
                     //    var instance = Activator.CreateInstance(info.PropertyType);
@@ -115,11 +112,37 @@ namespace ArkEcho.Core
             return this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
         }
 
-        private void setProperty<T>(JObject Data, PropertyInfo info, FillMode Mode)
+        private void handleJsonClass(JObject Data, PropertyInfo Info, FillMode Mode)
         {
-            if (Data.ContainsKey(info.Name)) // If key doesnt exist, set Standardvalue
-                                             //Data[info.Name] = (dynamic)(T)attribute.StandardValue;
-                info.SetValue(this, Convert.ChangeType(Data[info.Name], typeof(T)));
+            if (Mode == FillMode.JsonToProperties)
+            {
+                JsonBase instance = (JsonBase)Activator.CreateInstance(Info.PropertyType);
+                Info.SetValue(this, instance);
+
+                if (Data.ContainsKey(Info.Name))
+                    instance.handleProperties((JObject)Data[Info.Name], Mode); // Recursion!
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+            {
+                JsonBase cls = (JsonBase)Info.GetValue(this);
+                if (cls != null)
+                {
+                    JObject jCls = new JObject();
+                    cls.handleProperties(jCls, Mode);
+                    Data[Info.Name] = jCls;
+                }
+            }
+        }
+
+        private void handleGenericType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        {
+            if (Mode == FillMode.JsonToProperties)
+            {
+                if (Data.ContainsKey(Info.Name))
+                    Info.SetValue(this, Convert.ChangeType(Data[Info.Name], typeof(T)));
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+                Data[Info.Name] = (dynamic)(T)Info.GetValue(this);
 
             //if (!data.ContainsKey(info.Name))
             //    data[info.Name] = (bool)attribute.StandardValue;

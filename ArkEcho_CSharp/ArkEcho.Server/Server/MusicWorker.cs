@@ -27,6 +27,7 @@ namespace ArkEcho.Server
 
         private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter)
         {
+            // TODO: Access Violation on AppData etc.
             List<string> results = new List<string>();
 
             List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
