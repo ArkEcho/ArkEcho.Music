@@ -19,7 +19,7 @@ namespace ArkEcho.Server
         public bool Authorization { get; private set; } = false;
 
         [JsonProperty]
-        public TestClass TestClass { get; private set; }
+        public TestClass[] TestClass { get; private set; }
 
         public bool Load(string Folder)
         {

@@ -8,7 +8,7 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
-        // TODO: Listen und Arrays
+        // TODO: Listen
         // TODO: Was wenn Class null
         private enum FillMode
         {
@@ -130,20 +130,42 @@ namespace ArkEcho.Core
                 {
                     if (arrayType.IsSubclassOf(typeof(JsonBase)))
                     {
-                        // TODO
-                        //JToken[] array = Data[Info.Name].ToArray();
+                        if (Mode == FillMode.JsonToProperties)
+                        {
+                            JToken[] jArray = Data[Info.Name].ToArray();
+                            Array arrayProp = Array.CreateInstance(arrayType, jArray.Length);
 
-                        //JObject cls = (JObject)array[0];
-                        //JsonBase instance = (JsonBase)Activator.CreateInstance(Info.PropertyType);
-                        //instance.handleProperties(cls, Mode);
+                            Info.SetValue(this, arrayProp);
+
+                            for (int i = 0; i < arrayProp.Length; i++)
+                            {
+                                JsonBase instance = (JsonBase)Activator.CreateInstance(arrayType);
+                                JObject obj = (JObject)jArray[i];
+                                instance.handleProperties(obj, Mode);
+                                arrayProp.SetValue(instance, i);
+                            }
+                        }
+                        else
+                        {
+                            Array arr = (Array)Info.GetValue(this);
+                            JArray jArray = new JArray();
+
+                            for (int i = 0; i < arr.Length; i++)
+                            {
+                                JsonBase cls = (JsonBase)arr.GetValue(i);
+                                JObject obj = new JObject();
+                                cls.handleProperties(obj, Mode);
+                                jArray.Add(obj);
+                            }
+
+                            Data[Info.Name] = jArray;
+                        }
                     }
-                    else
-                    { } // WHAT
                 }
             }
             else
             {
-
+                // TODO
             }
         }
 
@@ -183,9 +205,9 @@ namespace ArkEcho.Core
                 JsonBase cls = (JsonBase)Info.GetValue(this);
                 if (cls != null)
                 {
-                    JObject jCls = new JObject();
-                    cls.handleProperties(jCls, Mode);
-                    Data[Info.Name] = jCls;
+                    JObject obj = new JObject();
+                    cls.handleProperties(obj, Mode);
+                    Data[Info.Name] = obj;
                 }
             }
         }
