@@ -8,7 +8,7 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
-        // TODO: Was wenn Class null oder Listen etc.
+        // TODO: Was wenn Class null oder Listen oder Class nicht JsonBase etc.
 
         private enum FillMode
         {
@@ -92,6 +92,31 @@ namespace ArkEcho.Core
             }
         }
 
+        private void handleJsonClass(JObject Data, PropertyInfo Info, FillMode Mode)
+        {
+            if (Mode == FillMode.JsonToProperties)
+            {
+                JsonBase instance = (JsonBase)Activator.CreateInstance(Info.PropertyType);
+                Info.SetValue(this, instance);
+
+                if (Data.ContainsKey(Info.Name))
+                    instance.handleProperties((JObject)Data[Info.Name], Mode); // Recursion
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+                Data[Info.Name] = makeJObjFromJBaseClass(Info.GetValue(this), Mode);
+        }
+
+        private void handlePrimitiveType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        {
+            if (Mode == FillMode.JsonToProperties)
+            {
+                if (Data.ContainsKey(Info.Name))
+                    Info.SetValue(this, Convert.ChangeType(Data[Info.Name], typeof(T)));
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+                Data[Info.Name] = (dynamic)(T)Info.GetValue(this);
+        }
+
         private List<PropertyInfo> getJsonProperties()
         {
             return this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
@@ -151,16 +176,32 @@ namespace ArkEcho.Core
                         JArray jArray = new JArray();
 
                         for (int i = 0; i < arr.Length; i++)
-                        {
-                            JsonBase cls = (JsonBase)arr.GetValue(i);
-                            JObject obj = new JObject();
-                            cls.handleProperties(obj, Mode);
-                            jArray.Add(obj);
-                        }
+                            jArray.Add(makeJObjFromJBaseClass(arr.GetValue(i), Mode));
 
                         Data[Info.Name] = jArray;
                     }
                 }
+            }
+        }
+
+        private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        {
+            if (Mode == FillMode.JsonToProperties)
+            {
+                JToken[] jArray = Data[Info.Name].ToArray();
+
+                T[] arrayProp = new T[jArray.Length];
+                Info.SetValue(this, arrayProp);
+                for (int i = 0; i < arrayProp.Length; i++)
+                    arrayProp[i] = (T)jArray[i].ToObject(typeof(T));
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+            {
+                T[] arrayProp = (T[])Info.GetValue(this);
+                JArray jArray = new JArray();
+                for (int i = 0; i < arrayProp.Length; i++)
+                    jArray.Add((dynamic)(T)arrayProp[i]);
+                Data[Info.Name] = jArray;
             }
         }
 
@@ -219,12 +260,7 @@ namespace ArkEcho.Core
                         JArray jArray = new JArray();
 
                         for (int i = 0; i < collectionArray.Length; i++)
-                        {
-                            JsonBase cls = (JsonBase)collectionArray.GetValue(i);
-                            JObject obj = new JObject();
-                            cls.handleProperties(obj, Mode);
-                            jArray.Add(obj);
-                        }
+                            jArray.Add(makeJObjFromJBaseClass(collectionArray.GetValue(i), Mode));
 
                         Data[Info.Name] = jArray;
                     }
@@ -261,62 +297,12 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private JObject makeJObjFromJBaseClass(object Object, FillMode Mode)
         {
-            if (Mode == FillMode.JsonToProperties)
-            {
-                JToken[] jArray = Data[Info.Name].ToArray();
-
-                T[] arrayProp = new T[jArray.Length];
-                Info.SetValue(this, arrayProp);
-                for (int i = 0; i < arrayProp.Length; i++)
-                    arrayProp[i] = (T)jArray[i].ToObject(typeof(T));
-            }
-            else if (Mode == FillMode.PropertiesToJson)
-            {
-                T[] arrayProp = (T[])Info.GetValue(this);
-                JArray jArray = new JArray();
-                for (int i = 0; i < arrayProp.Length; i++)
-                    jArray.Add((dynamic)(T)arrayProp[i]);
-                Data[Info.Name] = jArray;
-            }
-        }
-
-        private void handleJsonClass(JObject Data, PropertyInfo Info, FillMode Mode)
-        {
-            if (Mode == FillMode.JsonToProperties)
-            {
-                JsonBase instance = (JsonBase)Activator.CreateInstance(Info.PropertyType);
-                Info.SetValue(this, instance);
-
-                if (Data.ContainsKey(Info.Name))
-                    instance.handleProperties((JObject)Data[Info.Name], Mode); // Recursion!
-            }
-            else if (Mode == FillMode.PropertiesToJson)
-            {
-                JsonBase cls = (JsonBase)Info.GetValue(this);
-                if (cls != null)
-                {
-                    JObject obj = new JObject();
-                    cls.handleProperties(obj, Mode);
-                    Data[Info.Name] = obj;
-                }
-            }
-        }
-
-        private void handlePrimitiveType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
-        {
-            if (Mode == FillMode.JsonToProperties)
-            {
-                if (Data.ContainsKey(Info.Name))
-                    Info.SetValue(this, Convert.ChangeType(Data[Info.Name], typeof(T)));
-            }
-            else if (Mode == FillMode.PropertiesToJson)
-                Data[Info.Name] = (dynamic)(T)Info.GetValue(this);
-
-            //if (!data.ContainsKey(info.Name))
-            //    data[info.Name] = (bool)attribute.StandardValue;
-            //info.SetValue(this, (bool)data[info.Name]); 
+            JsonBase cls = (JsonBase)Object;
+            JObject jObj = new JObject();
+            cls.handleProperties(jObj, Mode); // Recursion
+            return jObj;
         }
     }
 }
