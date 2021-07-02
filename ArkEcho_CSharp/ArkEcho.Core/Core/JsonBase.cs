@@ -8,8 +8,8 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
-        // TODO: Listen
-        // TODO: Was wenn Class null
+        // TODO: Was wenn Class null oder Listen etc.
+
         private enum FillMode
         {
             PropertiesToJson = 0,
@@ -84,8 +84,10 @@ namespace ArkEcho.Core
                 {
                     if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
                         handleJsonClass(Data, info, Mode); // Recursion!
-                    else if (IsICollection(info) || info.PropertyType.IsArray)
-                        handleCollectionArray(Data, info, Mode);
+                    else if (IsICollection(info) && !info.PropertyType.IsArray)
+                        handleCollection(Data, info, Mode);
+                    else if (info.PropertyType.IsArray)
+                        handleArray(Data, info, Mode);
                 }
             }
         }
@@ -100,122 +102,163 @@ namespace ArkEcho.Core
             return Info.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
-        private void handleCollectionArray(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handleArray(JObject Data, PropertyInfo Info, FillMode Mode)
         {
-            if (Info.PropertyType.IsArray)
+            Type arrayType = Info.PropertyType.GetElementType();
+
+            if (arrayType == typeof(string))
+                handlePrimitiveArray<string>(Data, Info, Mode);
+            else if (arrayType == typeof(bool))
+                handlePrimitiveArray<bool>(Data, Info, Mode);
+            else if (arrayType == typeof(Guid))
+                handlePrimitiveArray<Guid>(Data, Info, Mode);
+            else if (arrayType == typeof(DateTime))
+                handlePrimitiveArray<DateTime>(Data, Info, Mode);
+            else if (arrayType == typeof(TimeSpan))
+                handlePrimitiveArray<TimeSpan>(Data, Info, Mode);
+            else if (arrayType == typeof(uint))
+                handlePrimitiveArray<uint>(Data, Info, Mode);
+            else if (arrayType == typeof(int))
+                handlePrimitiveArray<int>(Data, Info, Mode);
+            else if (arrayType == typeof(double))
+                handlePrimitiveArray<double>(Data, Info, Mode);
+            else if (arrayType == typeof(long))
+                handlePrimitiveArray<long>(Data, Info, Mode);
+            else if (arrayType == typeof(float))
+                handlePrimitiveArray<float>(Data, Info, Mode);
+            else if (arrayType.IsClass)
             {
-                Type arrayType = Info.PropertyType.GetElementType();
-
-                if (arrayType == typeof(string))
-                    handlePrimitiveArray<string>(Data, Info, Mode);
-                else if (arrayType == typeof(bool))
-                    handlePrimitiveArray<bool>(Data, Info, Mode);
-                else if (arrayType == typeof(Guid))
-                    handlePrimitiveArray<Guid>(Data, Info, Mode);
-                else if (arrayType == typeof(DateTime))
-                    handlePrimitiveArray<DateTime>(Data, Info, Mode);
-                else if (arrayType == typeof(TimeSpan))
-                    handlePrimitiveArray<TimeSpan>(Data, Info, Mode);
-                else if (arrayType == typeof(uint))
-                    handlePrimitiveArray<uint>(Data, Info, Mode);
-                else if (arrayType == typeof(int))
-                    handlePrimitiveArray<int>(Data, Info, Mode);
-                else if (arrayType == typeof(double))
-                    handlePrimitiveArray<double>(Data, Info, Mode);
-                else if (arrayType == typeof(long))
-                    handlePrimitiveArray<long>(Data, Info, Mode);
-                else if (arrayType == typeof(float))
-                    handlePrimitiveArray<float>(Data, Info, Mode);
-                else if (arrayType.IsClass)
+                if (arrayType.IsSubclassOf(typeof(JsonBase)))
                 {
-                    if (arrayType.IsSubclassOf(typeof(JsonBase)))
+                    if (Mode == FillMode.JsonToProperties)
                     {
-                        if (Mode == FillMode.JsonToProperties)
+                        JToken[] jArray = Data[Info.Name].ToArray();
+                        Array arrayProp = Array.CreateInstance(arrayType, jArray.Length);
+
+                        Info.SetValue(this, arrayProp);
+
+                        for (int i = 0; i < arrayProp.Length; i++)
                         {
-                            JToken[] jArray = Data[Info.Name].ToArray();
-                            Array arrayProp = Array.CreateInstance(arrayType, jArray.Length);
-
-                            Info.SetValue(this, arrayProp);
-
-                            for (int i = 0; i < arrayProp.Length; i++)
-                            {
-                                JsonBase instance = (JsonBase)Activator.CreateInstance(arrayType);
-                                JObject obj = (JObject)jArray[i];
-                                instance.handleProperties(obj, Mode);
-                                arrayProp.SetValue(instance, i);
-                            }
-                        }
-                        else if (Mode == FillMode.PropertiesToJson)
-                        {
-                            Array arr = (Array)Info.GetValue(this);
-                            JArray jArray = new JArray();
-
-                            for (int i = 0; i < arr.Length; i++)
-                            {
-                                JsonBase cls = (JsonBase)arr.GetValue(i);
-                                JObject obj = new JObject();
-                                cls.handleProperties(obj, Mode);
-                                jArray.Add(obj);
-                            }
-
-                            Data[Info.Name] = jArray;
+                            JsonBase instance = (JsonBase)Activator.CreateInstance(arrayType);
+                            JObject obj = (JObject)jArray[i];
+                            instance.handleProperties(obj, Mode);
+                            arrayProp.SetValue(instance, i);
                         }
                     }
-                }
-            }
-            else
-            {
-                Type collectionType = Info.PropertyType.GenericTypeArguments[0];
-
-                if (collectionType == typeof(int))
-                { }
-                else if (collectionType.IsClass)
-                {
-                    if (collectionType.IsSubclassOf(typeof(JsonBase)))
+                    else if (Mode == FillMode.PropertiesToJson)
                     {
-                        if (Mode == FillMode.JsonToProperties)
+                        Array arr = (Array)Info.GetValue(this);
+                        JArray jArray = new JArray();
+
+                        for (int i = 0; i < arr.Length; i++)
                         {
-                            MethodInfo meth = Info.PropertyType.GetMethod("Add");
-
-                            object icollection = Activator.CreateInstance(Info.PropertyType);
-
-                            Info.SetValue(this, icollection);
-
-                            JToken[] jArray = Data[Info.Name].ToArray();
-
-                            for (int i = 0; i < jArray.Length; i++)
-                            {
-                                JsonBase instance = (JsonBase)Activator.CreateInstance(collectionType);
-                                JObject obj = (JObject)jArray[i];
-                                instance.handleProperties(obj, Mode);
-                                meth.Invoke(icollection, new object[] { instance });
-                            }
+                            JsonBase cls = (JsonBase)arr.GetValue(i);
+                            JObject obj = new JObject();
+                            cls.handleProperties(obj, Mode);
+                            jArray.Add(obj);
                         }
-                        else if (Mode == FillMode.PropertiesToJson)
-                        {
-                            MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
 
-                            Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
-                            JArray jArray = new JArray();
-
-                            for (int i = 0; i < collectionArray.Length; i++)
-                            {
-                                JsonBase cls = (JsonBase)collectionArray.GetValue(i);
-                                JObject obj = new JObject();
-                                cls.handleProperties(obj, Mode);
-                                jArray.Add(obj);
-                            }
-
-                            Data[Info.Name] = jArray;
-                        }
+                        Data[Info.Name] = jArray;
                     }
                 }
             }
         }
 
-        private void handlePrimitiveCollection<T>(JObject Data, PropertyInfo, FillMode Mode)
+        private void handleCollection(JObject Data, PropertyInfo Info, FillMode Mode)
         {
+            // TODO was wenn liste leer
+            Type collectionType = Info.PropertyType.GenericTypeArguments[0];
 
+            if (collectionType == typeof(string))
+                handlePrimitiveCollection<string>(Data, Info, Mode);
+            else if (collectionType == typeof(bool))
+                handlePrimitiveCollection<bool>(Data, Info, Mode);
+            else if (collectionType == typeof(Guid))
+                handlePrimitiveCollection<Guid>(Data, Info, Mode);
+            else if (collectionType == typeof(DateTime))
+                handlePrimitiveCollection<DateTime>(Data, Info, Mode);
+            else if (collectionType == typeof(TimeSpan))
+                handlePrimitiveCollection<TimeSpan>(Data, Info, Mode);
+            else if (collectionType == typeof(uint))
+                handlePrimitiveCollection<uint>(Data, Info, Mode);
+            else if (collectionType == typeof(int))
+                handlePrimitiveCollection<int>(Data, Info, Mode);
+            else if (collectionType == typeof(double))
+                handlePrimitiveCollection<double>(Data, Info, Mode);
+            else if (collectionType == typeof(long))
+                handlePrimitiveCollection<long>(Data, Info, Mode);
+            else if (collectionType == typeof(float))
+                handlePrimitiveCollection<float>(Data, Info, Mode);
+            else if (collectionType.IsClass)
+            {
+                if (collectionType.IsSubclassOf(typeof(JsonBase)))
+                {
+                    if (Mode == FillMode.JsonToProperties)
+                    {
+                        MethodInfo methAdd = Info.PropertyType.GetMethod("Add");
+
+                        object icollection = Activator.CreateInstance(Info.PropertyType);
+
+                        Info.SetValue(this, icollection);
+
+                        JToken[] jArray = Data[Info.Name].ToArray();
+
+                        for (int i = 0; i < jArray.Length; i++)
+                        {
+                            JsonBase instance = (JsonBase)Activator.CreateInstance(collectionType);
+                            JObject obj = (JObject)jArray[i];
+                            instance.handleProperties(obj, Mode);
+                            methAdd.Invoke(icollection, new object[] { instance });
+                        }
+                    }
+                    else if (Mode == FillMode.PropertiesToJson)
+                    {
+                        MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
+
+                        Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
+                        JArray jArray = new JArray();
+
+                        for (int i = 0; i < collectionArray.Length; i++)
+                        {
+                            JsonBase cls = (JsonBase)collectionArray.GetValue(i);
+                            JObject obj = new JObject();
+                            cls.handleProperties(obj, Mode);
+                            jArray.Add(obj);
+                        }
+
+                        Data[Info.Name] = jArray;
+                    }
+                }
+            }
+        }
+
+        private void handlePrimitiveCollection<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        {
+            if (Mode == FillMode.JsonToProperties)
+            {
+                MethodInfo methAdd = Info.PropertyType.GetMethod("Add");
+
+                object icollection = Activator.CreateInstance(Info.PropertyType);
+
+                Info.SetValue(this, icollection);
+
+                JToken[] jArray = Data[Info.Name].ToArray();
+
+                for (int i = 0; i < jArray.Length; i++)
+                    methAdd.Invoke(icollection, new object[] { (T)jArray[i].ToObject(typeof(T)) });
+            }
+            else if (Mode == FillMode.PropertiesToJson)
+            {
+                MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
+
+                Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
+                JArray jArray = new JArray();
+
+                for (int i = 0; i < collectionArray.Length; i++)
+                    jArray.Add((dynamic)(T)collectionArray.GetValue(i));
+
+                Data[Info.Name] = jArray;
+            }
         }
 
         private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
@@ -275,6 +318,5 @@ namespace ArkEcho.Core
             //    data[info.Name] = (bool)attribute.StandardValue;
             //info.SetValue(this, (bool)data[info.Name]); 
         }
-
     }
 }
