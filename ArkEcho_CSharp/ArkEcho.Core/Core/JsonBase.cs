@@ -61,25 +61,25 @@ namespace ArkEcho.Core
             foreach (PropertyInfo info in getJsonProperties())
             {
                 if (info.PropertyType == typeof(string))
-                    handleGenericType<string>(Data, info, Mode);
+                    handlePrimitiveType<string>(Data, info, Mode);
                 else if (info.PropertyType == typeof(bool))
-                    handleGenericType<bool>(Data, info, Mode);
+                    handlePrimitiveType<bool>(Data, info, Mode);
                 else if (info.PropertyType == typeof(Guid))
-                    handleGenericType<Guid>(Data, info, Mode);
+                    handlePrimitiveType<Guid>(Data, info, Mode);
                 else if (info.PropertyType == typeof(DateTime))
-                    handleGenericType<DateTime>(Data, info, Mode);
+                    handlePrimitiveType<DateTime>(Data, info, Mode);
                 else if (info.PropertyType == typeof(TimeSpan))
-                    handleGenericType<TimeSpan>(Data, info, Mode);
+                    handlePrimitiveType<TimeSpan>(Data, info, Mode);
                 else if (info.PropertyType == typeof(uint))
-                    handleGenericType<uint>(Data, info, Mode);
+                    handlePrimitiveType<uint>(Data, info, Mode);
                 else if (info.PropertyType == typeof(int))
-                    handleGenericType<int>(Data, info, Mode);
+                    handlePrimitiveType<int>(Data, info, Mode);
                 else if (info.PropertyType == typeof(double))
-                    handleGenericType<double>(Data, info, Mode);
+                    handlePrimitiveType<double>(Data, info, Mode);
                 else if (info.PropertyType == typeof(long))
-                    handleGenericType<long>(Data, info, Mode);
+                    handlePrimitiveType<long>(Data, info, Mode);
                 else if (info.PropertyType == typeof(float))
-                    handleGenericType<float>(Data, info, Mode);
+                    handlePrimitiveType<float>(Data, info, Mode);
                 else if (info.PropertyType.IsClass)
                 {
                     if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
@@ -107,25 +107,25 @@ namespace ArkEcho.Core
                 Type arrayType = Info.PropertyType.GetElementType();
 
                 if (arrayType == typeof(string))
-                    handleGenericArray<string>(Data, Info, Mode);
+                    handlePrimitiveArray<string>(Data, Info, Mode);
                 else if (arrayType == typeof(bool))
-                    handleGenericArray<bool>(Data, Info, Mode);
+                    handlePrimitiveArray<bool>(Data, Info, Mode);
                 else if (arrayType == typeof(Guid))
-                    handleGenericArray<Guid>(Data, Info, Mode);
+                    handlePrimitiveArray<Guid>(Data, Info, Mode);
                 else if (arrayType == typeof(DateTime))
-                    handleGenericArray<DateTime>(Data, Info, Mode);
+                    handlePrimitiveArray<DateTime>(Data, Info, Mode);
                 else if (arrayType == typeof(TimeSpan))
-                    handleGenericArray<TimeSpan>(Data, Info, Mode);
+                    handlePrimitiveArray<TimeSpan>(Data, Info, Mode);
                 else if (arrayType == typeof(uint))
-                    handleGenericArray<uint>(Data, Info, Mode);
+                    handlePrimitiveArray<uint>(Data, Info, Mode);
                 else if (arrayType == typeof(int))
-                    handleGenericArray<int>(Data, Info, Mode);
+                    handlePrimitiveArray<int>(Data, Info, Mode);
                 else if (arrayType == typeof(double))
-                    handleGenericArray<double>(Data, Info, Mode);
+                    handlePrimitiveArray<double>(Data, Info, Mode);
                 else if (arrayType == typeof(long))
-                    handleGenericArray<long>(Data, Info, Mode);
+                    handlePrimitiveArray<long>(Data, Info, Mode);
                 else if (arrayType == typeof(float))
-                    handleGenericArray<float>(Data, Info, Mode);
+                    handlePrimitiveArray<float>(Data, Info, Mode);
                 else if (arrayType.IsClass)
                 {
                     if (arrayType.IsSubclassOf(typeof(JsonBase)))
@@ -193,14 +193,14 @@ namespace ArkEcho.Core
                         }
                         else if (Mode == FillMode.PropertiesToJson)
                         {
-                            MethodInfo meth = Info.PropertyType.GetMethod("ToArray");
+                            MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
 
-                            Array arr = (Array)meth.Invoke(Info.GetValue(this), null);
+                            Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
                             JArray jArray = new JArray();
 
-                            for (int i = 0; i < arr.Length; i++)
+                            for (int i = 0; i < collectionArray.Length; i++)
                             {
-                                JsonBase cls = (JsonBase)arr.GetValue(i);
+                                JsonBase cls = (JsonBase)collectionArray.GetValue(i);
                                 JObject obj = new JObject();
                                 cls.handleProperties(obj, Mode);
                                 jArray.Add(obj);
@@ -213,7 +213,12 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handleGenericArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handlePrimitiveCollection<T>(JObject Data, PropertyInfo, FillMode Mode)
+        {
+
+        }
+
+        private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
         {
             if (Mode == FillMode.JsonToProperties)
             {
@@ -256,7 +261,7 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handleGenericType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handlePrimitiveType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
         {
             if (Mode == FillMode.JsonToProperties)
             {
