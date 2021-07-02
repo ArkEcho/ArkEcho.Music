@@ -66,9 +66,7 @@ namespace ArkEcho.Core
             {
 
                 if (PrimitiveTypeFunction(info.PropertyType, HandlePrimitiveFunction.HandlePrimitiveType, Data, info, Mode))
-                {
-                    // WHAT
-                }
+                { /* Done */ }
                 else if (info.PropertyType.IsClass)
                 {
                     if (info.PropertyType.IsSubclassOf(typeof(JsonBase)))
@@ -122,9 +120,7 @@ namespace ArkEcho.Core
             Type arrayType = Info.PropertyType.GetElementType();
 
             if (PrimitiveTypeFunction(arrayType, HandlePrimitiveFunction.HandlePrimitiveArray, Data, Info, Mode))
-            {
-                // WHAT
-            }
+            { /* Done */ }
             else if (arrayType.IsClass && arrayType.IsSubclassOf(typeof(JsonBase)))
             {
                 if (Mode == FillMode.JsonToProperties)
@@ -182,20 +178,12 @@ namespace ArkEcho.Core
             Type collectionType = Info.PropertyType.GenericTypeArguments[0];
 
             if (PrimitiveTypeFunction(collectionType, HandlePrimitiveFunction.HandlePrimitiveCollection, Data, Info, Mode))
-            {
-                // WHAT
-            }
+            { /* Done */ }
             else if (collectionType.IsClass && collectionType.IsSubclassOf(typeof(JsonBase)))
             {
                 if (Mode == FillMode.JsonToProperties)
                 {
-                    MethodInfo methAdd = Info.PropertyType.GetMethod("Add");
-
-                    object icollection = Activator.CreateInstance(Info.PropertyType);
-
-                    Info.SetValue(this, icollection);
-
-                    JToken[] jArray = Data[Info.Name].ToArray();
+                    prepareJArrayToCollection(Info, Data, out MethodInfo methAdd, out object icollection, out JToken[] jArray);
 
                     for (int i = 0; i < jArray.Length; i++)
                     {
@@ -207,10 +195,7 @@ namespace ArkEcho.Core
                 }
                 else if (Mode == FillMode.PropertiesToJson)
                 {
-                    MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
-
-                    Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
-                    JArray jArray = new JArray();
+                    prepareCollectionToJArray(Info, out Array collectionArray, out JArray jArray);
 
                     for (int i = 0; i < collectionArray.Length; i++)
                         jArray.Add(makeJObjFromJBaseClass(collectionArray.GetValue(i), Mode));
@@ -224,29 +209,35 @@ namespace ArkEcho.Core
         {
             if (Mode == FillMode.JsonToProperties)
             {
-                MethodInfo methAdd = Info.PropertyType.GetMethod("Add");
-
-                object icollection = Activator.CreateInstance(Info.PropertyType);
-
-                Info.SetValue(this, icollection);
-
-                JToken[] jArray = Data[Info.Name].ToArray();
+                prepareJArrayToCollection(Info, Data, out MethodInfo methAdd, out object icollection, out JToken[] jArray);
 
                 for (int i = 0; i < jArray.Length; i++)
                     methAdd.Invoke(icollection, new object[] { (T)jArray[i].ToObject(typeof(T)) });
             }
             else if (Mode == FillMode.PropertiesToJson)
             {
-                MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
-
-                Array collectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
-                JArray jArray = new JArray();
+                prepareCollectionToJArray(Info, out Array collectionArray, out JArray jArray);
 
                 for (int i = 0; i < collectionArray.Length; i++)
                     jArray.Add((dynamic)(T)collectionArray.GetValue(i));
 
                 Data[Info.Name] = jArray;
             }
+        }
+
+        private void prepareJArrayToCollection(PropertyInfo Info, JObject Data, out MethodInfo MethodAdd, out object Collection, out JToken[] JArray)
+        {
+            MethodAdd = Info.PropertyType.GetMethod("Add");
+            Collection = Activator.CreateInstance(Info.PropertyType);
+            Info.SetValue(this, Collection);
+            JArray = Data[Info.Name].ToArray();
+        }
+
+        private void prepareCollectionToJArray(PropertyInfo Info, out Array CollectionArray, out JArray jArray)
+        {
+            MethodInfo methToArray = Info.PropertyType.GetMethod("ToArray");
+            CollectionArray = (Array)methToArray.Invoke(Info.GetValue(this), null);
+            jArray = new JArray();
         }
 
         private JObject makeJObjFromJBaseClass(object Object, FillMode Mode)
