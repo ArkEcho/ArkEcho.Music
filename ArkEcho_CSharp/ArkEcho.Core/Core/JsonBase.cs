@@ -145,7 +145,7 @@ namespace ArkEcho.Core
                                 arrayProp.SetValue(instance, i);
                             }
                         }
-                        else
+                        else if (Mode == FillMode.PropertiesToJson)
                         {
                             Array arr = (Array)Info.GetValue(this);
                             JArray jArray = new JArray();
@@ -165,7 +165,51 @@ namespace ArkEcho.Core
             }
             else
             {
-                // TODO
+                Type collectionType = Info.PropertyType.GenericTypeArguments[0];
+
+                if (collectionType == typeof(int))
+                { }
+                else if (collectionType.IsClass)
+                {
+                    if (collectionType.IsSubclassOf(typeof(JsonBase)))
+                    {
+                        if (Mode == FillMode.JsonToProperties)
+                        {
+                            MethodInfo meth = Info.PropertyType.GetMethod("Add");
+
+                            object icollection = Activator.CreateInstance(Info.PropertyType);
+
+                            Info.SetValue(this, icollection);
+
+                            JToken[] jArray = Data[Info.Name].ToArray();
+
+                            for (int i = 0; i < jArray.Length; i++)
+                            {
+                                JsonBase instance = (JsonBase)Activator.CreateInstance(collectionType);
+                                JObject obj = (JObject)jArray[i];
+                                instance.handleProperties(obj, Mode);
+                                meth.Invoke(icollection, new object[] { instance });
+                            }
+                        }
+                        else if (Mode == FillMode.PropertiesToJson)
+                        {
+                            MethodInfo meth = Info.PropertyType.GetMethod("ToArray");
+
+                            Array arr = (Array)meth.Invoke(Info.GetValue(this), null);
+                            JArray jArray = new JArray();
+
+                            for (int i = 0; i < arr.Length; i++)
+                            {
+                                JsonBase cls = (JsonBase)arr.GetValue(i);
+                                JObject obj = new JObject();
+                                cls.handleProperties(obj, Mode);
+                                jArray.Add(obj);
+                            }
+
+                            Data[Info.Name] = jArray;
+                        }
+                    }
+                }
             }
         }
 
