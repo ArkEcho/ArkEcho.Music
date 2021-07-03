@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace ArkEcho.Core
 {
-    public abstract class JsonBase // TODO: Listen und Array Zugriff OOBounds
+    public abstract class JsonBase
     {
         private enum Mode
         {
@@ -102,7 +102,8 @@ namespace ArkEcho.Core
         private bool isAllowedCollection(PropertyInfo Info)
         {
             // TODO bessere Lösung?
-            return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase);
+            return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase)
+                && Info.PropertyType.GenericTypeArguments.Length == 1;
         }
 
         private void handleArray(JObject Data, PropertyInfo Info, Mode Mode)
@@ -115,23 +116,23 @@ namespace ArkEcho.Core
             {
                 if (Mode == Mode.JsonToProp)
                 {
-                    prepareJArrayToArray(Data, Info, arrayType, out JToken[] jArray, out Array PropArray);
+                    prepareJArrayToArray(Data, Info, arrayType, out JToken[] jArray, out Array propArray);
 
-                    for (int i = 0; i < PropArray.Length; i++)
+                    for (int i = 0; i < jArray.Length; i++)
                     {
                         JsonBase instance = (JsonBase)Activator.CreateInstance(arrayType);
                         JObject obj = (JObject)jArray[i];
                         instance.handleProperties(obj, Mode);
-                        PropArray.SetValue(instance, i);
+                        propArray.SetValue(instance, i);
                     }
                 }
                 else if (Mode == Mode.PropToJson)
                 {
-                    Array arr = (Array)Info.GetValue(this);
+                    Array propArray = (Array)Info.GetValue(this);
                     JArray jArray = new JArray();
 
-                    for (int i = 0; i < arr.Length; i++)
-                        jArray.Add(makeJObjFromJBaseClass(arr.GetValue(i), Mode));
+                    for (int i = 0; i < propArray.Length; i++)
+                        jArray.Add(makeJObjFromJBaseClass(propArray.GetValue(i), Mode));
 
                     Data[Info.Name] = jArray;
                 }
@@ -142,33 +143,32 @@ namespace ArkEcho.Core
         {
             if (Mode == Mode.JsonToProp)
             {
-                prepareJArrayToArray(Data, Info, typeof(T), out JToken[] jArray, out Array PropArray);
+                prepareJArrayToArray(Data, Info, typeof(T), out JToken[] jArray, out Array propArray);
 
-                for (int i = 0; i < PropArray.Length; i++)
-                    PropArray.SetValue((T)jArray[i].ToObject(typeof(T)), i);
+                for (int i = 0; i < jArray.Length; i++)
+                    propArray.SetValue((T)jArray[i].ToObject(typeof(T)), i);
             }
             else if (Mode == Mode.PropToJson)
             {
-                Array arrayProp = (Array)Info.GetValue(this);
+                Array propArray = (Array)Info.GetValue(this);
                 JArray jArray = new JArray();
 
-                for (int i = 0; i < arrayProp.Length; i++)
-                    jArray.Add((dynamic)(T)arrayProp.GetValue(i));
+                for (int i = 0; i < propArray.Length; i++)
+                    jArray.Add((dynamic)(T)propArray.GetValue(i));
 
                 Data[Info.Name] = jArray;
             }
         }
 
-        private void prepareJArrayToArray(JObject Data, PropertyInfo Info, Type Typ, out JToken[] jArray, out Array PropArray)
+        private void prepareJArrayToArray(JObject Data, PropertyInfo Info, Type Typ, out JToken[] JArray, out Array PropArray)
         {
-            jArray = Data[Info.Name].ToArray();
-            PropArray = Array.CreateInstance(Typ, jArray.Length);
+            JArray = Data[Info.Name].ToArray();
+            PropArray = Array.CreateInstance(Typ, JArray.Length);
             Info.SetValue(this, PropArray);
         }
 
         private void handleCollection(JObject Data, PropertyInfo Info, Mode Mode)
         {
-            // TODO was wenn liste leer
             Type collectionType = Info.PropertyType.GenericTypeArguments[0];
 
             if (checkPrimitiveTypeAndFunction(collectionType, Func.PrimCollection, Data, Info, Mode))
