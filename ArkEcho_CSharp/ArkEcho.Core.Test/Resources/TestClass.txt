@@ -1,0 +1,32 @@
+{
+  "Boolean": true,
+  "Int": 123,
+  "Double": 123.45,
+  "String": "tEsTStRing",
+  "Guid": "936da01f-9abd-4d9d-80c7-02af85c822a8",
+  "DateTime": "2030-12-12T12:23:45",
+  "ListInt": [
+    987,
+    678
+  ],
+  "ArrayInt": [
+    422,
+    324
+  ],
+  "ListClass": [
+    {
+      "Int": 350
+    },
+    {
+      "Int": 260
+    }
+  ],
+  "ArrayClass": [
+    {
+      "Int": 350
+    },
+    {
+      "Int": 260
+    }
+  ]
+}

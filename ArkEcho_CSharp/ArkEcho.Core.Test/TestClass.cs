@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace ArkEcho.Core
 {
@@ -11,8 +10,6 @@ namespace ArkEcho.Core
     }
     public class TestClass : JsonBase
     {
-        public const string FileName = "TestClass.json";
-
         [JsonProperty]
         public bool Boolean { get; set; }
 
@@ -45,23 +42,11 @@ namespace ArkEcho.Core
 
         public TestClass() { }
 
-        public bool Load(string Folder)
+        public string Load(string Json)
         {
-            string filepath = $"{Folder}\\{FileName}";
+            LoadPropertiesFromJsonString(Json);
 
-            Console.WriteLine($"Loading Config File {filepath}");
-
-            string content = string.Empty;
-            if (File.Exists(filepath))
-                content = File.ReadAllText(filepath);
-
-            // Load Props from JSON
-            bool foundCorrectExistingFile = LoadPropertiesFromJsonString(content);
-
-            // Write back to add missing Params
-            File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
-
-            return foundCorrectExistingFile;
+            return GetJsonAsString();
         }
     }
 }

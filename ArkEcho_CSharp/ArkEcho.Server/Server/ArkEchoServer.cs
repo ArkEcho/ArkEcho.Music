@@ -33,9 +33,6 @@ namespace ArkEcho.Server
 
             Console.WriteLine("Initializing ArkEcho.Server");
 
-            TestClass testclass = new TestClass();
-            testclass.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-
             Config = new ServerConfig();
             if (!Config.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
             {
