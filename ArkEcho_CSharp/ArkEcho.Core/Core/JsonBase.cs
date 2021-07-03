@@ -6,14 +6,12 @@ using System.Reflection;
 
 namespace ArkEcho.Core
 {
-    public abstract class JsonBase
+    public abstract class JsonBase // TODO: Listen und Array Zugriff OOBounds
     {
-        // TODO: Was wenn Class oder JsonFeld oder Propnull
-
-        private enum FillMode
+        private enum Mode
         {
-            PropertiesToJson = 0,
-            JsonToProperties
+            PropToJson = 0,
+            JsonToProp
         }
 
         private enum Func
@@ -28,7 +26,7 @@ namespace ArkEcho.Core
         protected string GetJsonAsString()
         {
             JObject data = new JObject();
-            handleProperties(data, FillMode.PropertiesToJson);
+            handleProperties(data, Mode.PropToJson);
             return data.ToString().Replace("\\\\", "\\");
         }
 
@@ -48,18 +46,17 @@ namespace ArkEcho.Core
 
             if (data != null)
             {
-                handleProperties(data, FillMode.JsonToProperties);
+                handleProperties(data, Mode.JsonToProp);
                 return true;
             }
             else
                 return false;
         }
 
-        private void handleProperties(JObject Data, FillMode Mode)
+        private void handleProperties(JObject Data, Mode Mode)
         {
-            foreach (PropertyInfo info in getJsonProperties())
+            foreach (PropertyInfo info in getJsonProperties(Data, Mode))
             {
-
                 if (checkPrimitiveTypeAndFunction(info.PropertyType, Func.PrimType, Data, info, Mode))
                 { /* Done */ }
                 else if (info.PropertyType.IsClass)
@@ -74,34 +71,32 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handleJsonClass(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handleJsonClass(JObject Data, PropertyInfo Info, Mode Mode)
         {
-            if (Mode == FillMode.JsonToProperties)
+            if (Mode == Mode.JsonToProp)
             {
                 JsonBase instance = (JsonBase)Activator.CreateInstance(Info.PropertyType);
                 Info.SetValue(this, instance);
-
-                if (Data.ContainsKey(Info.Name))
-                    instance.handleProperties((JObject)Data[Info.Name], Mode); // Recursion
+                instance.handleProperties((JObject)Data[Info.Name], Mode); // Recursion
             }
-            else if (Mode == FillMode.PropertiesToJson)
+            else if (Mode == Mode.PropToJson)
                 Data[Info.Name] = makeJObjFromJBaseClass(Info.GetValue(this), Mode);
         }
 
-        private void handlePrimitiveType<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handlePrimitiveType<T>(JObject Data, PropertyInfo Info, Mode Mode)
         {
-            if (Mode == FillMode.JsonToProperties)
-            {
-                if (Data.ContainsKey(Info.Name))
-                    Info.SetValue(this, Convert.ChangeType(Data[Info.Name], typeof(T)));
-            }
-            else if (Mode == FillMode.PropertiesToJson)
+            if (Mode == Mode.JsonToProp)
+                Info.SetValue(this, Convert.ChangeType(Data[Info.Name], typeof(T)));
+            else if (Mode == Mode.PropToJson)
                 Data[Info.Name] = (dynamic)(T)Info.GetValue(this);
         }
 
-        private List<PropertyInfo> getJsonProperties()
+        private List<PropertyInfo> getJsonProperties(JObject Data, Mode Mode)
         {
-            return this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
+            List<PropertyInfo> result = this.GetType().GetProperties().ToList().FindAll(x => x.GetCustomAttributes().ToList().Find(y => y is JsonProperty) != null);
+            if (Mode == Mode.JsonToProp) result.RemoveAll(x => !Data.ContainsKey(x.Name));
+            else if (Mode == Mode.PropToJson) result.RemoveAll(x => x.GetValue(this) == null);
+            return result;
         }
 
         private bool isAllowedCollection(PropertyInfo Info)
@@ -110,7 +105,7 @@ namespace ArkEcho.Core
             return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase);
         }
 
-        private void handleArray(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handleArray(JObject Data, PropertyInfo Info, Mode Mode)
         {
             Type arrayType = Info.PropertyType.GetElementType();
 
@@ -118,7 +113,7 @@ namespace ArkEcho.Core
             { /* Done */ }
             else if (arrayType.IsClass && arrayType.IsSubclassOf(typeof(JsonBase)))
             {
-                if (Mode == FillMode.JsonToProperties)
+                if (Mode == Mode.JsonToProp)
                 {
                     prepareJArrayToArray(Data, Info, arrayType, out JToken[] jArray, out Array PropArray);
 
@@ -130,7 +125,7 @@ namespace ArkEcho.Core
                         PropArray.SetValue(instance, i);
                     }
                 }
-                else if (Mode == FillMode.PropertiesToJson)
+                else if (Mode == Mode.PropToJson)
                 {
                     Array arr = (Array)Info.GetValue(this);
                     JArray jArray = new JArray();
@@ -143,17 +138,16 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handlePrimitiveArray<T>(JObject Data, PropertyInfo Info, Mode Mode)
         {
-            if (Mode == FillMode.JsonToProperties)
+            if (Mode == Mode.JsonToProp)
             {
-                Type typ = typeof(T);
-                prepareJArrayToArray(Data, Info, typ, out JToken[] jArray, out Array PropArray);
+                prepareJArrayToArray(Data, Info, typeof(T), out JToken[] jArray, out Array PropArray);
 
                 for (int i = 0; i < PropArray.Length; i++)
-                    PropArray.SetValue((T)jArray[i].ToObject(typ), i);
+                    PropArray.SetValue((T)jArray[i].ToObject(typeof(T)), i);
             }
-            else if (Mode == FillMode.PropertiesToJson)
+            else if (Mode == Mode.PropToJson)
             {
                 Array arrayProp = (Array)Info.GetValue(this);
                 JArray jArray = new JArray();
@@ -172,7 +166,7 @@ namespace ArkEcho.Core
             Info.SetValue(this, PropArray);
         }
 
-        private void handleCollection(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handleCollection(JObject Data, PropertyInfo Info, Mode Mode)
         {
             // TODO was wenn liste leer
             Type collectionType = Info.PropertyType.GenericTypeArguments[0];
@@ -181,7 +175,7 @@ namespace ArkEcho.Core
             { /* Done */ }
             else if (collectionType.IsClass && collectionType.IsSubclassOf(typeof(JsonBase)))
             {
-                if (Mode == FillMode.JsonToProperties)
+                if (Mode == Mode.JsonToProp)
                 {
                     prepareJArrayToCollection(Info, Data, out MethodInfo methAdd, out object icollection, out JToken[] jArray);
 
@@ -193,7 +187,7 @@ namespace ArkEcho.Core
                         methAdd.Invoke(icollection, new object[] { instance });
                     }
                 }
-                else if (Mode == FillMode.PropertiesToJson)
+                else if (Mode == Mode.PropToJson)
                 {
                     prepareCollectionToJArray(Info, out Array collectionArray, out JArray jArray);
 
@@ -205,16 +199,16 @@ namespace ArkEcho.Core
             }
         }
 
-        private void handlePrimitiveCollection<T>(JObject Data, PropertyInfo Info, FillMode Mode)
+        private void handlePrimitiveCollection<T>(JObject Data, PropertyInfo Info, Mode Mode)
         {
-            if (Mode == FillMode.JsonToProperties)
+            if (Mode == Mode.JsonToProp)
             {
                 prepareJArrayToCollection(Info, Data, out MethodInfo methAdd, out object icollection, out JToken[] jArray);
 
                 for (int i = 0; i < jArray.Length; i++)
                     methAdd.Invoke(icollection, new object[] { (T)jArray[i].ToObject(typeof(T)) });
             }
-            else if (Mode == FillMode.PropertiesToJson)
+            else if (Mode == Mode.PropToJson)
             {
                 prepareCollectionToJArray(Info, out Array collectionArray, out JArray jArray);
 
@@ -240,7 +234,7 @@ namespace ArkEcho.Core
             jArray = new JArray();
         }
 
-        private JObject makeJObjFromJBaseClass(object Object, FillMode Mode)
+        private JObject makeJObjFromJBaseClass(object Object, Mode Mode)
         {
             JsonBase cls = (JsonBase)Object;
             JObject jObj = new JObject();
@@ -248,7 +242,7 @@ namespace ArkEcho.Core
             return jObj;
         }
 
-        private bool checkPrimitiveTypeAndFunction(Type Type, Func Function, JObject Data, PropertyInfo Info, FillMode Mode)
+        private bool checkPrimitiveTypeAndFunction(Type Type, Func Function, JObject Data, PropertyInfo Info, Mode Mode)
         {
             if (Type == typeof(string))
             {
