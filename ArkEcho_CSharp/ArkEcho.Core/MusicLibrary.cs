@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ArkEcho.Core
 {
     // TODO: Alles Serializable
     public class MusicLibrary
     {
-        public MusicLibrary(){}
+        public MusicLibrary() { }
 
         public List<AlbumArtist> AlbumArtists { get; private set; } = new List<AlbumArtist>();
 

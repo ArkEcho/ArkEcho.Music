@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ArkEcho.Core
 {
     public class Album
     {
-        public Album(){ }
+        public Album() { }
 
         public Guid GUID { get; private set; } = Guid.NewGuid();
 

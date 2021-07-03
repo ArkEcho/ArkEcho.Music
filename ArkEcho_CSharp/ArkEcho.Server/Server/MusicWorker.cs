@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
     public class MusicWorker : BackgroundWorker
     {
-        public MusicWorker(): base()
+        public MusicWorker() : base()
         {
             DoWork += MusicWorker_DoWork;
         }
@@ -27,7 +26,8 @@ namespace ArkEcho.Server
         }
 
         private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter)
-        {            
+        {
+            // TODO: Access Violation on AppData etc.
             List<string> results = new List<string>();
 
             List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
@@ -107,9 +107,9 @@ namespace ArkEcho.Server
 
         protected override void Dispose(bool Disposing)
         {
-            if(!disposed)
+            if (!disposed)
             {
-                if(Disposing)
+                if (Disposing)
                 {
 
                 }
