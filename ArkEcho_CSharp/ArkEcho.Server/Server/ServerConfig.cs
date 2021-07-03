@@ -1,6 +1,5 @@
 ﻿using ArkEcho.Core;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace ArkEcho.Server
@@ -9,18 +8,13 @@ namespace ArkEcho.Server
     {
         public const string FileName = "Config.json";
 
-        public ServerConfig()
-        {
-        }
+        public ServerConfig() { }
 
         [JsonProperty]
         public string MusicFolder { get; set; } = string.Empty;
 
         [JsonProperty]
         public bool Authorization { get; private set; } = false;
-
-        [JsonProperty]
-        public List<TestClass> TestClass { get; private set; }
 
         public bool Load(string Folder)
         {
