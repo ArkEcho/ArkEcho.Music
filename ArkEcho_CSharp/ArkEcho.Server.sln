@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.Core.Test", "ArkEcho.Core.Test\ArkEcho.Core.Test.csproj", "{541C8072-17FD-42B8-BFB5-0AF924101B6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "ArkEcho.Core.Test\ArkEcho.Core.Test.csproj", "{541C8072-17FD-42B8-BFB5-0AF924101B6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.Page", "ArkEcho.Page\ArkEcho.Page.csproj", "{B0D7C0D5-C43D-4E07-B39E-A25CF16ADE2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{541C8072-17FD-42B8-BFB5-0AF924101B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{541C8072-17FD-42B8-BFB5-0AF924101B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{541C8072-17FD-42B8-BFB5-0AF924101B6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0D7C0D5-C43D-4E07-B39E-A25CF16ADE2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0D7C0D5-C43D-4E07-B39E-A25CF16ADE2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0D7C0D5-C43D-4E07-B39E-A25CF16ADE2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0D7C0D5-C43D-4E07-B39E-A25CF16ADE2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

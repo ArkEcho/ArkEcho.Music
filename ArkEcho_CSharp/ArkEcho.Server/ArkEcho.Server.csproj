@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
+    <ProjectReference Include="..\ArkEcho.Page\ArkEcho.Page.csproj" />
   </ItemGroup>
 
 
