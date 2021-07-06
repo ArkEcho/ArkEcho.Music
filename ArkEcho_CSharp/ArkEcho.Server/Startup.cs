@@ -22,6 +22,7 @@ namespace ArkEcho.Server
             services.AddSingleton(ArkEchoServer.Instance);
             services.AddControllers();
             services.AddRazorPages();
+            services.AddServerSideBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +48,7 @@ namespace ArkEcho.Server
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapBlazorHub();
             });
         }
     }

@@ -16,12 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ArkEcho.BlazorPage\ArkEcho.BlazorPage.csproj" />
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
-    <ProjectReference Include="..\ArkEcho.Page\ArkEcho.Page.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY /s /y &quot;..\ArkEcho.Page\wwwroot\&quot; &quot;$(TargetDir)wwwroot\&quot;" />
+    <Exec Command="XCOPY /s /y &quot;..\ArkEcho.BlazorPage\wwwroot\&quot; &quot;$(TargetDir)wwwroot\&quot;" />
   </Target>
 
 
