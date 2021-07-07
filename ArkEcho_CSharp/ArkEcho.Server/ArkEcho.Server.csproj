@@ -2,8 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AssemblyName>ArkEcho.Server</AssemblyName>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,13 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ArkEcho.BlazorPage\ArkEcho.BlazorPage.csproj" />
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="XCOPY /s /y &quot;..\ArkEcho.BlazorPage\wwwroot\&quot; &quot;$(TargetDir)wwwroot\&quot;" />
-  </Target>
 
 
 </Project>
