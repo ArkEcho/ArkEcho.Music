@@ -1,16 +1,28 @@
 ﻿@page "/counter"
 
+@inject ArkEcho.Server.ArkEchoServer Server
+
 <h1>Counter</h1>
 
 <p>Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<p>Current count: @musicFileCounter</p>
+
+
 @code {
+    private int musicFileCounter = 0;
     private int currentCount = 0;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        musicFileCounter = Server.GetAllMusicFiles().Count;
+        return base.OnInitializedAsync();
     }
 }
