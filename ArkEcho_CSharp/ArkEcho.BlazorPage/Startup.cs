@@ -23,6 +23,8 @@ namespace ArkEcho.BlazorPage
         {
             services.AddSingleton(ArkEchoServer.Instance);
 
+            services.AddSingleton<AppModel>();
+
             // Web API
             services.AddControllers();
 
