@@ -17,3 +17,12 @@
         </div>
     </div>
 </div>
+
+@code{
+    protected override void OnInitialized()
+    {
+        Model.CounterChanged += () => InvokeAsync(StateHasChanged);
+
+        base.OnInitialized();
+    }
+}
