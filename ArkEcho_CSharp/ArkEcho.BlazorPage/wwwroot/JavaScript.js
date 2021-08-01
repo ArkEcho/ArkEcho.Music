@@ -1,13 +1,17 @@
-﻿var audio;
+﻿
+var sound;
 
 function Init(Text) {
-    audio = new Audio('https://localhost:5001/api/Music/MusicFile/' + Text);
+    sound = new Howl({
+        src: ['https://localhost:5001/api/Music/MusicFile/' + Text],
+        html5: true
+    });
 }
 
 function PlayAudio() {
-    audio.play();
+    sound.play();
 }
 
 function PauseAudio() {
-    audio.pause();
+    sound.pause();
 }
