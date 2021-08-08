@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using ArkEcho.App.Connection;
+﻿using ArkEcho.App.Connection;
+using ArkEcho.Core;
 using ArkEcho.Player;
+using System;
+using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
@@ -21,9 +13,9 @@ namespace ArkEcho.App
         private AppModel()
         {
             rest = new Connection.ArkEchoRest();
-            player = new Player.ArkEchoPlayer();
+            player = new Player.ArkEchoVLCPlayer();
         }
-        
+
         public void PlayPause()
         {
             if (player.Playing)
@@ -33,8 +25,11 @@ namespace ArkEcho.App
             else
             {
                 string pathnew = @"/storage/0000-0000/Android/Music/Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+                MusicFile file = new MusicFile(pathnew);
+                file.LocalFileName = pathnew;
 
-                player.Play(pathnew);
+                player.Init(file);
+                player.Play();
             }
         }
 
@@ -45,7 +40,7 @@ namespace ArkEcho.App
         }
 
         private ArkEchoRest rest = null;
-        private ArkEchoPlayer player = null;
+        private ArkEchoVLCPlayer player = null;
         private bool disposed;
 
         protected virtual void Dispose(bool disposing)

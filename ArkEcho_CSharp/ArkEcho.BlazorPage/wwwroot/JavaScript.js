@@ -10,11 +10,13 @@ function Init(Text) {
 }
 
 function PlayAudio() {
-    sound.play();
+    if (sound != undefined)
+        sound.play();
 }
 
 function PauseAudio() {
-    sound.pause();
+    if (sound != undefined)
+        sound.pause();
 }
 
 function onVolumePlayerChanged() {
