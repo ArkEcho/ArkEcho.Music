@@ -8,64 +8,69 @@ namespace ArkEcho.Player
 
         public bool Shuffle { get; set; } = false;
 
+        private int volume = 50;
+        public int Volume { get { return volume; } set { volume = value; SetVolumeImpl(value); } }
+
+        private bool muted = false;
+        public bool Mute { get { return muted; } set { muted = value; SetMuteImpl(value); } }
+
         public ArkEchoPlayer()
         {
         }
 
-        public bool Init(MusicFile File)
+        public void Init(MusicFile File)
         {
+            DisposeImpl();
+
             this.PlayingMusic = File;
-            return InitImpl(File);
+            InitImpl(File);
+
+            SetMuteImpl(muted);
+            SetVolumeImpl(volume);
         }
 
-        public bool Play()
+        public void Play()
         {
-            return PlayImpl();
+            PlayImpl();
         }
 
-        public bool Pause()
+        public void Pause()
         {
-            return PauseImpl();
+            PauseImpl();
         }
 
-        public bool PlayPause()
+        public void PlayPause()
         {
-            return PlayPauseImpl();
+            PlayPauseImpl();
         }
 
-        public bool Stop()
+        public void Stop()
         {
-            return StopImpl();
+            StopImpl();
         }
 
-        public bool Forward()
+        public void Forward()
         {
-            return ForwardImpl();
+            // TODO: Load next MusicFile
         }
 
-        public bool Backward()
+        public void Backward()
         {
-            return BackwardImpl();
+            // TODO: Set to 0, if double klicked backward
         }
 
-        public bool AudioFinished()
+        public void AudioEnd()
         {
-            // Load next MusicFile
-            return true;
+            // TODO: Load next MusicFile
         }
 
-        public bool SetMute(bool Mute)
-        {
-            return SetMuteImpl(Mute);
-        }
-
-        protected abstract bool InitImpl(MusicFile File);
-        protected abstract bool PlayImpl();
-        protected abstract bool PauseImpl();
-        protected abstract bool PlayPauseImpl();
-        protected abstract bool StopImpl();
-        protected abstract bool ForwardImpl();
-        protected abstract bool BackwardImpl();
-        protected abstract bool SetMuteImpl(bool Mute);
+        protected abstract void InitImpl(MusicFile File);
+        protected abstract void DisposeImpl();
+        protected abstract void PlayImpl();
+        protected abstract void PauseImpl();
+        protected abstract void PlayPauseImpl();
+        protected abstract void StopImpl();
+        protected abstract void SetMuteImpl(bool Mute);
+        protected abstract void SetVolumeImpl(int NewVolume);
     }
 }

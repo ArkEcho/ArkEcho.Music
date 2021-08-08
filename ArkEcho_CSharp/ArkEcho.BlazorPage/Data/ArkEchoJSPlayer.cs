@@ -17,49 +17,44 @@ namespace ArkEcho.Player
             this.JS = JS;
         }
 
-        protected override bool InitImpl(MusicFile File)
+        protected override void InitImpl(MusicFile File)
         {
-            JS.InvokeVoidAsync("Init", new object[] { File.GUID.ToString() });
-            return true;
+            string source = $"https://localhost:5001/api/Music/MusicFile/{File.GUID}";
+            JS?.InvokeVoidAsync("InitAudio", new object[] { source });
         }
 
-        protected override bool PlayImpl()
+        protected override void DisposeImpl()
         {
-            JS.InvokeVoidAsync("PlayAudio", new object[] { });
-            return true;
+            JS?.InvokeVoidAsync("DisposeAudio", new object[] { });
         }
 
-        protected override bool PauseImpl()
+        protected override void PlayImpl()
         {
-            JS.InvokeVoidAsync("PauseAudio", new object[] { });
-            return true;
-        }
-        protected override bool PlayPauseImpl()
-        {
-            JS.InvokeVoidAsync("PlayPauseAudio", new object[] { });
-            return true;
+            JS?.InvokeVoidAsync("PlayAudio", new object[] { });
         }
 
-        protected override bool StopImpl()
+        protected override void PauseImpl()
         {
-            JS.InvokeVoidAsync("StopAudio", new object[] { });
-            return true;
+            JS?.InvokeVoidAsync("PauseAudio", new object[] { });
+        }
+        protected override void PlayPauseImpl()
+        {
+            JS?.InvokeVoidAsync("PlayPauseAudio", new object[] { });
         }
 
-        protected override bool ForwardImpl()
+        protected override void StopImpl()
         {
-            return true;
+            JS?.InvokeVoidAsync("StopAudio", new object[] { });
         }
 
-        protected override bool BackwardImpl()
+        protected override void SetMuteImpl(bool Mute)
         {
-            return true;
+            JS?.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
         }
 
-        protected override bool SetMuteImpl(bool Mute)
+        protected override void SetVolumeImpl(int NewVolume)
         {
-            JS.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
-            return true;
+            JS?.InvokeVoidAsync("SetAudioVolume", new object[] { NewVolume });
         }
     }
 }

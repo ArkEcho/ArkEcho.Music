@@ -1,35 +1,39 @@
-﻿
+﻿/*
+ TODO
+ */
+
 var sound;
 var id;
 
-function Init(Text) {
-    if (sound != undefined) {
-        sound.stop();
-        sound.unload();
-        id = 0;
-    }
-
+function InitAudio(Source) {
     sound = new Howl({
-        src:['https://localhost:5001/api/Music/MusicFile/' + Text],
+        src:[Source],
         html5: true,
-        volume: getVolumeForHowler(),
         onend: function () {
-            console.log('Finished!');
-            audioEnd();
+            console.log('´Sound Finished!'); // Mehr logging -> direkt bei Funktionen auch noch?
+            AudioEnd();
         },
         onplay: function () {
-            console.log('Play!');
+            console.log('Sound Play!');
         },
         onpause: function () {
-            console.log('Pause!');
+            console.log('Sound Pause!');
         },
         onseek: function () {
-            console.log('Seeked!');
+            console.log('Sound Seeked!');
         },
         onmute: function () {
-            console.log('(Un)Mute!');
+            console.log('Sound (Un)Mute!');
         }
     });
+}
+
+function DisposeAudio() {
+    if (sound != undefined) {
+        sound.stop(id);
+        sound.unload(id);
+        id = 0;
+    }
 }
 
 function PlayAudio() {
@@ -65,17 +69,13 @@ function SetAudioMute(Mute) {
     }
 }
 
-function audioEnd() {
-    console.log('Audio Finished!');
-    document.getElementById("AudioFinished").click();
-}
-
-function onVolumePlayerChanged() {
+function SetAudioVolume(NewVolume) {
     if (sound != undefined) {
-        sound.volume(getVolumeForHowler(), id);
+        sound.volume(NewVolume / 100, id);
     }
 }
 
-function getVolumeForHowler() {
-    return document.getElementById("volumePlayer").value / 100;
+function AudioEnd() {
+    console.log('Audio Ended!');
+    document.getElementById("AudioEnd").click();
 }
