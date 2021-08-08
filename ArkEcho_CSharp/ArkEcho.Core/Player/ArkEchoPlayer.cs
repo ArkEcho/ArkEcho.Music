@@ -28,9 +28,24 @@ namespace ArkEcho.Player
             return PauseImpl();
         }
 
+        public bool PlayPause()
+        {
+            return PlayPauseImpl();
+        }
+
         public bool Stop()
         {
             return StopImpl();
+        }
+
+        public bool Forward()
+        {
+            return ForwardImpl();
+        }
+
+        public bool Backward()
+        {
+            return BackwardImpl();
         }
 
         public bool AudioFinished()
@@ -39,9 +54,18 @@ namespace ArkEcho.Player
             return true;
         }
 
+        public bool SetMute(bool Mute)
+        {
+            return SetMuteImpl(Mute);
+        }
+
         protected abstract bool InitImpl(MusicFile File);
         protected abstract bool PlayImpl();
         protected abstract bool PauseImpl();
+        protected abstract bool PlayPauseImpl();
         protected abstract bool StopImpl();
+        protected abstract bool ForwardImpl();
+        protected abstract bool BackwardImpl();
+        protected abstract bool SetMuteImpl(bool Mute);
     }
 }

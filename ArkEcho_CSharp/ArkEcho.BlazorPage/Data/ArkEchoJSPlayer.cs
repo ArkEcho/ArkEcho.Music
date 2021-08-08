@@ -34,10 +34,31 @@ namespace ArkEcho.Player
             JS.InvokeVoidAsync("PauseAudio", new object[] { });
             return true;
         }
+        protected override bool PlayPauseImpl()
+        {
+            JS.InvokeVoidAsync("PlayPauseAudio", new object[] { });
+            return true;
+        }
 
         protected override bool StopImpl()
         {
-            JS.InvokeVoidAsync("PauseAudio", new object[] { });
+            JS.InvokeVoidAsync("StopAudio", new object[] { });
+            return true;
+        }
+
+        protected override bool ForwardImpl()
+        {
+            return true;
+        }
+
+        protected override bool BackwardImpl()
+        {
+            return true;
+        }
+
+        protected override bool SetMuteImpl(bool Mute)
+        {
+            JS.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
             return true;
         }
     }
