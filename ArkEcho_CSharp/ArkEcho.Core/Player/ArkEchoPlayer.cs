@@ -6,6 +6,8 @@ namespace ArkEcho.Player
     {
         public MusicFile PlayingMusic { get; private set; }
 
+        public bool Shuffle { get; set; } = false;
+
         public ArkEchoPlayer()
         {
         }
@@ -29,6 +31,12 @@ namespace ArkEcho.Player
         public bool Stop()
         {
             return StopImpl();
+        }
+
+        public bool AudioFinished()
+        {
+            // Load next MusicFile
+            return true;
         }
 
         protected abstract bool InitImpl(MusicFile File);

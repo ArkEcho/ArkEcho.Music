@@ -24,10 +24,10 @@
 <br />
 <label for="volumePlayer">Volume:</label>
 <input type="number" id="volumePlayer" name="volumePlayer" onchange="onVolumePlayerChanged()" min="0" max="100" value="50">
+<button hidden="true" id="AudioFinished" @onclick="Finished"></button>
 
 @code { private int musicFileCounter = 0;
     private string searchMusicValue = string.Empty;
-
     protected override Task OnInitializedAsync()
     {
         JSPlayer.SetJSRuntime(JS);
@@ -37,7 +37,8 @@
 
     private void Search()
     {
-        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+        Core.MusicFile file = Server.GetAllMusicFiles().Find(x =>
+      x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
         JSPlayer.Init(file);
     }
@@ -56,6 +57,11 @@
     private void Pause()
     {
         JSPlayer.Pause();
+    }
+
+    private void Finished()
+    {
+        JSPlayer.AudioFinished();
     }
 
     private void Count()
