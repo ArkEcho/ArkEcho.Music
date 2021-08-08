@@ -3,6 +3,7 @@
 @inject ArkEcho.Server.ArkEchoServer Server
 @inject IJSRuntime JS
 @inject AppModel Model
+@inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
 
 <p>MusicFileCount: @musicFileCounter</p>
 
@@ -29,6 +30,7 @@
 
     protected override Task OnInitializedAsync()
     {
+        JSPlayer.SetJSRuntime(JS);
         musicFileCounter = Server.GetAllMusicFiles().Count;
         return base.OnInitializedAsync();
     }
@@ -36,24 +38,24 @@
     private void Search()
     {
         Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
-        if (file != null)
-            JS.InvokeVoidAsync("Init", new object[] { file.GUID.ToString() });
+
+        JSPlayer.Init(file);
     }
 
     private void Init()
     {
         Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
-        JS.InvokeVoidAsync("Init", new object[] { file.GUID.ToString() });
+        JSPlayer.Init(file);
     }
 
     private void Play()
     {
-        JS.InvokeVoidAsync("PlayAudio", new object[] { });
+        JSPlayer.Play();
     }
 
     private void Pause()
     {
-        JS.InvokeVoidAsync("PauseAudio", new object[] { });
+        JSPlayer.Pause();
     }
 
     private void Count()

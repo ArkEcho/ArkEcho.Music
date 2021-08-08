@@ -46,7 +46,7 @@ namespace ArkEcho.Server
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
-            result.FileDownloadName = Path.GetFileName(musicFile.FileName);
+            result.FileDownloadName = Path.GetFileName(musicFile.RemoteFileName);
 
             return result;
         }

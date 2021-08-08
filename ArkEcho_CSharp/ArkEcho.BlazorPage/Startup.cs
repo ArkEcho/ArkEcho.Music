@@ -24,6 +24,7 @@ namespace ArkEcho.BlazorPage
             services.AddSingleton(ArkEchoServer.Instance);
 
             services.AddSingleton<AppModel>();
+            services.AddSingleton<ArkEcho.Player.ArkEchoJSPlayer>();
 
             // Web API
             services.AddControllers();
