@@ -8,11 +8,19 @@ namespace ArkEcho.Player
 
         public bool Shuffle { get; set; } = false;
 
+        /// <summary>
+        /// Volume, 0 - 100
+        /// </summary>
+        public int Volume { get { return volume; } set { volume = value; SetVolumeImpl(); } }
         private int volume = 50;
-        public int Volume { get { return volume; } set { volume = value; SetVolumeImpl(value); } }
 
+        public bool Mute { get { return muted; } set { muted = value; SetMuteImpl(); } }
         private bool muted = false;
-        public bool Mute { get { return muted; } set { muted = value; SetMuteImpl(value); } }
+
+        /// <summary>
+        /// Set true to start the Audio on Init()
+        /// </summary>
+        public bool DirectPlay { get; set; } = false;
 
         public ArkEchoPlayer()
         {
@@ -20,13 +28,11 @@ namespace ArkEcho.Player
 
         public void Init(MusicFile File)
         {
+            this.PlayingMusic = File;
+
             DisposeImpl();
 
-            this.PlayingMusic = File;
-            InitImpl(File);
-
-            SetMuteImpl(muted);
-            SetVolumeImpl(volume);
+            InitImpl();
         }
 
         public void Play()
@@ -56,7 +62,7 @@ namespace ArkEcho.Player
 
         public void Backward()
         {
-            // TODO: Set to 0, if double klicked backward
+            // TODO: Set to 0 (Stop and Play), if double klicked backward
         }
 
         public void AudioEnd()
@@ -64,13 +70,13 @@ namespace ArkEcho.Player
             // TODO: Load next MusicFile
         }
 
-        protected abstract void InitImpl(MusicFile File);
+        protected abstract void InitImpl();
         protected abstract void DisposeImpl();
         protected abstract void PlayImpl();
         protected abstract void PauseImpl();
         protected abstract void PlayPauseImpl();
         protected abstract void StopImpl();
-        protected abstract void SetMuteImpl(bool Mute);
-        protected abstract void SetVolumeImpl(int NewVolume);
+        protected abstract void SetMuteImpl();
+        protected abstract void SetVolumeImpl();
     }
 }

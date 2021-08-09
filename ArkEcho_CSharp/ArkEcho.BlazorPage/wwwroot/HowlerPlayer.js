@@ -6,14 +6,18 @@ var sounds = new Array(0);
 function firstSound() { return sounds[0]; }
 function lastSound() { return sounds[sounds.length - 1]; }
 
-function InitAudio(Source, FileFormat) {
+function InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
     sounds.push(
         new Howl({
-            src: [Source],
             //preload: true,
-            //autoplay: true,
             html5: true,
+
+            src: [Source],
+            autoplay: DirectPlay,
             format: [FileFormat],
+            volume: Volume / 100,
+            mute: Mute,
+
             onend: function () {
                 LogPlayer('Finished!');
                 AudioEnd();
@@ -36,6 +40,9 @@ function InitAudio(Source, FileFormat) {
             onload: function () {
                 LogPlayer('Load!');
             },
+            onvolume: function () {
+                LogPlayer('Volume!');
+            }
         })
     );
     LogPlayer('Init - Number of Sounds: ' + sounds.length);

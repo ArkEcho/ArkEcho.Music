@@ -1,5 +1,4 @@
-﻿using ArkEcho.Core;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace ArkEcho.Player
 {
@@ -17,10 +16,11 @@ namespace ArkEcho.Player
             this.JS = JS;
         }
 
-        protected override void InitImpl(MusicFile File)
+        protected override void InitImpl()
         {
-            string source = $"https://localhost:5001/api/Music/MusicFile/{File.GUID}";
-            JS?.InvokeVoidAsync("InitAudio", new object[] { source, File.FileFormat });
+            // TODO: Adresse dynamisch
+            string source = $"https://localhost:5001/api/Music/MusicFile/{PlayingMusic.GUID}";
+            JS?.InvokeVoidAsync("InitAudio", new object[] { source, PlayingMusic.FileFormat, DirectPlay, Volume, Mute });
         }
 
         protected override void DisposeImpl()
@@ -47,14 +47,14 @@ namespace ArkEcho.Player
             JS?.InvokeVoidAsync("StopAudio", new object[] { });
         }
 
-        protected override void SetMuteImpl(bool Mute)
+        protected override void SetMuteImpl()
         {
             JS?.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
         }
 
-        protected override void SetVolumeImpl(int NewVolume)
+        protected override void SetVolumeImpl()
         {
-            JS?.InvokeVoidAsync("SetAudioVolume", new object[] { NewVolume });
+            JS?.InvokeVoidAsync("SetAudioVolume", new object[] { Volume });
         }
     }
 }
