@@ -2,66 +2,78 @@
  TODO
  */
 
-var sound;
-var id;
+var sounds = new Array(0);
+function firstSound() { return sounds[0]; }
+function lastSound() { return sounds[sounds.length - 1]; }
 
 function InitAudio(Source, FileFormat) {
-    sound = new Howl({
+    sounds.push(new Howl({
         src: [Source],
         //preload: true,
         //autoplay: true,
         html5: true,
-        //format: [FileFormat],
+        format: [FileFormat],
         onend: function () {
-            console.log('´Sound Finished!'); // Mehr logging -> direkt bei Funktionen auch noch?
+            console.log('Finished!'); // Mehr logging -> direkt bei Funktionen auch noch?
             AudioEnd();
         },
         onplay: function () {
-            console.log('Sound Play!');
+            console.log('Play!');
         },
         onpause: function () {
-            console.log('Sound Pause!');
+            console.log('Pause!');
         },
         onseek: function () {
-            console.log('Sound Seeked!');
+            console.log('Seek!');
         },
         onmute: function () {
-            console.log('Sound (Un)Mute!');
+            console.log('(Un)Mute!');
         },
         onstop: function () {
-            console.log('Sound Stopped!');
+            console.log('Stop!');
         },
         onload: function () {
-            console.log('Sound Loaded!');
+            console.log('Load!');
         }
-    });
-    //console.log('Sound is ' + (sound != undefined));
+    }));
+    console.log('Number of Sounds: ' + sounds.length);
 }
 
 function DisposeAudio() {
-    if (sound != undefined) {
-        sound.stop(id);
-        sound.unload(id);
-        id = 0;
+    if (sounds.length >= 1) {
+        var sound = firstSound();
+
+        sound.stop();
+        sound.unload();
+        sounds.shift();
     }
+    console.log('Number of Sounds: ' + sounds.length);
 }
 
 function PlayAudio() {
-    if (sound != undefined) {
-        id = sound.play(id);
-        //console.log('Play for ID: ' + id);
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        var id = 0;
+
+        if(!sound.playing())
+            id = sound.play();
+
+        console.log('Sound Play '+ id);
     }
 }
 
 function PauseAudio() {
-    if (sound != undefined) {
-        sound.pause(id);
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        sound.pause();
     }
 }
 
 function PlayPauseAudio() {
-    if (sound != undefined) {
-        if (sound.playing(id))
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+
+        if (sound.playing())
             PauseAudio();
         else
             PlayAudio();
@@ -69,20 +81,23 @@ function PlayPauseAudio() {
 }
 
 function StopAudio() {
-    if (sound != undefined) {
-        sound.stop(id);
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        sound.stop();
     }
 }
 
 function SetAudioMute(Mute) {
-    if (sound != undefined) {
-        sound.mute(Mute, id);
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        sound.mute(Mute);
     }
 }
 
 function SetAudioVolume(NewVolume) {
-    if (sound != undefined) {
-        sound.volume(NewVolume / 100, id);
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        sound.volume(NewVolume / 100);
     }
 }
 
