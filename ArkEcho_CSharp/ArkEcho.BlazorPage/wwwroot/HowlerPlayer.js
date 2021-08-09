@@ -7,47 +7,47 @@ function firstSound() { return sounds[0]; }
 function lastSound() { return sounds[sounds.length - 1]; }
 
 function InitAudio(Source, FileFormat) {
-    sounds.push(new Howl({
-        src: [Source],
-        //preload: true,
-        //autoplay: true,
-        html5: true,
-        format: [FileFormat],
-        onend: function () {
-            console.log('Finished!'); // Mehr logging -> direkt bei Funktionen auch noch?
-            AudioEnd();
-        },
-        onplay: function () {
-            console.log('Play!');
-        },
-        onpause: function () {
-            console.log('Pause!');
-        },
-        onseek: function () {
-            console.log('Seek!');
-        },
-        onmute: function () {
-            console.log('(Un)Mute!');
-        },
-        onstop: function () {
-            console.log('Stop!');
-        },
-        onload: function () {
-            console.log('Load!');
-        }
-    }));
-    console.log('Number of Sounds: ' + sounds.length);
+    sounds.push(
+        new Howl({
+            src: [Source],
+            //preload: true,
+            //autoplay: true,
+            html5: true,
+            format: [FileFormat],
+            onend: function () {
+                LogPlayer('Finished!');
+                AudioEnd();
+            },
+            onplay: function () {
+                LogPlayer('Play!');
+            },
+            onpause: function () {
+                LogPlayer('Pause!');
+            },
+            onseek: function () {
+                LogPlayer('Seek!');
+            },
+            onmute: function () {
+                LogPlayer('(Un)Mute!');
+            },
+            onstop: function () {
+                LogPlayer('Stop!');
+            },
+            onload: function () {
+                LogPlayer('Load!');
+            },
+        })
+    );
+    LogPlayer('Init - Number of Sounds: ' + sounds.length);
 }
 
 function DisposeAudio() {
     if (sounds.length >= 1) {
-        var sound = firstSound();
-
-        sound.stop();
-        sound.unload();
+        firstSound().unload();
         sounds.shift();
+
+        LogPlayer('Disposed - Number of Sounds: ' + sounds.length);
     }
-    console.log('Number of Sounds: ' + sounds.length);
 }
 
 function PlayAudio() {
@@ -58,22 +58,20 @@ function PlayAudio() {
         if(!sound.playing())
             id = sound.play();
 
-        console.log('Sound Play '+ id);
+        LogPlayer('Sound Play ID '+ id);
     }
 }
 
 function PauseAudio() {
     if (sounds.length >= 1) {
-        var sound = lastSound();
-        sound.pause();
+        lastSound().pause();
+        LogPlayer('Sound Paused');
     }
 }
 
 function PlayPauseAudio() {
     if (sounds.length >= 1) {
-        var sound = lastSound();
-
-        if (sound.playing())
+        if (lastSound().playing())
             PauseAudio();
         else
             PlayAudio();
@@ -84,13 +82,14 @@ function StopAudio() {
     if (sounds.length >= 1) {
         var sound = lastSound();
         sound.stop();
+        LogPlayer('Sound Stop is ' + (sound.seek() == 0 && !sound.playing()));
     }
 }
 
 function SetAudioMute(Mute) {
     if (sounds.length >= 1) {
-        var sound = lastSound();
-        sound.mute(Mute);
+        lastSound().mute(Mute);
+        LogPlayer('Sound Mute is ' + Mute);
     }
 }
 
@@ -98,10 +97,35 @@ function SetAudioVolume(NewVolume) {
     if (sounds.length >= 1) {
         var sound = lastSound();
         sound.volume(NewVolume / 100);
+        LogPlayer('Sound Volume is ' + sound.volume());
+    }
+}
+
+function SetAudioPosition(NewTime) {
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        sound.seek(NewTime);
+        LogPlayer('Sound Position is ' + sound.seek());
     }
 }
 
 function AudioEnd() {
-    console.log('Audio Ended!');
     document.getElementById("AudioEnd").click();
+    LogPlayer('Sound Ended!');
+}
+
+function LogPlayer(Text) {
+    console.log('[' + GetCurrentDateTime() + '] ' + Text);
+}
+
+function GetCurrentDateTime() {
+    var currentdate = new Date();
+    var datetime = currentdate.getFullYear() + "-"
+        + ((currentdate.getMonth() + 1) < 10 ? "0" : "") + (currentdate.getMonth() + 1) + "-"
+        + (currentdate.getDate() < 10 ? "0" : "") + currentdate.getDate() + "_"
+        + (currentdate.getHours() < 10 ? "0" : "") + currentdate.getHours() + ":"
+        + currentdate.getMinutes() + ":"
+        + currentdate.getSeconds() + "."
+        + currentdate.getMilliseconds();
+    return datetime;
 }
