@@ -5,11 +5,13 @@
 var sound;
 var id;
 
-function InitAudio(Source) {
+function InitAudio(Source, FileFormat) {
     sound = new Howl({
-        src:[Source],
+        src: [Source],
+        //preload: true,
+        //autoplay: true,
         html5: true,
-        //format: ['mp3', 'm4a', 'wma'],
+        //format: [FileFormat],
         onend: function () {
             console.log('´Sound Finished!'); // Mehr logging -> direkt bei Funktionen auch noch?
             AudioEnd();
@@ -25,6 +27,12 @@ function InitAudio(Source) {
         },
         onmute: function () {
             console.log('Sound (Un)Mute!');
+        },
+        onstop: function () {
+            console.log('Sound Stopped!');
+        },
+        onload: function () {
+            console.log('Sound Loaded!');
         }
     });
     //console.log('Sound is ' + (sound != undefined));

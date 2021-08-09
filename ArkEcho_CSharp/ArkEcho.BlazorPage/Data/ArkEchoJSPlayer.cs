@@ -20,7 +20,7 @@ namespace ArkEcho.Player
         protected override void InitImpl(MusicFile File)
         {
             string source = $"https://localhost:5001/api/Music/MusicFile/{File.GUID}";
-            JS?.InvokeVoidAsync("InitAudio", new object[] { source });
+            JS?.InvokeVoidAsync("InitAudio", new object[] { source, File.FileFormat });
         }
 
         protected override void DisposeImpl()
