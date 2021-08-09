@@ -18,11 +18,13 @@
     </div>
 </div>
 
-@code{
-    protected override void OnInitialized()
-    {
-        Model.CounterChanged += () => InvokeAsync(StateHasChanged);
+@code
+{ protected override void OnInitialized()
+            {
+                // auf Event vom Model reagieren und das UI Updaten
+                Model.CounterChanged += () => InvokeAsync(StateHasChanged);
 
-        base.OnInitialized();
-    }
-}
+                base.OnInitialized();
+
+
+            } }

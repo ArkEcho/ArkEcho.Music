@@ -1,5 +1,5 @@
 ﻿/*
- TODO
+ TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
  */
 
 var sounds = new Array(0);

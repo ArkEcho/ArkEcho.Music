@@ -1,58 +1,65 @@
 ﻿using ArkEcho.Core;
+using System.Collections.Generic;
 
 namespace ArkEcho.Player
 {
+    // TODO: JSONBase -> Einstellungen nach Nutzer speichern
     public abstract class ArkEchoPlayer
     {
-        public MusicFile PlayingMusic { get; private set; }
+        public List<MusicFile> ListToPlay { get; set; } = null;
+        public int Position { get; private set; }
 
         public bool Shuffle { get; set; } = false;
 
         /// <summary>
         /// Volume, 0 - 100
         /// </summary>
-        public int Volume { get { return volume; } set { volume = value; SetVolumeImpl(); } }
+        public int Volume { get { return volume; } set { volume = value; setVolumeImpl(); } }
         private int volume = 50;
 
-        public bool Mute { get { return muted; } set { muted = value; SetMuteImpl(); } }
+        public bool Mute { get { return muted; } set { muted = value; setMuteImpl(); } }
         private bool muted = false;
 
-        /// <summary>
-        /// Set true to start the Audio on Init()
-        /// </summary>
-        public bool DirectPlay { get; set; } = false;
+        public bool StartOnLoad { get; set; } = true;
 
         public ArkEchoPlayer()
         {
         }
 
-        public void Init(MusicFile File)
+        public void Start(List<MusicFile> MusicFiles, int PositionToStart)
         {
-            this.PlayingMusic = File;
+            // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
+            ListToPlay = MusicFiles;
+            Position = PositionToStart;
 
-            DisposeImpl();
+            load();
+        }
 
-            InitImpl();
+        private void load()
+        {
+            disposeImpl();
+
+            loadImpl();
         }
 
         public void Play()
         {
-            PlayImpl();
+            playImpl();
         }
 
         public void Pause()
         {
-            PauseImpl();
+            pauseImpl();
         }
 
         public void PlayPause()
         {
-            PlayPauseImpl();
+            playPauseImpl();
         }
 
         public void Stop()
         {
-            StopImpl();
+            stopImpl();
         }
 
         public void Forward()
@@ -62,7 +69,7 @@ namespace ArkEcho.Player
 
         public void Backward()
         {
-            // TODO: Set to 0 (Stop and Play), if double klicked backward
+            // TODO: Set Audio to 0 (Stop and Play), if double klicked backward
         }
 
         public void AudioEnd()
@@ -70,13 +77,13 @@ namespace ArkEcho.Player
             // TODO: Load next MusicFile
         }
 
-        protected abstract void InitImpl();
-        protected abstract void DisposeImpl();
-        protected abstract void PlayImpl();
-        protected abstract void PauseImpl();
-        protected abstract void PlayPauseImpl();
-        protected abstract void StopImpl();
-        protected abstract void SetMuteImpl();
-        protected abstract void SetVolumeImpl();
+        protected abstract void loadImpl();
+        protected abstract void disposeImpl();
+        protected abstract void playImpl();
+        protected abstract void pauseImpl();
+        protected abstract void playPauseImpl();
+        protected abstract void stopImpl();
+        protected abstract void setMuteImpl();
+        protected abstract void setVolumeImpl();
     }
 }

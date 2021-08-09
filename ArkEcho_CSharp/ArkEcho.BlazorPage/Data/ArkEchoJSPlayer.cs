@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using ArkEcho.Core;
+using Microsoft.JSInterop;
 
 namespace ArkEcho.Player
 {
@@ -16,43 +17,48 @@ namespace ArkEcho.Player
             this.JS = JS;
         }
 
-        protected override void InitImpl()
+        protected override void loadImpl()
         {
             // TODO: Adresse dynamisch
-            string source = $"https://localhost:5001/api/Music/MusicFile/{PlayingMusic.GUID}";
-            JS?.InvokeVoidAsync("InitAudio", new object[] { source, PlayingMusic.FileFormat, DirectPlay, Volume, Mute });
+            // TODO: In player verschieben?
+            MusicFile file = ListToPlay[Position];
+            if (file != null)
+            {
+                string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";
+                JS?.InvokeVoidAsync("InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
+            }
         }
 
-        protected override void DisposeImpl()
+        protected override void disposeImpl()
         {
             JS?.InvokeVoidAsync("DisposeAudio", new object[] { });
         }
 
-        protected override void PlayImpl()
+        protected override void playImpl()
         {
             JS?.InvokeVoidAsync("PlayAudio", new object[] { });
         }
 
-        protected override void PauseImpl()
+        protected override void pauseImpl()
         {
             JS?.InvokeVoidAsync("PauseAudio", new object[] { });
         }
-        protected override void PlayPauseImpl()
+        protected override void playPauseImpl()
         {
             JS?.InvokeVoidAsync("PlayPauseAudio", new object[] { });
         }
 
-        protected override void StopImpl()
+        protected override void stopImpl()
         {
             JS?.InvokeVoidAsync("StopAudio", new object[] { });
         }
 
-        protected override void SetMuteImpl()
+        protected override void setMuteImpl()
         {
             JS?.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
         }
 
-        protected override void SetVolumeImpl()
+        protected override void setVolumeImpl()
         {
             JS?.InvokeVoidAsync("SetAudioVolume", new object[] { Volume });
         }

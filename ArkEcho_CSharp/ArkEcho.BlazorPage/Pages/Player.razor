@@ -34,7 +34,6 @@
 
     protected override Task OnInitializedAsync()
     {
-        JSPlayer.DirectPlay = true;
         JSPlayer.SetJSRuntime(JS);
         musicFileCounter = Server.GetAllMusicFiles().Count;
         return base.OnInitializedAsync();
@@ -44,13 +43,15 @@
     {
         Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
-        JSPlayer.Init(file);
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        JSPlayer.Start(Files, 0);
     }
 
     private void Init()
     {
         Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
-        JSPlayer.Init(file);
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        JSPlayer.Start(Files, 0);
     }
 
     private void Play()
