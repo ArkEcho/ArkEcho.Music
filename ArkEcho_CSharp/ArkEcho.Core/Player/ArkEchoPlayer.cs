@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using System;
 using System.Collections.Generic;
 
 namespace ArkEcho.Player
@@ -6,10 +7,16 @@ namespace ArkEcho.Player
     // TODO: JSONBase -> Einstellungen nach Nutzer speichern
     public abstract class ArkEchoPlayer
     {
-        public List<MusicFile> ListToPlay { get; set; } = null;
+        public List<MusicFile> ListToPlay { get; private set; } = null;
         public int Position { get; private set; }
 
-        public bool Shuffle { get; set; } = false;
+        public MusicFile PlayingFile
+        {
+            get { return ListToPlay != null ? ListToPlay.Count > Position && Position >= 0 ? ListToPlay[Position] : null : null; }
+        }
+
+
+        public event Action TitleChanged;
 
         /// <summary>
         /// Volume, 0 - 100
@@ -20,7 +27,7 @@ namespace ArkEcho.Player
         public bool Mute { get { return muted; } set { muted = value; setMuteImpl(); } }
         private bool muted = false;
 
-        public bool StartOnLoad { get; set; } = true;
+        public bool Shuffle { get; set; } = false;
 
         public ArkEchoPlayer()
         {
@@ -32,14 +39,16 @@ namespace ArkEcho.Player
             ListToPlay = MusicFiles;
             Position = PositionToStart;
 
-            load();
+            load(true);
         }
 
-        private void load()
+        private void load(bool StartOnLoad)
         {
             disposeImpl();
 
-            loadImpl();
+            loadImpl(StartOnLoad);
+
+            TitleChanged?.Invoke();
         }
 
         public void Play()
@@ -64,7 +73,14 @@ namespace ArkEcho.Player
 
         public void Forward()
         {
-            // TODO: Load next MusicFile
+            Position++;
+            if (Position == ListToPlay.Count)
+            {
+                Position = 0;
+                load(false);
+            }
+            else
+                load(true);
         }
 
         public void Backward()
@@ -77,7 +93,7 @@ namespace ArkEcho.Player
             // TODO: Load next MusicFile
         }
 
-        protected abstract void loadImpl();
+        protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();
         protected abstract void pauseImpl();

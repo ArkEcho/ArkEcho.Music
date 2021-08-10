@@ -17,11 +17,10 @@ namespace ArkEcho.Player
             this.JS = JS;
         }
 
-        protected override void loadImpl()
+        protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
-            // TODO: In player verschieben?
-            MusicFile file = ListToPlay[Position];
+            MusicFile file = PlayingFile;
             if (file != null)
             {
                 string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";

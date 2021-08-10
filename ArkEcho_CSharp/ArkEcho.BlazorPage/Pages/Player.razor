@@ -1,5 +1,6 @@
 ﻿@page "/Player"
 
+@using ArkEcho.Core
 @inject ArkEcho.Server.ArkEchoServer Server
 @inject IJSRuntime JS
 @inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
@@ -24,73 +25,95 @@
 <label for="volumePlayer">Volume:</label>
 <input type="number" id="volumePlayer" @bind="JSPlayer.Volume" min="0" max="100">
 
+<br />
+<br />
+<p>@SongInfo</p>
+
 <!-- Hidden Button to react to JS Events in C# (click()).-->
 <button hidden id="AudioEnd" @onclick="AudioEnd"></button>
 
 @code
 {
-    private int musicFileCounter = 0;
-    private string searchMusicValue = string.Empty;
+	private string SongInfo = string.Empty;
 
-    protected override Task OnInitializedAsync()
-    {
-        JSPlayer.SetJSRuntime(JS);
-        musicFileCounter = Server.GetAllMusicFiles().Count;
-        return base.OnInitializedAsync();
-    }
+	private int musicFileCounter = 0;
+	private string searchMusicValue = string.Empty;
 
-    private void Search()
-    {
-        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+	protected override Task OnInitializedAsync()
+	{
+		JSPlayer.SetJSRuntime(JS);
+		JSPlayer.TitleChanged += () => updateSongInfo();
+		musicFileCounter = Server.GetAllMusicFiles().Count;
+		updateSongInfo();
+		return base.OnInitializedAsync();
+	}
 
-        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
-        JSPlayer.Start(Files, 0);
-    }
+	private void updateSongInfo()
+	{
+		MusicFile file = JSPlayer.PlayingFile;
+		if (file != null)
+			SongInfo = $"{file.Title} - {file.Performer}";
 
-    private void Init()
-    {
-        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
-        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
-        JSPlayer.Start(Files, 0);
-    }
+		StateHasChanged();
+	}
 
-    private void Play()
-    {
-        JSPlayer.Play();
-    }
+	private void Search()
+	{
+		Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
-    private void Pause()
-    {
-        JSPlayer.Pause();
-    }
+		List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+		JSPlayer.Start(Files, 0);
+	}
 
-    private void PlayPause()
-    {
-        JSPlayer.PlayPause();
-    }
+	private void Init()
+	{
+		//Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
+		//List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
 
-    private void Stop()
-    {
-        JSPlayer.Stop();
-    }
+		List<Core.MusicFile> all = Server.GetAllMusicFiles();
+		List<Core.MusicFile> Files = new List<Core.MusicFile>();
+		Server.GetAllAlbum()[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
-    private void Mute()
-    {
-        JSPlayer.Mute = !JSPlayer.Mute;
-    }
+		JSPlayer.Start(Files, 0);
+	}
 
-    private void Backward()
-    {
-        JSPlayer.Backward();
-    }
+	private void Play()
+	{
+		JSPlayer.Play();
+	}
 
-    private void Forward()
-    {
-        JSPlayer.Forward();
-    }
+	private void Pause()
+	{
+		JSPlayer.Pause();
+	}
 
-    private void AudioEnd()
-    {
-        JSPlayer.AudioEnd();
-    }
+	private void PlayPause()
+	{
+		JSPlayer.PlayPause();
+	}
+
+	private void Stop()
+	{
+		JSPlayer.Stop();
+	}
+
+	private void Mute()
+	{
+		JSPlayer.Mute = !JSPlayer.Mute;
+	}
+
+	private void Backward()
+	{
+		JSPlayer.Backward();
+	}
+
+	private void Forward()
+	{
+		JSPlayer.Forward();
+	}
+
+	private void AudioEnd()
+	{
+		JSPlayer.AudioEnd();
+	}
 }
