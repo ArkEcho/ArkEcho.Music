@@ -83,9 +83,22 @@ namespace ArkEcho.Player
                 load(true);
         }
 
+        //private long lastBackwards = 0;
         public void Backward()
         {
-            // TODO: Set Audio to 0 (Stop and Play), if double klicked backward
+            //if ((DateTime.Now.Ticks - lastBackwards) > 5000 && Position > 0)
+            //{
+            //    Position--;
+            //    load(true);
+            //    lastBackwards = 0;
+            //}
+            //else // Begin of Playlist or was klicked after 5s
+            //{
+            //    Stop();
+            //    Play();
+            //}
+
+            //lastBackwards = DateTime.Now.Ticks;
         }
 
         public void AudioEnd()
@@ -101,5 +114,6 @@ namespace ArkEcho.Player
         protected abstract void stopImpl();
         protected abstract void setMuteImpl();
         protected abstract void setVolumeImpl();
+        protected abstract void setDuration(int NewDuration);
     }
 }

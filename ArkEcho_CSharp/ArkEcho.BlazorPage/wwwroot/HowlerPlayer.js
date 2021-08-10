@@ -116,6 +116,14 @@ function SetAudioPosition(NewTime) {
     }
 }
 
+function GetAudioPosition() {
+    if (sounds.length >= 1) {
+        var duration = lastSound().seek();
+        LogPlayer('Sound Position is ' + duration);
+        return duration;
+    }
+}
+
 function AudioEnd() {
     document.getElementById("AudioEnd").click();
     LogPlayer('Sound Ended!');

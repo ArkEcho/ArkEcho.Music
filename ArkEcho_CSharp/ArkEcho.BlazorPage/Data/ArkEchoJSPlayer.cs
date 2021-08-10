@@ -61,5 +61,10 @@ namespace ArkEcho.Player
         {
             JS?.InvokeVoidAsync("SetAudioVolume", new object[] { Volume });
         }
+
+        protected override void setDuration(int NewDuration)
+        {
+            JS?.InvokeVoidAsync("SetAudioPosition", new object[] { NewDuration });
+        }
     }
 }
