@@ -8,24 +8,64 @@ namespace ArkEcho.Player
     public abstract class ArkEchoPlayer
     {
         public List<MusicFile> ListToPlay { get; private set; } = null;
-        public int Position { get; private set; }
+        public int SongIndex { get; private set; }
 
         public MusicFile PlayingFile
         {
-            get { return ListToPlay != null ? ListToPlay.Count > Position && Position >= 0 ? ListToPlay[Position] : null : null; }
+            get
+            {
+                return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
+            }
         }
 
 
         public event Action TitleChanged;
+        public event Action PositionChanged;
 
         /// <summary>
-        /// Volume, 0 - 100
+        /// Audio Volume, 0 - 100
         /// </summary>
-        public int Volume { get { return volume; } set { volume = value; setVolumeImpl(); } }
+        public int Volume
+        {
+            get { return volume; }
+            set
+            {
+                volume = value;
+                setVolumeImpl();
+            }
+        }
         private int volume = 50;
 
-        public bool Mute { get { return muted; } set { muted = value; setMuteImpl(); } }
+        /// <summary>
+        /// Audio Muted
+        /// </summary>
+        public bool Mute
+        {
+            get { return muted; }
+            set
+            {
+                muted = value;
+                setMuteImpl();
+            }
+        }
         private bool muted = false;
+
+        /// <summary>
+        /// Audio Position of Playback
+        /// </summary>
+        public int Position
+        {
+            get { return position; }
+            set
+            {
+                if (value != position)
+                {
+                    position = value;
+                    PositionChanged?.Invoke();
+                }
+            }
+        }
+        private int position = 0;
 
         public bool Shuffle { get; set; } = false;
 
@@ -33,11 +73,11 @@ namespace ArkEcho.Player
         {
         }
 
-        public void Start(List<MusicFile> MusicFiles, int PositionToStart)
+        public void Start(List<MusicFile> MusicFiles, int Index)
         {
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
-            Position = PositionToStart;
+            SongIndex = Index;
 
             load(true);
         }
@@ -73,10 +113,10 @@ namespace ArkEcho.Player
 
         public void Forward()
         {
-            Position++;
-            if (Position == ListToPlay.Count)
+            SongIndex++;
+            if (SongIndex == ListToPlay.Count)
             {
-                Position = 0;
+                SongIndex = 0;
                 load(false);
             }
             else
@@ -86,6 +126,7 @@ namespace ArkEcho.Player
         //private long lastBackwards = 0;
         public void Backward()
         {
+            double dura = position;
             //if ((DateTime.Now.Ticks - lastBackwards) > 5000 && Position > 0)
             //{
             //    Position--;
@@ -114,6 +155,6 @@ namespace ArkEcho.Player
         protected abstract void stopImpl();
         protected abstract void setMuteImpl();
         protected abstract void setVolumeImpl();
-        protected abstract void setDuration(int NewDuration);
+        protected abstract void setPositionImpl(int NewPosition);
     }
 }

@@ -32,6 +32,8 @@
 <!-- Hidden Button to react to JS Events in C# (click()).-->
 <button hidden id="AudioEnd" @onclick="AudioEnd"></button>
 
+<input type="number" id="AudioPosition" @bind="JSPlayer.Position" />
+
 @code
 {
 	private string SongInfo = string.Empty;
@@ -43,6 +45,7 @@
 	{
 		JSPlayer.SetJSRuntime(JS);
 		JSPlayer.TitleChanged += () => updateSongInfo();
+		JSPlayer.PositionChanged += () => InvokeAsync(StateHasChanged);
 		musicFileCounter = Server.GetAllMusicFiles().Count;
 		updateSongInfo();
 		return base.OnInitializedAsync();

@@ -15,7 +15,23 @@ namespace ArkEcho.Player
         public void SetJSRuntime(IJSRuntime JS)
         {
             this.JS = JS;
+            var dotNetReference = DotNetObjectReference.Create(this);
+            JS?.InvokeVoidAsync("SetNetObject", new object[] { dotNetReference });
         }
+
+        [JSInvokable]
+        public void SetPosition(int Position)
+        {
+            base.Position = Position;
+        }
+
+
+        [JSInvokable]
+        public void AudioEnded()
+        {
+            AudioEnd();
+        }
+
 
         protected override void loadImpl(bool StartOnLoad)
         {
@@ -62,7 +78,7 @@ namespace ArkEcho.Player
             JS?.InvokeVoidAsync("SetAudioVolume", new object[] { Volume });
         }
 
-        protected override void setDuration(int NewDuration)
+        protected override void setPositionImpl(int NewDuration)
         {
             JS?.InvokeVoidAsync("SetAudioPosition", new object[] { NewDuration });
         }

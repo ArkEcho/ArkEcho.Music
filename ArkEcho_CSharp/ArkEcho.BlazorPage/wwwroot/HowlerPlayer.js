@@ -2,9 +2,15 @@
  TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
  */
 
+var dotNetObject;
+
 var sounds = new Array(0);
 function firstSound() { return sounds[0]; }
 function lastSound() { return sounds[sounds.length - 1]; }
+
+function SetNetObject(object) {
+    dotNetObject = object;
+}
 
 function InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
     sounds.push(
@@ -23,6 +29,7 @@ function InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
                 AudioEnd();
             },
             onplay: function () {
+                requestAnimationFrame(self.Step.bind(self));
                 LogPlayer('Play!');
             },
             onpause: function () {
@@ -46,6 +53,17 @@ function InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
         })
     );
     LogPlayer('Init - Number of Sounds: ' + sounds.length);
+}
+
+function Step() {
+    if (sounds.length >= 1) {
+        var sound = lastSound();
+        if (sound.playing()) {
+            dotNetObject.invokeMethodAsync('SetPosition', GetAudioPosition());
+            //document.getElementById("AudioDuration").value = GetAudioPosition();
+            requestAnimationFrame(self.Step.bind(self));
+        }
+    }
 }
 
 function DisposeAudio() {
@@ -118,14 +136,15 @@ function SetAudioPosition(NewTime) {
 
 function GetAudioPosition() {
     if (sounds.length >= 1) {
-        var duration = lastSound().seek();
-        LogPlayer('Sound Position is ' + duration);
-        return duration;
+        var pos = Math.round(lastSound().seek());
+        LogPlayer('Sound Position is ' + pos);
+        return pos;
     }
 }
 
 function AudioEnd() {
-    document.getElementById("AudioEnd").click();
+    //document.getElementById("AudioEnd").click();
+    dotNetObject.invokeMethodAsync('AudioEnded');
     LogPlayer('Sound Ended!');
 }
 
