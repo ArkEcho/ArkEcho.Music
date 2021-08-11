@@ -12,11 +12,11 @@ namespace ArkEcho.Player
 
         }
 
-        public void SetJSRuntime(IJSRuntime JS)
+        public void Init(IJSRuntime JS)
         {
             this.JS = JS;
             var dotNetReference = DotNetObjectReference.Create(this);
-            JS?.InvokeVoidAsync("SetNetObject", new object[] { dotNetReference });
+            JS?.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
         }
 
         [JSInvokable]
@@ -40,47 +40,47 @@ namespace ArkEcho.Player
             if (file != null)
             {
                 string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";
-                JS?.InvokeVoidAsync("InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
+                JS?.InvokeVoidAsync("Player.InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
             }
         }
 
         protected override void disposeImpl()
         {
-            JS?.InvokeVoidAsync("DisposeAudio", new object[] { });
+            JS?.InvokeVoidAsync("Player.DisposeAudio", new object[] { });
         }
 
         protected override void playImpl()
         {
-            JS?.InvokeVoidAsync("PlayAudio", new object[] { });
+            JS?.InvokeVoidAsync("Player.PlayAudio", new object[] { });
         }
 
         protected override void pauseImpl()
         {
-            JS?.InvokeVoidAsync("PauseAudio", new object[] { });
+            JS?.InvokeVoidAsync("Player.PauseAudio", new object[] { });
         }
         protected override void playPauseImpl()
         {
-            JS?.InvokeVoidAsync("PlayPauseAudio", new object[] { });
+            JS?.InvokeVoidAsync("Player.PlayPauseAudio", new object[] { });
         }
 
         protected override void stopImpl()
         {
-            JS?.InvokeVoidAsync("StopAudio", new object[] { });
+            JS?.InvokeVoidAsync("Player.StopAudio", new object[] { });
         }
 
         protected override void setMuteImpl()
         {
-            JS?.InvokeVoidAsync("SetAudioMute", new object[] { Mute });
+            JS?.InvokeVoidAsync("Player.SetAudioMute", new object[] { Mute });
         }
 
         protected override void setVolumeImpl()
         {
-            JS?.InvokeVoidAsync("SetAudioVolume", new object[] { Volume });
+            JS?.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
         protected override void setPositionImpl(int NewDuration)
         {
-            JS?.InvokeVoidAsync("SetAudioPosition", new object[] { NewDuration });
+            JS?.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewDuration });
         }
     }
 }

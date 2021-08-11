@@ -88,6 +88,7 @@ namespace ArkEcho.Player
 
             loadImpl(StartOnLoad);
 
+            Position = 0;
             TitleChanged?.Invoke();
         }
 
@@ -108,6 +109,7 @@ namespace ArkEcho.Player
 
         public void Stop()
         {
+            Position = 0;
             stopImpl();
         }
 
@@ -126,25 +128,21 @@ namespace ArkEcho.Player
         //private long lastBackwards = 0;
         public void Backward()
         {
-            double dura = position;
-            //if ((DateTime.Now.Ticks - lastBackwards) > 5000 && Position > 0)
-            //{
-            //    Position--;
-            //    load(true);
-            //    lastBackwards = 0;
-            //}
-            //else // Begin of Playlist or was klicked after 5s
-            //{
-            //    Stop();
-            //    Play();
-            //}
-
-            //lastBackwards = DateTime.Now.Ticks;
+            if (Position > 5 || SongIndex == 0)
+            {
+                Stop();
+                Play();
+            }
+            else
+            {
+                SongIndex--;
+                load(true);
+            }
         }
 
         public void AudioEnd()
         {
-            // TODO: Load next MusicFile
+            Forward();
         }
 
         protected abstract void loadImpl(bool StartOnLoad);
