@@ -85,10 +85,9 @@ namespace ArkEcho.Player
         private void load(bool StartOnLoad)
         {
             disposeImpl();
+            Position = 0;
 
             loadImpl(StartOnLoad);
-
-            Position = 0;
             TitleChanged?.Invoke();
         }
 
@@ -109,8 +108,8 @@ namespace ArkEcho.Player
 
         public void Stop()
         {
-            Position = 0;
             stopImpl();
+            Position = 0;
         }
 
         public void Forward()
@@ -138,6 +137,11 @@ namespace ArkEcho.Player
                 SongIndex--;
                 load(true);
             }
+        }
+
+        public void SetPosition(int NewPosition)
+        {
+            setPositionImpl(NewPosition);
         }
 
         public void AudioEnd()

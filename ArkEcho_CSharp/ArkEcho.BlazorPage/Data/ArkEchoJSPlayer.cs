@@ -20,14 +20,14 @@ namespace ArkEcho.Player
         }
 
         [JSInvokable]
-        public void SetPosition(int Position)
+        public void SetPositionJS(int Position)
         {
             base.Position = Position;
         }
 
 
         [JSInvokable]
-        public void AudioEnded()
+        public void AudioEndedJS()
         {
             AudioEnd();
         }

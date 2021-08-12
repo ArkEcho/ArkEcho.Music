@@ -28,44 +28,49 @@ class HowlerPlayer {
                 mute: Mute,
 
                 onend: function () {
-                    self.LogPlayer('Finished!');
+                    //self.LogPlayer('Finished!');
                     self.AudioEnd();
                 },
                 onplay: function () {
                     requestAnimationFrame(self.Step.bind(self));
-                    self.LogPlayer('Play!');
+                    //self.LogPlayer('Play!');
                 },
                 onpause: function () {
-                    self.LogPlayer('Pause!');
+                    //self.LogPlayer('Pause!');
                 },
                 onseek: function () {
-                    self.LogPlayer('Seek!');
+                    //self.LogPlayer('Seek!');
                 },
                 onmute: function () {
-                    self.LogPlayer('(Un)Mute!');
+                    //self.LogPlayer('(Un)Mute!');
                 },
                 onstop: function () {
-                    self.LogPlayer('Stop!');
+                    //self.LogPlayer('Stop!');
                 },
                 onload: function () {
-                    self.LogPlayer('Load!');
+                    //self.LogPlayer('Load!');
                 },
                 onvolume: function () {
-                    self.LogPlayer('Volume!');
+                    //self.LogPlayer('Volume!');
                 }
             })
         );
+
+        this.disposed = false;
         this.LogPlayer('Init - Number of Sounds: ' + this.sounds.length);
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
     Step() {
+        if (this.disposed)
+            return;
+
         if (this.stepCount >= 20) {
             this.stepCount = 0;
             if (this.sounds.length >= 1) {
                 var sound = this.Sound();
                 if (sound.playing()) {
-                    this.NetObject.invokeMethodAsync('SetPosition', this.GetAudioPosition());
+                    this.NetObject.invokeMethodAsync('SetPositionJS', this.GetAudioPosition());
                 }
             }
         }
@@ -75,6 +80,7 @@ class HowlerPlayer {
 
     DisposeAudio() {
         if (this.sounds.length >= 1) {
+            this.disposed = true;
             this.sounds[0].unload();
             this.sounds.shift();
             
@@ -150,7 +156,7 @@ class HowlerPlayer {
 
     AudioEnd() {
         //document.getElementById("AudioEnd").click();
-        this.NetObject.invokeMethodAsync('AudioEnded');
+        this.NetObject.invokeMethodAsync('AudioEndedJS');
         this.LogPlayer('Sound Ended!');
     }
 
