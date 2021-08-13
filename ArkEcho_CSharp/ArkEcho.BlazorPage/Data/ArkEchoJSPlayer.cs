@@ -65,10 +65,6 @@ namespace ArkEcho.Player
         {
             JS?.InvokeVoidAsync("Player.PauseAudio", new object[] { });
         }
-        protected override void playPauseImpl()
-        {
-            JS?.InvokeVoidAsync("Player.PlayPauseAudio", new object[] { });
-        }
 
         protected override void stopImpl()
         {

@@ -57,7 +57,7 @@ namespace ArkEcho.Player
         public bool Playing
         {
             get { return playing; }
-            set
+            protected set
             {
                 playing = value;
                 PlayingChanged?.Invoke();
@@ -71,7 +71,7 @@ namespace ArkEcho.Player
         public int Position
         {
             get { return position; }
-            set
+            protected set
             {
                 if (value != position)
                 {
@@ -82,6 +82,7 @@ namespace ArkEcho.Player
         }
         private int position = 0;
 
+        // TODO: Shuffle
         public bool Shuffle { get; set; } = false;
 
         public ArkEchoPlayer()
@@ -118,7 +119,10 @@ namespace ArkEcho.Player
 
         public void PlayPause()
         {
-            playPauseImpl();
+            if (playing)
+                Pause();
+            else
+                Play();
         }
 
         public void Stop()
@@ -168,7 +172,6 @@ namespace ArkEcho.Player
         protected abstract void disposeImpl();
         protected abstract void playImpl();
         protected abstract void pauseImpl();
-        protected abstract void playPauseImpl();
         protected abstract void stopImpl();
         protected abstract void setMuteImpl();
         protected abstract void setVolumeImpl();

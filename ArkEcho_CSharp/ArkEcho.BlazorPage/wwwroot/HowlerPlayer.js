@@ -33,6 +33,7 @@ class HowlerPlayer {
                     self.LogPlayer('Sound Ended!');
                 },
                 onplay: function () {
+                    self.stop = false;
                     self.NetObject.invokeMethodAsync('AudioPlayingJS', true);
                     requestAnimationFrame(self.Step.bind(self));
                 },
@@ -57,13 +58,12 @@ class HowlerPlayer {
             })
         );
 
-        this.disposed = false;
         this.LogPlayer('Init - Number of Sounds: ' + this.sounds.length);
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
     Step() {
-        if (this.disposed)
+        if (this.stop)
             return;
 
         if (this.stepCount >= 20) {
@@ -81,7 +81,7 @@ class HowlerPlayer {
 
     DisposeAudio() {
         if (this.sounds.length >= 1) {
-            this.disposed = true;
+            this.stop = true;
             this.sounds[0].unload();
             this.sounds.shift();
             
@@ -108,17 +108,9 @@ class HowlerPlayer {
         }
     }
 
-    PlayPauseAudio() {
-        if (this.sounds.length >= 1) {
-            if (this.Sound().playing())
-                this.PauseAudio();
-            else
-                this.PlayAudio();
-        }
-    }
-
     StopAudio() {
         if (this.sounds.length >= 1) {
+            this.stop = true;
             var sound = this.Sound();
             sound.stop();
             this.LogPlayer('Sound Stop is ' + (sound.seek() == 0 && !sound.playing()));
