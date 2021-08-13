@@ -21,6 +21,7 @@ namespace ArkEcho.Player
 
         public event Action TitleChanged;
         public event Action PositionChanged;
+        public event Action PlayingChanged;
 
         /// <summary>
         /// Audio Volume, 0 - 100
@@ -49,6 +50,20 @@ namespace ArkEcho.Player
             }
         }
         private bool muted = false;
+
+        /// <summary>
+        /// Audio Muted
+        /// </summary>
+        public bool Playing
+        {
+            get { return playing; }
+            set
+            {
+                playing = value;
+                PlayingChanged?.Invoke();
+            }
+        }
+        private bool playing = false;
 
         /// <summary>
         /// Audio Position of Playback

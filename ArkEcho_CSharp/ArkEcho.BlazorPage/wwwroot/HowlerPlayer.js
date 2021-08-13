@@ -28,15 +28,16 @@ class HowlerPlayer {
                 mute: Mute,
 
                 onend: function () {
-                    //self.LogPlayer('Finished!');
-                    self.AudioEnd();
+                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
+                    self.NetObject.invokeMethodAsync('AudioEndedJS');
+                    self.LogPlayer('Sound Ended!');
                 },
                 onplay: function () {
+                    self.NetObject.invokeMethodAsync('AudioPlayingJS', true);
                     requestAnimationFrame(self.Step.bind(self));
-                    //self.LogPlayer('Play!');
                 },
                 onpause: function () {
-                    //self.LogPlayer('Pause!');
+                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
                 },
                 onseek: function () {
                     //self.LogPlayer('Seek!');
@@ -45,7 +46,7 @@ class HowlerPlayer {
                     //self.LogPlayer('(Un)Mute!');
                 },
                 onstop: function () {
-                    //self.LogPlayer('Stop!');
+                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
                 },
                 onload: function () {
                     //self.LogPlayer('Load!');
@@ -152,12 +153,6 @@ class HowlerPlayer {
             this.LogPlayer('Sound Position is ' + pos);
             return pos;
         }
-    }
-
-    AudioEnd() {
-        //document.getElementById("AudioEnd").click();
-        this.NetObject.invokeMethodAsync('AudioEndedJS');
-        this.LogPlayer('Sound Ended!');
     }
 
     LogPlayer(Text) {

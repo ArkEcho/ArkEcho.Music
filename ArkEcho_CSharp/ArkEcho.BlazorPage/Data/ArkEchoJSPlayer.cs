@@ -33,6 +33,13 @@ namespace ArkEcho.Player
         }
 
 
+        [JSInvokable]
+        public void AudioPlayingJS(bool Playing)
+        {
+            this.Playing = Playing;
+        }
+
+
         protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
