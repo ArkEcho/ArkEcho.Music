@@ -1,6 +1,7 @@
 ﻿using ArkEcho.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ArkEcho.Player
 {
@@ -17,7 +18,6 @@ namespace ArkEcho.Player
                 return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
             }
         }
-
 
         public event Action TitleChanged;
         public event Action PositionChanged;
@@ -84,6 +84,7 @@ namespace ArkEcho.Player
 
         // TODO: Shuffle
         public bool Shuffle { get; set; } = false;
+        private List<int> shuffledIndexList = null;
 
         public ArkEchoPlayer()
         {
@@ -94,6 +95,8 @@ namespace ArkEcho.Player
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
             SongIndex = Index;
+
+            shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, ListToPlay.Count - 1).ToList());
 
             load(true);
         }

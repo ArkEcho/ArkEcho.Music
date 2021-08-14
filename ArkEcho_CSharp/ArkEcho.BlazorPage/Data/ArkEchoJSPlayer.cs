@@ -25,13 +25,11 @@ namespace ArkEcho.Player
             base.Position = Position;
         }
 
-
         [JSInvokable]
         public void AudioEndedJS()
         {
             AudioEnd();
         }
-
 
         [JSInvokable]
         public void AudioPlayingJS(bool Playing)
@@ -39,13 +37,13 @@ namespace ArkEcho.Player
             this.Playing = Playing;
         }
 
-
         protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
             MusicFile file = PlayingFile;
             if (file != null)
             {
+                // ÄNDERN BEI RELEASE
                 string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";
                 JS?.InvokeVoidAsync("Player.InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
             }

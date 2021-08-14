@@ -17,6 +17,7 @@
 <button class="btn btn-primary" @onclick="PlayPause">PlayPause</button>
 <button class="btn btn-primary" @onclick="Stop">Stop</button>
 <button class="btn btn-primary" @onclick="Mute">Mute</button>
+<button class="btn btn-primary" @onclick="Shuffle">Shuffle</button>
 <button class="btn btn-primary" @onclick="Backward">Backward</button>
 <button class="btn btn-primary" @onclick="Forward">Forward</button>
 
@@ -27,7 +28,13 @@
 
 <br />
 <label for="playing">Playing:</label>
-<input type="checkbox" id="scales" name="scales" checked="@JSPlayer.Playing">
+<input type="checkbox" id="playing" name="playing" checked="@JSPlayer.Playing">
+<br />
+<label for="muted">Mute:</label>
+<input type="checkbox" id="muted" name="muted" checked="@JSPlayer.Mute">
+<br />
+<label for="shuffle">Shuffle:</label>
+<input type="checkbox" id="shuffle" name="shuffle" checked="@JSPlayer.Shuffle">
 <br />
 <p>@SongInfo</p>
 
@@ -43,15 +50,15 @@
 	protected override Task OnInitializedAsync()
 	{
 		JSPlayer.Init(JS);
-		JSPlayer.TitleChanged += () => updateSongInfo();
-		JSPlayer.PositionChanged += () => InvokeAsync(StateHasChanged);
-		JSPlayer.PlayingChanged += () => InvokeAsync(StateHasChanged);
+		JSPlayer.TitleChanged += () => updatePlayerInfo();
+		JSPlayer.PositionChanged += () => updatePlayerInfo();
+		JSPlayer.PlayingChanged += () => updatePlayerInfo();
 		musicFileCounter = Server.GetAllMusicFiles().Count;
-		updateSongInfo();
+		updatePlayerInfo();
 		return base.OnInitializedAsync();
 	}
 
-	private void updateSongInfo()
+	private void updatePlayerInfo()
 	{
 		MusicFile file = JSPlayer.PlayingFile;
 		if (file != null)
@@ -98,6 +105,11 @@
 	private void Stop()
 	{
 		JSPlayer.Stop();
+	}
+
+	private void Shuffle()
+	{
+		JSPlayer.Shuffle = !JSPlayer.Shuffle;
 	}
 
 	private void Mute()

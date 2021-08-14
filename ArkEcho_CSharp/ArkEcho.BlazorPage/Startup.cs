@@ -23,16 +23,15 @@ namespace ArkEcho.BlazorPage
         {
             services.AddSingleton(ArkEchoServer.Instance);
 
-            services.AddSingleton<AppModel>();
-            services.AddSingleton<ArkEcho.Player.ArkEchoJSPlayer>();
-
             // Web API
             services.AddControllers();
 
             // Blazor Page
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddScoped<WeatherForecastService>();
+            services.AddScoped<AppModel>();
+            services.AddScoped<ArkEcho.Player.ArkEchoJSPlayer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
