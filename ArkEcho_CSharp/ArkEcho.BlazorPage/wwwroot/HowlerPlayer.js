@@ -4,7 +4,6 @@
 
 class HowlerPlayer {
     constructor() {
-        this.sounds = new Array(0);
         this.stepCount = 0;
         this.LogPlayer('Created new HowlerPlayer!');
     }
@@ -16,49 +15,47 @@ class HowlerPlayer {
 
     InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
         var self = this;
-        this.sounds.push(
-            new Howl({
-                //preload: true,
-                html5: true,
+        this.sound = new Howl({
+            //preload: true,
+            html5: true,
 
-                src: [Source],
-                autoplay: DirectPlay,
-                format: [FileFormat],
-                volume: Volume / 100,
-                mute: Mute,
+            src: [Source],
+            autoplay: DirectPlay,
+            format: [FileFormat],
+            volume: Volume / 100,
+            mute: Mute,
 
-                onend: function () {
-                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-                    self.NetObject.invokeMethodAsync('AudioEndedJS');
-                    self.LogPlayer('Sound Ended!');
-                },
-                onplay: function () {
-                    self.stop = false;
-                    self.NetObject.invokeMethodAsync('AudioPlayingJS', true);
-                    requestAnimationFrame(self.Step.bind(self));
-                },
-                onpause: function () {
-                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-                },
-                onseek: function () {
-                    //self.LogPlayer('Seek!');
-                },
-                onmute: function () {
-                    //self.LogPlayer('(Un)Mute!');
-                },
-                onstop: function () {
-                    self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-                },
-                onload: function () {
-                    //self.LogPlayer('Load!');
-                },
-                onvolume: function () {
-                    //self.LogPlayer('Volume!');
-                }
-            })
-        );
+            onend: function () {
+                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
+                self.NetObject.invokeMethodAsync('AudioEndedJS');
+                self.LogPlayer('Sound Ended!');
+            },
+            onplay: function () {
+                self.stop = false;
+                self.NetObject.invokeMethodAsync('AudioPlayingJS', true);
+                requestAnimationFrame(self.Step.bind(self));
+            },
+            onpause: function () {
+                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
+            },
+            onseek: function () {
+                //self.LogPlayer('Seek!');
+            },
+            onmute: function () {
+                //self.LogPlayer('(Un)Mute!');
+            },
+            onstop: function () {
+                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
+            },
+            onload: function () {
+                //self.LogPlayer('Load!');
+            },
+            onvolume: function () {
+                //self.LogPlayer('Volume!');
+            }
+        });
 
-        this.LogPlayer('Init - Number of Sounds: ' + this.sounds.length);
+        this.LogPlayer('Init Succeed');
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
@@ -67,12 +64,9 @@ class HowlerPlayer {
             return;
 
         if (this.stepCount >= 20) {
-            this.stepCount = 0;
-            if (this.sounds.length >= 1) {
-                var sound = this.Sound();
-                if (sound.playing()) {
-                    this.NetObject.invokeMethodAsync('SetPositionJS', this.GetAudioPosition());
-                }
+            this.stepCount = 0;                
+            if (this.sound.playing()) {
+                this.NetObject.invokeMethodAsync('SetPositionJS', this.GetAudioPosition());
             }
         }
         this.stepCount++;
@@ -80,71 +74,50 @@ class HowlerPlayer {
     }
 
     DisposeAudio() {
-        if (this.sounds.length >= 1) {
-            this.stop = true;
-            this.sounds[0].unload();
-            this.sounds.shift();
-            
-            this.LogPlayer('Disposed - Number of Sounds: ' + this.sounds.length);
-        }
+        this.stop = true;
+        this.sound.unload();
+        this.LogPlayer('Disposed');
     }
 
     PlayAudio() {
-        if (this.sounds.length >= 1) {
-            var sound = this.Sound();
-            var id = 0;
+        var id = 0;
 
-            if (!sound.playing())
-                id = sound.play();
+        if (!this.sound.playing())
+            id = this.sound.play();
 
-            this.LogPlayer('Sound Play ID ' + id);
-        }
+        this.LogPlayer('Sound Play ID ' + id);
     }
 
     PauseAudio() {
-        if (this.sounds.length >= 1) {
-            this.Sound().pause();
-            this.LogPlayer('Sound Paused');
-        }
+        this.sound.pause();
+        this.LogPlayer('Sound Paused');
     }
 
     StopAudio() {
-        if (this.sounds.length >= 1) {
-            this.stop = true;
-            var sound = this.Sound();
-            sound.stop();
-            this.LogPlayer('Sound Stop is ' + (sound.seek() == 0 && !sound.playing()));
-        }
+        this.stop = true;
+        this.sound.stop();
+        this.LogPlayer('Sound Stop is ' + (this.sound.seek() == 0 && !this.sound.playing()));
     }
 
     SetAudioMute(Mute) {
-        if (this.sounds.length >= 1) {
-            this.Sound().mute(Mute);
-            this.LogPlayer('Sound Mute is ' + Mute);
-        }
+        this.sound.mute(Mute);
+        this.LogPlayer('Sound Mute is ' + Mute);
     }
+
     SetAudioVolume(NewVolume) {
-        if (this.sounds.length >= 1) {
-            var sound = this.Sound();
-            sound.volume(NewVolume / 100);
-            this.LogPlayer('Sound Volume is ' + sound.volume());
-        }
+        this.sound.volume(NewVolume / 100);
+        this.LogPlayer('Sound Volume is ' + this.sound.volume());
     }
 
     SetAudioPosition(NewTime) {
-        if (this.sounds.length >= 1) {
-            var sound = this.Sound();
-            sound.seek(NewTime);
-            this.LogPlayer('Sound Position is ' + sound.seek());
-        }
+        this.sound.seek(NewTime);
+        this.LogPlayer('Sound Position is ' + this.sound.seek());
     }
 
     GetAudioPosition() {
-        if (this.sounds.length >= 1) {
-            var pos = Math.round(this.Sound().seek());
-            this.LogPlayer('Sound Position is ' + pos);
-            return pos;
-        }
+        var pos = Math.round(this.sound.seek());
+        this.LogPlayer('Sound Position is ' + pos);
+        return pos;
     }
 
     LogPlayer(Text) {
@@ -162,8 +135,6 @@ class HowlerPlayer {
             + currentdate.getMilliseconds();
         return datetime;
     }
-
-    Sound() { return this.sounds[this.sounds.length - 1]; }
 }
 
 var Player = new HowlerPlayer();
