@@ -40,90 +40,114 @@
 
 <p>@JSPlayer.Position</p>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th>Logs</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (string log in Logs)
+        {
+            <tr>
+                <td>@log</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 @code
 {
-	private string SongInfo = string.Empty;
+    private string SongInfo = string.Empty;
 
-	private int musicFileCounter = 0;
-	private string searchMusicValue = string.Empty;
+    private int musicFileCounter = 0;
+    private string searchMusicValue = string.Empty;
 
-	protected override Task OnInitializedAsync()
-	{
-		JSPlayer.Init(JS);
-		JSPlayer.TitleChanged += () => updatePlayerInfo();
-		JSPlayer.PositionChanged += () => updatePlayerInfo();
-		JSPlayer.PlayingChanged += () => updatePlayerInfo();
-		musicFileCounter = Server.GetAllMusicFiles().Count;
-		updatePlayerInfo();
-		return base.OnInitializedAsync();
-	}
+    private List<string> Logs = new List<string>();
 
-	private void updatePlayerInfo()
-	{
-		MusicFile file = JSPlayer.PlayingFile;
-		if (file != null)
-			SongInfo = $"{file.Title} - {file.Performer}";
+    protected override Task OnInitializedAsync()
+    {
+        JSPlayer.InitPlayer(JS, logSomeShit);
+        JSPlayer.TitleChanged += () => updatePlayerInfo();
+        JSPlayer.PositionChanged += () => updatePlayerInfo();
+        JSPlayer.PlayingChanged += () => updatePlayerInfo();
+        musicFileCounter = Server.GetAllMusicFiles().Count;
+        updatePlayerInfo();
+        return base.OnInitializedAsync();
+    }
 
-		InvokeAsync(StateHasChanged);
-	}
+    private bool logSomeShit(string Text, Resources.LogLevel Level)
+    {
+        Logs.Add($"{Level}\t\t{Text}");
+        return true;
+    }
 
-	private void Search()
-	{
-		Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+    private void updatePlayerInfo()
+    {
+        MusicFile file = JSPlayer.PlayingFile;
+        if (file != null)
+            SongInfo = $"{file.Title} - {file.Performer}";
 
-		List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
-		JSPlayer.Start(Files, 0);
-	}
+        InvokeAsync(StateHasChanged);
+    }
 
-	private void Init()
-	{
-		//Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
-		//List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+    private void Search()
+    {
+        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
-		List<Core.MusicFile> all = Server.GetAllMusicFiles();
-		List<Core.MusicFile> Files = new List<Core.MusicFile>();
-		Server.GetAllAlbum()[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        JSPlayer.Start(Files, 0);
+    }
 
-		JSPlayer.Start(Files, 0);
-	}
+    private void Init()
+    {
+        //Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
+        //List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
 
-	private void Play()
-	{
-		JSPlayer.Play();
-	}
+        List<Core.MusicFile> all = Server.GetAllMusicFiles();
+        List<Core.MusicFile> Files = new List<Core.MusicFile>();
+        Server.GetAllAlbum()[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
-	private void Pause()
-	{
-		JSPlayer.Pause();
-	}
+        JSPlayer.Start(Files, 0);
+    }
 
-	private void PlayPause()
-	{
-		JSPlayer.PlayPause();
-	}
+    private void Play()
+    {
+        JSPlayer.Play();
+    }
 
-	private void Stop()
-	{
-		JSPlayer.Stop();
-	}
+    private void Pause()
+    {
+        JSPlayer.Pause();
+    }
 
-	private void Shuffle()
-	{
-		JSPlayer.Shuffle = !JSPlayer.Shuffle;
-	}
+    private void PlayPause()
+    {
+        JSPlayer.PlayPause();
+    }
 
-	private void Mute()
-	{
-		JSPlayer.Mute = !JSPlayer.Mute;
-	}
+    private void Stop()
+    {
+        JSPlayer.Stop();
+    }
 
-	private void Backward()
-	{
-		JSPlayer.Backward();
-	}
+    private void Shuffle()
+    {
+        JSPlayer.Shuffle = !JSPlayer.Shuffle;
+    }
 
-	private void Forward()
-	{
-		JSPlayer.Forward();
-	}
+    private void Mute()
+    {
+        JSPlayer.Mute = !JSPlayer.Mute;
+    }
+
+    private void Backward()
+    {
+        JSPlayer.Backward();
+    }
+
+    private void Forward()
+    {
+        JSPlayer.Forward();
+    }
 }

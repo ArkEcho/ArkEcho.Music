@@ -13,14 +13,22 @@ namespace ArkEcho.Player
         {
         }
 
-        protected override bool initPlayerImpl()
+        public bool InitPlayer(Resources.LoggingDelegate LogDelegate)
         {
             try
             {
-                LibVLCSharp.Shared.Core.Initialize();
-                libvlc = new LibVLC(enableDebugLogs: true);
-                mediaplayer = new MediaPlayer(libvlc);
-                return true;
+                if (LogDelegate != null)
+                {
+                    logDelegate = LogDelegate;
+
+                    LibVLCSharp.Shared.Core.Initialize();
+                    libvlc = new LibVLC(enableDebugLogs: true);
+                    mediaplayer = new MediaPlayer(libvlc);
+
+                    Initialized = true;
+                    return Initialized;
+                }
+                return false;
             }
             catch(Exception ex)
             {

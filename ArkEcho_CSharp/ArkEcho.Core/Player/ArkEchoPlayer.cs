@@ -8,6 +8,10 @@ namespace ArkEcho.Player
     // TODO: JSONBase -> Einstellungen nach Nutzer speichern
     public abstract class ArkEchoPlayer
     {
+        public event Action TitleChanged;
+        public event Action PositionChanged;
+        public event Action PlayingChanged;
+
         public List<MusicFile> ListToPlay { get; private set; } = null;
         public int SongIndex { get; private set; }
 
@@ -19,10 +23,6 @@ namespace ArkEcho.Player
                 return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
             }
         }
-
-        public event Action TitleChanged;
-        public event Action PositionChanged;
-        public event Action PlayingChanged;
 
         /// <summary>
         /// Audio Volume, 0 - 100
@@ -87,22 +87,11 @@ namespace ArkEcho.Player
         public bool Shuffle { get; set; } = false;
         private List<int> shuffledIndexList = null;
 
-        private Resources.LoggingDelegate logDelegate = null;
-        public bool Initialized { get; private set; }
+        protected Resources.LoggingDelegate logDelegate = null;
+        public bool Initialized { get; protected set; }
 
         public ArkEchoPlayer()
         {
-        }
-
-        public bool InitPlayer(Resources.LoggingDelegate LogDelegate)
-        {
-            if (LogDelegate != null)
-            {
-                logDelegate = LogDelegate;
-                Initialized = initPlayerImpl();
-                return Initialized;
-            }
-            return false;
         }
 
         protected bool log(string Text, Resources.LogLevel Level)
@@ -114,6 +103,8 @@ namespace ArkEcho.Player
 
         public void Start(List<MusicFile> MusicFiles, int Index)
         {
+            log($"Start {MusicFiles.Count} Files", Resources.LogLevel.Information);
+
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
             SongIndex = Index;
@@ -193,7 +184,6 @@ namespace ArkEcho.Player
             Forward();
         }
 
-        protected abstract bool initPlayerImpl();
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();
