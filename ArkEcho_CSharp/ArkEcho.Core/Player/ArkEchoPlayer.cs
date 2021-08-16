@@ -11,6 +11,7 @@ namespace ArkEcho.Player
         public List<MusicFile> ListToPlay { get; private set; } = null;
         public int SongIndex { get; private set; }
 
+        // TODO: Andere lösung
         public MusicFile PlayingFile
         {
             get
@@ -86,8 +87,29 @@ namespace ArkEcho.Player
         public bool Shuffle { get; set; } = false;
         private List<int> shuffledIndexList = null;
 
+        private Resources.LoggingDelegate logDelegate = null;
+        public bool Initialized { get; private set; }
+
         public ArkEchoPlayer()
         {
+        }
+
+        public bool InitPlayer(Resources.LoggingDelegate LogDelegate)
+        {
+            if (LogDelegate != null)
+            {
+                logDelegate = LogDelegate;
+                Initialized = initPlayerImpl();
+                return Initialized;
+            }
+            return false;
+        }
+
+        protected bool log(string Text, Resources.LogLevel Level)
+        {
+            if(logDelegate != null)
+                return logDelegate.Invoke(Text, Level);
+            return false;
         }
 
         public void Start(List<MusicFile> MusicFiles, int Index)
@@ -171,6 +193,7 @@ namespace ArkEcho.Player
             Forward();
         }
 
+        protected abstract bool initPlayerImpl();
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();

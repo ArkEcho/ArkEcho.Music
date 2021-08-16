@@ -2,6 +2,7 @@
 using ArkEcho.Core;
 using ArkEcho.Player;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -28,14 +29,20 @@ namespace ArkEcho.App
                 MusicFile file = new MusicFile(pathnew);
                 file.LocalFileName = pathnew;
 
-                player.Init(file);
-                player.Play();
+                player.Start(new List<MusicFile> { file }, 0);
             }
         }
 
         public async Task<bool> Init()
         {
-            await Task.Delay(10);
+            player.InitPlayer(Log);
+            await Task.Delay(5);
+            return true;
+        }
+
+        public bool Log(string Text, Resources.LogLevel Level)
+        {
+            // TODO
             return true;
         }
 

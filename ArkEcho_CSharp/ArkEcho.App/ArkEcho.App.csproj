@@ -84,8 +84,8 @@
     <Compile Include="Source\Activity\MainActivity.cs" />
     <Compile Include="Source\Activity\PlayerActivity.cs" />
     <Compile Include="Source\Activity\SplashActivity.cs" />
-    <Compile Include="Source\AppModel.cs" />
-    <Compile Include="Source\ArkEchoVLCPlayer.cs" />
+    <Compile Include="Source\Model\AppModel.cs" />
+    <Compile Include="Source\Model\ArkEchoVLCPlayer.cs" />
     <Compile Include="Source\Connection\ArkEchoRest.cs" />
     <Compile Include="Source\Connection\ArkEchoWebSocket.cs" />
   </ItemGroup>

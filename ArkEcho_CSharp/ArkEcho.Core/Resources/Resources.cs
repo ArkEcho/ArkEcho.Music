@@ -4,6 +4,14 @@ namespace ArkEcho.Core
 {
     public class Resources
     {
+        public enum LogLevel
+        {
+            Static = 0,
+            Error,
+            Information
+        }
+        public delegate bool LoggingDelegate(string Text, LogLevel Level);
+
         public static readonly List<string> SupportedFileFormats = new List<string>()
         {
             "mp3",
