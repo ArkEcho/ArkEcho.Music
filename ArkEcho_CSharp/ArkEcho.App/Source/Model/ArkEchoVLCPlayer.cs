@@ -53,32 +53,33 @@ namespace ArkEcho.Player
 
         protected override void playImpl()
         {
-            throw new NotImplementedException();
+            mediaplayer.Play();
         }
 
         protected override void pauseImpl()
         {
-            throw new NotImplementedException();
+            mediaplayer.Pause();
         }
 
         protected override void stopImpl()
         {
-            throw new NotImplementedException();
+            mediaplayer.Stop();
         }
 
         protected override void setMuteImpl()
         {
-            throw new NotImplementedException();
+            mediaplayer.Mute = Mute;
         }
 
         protected override void setVolumeImpl()
         {
-            throw new NotImplementedException();
+            mediaplayer.Volume = Volume;
         }
 
         protected override void setPositionImpl(int NewPosition)
         {
-            throw new NotImplementedException();
+            if(mediaplayer.Media != null)
+                mediaplayer.Position = NewPosition / mediaplayer.Media.Duration;
         }
     }
 }
