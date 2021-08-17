@@ -8,15 +8,22 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
-        // GET: api/Control/Stop
-        [HttpGet("Stop")]
+        // GET: api/Control/ReloadMusicLibrary
+        [HttpGet("LoadMusicLibrary")]
+        public void ControlLoadMusicLibrary()
+        {
+            server.LoadMusicLibrary();
+        }
+
+        // GET: api/Control/StopServer
+        [HttpGet("StopServer")]
         public void ControlStopServer()
         {
             server.Stop();
         }
 
-        // GET: api/Control/Restart
-        [HttpGet("Restart")]
+        // GET: api/Control/RestartServer
+        [HttpGet("RestartServer")]
         public void ControlRestartServer()
         {
             server.Restart();

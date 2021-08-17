@@ -12,4 +12,10 @@
     <ProjectReference Include="..\ArkEcho.Server\ArkEcho.Server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Data\MusicWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>
