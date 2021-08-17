@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ArkEcho.Server
 {
@@ -27,8 +28,9 @@ namespace ArkEcho.Server
             services.AddControllers();
 
             // Blazor Page
-            services.AddRazorPages();
+            services.AddRazorPages(options => options.RootDirectory = "/Page/Pages");
             services.AddServerSideBlazor();
+
             services.AddScoped<WeatherForecastService>();
             services.AddScoped<AppModel>();
             services.AddScoped<ArkEcho.Player.ArkEchoJSPlayer>();
