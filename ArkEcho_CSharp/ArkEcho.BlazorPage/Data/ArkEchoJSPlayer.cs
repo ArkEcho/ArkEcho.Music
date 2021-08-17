@@ -5,6 +5,8 @@ namespace ArkEcho.Player
 {
     public class ArkEchoJSPlayer : ArkEchoPlayer
     {
+        private Resources.LoggingDelegate logDelegate = null;
+
         public IJSRuntime JS { get; private set; }
 
         public ArkEchoJSPlayer(IJSRuntime JS) : base()
@@ -43,6 +45,13 @@ namespace ArkEcho.Player
         public void AudioPlayingJS(bool Playing)
         {
             this.Playing = Playing;
+        }
+
+        protected override bool log(string Text, Resources.LogLevel Level)
+        {
+            if (logDelegate != null)
+                return logDelegate.Invoke(Text, Level);
+            return false;
         }
 
         protected override void loadImpl(bool StartOnLoad)
@@ -91,6 +100,5 @@ namespace ArkEcho.Player
         {
             JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewDuration });
         }
-
     }
 }

@@ -8,9 +8,17 @@ namespace ArkEcho.Player
     {
         private LibVLC libvlc = null;
         private MediaPlayer mediaplayer = null;
+        private Resources.LoggingDelegate logDelegate = null;
 
         public ArkEchoVLCPlayer() : base()
         {
+        }
+
+        protected override bool log(string Text, Resources.LogLevel Level)
+        {
+            if (logDelegate != null)
+                return logDelegate.Invoke(Text, Level);
+            return false;
         }
 
         public bool InitPlayer(Resources.LoggingDelegate LogDelegate)

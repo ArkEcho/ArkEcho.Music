@@ -87,18 +87,10 @@ namespace ArkEcho.Player
         public bool Shuffle { get; set; } = false;
         private List<int> shuffledIndexList = null;
 
-        protected Resources.LoggingDelegate logDelegate = null;
         public bool Initialized { get; protected set; }
 
         public ArkEchoPlayer()
         {
-        }
-
-        protected bool log(string Text, Resources.LogLevel Level)
-        {
-            if(logDelegate != null)
-                return logDelegate.Invoke(Text, Level);
-            return false;
         }
 
         public void Start(List<MusicFile> MusicFiles, int Index)
@@ -184,6 +176,7 @@ namespace ArkEcho.Player
             Forward();
         }
 
+        protected abstract bool log(string Text, Resources.LogLevel Level);
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();
