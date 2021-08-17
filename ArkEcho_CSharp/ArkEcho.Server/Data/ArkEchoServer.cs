@@ -1,4 +1,4 @@
-﻿using ArkEcho.BlazorPage;
+﻿using ArkEcho.Server;
 using ArkEcho.Core;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

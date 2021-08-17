@@ -1,5 +1,5 @@
 
-using ArkEcho.BlazorPage.Data;
+using ArkEcho.Server.Data;
 using ArkEcho.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ArkEcho.BlazorPage
+namespace ArkEcho.Server
 {
     public class Startup
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace ArkEcho.BlazorPage.Data
+namespace ArkEcho.Server.Data
 {
     public class WeatherForecast
     {

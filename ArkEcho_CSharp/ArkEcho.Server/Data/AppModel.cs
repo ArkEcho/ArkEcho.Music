@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArkEcho.BlazorPage
+namespace ArkEcho.Server
 {
     public class AppModel
     {

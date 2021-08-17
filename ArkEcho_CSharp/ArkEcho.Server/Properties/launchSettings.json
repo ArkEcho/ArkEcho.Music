@@ -1,6 +1,6 @@
 {
   "profiles": {    
-    "ArkEcho.BlazorPage": {
+    "ArkEcho.Server": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

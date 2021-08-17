@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ArkEcho.BlazorPage.Data
+namespace ArkEcho.Server.Data
 {
     public class WeatherForecastService
     {

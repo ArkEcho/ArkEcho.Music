@@ -2,7 +2,7 @@ using ArkEcho.Server;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace ArkEcho.BlazorPage
+namespace ArkEcho.Server
 {
     public static class Program
     {
