@@ -17,20 +17,9 @@ namespace ArkEcho.App
             player = new Player.ArkEchoVLCPlayer();
         }
 
-        public void PlayPause()
+        public void StartPlayer(List<MusicFile> Files, int Index)
         {
-            if (player.Playing)
-            {
-                player.Pause();
-            }
-            else
-            {
-                string pathnew = @"/storage/0000-0000/Android/Music/Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
-                MusicFile file = new MusicFile(pathnew);
-                file.LocalFileName = pathnew;
-
-                player.Start(new List<MusicFile> { file }, 0);
-            }
+            player.Start(Files, Index);
         }
 
         public async Task<bool> Init()
@@ -47,7 +36,9 @@ namespace ArkEcho.App
         }
 
         private ArkEchoRest rest = null;
-        private ArkEchoVLCPlayer player = null;
+
+        public ArkEchoVLCPlayer player { get; private set; } = null;
+
         private bool disposed;
 
         protected virtual void Dispose(bool disposing)

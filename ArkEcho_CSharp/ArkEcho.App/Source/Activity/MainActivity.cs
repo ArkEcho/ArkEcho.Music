@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using ArkEcho.Core;
 using ArkEcho.App.Connection;
+using System.Collections.Generic;
 
 namespace ArkEcho.App
 {
@@ -63,7 +64,11 @@ namespace ArkEcho.App
 
             //connectAndOpenPlayer(address);
 
-            AppModel.Instance.PlayPause();
+            string pathnew = @"/storage/0000-0000/Android/Music/Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+            MusicFile file = new MusicFile(pathnew);
+            file.LocalFileName = pathnew;
+
+            AppModel.Instance.StartPlayer(new List<MusicFile> { file },0);
         }
         
         //private async void onPbConnectWithQrClicked(object sender, System.EventArgs e)
