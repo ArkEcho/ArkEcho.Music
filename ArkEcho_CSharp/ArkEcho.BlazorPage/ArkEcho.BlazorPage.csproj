@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
-    <ProjectReference Include="..\ArkEcho.Server\ArkEcho.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>
