@@ -15,13 +15,9 @@ namespace ArkEcho.Player
         public List<MusicFile> ListToPlay { get; private set; } = null;
         public int SongIndex { get; private set; }
 
-        // TODO: Andere lösung
-        public MusicFile PlayingFile
+        public MusicFile GetPlayingFile()
         {
-            get
-            {
-                return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
-            }
+            return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
         }
 
         /// <summary>

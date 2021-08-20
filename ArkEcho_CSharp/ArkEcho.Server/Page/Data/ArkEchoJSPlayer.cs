@@ -57,7 +57,7 @@ namespace ArkEcho.Player
         protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
-            MusicFile file = PlayingFile;
+            MusicFile file = GetPlayingFile();
             if (file != null)
             {
                 // ÄNDERN BEI RELEASE

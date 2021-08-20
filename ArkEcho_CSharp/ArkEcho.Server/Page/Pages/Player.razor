@@ -84,7 +84,7 @@
 
     private void updatePlayerInfo()
     {
-        MusicFile file = JSPlayer.PlayingFile;
+        MusicFile file = JSPlayer.GetPlayingFile();
         if (file != null)
             SongInfo = $"{file.Title} - {file.Performer}";
 
