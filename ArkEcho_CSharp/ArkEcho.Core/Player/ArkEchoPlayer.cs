@@ -13,11 +13,12 @@ namespace ArkEcho.Player
         public event Action PlayingChanged;
 
         public List<MusicFile> ListToPlay { get; private set; } = null;
-        public int SongIndex { get; private set; }
+
+        private int songIndex = 0;
 
         public MusicFile GetPlayingFile()
         {
-            return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
+            return ListToPlay != null ? ListToPlay.Count > songIndex && songIndex >= 0 ? ListToPlay[songIndex] : null : null;
         }
 
         /// <summary>
@@ -85,17 +86,15 @@ namespace ArkEcho.Player
 
         public bool Initialized { get; protected set; }
 
-        public ArkEchoPlayer()
-        {
-        }
+        public ArkEchoPlayer() { }
 
         public void Start(List<MusicFile> MusicFiles, int Index)
         {
-            log($"Start {MusicFiles.Count} Files", Resources.LogLevel.Information);
+            logImpl($"Start {MusicFiles.Count} Files", Resources.LogLevel.Information);
 
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
-            SongIndex = Index;
+            songIndex = Index;
 
             shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, ListToPlay.Count - 1).ToList());
 
@@ -137,10 +136,10 @@ namespace ArkEcho.Player
 
         public void Forward()
         {
-            SongIndex++;
-            if (SongIndex == ListToPlay.Count)
+            songIndex++;
+            if (songIndex == ListToPlay.Count)
             {
-                SongIndex = 0;
+                songIndex = 0;
                 load(false);
             }
             else
@@ -150,14 +149,14 @@ namespace ArkEcho.Player
         //private long lastBackwards = 0;
         public void Backward()
         {
-            if (Position > 5 || SongIndex == 0)
+            if (Position > 5 || songIndex == 0)
             {
                 Stop();
                 Play();
             }
             else
             {
-                SongIndex--;
+                songIndex--;
                 load(true);
             }
         }
@@ -172,7 +171,7 @@ namespace ArkEcho.Player
             Forward();
         }
 
-        protected abstract bool log(string Text, Resources.LogLevel Level);
+        protected abstract bool logImpl(string Text, Resources.LogLevel Level);
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();

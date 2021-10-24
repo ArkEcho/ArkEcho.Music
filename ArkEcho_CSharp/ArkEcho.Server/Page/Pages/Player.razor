@@ -2,6 +2,7 @@
 
 @using ArkEcho.Core
 @inject ArkEcho.Server.ArkEchoServer Server
+
 @inject IJSRuntime JS
 @inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
 
@@ -43,7 +44,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Logs</th>
+            <th>Logging</th>
         </tr>
     </thead>
     <tbody>
@@ -67,7 +68,7 @@
 
     protected override Task OnInitializedAsync()
     {
-        JSPlayer.InitPlayer(JS, logSomeShit);
+        JSPlayer.InitPlayer(JS, logOnPage);
         JSPlayer.TitleChanged += () => updatePlayerInfo();
         JSPlayer.PositionChanged += () => updatePlayerInfo();
         JSPlayer.PlayingChanged += () => updatePlayerInfo();
@@ -76,9 +77,9 @@
         return base.OnInitializedAsync();
     }
 
-    private bool logSomeShit(string Text, Resources.LogLevel Level)
+    private bool logOnPage(string Text, Resources.LogLevel Level)
     {
-        Logs.Add($"{Level}\t\t{Text}");
+        Logs.Add($"{Level}\t-\t{Text}");
         return true;
     }
 

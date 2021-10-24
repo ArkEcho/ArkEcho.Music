@@ -9,7 +9,7 @@ namespace ArkEcho.Player
 
         public IJSRuntime JS { get; private set; }
 
-        public ArkEchoJSPlayer(IJSRuntime JS) : base()
+        public ArkEchoJSPlayer() : base()
         {
         }
 
@@ -47,7 +47,7 @@ namespace ArkEcho.Player
             this.Playing = Playing;
         }
 
-        protected override bool log(string Text, Resources.LogLevel Level)
+        protected override bool logImpl(string Text, Resources.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);
@@ -96,9 +96,9 @@ namespace ArkEcho.Player
             JS.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
-        protected override void setPositionImpl(int NewDuration)
+        protected override void setPositionImpl(int NewPosition)
         {
-            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewDuration });
+            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewPosition });
         }
     }
 }
