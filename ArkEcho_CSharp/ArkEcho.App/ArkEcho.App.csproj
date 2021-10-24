@@ -84,7 +84,8 @@
     <Compile Include="Source\Activity\MainActivity.cs" />
     <Compile Include="Source\Activity\PlayerActivity.cs" />
     <Compile Include="Source\Activity\SplashActivity.cs" />
-    <Compile Include="Source\AppModel.cs" />
+    <Compile Include="Source\Model\AppModel.cs" />
+    <Compile Include="Source\Model\ArkEchoVLCPlayer.cs" />
     <Compile Include="Source\Connection\ArkEchoRest.cs" />
     <Compile Include="Source\Connection\ArkEchoWebSocket.cs" />
   </ItemGroup>
@@ -177,10 +178,6 @@
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj">
       <Project>{34dfb0f4-7aea-4458-891c-bbd38e067e5d}</Project>
       <Name>ArkEcho.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ArkEcho.Player\ArkEcho.Player.csproj">
-      <Project>{2a4bb1bc-3129-4f39-8c44-98991ab058bb}</Project>
-      <Name>ArkEcho.Player</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

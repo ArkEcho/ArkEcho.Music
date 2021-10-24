@@ -1,19 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <AssemblyName>ArkEcho.Server</AssemblyName>
     <ApplicationIcon />
-    <StartupObject />
+    <OutputType>Exe</OutputType>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
   </ItemGroup>
 
@@ -21,5 +15,10 @@
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Server\MusicWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
 
 </Project>

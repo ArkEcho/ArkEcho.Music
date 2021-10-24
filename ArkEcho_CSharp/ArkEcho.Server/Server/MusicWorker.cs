@@ -14,17 +14,6 @@ namespace ArkEcho.Server
             DoWork += MusicWorker_DoWork;
         }
 
-        public bool Init(string MusicDirectoryPath)
-        {
-            if (string.IsNullOrEmpty(MusicDirectoryPath))
-                return false;
-
-            this.MusicDirectoryPath = MusicDirectoryPath;
-
-            Initialized = true;
-            return Initialized;
-        }
-
         private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter)
         {
             // TODO: Access Violation on AppData etc.
@@ -41,6 +30,13 @@ namespace ArkEcho.Server
 
         private void MusicWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            string MusicDirectoryPath = (string)e.Argument;
+            if (string.IsNullOrEmpty(MusicDirectoryPath))
+            {
+                e.Result = null;
+                return;
+            }
+
             MusicLibrary library = new MusicLibrary();
 
             foreach (string FilePath in getAllFilesSubSearch(MusicDirectoryPath, Resources.SupportedFileFormats))
@@ -98,10 +94,6 @@ namespace ArkEcho.Server
 
             e.Result = library;
         }
-
-        public string MusicDirectoryPath { get; private set; } = string.Empty;
-
-        public bool Initialized { get; private set; } = false;
 
         bool disposed = false;
 
