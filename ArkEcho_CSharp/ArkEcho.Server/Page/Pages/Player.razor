@@ -50,16 +50,14 @@
     <tbody>
         @foreach (string log in Logs)
         {
-            <tr>
-                <td>@log</td>
-            </tr>
-        }
+<tr>
+    <td>@log</td>
+</tr>}
     </tbody>
 </table>
 
 @code
-{
-    private string SongInfo = string.Empty;
+{ private string SongInfo = string.Empty;
 
     private int musicFileCounter = 0;
     private string searchMusicValue = string.Empty;
@@ -85,9 +83,8 @@
 
     private void updatePlayerInfo()
     {
-        MusicFile file = JSPlayer.GetPlayingFile();
-        if (file != null)
-            SongInfo = $"{file.Title} - {file.Performer}";
+        if (JSPlayer.PlayingFile != null)
+            SongInfo = $"{JSPlayer.PlayingFile.Title} - {JSPlayer.PlayingFile.Performer}";
 
         InvokeAsync(StateHasChanged);
     }
@@ -150,5 +147,4 @@
     private void Forward()
     {
         JSPlayer.Forward();
-    }
-}
+    } }

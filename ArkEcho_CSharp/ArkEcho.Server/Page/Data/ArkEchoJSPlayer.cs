@@ -57,12 +57,11 @@ namespace ArkEcho.Player
         protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
-            MusicFile file = GetPlayingFile();
-            if (file != null)
+            if (PlayingFile != null)
             {
                 // ÄNDERN BEI RELEASE
-                string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";
-                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
+                string source = $"https://localhost:5001/api/Music/MusicFile/{PlayingFile.GUID}";
+                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
             }
         }
 
