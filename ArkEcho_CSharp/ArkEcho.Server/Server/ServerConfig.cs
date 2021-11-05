@@ -11,10 +11,13 @@ namespace ArkEcho.Server
         public ServerConfig() { }
 
         [JsonProperty]
-        public string MusicFolder { get; set; } = string.Empty;
+        public string MusicFolder { get; private set; } = string.Empty;
 
         [JsonProperty]
         public bool Authorization { get; private set; } = false;
+
+        [JsonProperty]
+        public int Port { get; private set; } = 5001;
 
         public bool Load(string Folder)
         {
@@ -37,6 +40,7 @@ namespace ArkEcho.Server
 
         public void WriteOutputToConsole()
         {
+            // TODO: In Basis Klasse -> Richtige Reihenfolge Reflection alle etc.
             string prefix = "\t";
             string middle = ": ";
 
@@ -44,6 +48,7 @@ namespace ArkEcho.Server
             Console.WriteLine("Configuration for ArkEcho.Server:");
             Console.WriteLine($"{prefix}MusicFolder{middle}{MusicFolder}");
             Console.WriteLine($"{prefix}Authorization{middle}{Authorization}");
+            Console.WriteLine($"{prefix}Port{middle}{Port}");
             Console.WriteLine();
         }
     }

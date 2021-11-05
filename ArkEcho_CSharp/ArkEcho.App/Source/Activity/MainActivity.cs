@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 using ArkEcho.Core;
 using ArkEcho.App.Connection;
+using System.Collections.Generic;
+using Android.Content;
+using System.IO;
 
 namespace ArkEcho.App
 {
@@ -63,9 +66,46 @@ namespace ArkEcho.App
 
             //connectAndOpenPlayer(address);
 
-            AppModel.Instance.PlayPause();
+            string sdCardMusicFolder = GetMusicSDFolderPath();
+
+            string pathnew = $"{sdCardMusicFolder}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+            MusicFile file = new MusicFile(pathnew);
+            file.LocalFileName = pathnew;
+
+            AppModel.Instance.StartPlayer(new List<MusicFile> { file },0);
         }
-        
+
+        public static string GetMusicSDFolderPath()
+        {
+            string baseFolderPath = string.Empty;
+            try
+            {
+                Context context = Application.Context;
+                                
+                Java.IO.File[] dirs = context.GetExternalFilesDirs(null);
+
+                foreach (Java.IO.File folder in dirs)
+                {
+                    bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
+                    bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
+
+                    if (IsRemovable && !IsEmulated)
+                    {
+                        baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
+                        baseFolderPath += "Music/";
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetBaseFolderPath caused the follwing exception: {0}", ex);
+            }
+
+            return baseFolderPath;
+
+            
+        }
         //private async void onPbConnectWithQrClicked(object sender, System.EventArgs e)
         //{
         //    setElementsEnabled(false);

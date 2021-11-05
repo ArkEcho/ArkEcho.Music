@@ -1,0 +1,150 @@
+﻿@page "/Player"
+
+@using ArkEcho.Core
+@inject ArkEcho.Server.ArkEchoServer Server
+
+@inject IJSRuntime JS
+@inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
+
+<p>MusicFileCount: @musicFileCounter</p>
+
+<input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
+<button class="btn btn-primary" @onclick="Search">Suche</button>
+
+<br />
+<button class="btn btn-primary" @onclick="Init">Init</button>
+<button class="btn btn-primary" @onclick="Play">Play</button>
+<button class="btn btn-primary" @onclick="Pause">Pause</button>
+<button class="btn btn-primary" @onclick="PlayPause">PlayPause</button>
+<button class="btn btn-primary" @onclick="Stop">Stop</button>
+<button class="btn btn-primary" @onclick="Mute">Mute</button>
+<button class="btn btn-primary" @onclick="Shuffle">Shuffle</button>
+<button class="btn btn-primary" @onclick="Backward">Backward</button>
+<button class="btn btn-primary" @onclick="Forward">Forward</button>
+
+<br />
+<br />
+<label for="volume">Volume:</label>
+<input type="number" id="volume" @bind="JSPlayer.Volume" min="0" max="100">
+
+<br />
+<label for="playing">Playing:</label>
+<input type="checkbox" id="playing" name="playing" checked="@JSPlayer.Playing">
+<br />
+<label for="muted">Mute:</label>
+<input type="checkbox" id="muted" name="muted" checked="@JSPlayer.Mute">
+<br />
+<label for="shuffle">Shuffle:</label>
+<input type="checkbox" id="shuffle" name="shuffle" checked="@JSPlayer.Shuffle">
+<br />
+<p>@SongInfo</p>
+
+<p>@JSPlayer.Position</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Logging</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (string log in Logs)
+        {
+<tr>
+    <td>@log</td>
+</tr>}
+    </tbody>
+</table>
+
+@code
+{ private string SongInfo = string.Empty;
+
+    private int musicFileCounter = 0;
+    private string searchMusicValue = string.Empty;
+
+    private List<string> Logs = new List<string>();
+
+    protected override Task OnInitializedAsync()
+    {
+        JSPlayer.InitPlayer(JS, logOnPage);
+        JSPlayer.TitleChanged += () => updatePlayerInfo();
+        JSPlayer.PositionChanged += () => updatePlayerInfo();
+        JSPlayer.PlayingChanged += () => updatePlayerInfo();
+        musicFileCounter = Server.GetAllMusicFiles().Count;
+        updatePlayerInfo();
+        return base.OnInitializedAsync();
+    }
+
+    private bool logOnPage(string Text, Resources.LogLevel Level)
+    {
+        Logs.Add($"{Level}\t-\t{Text}");
+        return true;
+    }
+
+    private void updatePlayerInfo()
+    {
+        if (JSPlayer.PlayingFile != null)
+            SongInfo = $"{JSPlayer.PlayingFile.Title} - {JSPlayer.PlayingFile.Performer}";
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Search()
+    {
+        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        JSPlayer.Start(Files, 0);
+    }
+
+    private void Init()
+    {
+        //Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
+        //List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+
+        List<Core.MusicFile> all = Server.GetAllMusicFiles();
+        List<Core.MusicFile> Files = new List<Core.MusicFile>();
+        Server.GetAllAlbum()[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+
+        JSPlayer.Start(Files, 0);
+    }
+
+    private void Play()
+    {
+        JSPlayer.Play();
+    }
+
+    private void Pause()
+    {
+        JSPlayer.Pause();
+    }
+
+    private void PlayPause()
+    {
+        JSPlayer.PlayPause();
+    }
+
+    private void Stop()
+    {
+        JSPlayer.Stop();
+    }
+
+    private void Shuffle()
+    {
+        JSPlayer.Shuffle = !JSPlayer.Shuffle;
+    }
+
+    private void Mute()
+    {
+        JSPlayer.Mute = !JSPlayer.Mute;
+    }
+
+    private void Backward()
+    {
+        JSPlayer.Backward();
+    }
+
+    private void Forward()
+    {
+        JSPlayer.Forward();
+    } }

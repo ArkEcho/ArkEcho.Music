@@ -21,7 +21,7 @@ namespace ArkEcho.App
             await AppModel.Instance.Init();
 
             // Bisschen Verzögerung
-            await Task.Delay(1500);
+            await Task.Delay(1000);
 
             StartActivity(typeof(MainActivity));
         }
