@@ -12,13 +12,27 @@ namespace ArkEcho.Player
         public event Action PositionChanged;
         public event Action PlayingChanged;
 
-        public List<MusicFile> ListToPlay { get; private set; } = null;
-        public int SongIndex { get; private set; }
+        public ArkEchoPlayer() { }
 
-        public MusicFile GetPlayingFile()
+        public bool Initialized { get; protected set; }
+
+        public List<MusicFile> ListToPlay { get; private set; } = null;
+
+
+        public MusicFile PlayingFile { get; private set; } = null;
+
+        private int songIndex = 0;
+
+        private void setPlayingFile()
         {
-            return ListToPlay != null ? ListToPlay.Count > SongIndex && SongIndex >= 0 ? ListToPlay[SongIndex] : null : null;
+            if (ListToPlay != null && ListToPlay.Count > songIndex && songIndex >= 0)
+                PlayingFile = Shuffle ? ListToPlay[shuffledIndexList[songIndex]] : ListToPlay[songIndex];
+            else
+                PlayingFile = null;
         }
+
+
+        #region Volume
 
         /// <summary>
         /// Audio Volume, 0 - 100
@@ -34,6 +48,10 @@ namespace ArkEcho.Player
         }
         private int volume = 50;
 
+        #endregion
+
+        #region Mute
+
         /// <summary>
         /// Audio Muted
         /// </summary>
@@ -48,6 +66,10 @@ namespace ArkEcho.Player
         }
         private bool muted = false;
 
+        #endregion
+
+        #region Playing
+
         /// <summary>
         /// Audio Muted
         /// </summary>
@@ -61,6 +83,10 @@ namespace ArkEcho.Player
             }
         }
         private bool playing = false;
+
+        #endregion
+
+        #region Position
 
         /// <summary>
         /// Audio Position of Playback
@@ -79,25 +105,50 @@ namespace ArkEcho.Player
         }
         private int position = 0;
 
-        // TODO: Shuffle
-        public bool Shuffle { get; set; } = false;
+        #endregion
+
+        #region Shuffle
+
+        public bool Shuffle
+        {
+            get { return shuffle; }
+            set
+            {
+                shuffle = value;
+                setShuffleList();
+                if (!shuffle && ListToPlay != null)
+                {
+                    int indexPlaying = ListToPlay.IndexOf(PlayingFile);
+                    if (indexPlaying >= 0 && indexPlaying != songIndex)
+                        songIndex = shuffledIndexList[songIndex];
+                }
+            }
+        }
+        private bool shuffle = false;
+
         private List<int> shuffledIndexList = null;
 
-        public bool Initialized { get; protected set; }
-
-        public ArkEchoPlayer()
+        private void setShuffleList()
         {
+            if (shuffle && ListToPlay != null)
+            {
+                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, ListToPlay.Count - 1).ToList());
+                if (songIndex == shuffledIndexList[songIndex] || songIndex == (shuffledIndexList[songIndex + 1]))
+                    setShuffleList();
+            }
         }
+
+        #endregion
 
         public void Start(List<MusicFile> MusicFiles, int Index)
         {
-            log($"Start {MusicFiles.Count} Files", Resources.LogLevel.Information);
+            logImpl($"Starting {MusicFiles.Count} Files", Resources.LogLevel.Information);
 
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
-            SongIndex = Index;
+            songIndex = Index;
 
-            shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, ListToPlay.Count - 1).ToList());
+            setShuffleList();
 
             load(true);
         }
@@ -106,6 +157,8 @@ namespace ArkEcho.Player
         {
             disposeImpl();
             Position = 0;
+
+            setPlayingFile();
 
             loadImpl(StartOnLoad);
             TitleChanged?.Invoke();
@@ -137,28 +190,54 @@ namespace ArkEcho.Player
 
         public void Forward()
         {
-            SongIndex++;
-            if (SongIndex == ListToPlay.Count)
+            if (ListToPlay != null)
             {
-                SongIndex = 0;
-                load(false);
+                if (songIndex + 1 == ListToPlay.Count)
+                {
+                    songIndex = 0;
+                    if (Shuffle)
+                    {
+                        setShuffleList();
+                        load(true);
+                    }
+                    else
+                        load(false);
+                }
+                else
+                {
+                    songIndex++;
+                    load(true);
+                }
             }
-            else
-                load(true);
         }
 
-        //private long lastBackwards = 0;
         public void Backward()
         {
-            if (Position > 5 || SongIndex == 0)
+            if (ListToPlay != null)
             {
-                Stop();
-                Play();
-            }
-            else
-            {
-                SongIndex--;
-                load(true);
+                if (Position > 5)
+                {
+                    Stop();
+                    Play();
+                }
+                else if (songIndex == 0)
+                {
+                    if (Shuffle)
+                    {
+                        setShuffleList();
+                        load(true);
+                    }
+                    else
+                    {
+                        Stop();
+                        Play();
+                    }
+                }
+                else
+                {
+                    songIndex--;
+                    load(true);
+                }
             }
         }
 
@@ -172,7 +251,7 @@ namespace ArkEcho.Player
             Forward();
         }
 
-        protected abstract bool log(string Text, Resources.LogLevel Level);
+        protected abstract bool logImpl(string Text, Resources.LogLevel Level);
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();

@@ -8,7 +8,11 @@ namespace ArkEcho.Core
     {
         private class ShuffleClass
         {
-            public Guid GuidRND { get; } = new Guid();
+            public ShuffleClass()
+            {
+                GuidRND = Guid.NewGuid();
+            }
+            public Guid GuidRND { get; }
             public object Object { get; set; } = null;
         }
 

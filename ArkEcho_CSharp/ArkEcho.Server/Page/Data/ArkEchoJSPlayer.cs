@@ -9,7 +9,7 @@ namespace ArkEcho.Player
 
         public IJSRuntime JS { get; private set; }
 
-        public ArkEchoJSPlayer(IJSRuntime JS) : base()
+        public ArkEchoJSPlayer() : base()
         {
         }
 
@@ -47,7 +47,7 @@ namespace ArkEcho.Player
             this.Playing = Playing;
         }
 
-        protected override bool log(string Text, Resources.LogLevel Level)
+        protected override bool logImpl(string Text, Resources.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);
@@ -57,12 +57,11 @@ namespace ArkEcho.Player
         protected override void loadImpl(bool StartOnLoad)
         {
             // TODO: Adresse dynamisch
-            MusicFile file = GetPlayingFile();
-            if (file != null)
+            if (PlayingFile != null)
             {
                 // ÄNDERN BEI RELEASE
-                string source = $"https://localhost:5001/api/Music/MusicFile/{file.GUID}";
-                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, file.FileFormat, StartOnLoad, Volume, Mute });
+                string source = $"https://localhost:5001/api/Music/MusicFile/{PlayingFile.GUID}";
+                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
             }
         }
 
@@ -96,9 +95,9 @@ namespace ArkEcho.Player
             JS.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
-        protected override void setPositionImpl(int NewDuration)
+        protected override void setPositionImpl(int NewPosition)
         {
-            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewDuration });
+            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewPosition });
         }
     }
 }
