@@ -1,8 +1,7 @@
-using System;
-
 using Android.App;
 using Android.OS;
 using Android.Widget;
+using System;
 
 namespace ArkEcho.App
 {
@@ -58,6 +57,10 @@ namespace ArkEcho.App
             else if (itemId == Resource.Id.top_menu_help)
             {
                 StartActivity(typeof(HelpActivity));
+            }
+            else if (itemId == Resource.Id.top_menu_syncmusicfiles)
+            {
+                StartActivity(typeof(SyncMusicFilesActivity));
             }
         }
 

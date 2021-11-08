@@ -6,4 +6,7 @@
   <item
       android:id="@+id/top_menu_help"
       android:title="@string/TopMenuHelp"/>
+  <item
+      android:id="@+id/top_menu_syncmusicfiles"
+      android:title="@string/SyncMusicFilesActivityTitle"/>
 </menu>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <TextView
+        android:text="@string/SyncMusicFilesActivityHeader"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="50mm"
+        android:layout_height="10mm"/>
+    <Button
+        android:id="@+id/syncMusicButton"
+        android:text="@string/SyncMusicFilesActivitySyncButton"
+        android:layout_width="50mm"
+        android:layout_height="10mm"/>
+    <TextView
+        android:text="@string/SyncMusicFilesActivityLog"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="50mm"
+        android:layout_height="10mm"/>
+    <ListView
+        android:layout_width="50mm"
+        android:layout_height="60mm"/>
+</LinearLayout>

@@ -1,18 +1,14 @@
 using Android.App;
 using Android.OS;
 using Android.Widget;
-
-using System.Threading.Tasks;
 using System;
-using ArkEcho.App.Connection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
     [Activity]
     public class PlayerActivity : ExtendedActivity
     {
-        bool backPressed = false;
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -40,8 +36,6 @@ namespace ArkEcho.App
 
         public override async void OnBackPressed()
         {
-            backPressed = true;
-
             await Task.Delay(10);
 
             Finish();

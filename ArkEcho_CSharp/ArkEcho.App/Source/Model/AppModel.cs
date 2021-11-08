@@ -1,8 +1,9 @@
-﻿using ArkEcho.App.Connection;
+﻿using Android.App;
+using Android.Content;
+using ArkEcho.App.Connection;
 using ArkEcho.Core;
 using ArkEcho.Player;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -11,20 +12,19 @@ namespace ArkEcho.App
     {
         public static AppModel Instance { get; } = new AppModel();
 
+        private ArkEchoRest rest = null;
+
+        public ArkEchoVLCPlayer Player { get; private set; } = null;
+
         private AppModel()
         {
             rest = new Connection.ArkEchoRest();
-            player = new Player.ArkEchoVLCPlayer();
-        }
-
-        public void StartPlayer(List<MusicFile> Files, int Index)
-        {
-            player.Start(Files, Index);
+            Player = new Player.ArkEchoVLCPlayer();
         }
 
         public async Task<bool> Init()
         {
-            player.InitPlayer(Log);
+            Player.InitPlayer(Log);
             await Task.Delay(5);
             return true;
         }
@@ -35,9 +35,35 @@ namespace ArkEcho.App
             return true;
         }
 
-        private ArkEchoRest rest = null;
+        public static string GetMusicSDFolderPath()
+        {
+            string baseFolderPath = string.Empty;
+            try
+            {
+                Context context = Application.Context;
 
-        public ArkEchoVLCPlayer player { get; private set; } = null;
+                Java.IO.File[] dirs = context.GetExternalFilesDirs(null);
+
+                foreach (Java.IO.File folder in dirs)
+                {
+                    bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
+                    bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
+
+                    if (IsRemovable && !IsEmulated)
+                    {
+                        baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
+                        baseFolderPath += "Music/";
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine("GetBaseFolderPath caused the follwing exception: {0}", ex);
+            }
+
+            return baseFolderPath;
+        }
 
         private bool disposed;
 

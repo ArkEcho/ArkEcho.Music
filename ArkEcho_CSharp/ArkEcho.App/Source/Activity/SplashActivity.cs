@@ -17,13 +17,14 @@ namespace ArkEcho.App
         protected override async void OnResume()
         {
             base.OnResume();
-            
+
             await AppModel.Instance.Init();
 
             // Bisschen Verzögerung
             await Task.Delay(1000);
 
-            StartActivity(typeof(MainActivity));
+            StartActivity(typeof(PlayerActivity));
+            Finish();
         }
     }
 }

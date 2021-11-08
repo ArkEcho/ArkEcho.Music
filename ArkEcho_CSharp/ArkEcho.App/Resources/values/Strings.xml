@@ -20,11 +20,17 @@
 
   <!-- Impressum Activity -->
   <string name="ImpressumActivityTitle">Impressum</string>
-  <string name="ImpressumActivityTextViewHeader">Impressum:</string>
+  <string name="ImpressumActivityHeader">Impressum:</string>
+  
+  <!-- SyncMusicFiles Activity -->
+  <string name="SyncMusicFilesActivityTitle">Synchronisieren</string>
+  <string name="SyncMusicFilesActivityHeader">Musik synchronisieren:</string>
+  <string name="SyncMusicFilesActivitySyncButton">Synchronisieren</string>
+  <string name="SyncMusicFilesActivityLog">Log:</string>
 
   <!-- Help Activity -->
   <string name="HelpActivityTitle">Hilfe</string>
-  <string name="HelpActivityTextViewHeader">ArkEcho-Hilfe:</string>
+  <string name="HelpActivityHeader">ArkEcho-Hilfe:</string>
 
   <!-- Qr Scanner -->
   <string name="QrScannerTextTop">Qr-Code Scanner</string>
