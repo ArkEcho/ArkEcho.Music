@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using RestSharp;
+using System.Net;
 using System.Threading.Tasks;
-using ArkEcho.Core;
-using RestSharp;
 
 namespace ArkEcho.App.Connection
 {
@@ -13,16 +10,16 @@ namespace ArkEcho.App.Connection
 
         public ArkEchoRest()
         {
-            client = new RestClient("https://192.168.178.21:5001/api");
+            client = new RestClient("https://192.168.178.20:5001/api");
         }
 
-        public async Task<IRestResponse> getMusicFileInfo()
+        public async Task<IRestResponse> GetMusicFileInfo()
         {
-            RestRequest request = new RestRequest("/Music/MusicFile", Method.GET);
+            RestRequest request = new RestRequest("Music/MusicFile");
 
             // execute the request
             IRestResponse response = null;
-            await Task.Run(()=> response = client.Execute(request));
+            response = client.Get(request);
             return response;
         }
     }

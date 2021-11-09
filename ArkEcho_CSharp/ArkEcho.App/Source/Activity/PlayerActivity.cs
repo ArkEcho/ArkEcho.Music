@@ -1,7 +1,9 @@
 using Android.App;
 using Android.OS;
 using Android.Widget;
+using ArkEcho.Core;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -32,6 +34,11 @@ namespace ArkEcho.App
 
         private void onPbPlay_PauseClicked(object sender, EventArgs e)
         {
+            string pathnew = $"{ArkEcho.App.AppModel.GetMusicSDFolderPath()}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+            MusicFile file = new MusicFile(pathnew);
+            file.LocalFileName = pathnew;
+
+            AppModel.Instance.Player.Start(new List<MusicFile> { file }, 0);
         }
 
         public override async void OnBackPressed()

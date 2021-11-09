@@ -1,5 +1,6 @@
 using Android.App;
 using Android.OS;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -11,6 +12,13 @@ namespace ArkEcho.App
         {
             base.OnCreate(savedInstanceState);
 
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+
+#if DEBUG
+            ServicePointManager.ServerCertificateValidationCallback +=  // Disable https Error Fails -> Trust Failure
+                    (sender, certificate, chain, sslPolicyErrors) => true;
+#endif
+
             SetContentView(Resource.Layout.Splash);
         }
 
@@ -21,7 +29,7 @@ namespace ArkEcho.App
             await AppModel.Instance.Init();
 
             // Bisschen Verzögerung
-            await Task.Delay(1000);
+            await Task.Delay(500);
 
             StartActivity(typeof(PlayerActivity));
             Finish();

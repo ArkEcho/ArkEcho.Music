@@ -137,70 +137,73 @@ namespace ArkEcho.App
 			public const int imageViewCoverArt = 2130903042;
 			
 			// aapt resource value: 0x7F030003
-			public const int pbActionBarBack = 2130903043;
+			public const int logListView = 2130903043;
 			
 			// aapt resource value: 0x7F030004
-			public const int pbActionBarMenu = 2130903044;
+			public const int pbActionBarBack = 2130903044;
 			
 			// aapt resource value: 0x7F030005
-			public const int pbBackward = 2130903045;
+			public const int pbActionBarMenu = 2130903045;
 			
 			// aapt resource value: 0x7F030006
-			public const int pbConnectManually = 2130903046;
+			public const int pbBackward = 2130903046;
 			
 			// aapt resource value: 0x7F030007
-			public const int pbConnectWithQr = 2130903047;
+			public const int pbConnectManually = 2130903047;
 			
 			// aapt resource value: 0x7F030008
-			public const int pbForward = 2130903048;
+			public const int pbConnectWithQr = 2130903048;
 			
 			// aapt resource value: 0x7F030009
-			public const int pbPlay_Pause = 2130903049;
+			public const int pbForward = 2130903049;
 			
 			// aapt resource value: 0x7F03000A
-			public const int space1 = 2130903050;
+			public const int pbPlay_Pause = 2130903050;
 			
 			// aapt resource value: 0x7F03000B
-			public const int space2 = 2130903051;
+			public const int space1 = 2130903051;
 			
 			// aapt resource value: 0x7F03000C
-			public const int space3 = 2130903052;
+			public const int space2 = 2130903052;
 			
 			// aapt resource value: 0x7F03000D
-			public const int space4 = 2130903053;
+			public const int space3 = 2130903053;
 			
 			// aapt resource value: 0x7F03000E
-			public const int syncMusicButton = 2130903054;
+			public const int space4 = 2130903054;
 			
 			// aapt resource value: 0x7F03000F
-			public const int teAddress = 2130903055;
+			public const int syncMusicButton = 2130903055;
 			
 			// aapt resource value: 0x7F030010
-			public const int top_menu_help = 2130903056;
+			public const int teAddress = 2130903056;
 			
 			// aapt resource value: 0x7F030011
-			public const int top_menu_impressum = 2130903057;
+			public const int top_menu_help = 2130903057;
 			
 			// aapt resource value: 0x7F030012
-			public const int top_menu_syncmusicfiles = 2130903058;
+			public const int top_menu_impressum = 2130903058;
 			
 			// aapt resource value: 0x7F030013
-			public const int tvAddress = 2130903059;
+			public const int top_menu_syncmusicfiles = 2130903059;
 			
 			// aapt resource value: 0x7F030014
-			public const int tvHeader = 2130903060;
+			public const int tvAddress = 2130903060;
 			
 			// aapt resource value: 0x7F030015
-			public const int tvHilfe = 2130903061;
+			public const int tvHeader = 2130903061;
 			
 			// aapt resource value: 0x7F030016
-			public const int tvInterpretPlayer = 2130903062;
+			public const int tvHilfe = 2130903062;
 			
 			// aapt resource value: 0x7F030017
-			public const int tvTitlePlayer = 2130903063;
+			public const int tvInterpretPlayer = 2130903063;
 			
 			// aapt resource value: 0x7F030018
-			public const int twActionBarTitle = 2130903064;
+			public const int tvTitlePlayer = 2130903064;
+			
+			// aapt resource value: 0x7F030019
+			public const int twActionBarTitle = 2130903065;
 			
 			static Id()
 			{

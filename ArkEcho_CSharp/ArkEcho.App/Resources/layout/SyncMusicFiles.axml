@@ -21,6 +21,7 @@
         android:layout_width="50mm"
         android:layout_height="10mm"/>
     <ListView
+        android:id="@+id/logListView"
         android:layout_width="50mm"
         android:layout_height="60mm"/>
 </LinearLayout>
