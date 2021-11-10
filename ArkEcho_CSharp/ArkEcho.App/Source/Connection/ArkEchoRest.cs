@@ -1,5 +1,4 @@
 ﻿using RestSharp;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App.Connection
@@ -10,7 +9,11 @@ namespace ArkEcho.App.Connection
 
         public ArkEchoRest()
         {
-            client = new RestClient("https://192.168.178.20:5001/api");
+#if DEBUG
+            client = new RestClient("https://192.168.178.21:5001/api");
+#else
+            client = new RestClient("https://arkecho.de/api");
+#endif
         }
 
         public async Task<IRestResponse> GetMusicFileInfo()
