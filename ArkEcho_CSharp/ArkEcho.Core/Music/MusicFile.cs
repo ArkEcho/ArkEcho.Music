@@ -58,7 +58,7 @@ namespace ArkEcho.Core
 
         public string GetFullFilePath()
         {
-            return $"{Folder}\\{FileName}";
+            return $"{Folder}/{FileName}";
         }
     }
 }
