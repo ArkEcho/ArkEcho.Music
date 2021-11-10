@@ -29,11 +29,10 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
-        [JsonProperty]
-        public string RemoteFolder { get; set; } = string.Empty;
+        public string Folder { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string RemoteFileName { get; set; } = string.Empty;
+        public string FileName { get; set; } = string.Empty;
 
         [JsonProperty]
         public string FileFormat { get; set; } = string.Empty;
@@ -47,8 +46,8 @@ namespace ArkEcho.Core
         {
             FileInfo info = new FileInfo(FilePath);
 
-            this.RemoteFolder = info.DirectoryName;
-            this.RemoteFileName = info.Name;
+            this.Folder = info.DirectoryName;
+            this.FileName = info.Name;
 
             string extensionCleared = info.Extension.Substring(1);
             if (Resources.SupportedFileFormats.Contains(extensionCleared))
@@ -59,7 +58,7 @@ namespace ArkEcho.Core
 
         public string GetFullFilePath()
         {
-            return $"{RemoteFolder}\\{RemoteFileName}";
+            return $"{Folder}\\{FileName}";
         }
     }
 }

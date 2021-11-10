@@ -24,7 +24,7 @@ namespace ArkEcho.Core
 
         protected class JsonProperty : Attribute { }
 
-        public string FileName { get; private set; } = string.Empty;
+        private string fileName = string.Empty;
 
         protected JsonBase()
         {
@@ -32,12 +32,12 @@ namespace ArkEcho.Core
 
         protected JsonBase(string FileName)
         {
-            this.FileName = FileName;
+            this.fileName = FileName;
         }
 
         public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
-            string filepath = $"{Folder}\\{FileName}";
+            string filepath = $"{Folder}\\{fileName}";
 
             Console.WriteLine($"Loading Config File {filepath}");
 
@@ -56,7 +56,7 @@ namespace ArkEcho.Core
 
         public bool SaveToFile(string Folder)
         {
-            string filepath = $"{Folder}\\{FileName}";
+            string filepath = $"{Folder}\\{fileName}";
 
             try
             {
