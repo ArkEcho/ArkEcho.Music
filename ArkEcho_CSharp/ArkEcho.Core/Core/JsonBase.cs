@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -23,6 +24,36 @@ namespace ArkEcho.Core
 
         protected class JsonProperty : Attribute { }
 
+        public string FileName { get; private set; } = string.Empty;
+
+        protected JsonBase()
+        {
+        }
+
+        protected JsonBase(string FileName)
+        {
+            this.FileName = FileName;
+        }
+
+        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        {
+            string filepath = $"{Folder}\\{FileName}";
+
+            Console.WriteLine($"Loading Config File {filepath}");
+
+            string content = string.Empty;
+            if (File.Exists(filepath))
+                content = File.ReadAllText(filepath);
+
+            // Load Props from JSON
+            bool foundCorrectExistingFile = LoadPropertiesFromJsonString(content);
+
+            // Write back to add missing Params
+            File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+
+            return foundCorrectExistingFile;
+        }
+
         protected string GetJsonAsString()
         {
             JObject data = new JObject();
@@ -36,7 +67,7 @@ namespace ArkEcho.Core
 
             if (!string.IsNullOrEmpty(Json))
             {
-                Json = Json.Replace("\\", "\\\\");
+                Json = Json.Replace("\\", "\\\\"); // TODO: Hack?
                 try
                 {
                     data = JObject.Parse(Json);

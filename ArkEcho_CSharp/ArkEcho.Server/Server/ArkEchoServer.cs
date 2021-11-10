@@ -1,5 +1,4 @@
-﻿using ArkEcho.Server;
-using ArkEcho.Core;
+﻿using ArkEcho.Core;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -11,6 +10,8 @@ namespace ArkEcho.Server
 {
     public sealed class ArkEchoServer : IDisposable
     {
+        private const string serverConfigFileName = "Config.json";
+
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
         public ServerConfig Config { get; private set; } = null;
@@ -33,8 +34,10 @@ namespace ArkEcho.Server
 
             Console.WriteLine("Initializing ArkEcho.Server");
 
-            Config = new ServerConfig();
-            if (!Config.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            Config = new ServerConfig(serverConfigFileName);
+            if (!Config.LoadFromFile(executingLocation, true))
             {
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;
