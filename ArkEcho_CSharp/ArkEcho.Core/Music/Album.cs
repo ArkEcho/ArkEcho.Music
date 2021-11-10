@@ -6,10 +6,10 @@ namespace ArkEcho.Core
     public class Album : JsonBase
     {
         [JsonProperty]
-        public Guid GUID { get; private set; } = Guid.NewGuid();
+        public Guid GUID { get; set; } = Guid.NewGuid();
 
         [JsonProperty]
-        public List<Guid> MusicFiles { get; private set; } = new List<Guid>();
+        public List<Guid> MusicFiles { get; set; } = new List<Guid>();
 
         [JsonProperty]
         public Guid AlbumArtist { get; set; } = Guid.Empty;

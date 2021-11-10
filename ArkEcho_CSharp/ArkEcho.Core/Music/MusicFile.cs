@@ -6,7 +6,7 @@ namespace ArkEcho.Core
     public class MusicFile : JsonBase
     {
         [JsonProperty]
-        public Guid GUID { get; } = Guid.NewGuid();
+        public Guid GUID { get; set; } = Guid.NewGuid();
 
         [JsonProperty]
         public Guid Album { get; set; } = Guid.Empty;
@@ -30,13 +30,18 @@ namespace ArkEcho.Core
         public uint Year { get; set; } = 0;
 
         [JsonProperty]
-        public string RemoteFolder { get; } = string.Empty;
+        public string RemoteFolder { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string RemoteFileName { get; } = string.Empty;
+        public string RemoteFileName { get; set; } = string.Empty;
 
         [JsonProperty]
-        public string FileFormat { get; } = string.Empty;
+        public string FileFormat { get; set; } = string.Empty;
+
+        /// <summary>
+        /// ONLY FOR SERIALIZATION
+        /// </summary>
+        public MusicFile() : base() { }
 
         public MusicFile(string FilePath) : base()
         {

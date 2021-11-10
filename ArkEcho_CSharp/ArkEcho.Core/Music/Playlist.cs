@@ -6,13 +6,13 @@ namespace ArkEcho.Core
     public class Playlist : JsonBase
     {
         [JsonProperty]
-        public string Name { get; private set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty]
-        public Guid GUID { get; private set; } = new Guid();
+        public Guid GUID { get; set; } = new Guid();
 
         [JsonProperty]
-        public SortedSet<Guid> MusicFiles { get; private set; } = new SortedSet<Guid>();
+        public SortedSet<Guid> MusicFiles { get; set; } = new SortedSet<Guid>();
 
         public Playlist(string Name) : base()
         {

@@ -7,15 +7,15 @@ namespace ArkEcho.Core
         public MusicLibrary() : base() { }
 
         [JsonProperty]
-        public List<AlbumArtist> AlbumArtists { get; private set; } = new List<AlbumArtist>();
+        public List<AlbumArtist> AlbumArtists { get; set; } = new List<AlbumArtist>();
 
         [JsonProperty]
-        public List<Album> Album { get; private set; } = new List<Album>();
+        public List<Album> Album { get; set; } = new List<Album>();
 
         [JsonProperty]
-        public List<MusicFile> MusicFiles { get; private set; } = new List<MusicFile>();
+        public List<MusicFile> MusicFiles { get; set; } = new List<MusicFile>();
 
         [JsonProperty]
-        public List<Playlist> Playlists { get; private set; } = new List<Playlist>();
+        public List<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }
