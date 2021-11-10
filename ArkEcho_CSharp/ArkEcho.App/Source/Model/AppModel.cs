@@ -53,13 +53,14 @@ namespace ArkEcho.App
                     {
                         baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
                         baseFolderPath += "Music/";
+                        break;
                     }
                 }
             }
 
             catch (Exception ex)
             {
-                Console.WriteLine("GetBaseFolderPath caused the follwing exception: {0}", ex);
+                Console.WriteLine("GetBaseFolderPath caused the following exception: {0}", ex);
             }
 
             return baseFolderPath;

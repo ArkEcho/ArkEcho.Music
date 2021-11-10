@@ -1,10 +1,12 @@
-﻿using Android.App;
+﻿using Android;
+using Android.App;
 using Android.OS;
 using Android.Widget;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
+
 using System;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace ArkEcho.App
 {
@@ -38,16 +40,32 @@ namespace ArkEcho.App
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
+            logInListView("Loading Music Library from Remote Server", Core.Resources.LogLevel.Information);
+
             string sdCardMusicFolder = ArkEcho.App.AppModel.GetMusicSDFolderPath();
 
-            RestSharp.RestResponse response = null;
-            await Task.Run(() => response = (RestSharp.RestResponse)arkEchoRest.GetMusicFileInfo().Result);
-            logInListView("", Core.Resources.LogLevel.Error);
+            string libraryString = string.Empty;
+
+            libraryString = await arkEchoRest.GetMusicLibrary();
+
+            //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
+            //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
+
+            //string test = File.ReadAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt");
+            //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", libraryString);
+
+            // TODO: Cant load from String -> Wrong Escape
+            MusicLibrary lib = new MusicLibrary();
+            if (!string.IsNullOrEmpty(libraryString))
+            {
+                if (lib.LoadFromJsonString(libraryString))
+                    logInListView(lib.MusicFiles.Count.ToString(), Core.Resources.LogLevel.Information);
+            }
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
         {
-            adapter.Add(text);
+            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
             return true;
         }
