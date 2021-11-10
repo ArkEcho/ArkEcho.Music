@@ -148,7 +148,7 @@ namespace ArkEcho.Core
 
         private bool isAllowedCollection(PropertyInfo Info)
         {
-            // TODO bessere Lösung?
+            // TODO bessere Lösung -> SortedSet on Playlist?
             return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase)
                 && Info.PropertyType.GenericTypeArguments.Length == 1;
         }

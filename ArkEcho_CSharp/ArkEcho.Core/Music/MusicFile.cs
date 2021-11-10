@@ -38,9 +38,7 @@ namespace ArkEcho.Core
         [JsonProperty]
         public string FileFormat { get; } = string.Empty;
 
-        public string LocalFileName { get; set; } = string.Empty;
-
-        public MusicFile(string FilePath)
+        public MusicFile(string FilePath) : base()
         {
             FileInfo info = new FileInfo(FilePath);
 
