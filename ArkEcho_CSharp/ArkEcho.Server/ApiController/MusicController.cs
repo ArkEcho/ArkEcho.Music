@@ -14,9 +14,9 @@ namespace ArkEcho.Server
 
         // GET: api/Music/Library
         [HttpGet("Library")]
-        public string GetMusicLibrary()
+        public ObjectResult GetMusicLibrary()
         {
-            return server.GetMusicLibraryString();
+            return Ok(server.GetMusicLibraryString());
         }
 
         // GET: api/Music/MusicFile/[GUID]

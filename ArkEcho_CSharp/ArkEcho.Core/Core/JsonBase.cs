@@ -74,7 +74,7 @@ namespace ArkEcho.Core
         {
             JObject data = new JObject();
             handleProperties(data, Mode.PropToJson);
-            return data.ToString().Replace("\\\\", "\\");
+            return data.ToString();
         }
 
         public bool LoadFromJsonString(string Json)
@@ -83,7 +83,6 @@ namespace ArkEcho.Core
 
             if (!string.IsNullOrEmpty(Json))
             {
-                Json = Json.Replace("\\", "\\\\"); // TODO: Hack?
                 try
                 {
                     data = JObject.Parse(Json);
