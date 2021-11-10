@@ -48,7 +48,10 @@ namespace ArkEcho.Server
                 return false;
             }
             else
-                Config.WriteOutputToConsole();
+            {
+                Console.WriteLine("Configuration for ArkEcho.Server:");
+                Console.WriteLine(Config.GetJsonAsString());
+            }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
             LoadMusicLibrary();
