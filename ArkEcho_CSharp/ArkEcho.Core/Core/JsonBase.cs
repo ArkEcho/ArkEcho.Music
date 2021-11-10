@@ -24,7 +24,7 @@ namespace ArkEcho.Core
 
         protected class JsonProperty : Attribute { }
 
-        public string FileName { get; private set; } = string.Empty;
+        private string fileName = string.Empty;
 
         protected JsonBase()
         {
@@ -32,12 +32,12 @@ namespace ArkEcho.Core
 
         protected JsonBase(string FileName)
         {
-            this.FileName = FileName;
+            this.fileName = FileName;
         }
 
         public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
-            string filepath = $"{Folder}\\{FileName}";
+            string filepath = $"{Folder}\\{fileName}";
 
             Console.WriteLine($"Loading Config File {filepath}");
 
@@ -46,7 +46,7 @@ namespace ArkEcho.Core
                 content = File.ReadAllText(filepath);
 
             // Load Props from JSON
-            bool foundCorrectExistingFile = SetFromJsonString(content);
+            bool foundCorrectExistingFile = LoadFromJsonString(content);
 
             if (RewriteAddMissingParams)
                 SaveToFile(Folder);
@@ -56,11 +56,11 @@ namespace ArkEcho.Core
 
         public bool SaveToFile(string Folder)
         {
-            string filepath = $"{Folder}\\{FileName}";
+            string filepath = $"{Folder}\\{fileName}";
 
             try
             {
-                File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -70,14 +70,14 @@ namespace ArkEcho.Core
             return true;
         }
 
-        public string GetJsonAsString()
+        public string SaveToJsonString()
         {
             JObject data = new JObject();
             handleProperties(data, Mode.PropToJson);
             return data.ToString().Replace("\\\\", "\\");
         }
 
-        public bool SetFromJsonString(string Json)
+        public bool LoadFromJsonString(string Json)
         {
             JObject data = null;
 
@@ -148,7 +148,7 @@ namespace ArkEcho.Core
 
         private bool isAllowedCollection(PropertyInfo Info)
         {
-            // TODO bessere Lösung?
+            // TODO bessere Lösung -> SortedSet on Playlist?
             return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase)
                 && Info.PropertyType.GenericTypeArguments.Length == 1;
         }
