@@ -1,7 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -13,32 +12,18 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
-        // GET: api/Music/MusicFile
-        [HttpGet("MusicFile")]
-        public IEnumerable<MusicFile> GetAllMusicFiles()
+        // GET: api/Music/Library
+        [HttpGet("Library")]
+        public string GetMusicLibrary()
         {
-            return server.GetAllMusicFiles();
-        }
-
-        // GET: api/Music/AlbumArtist
-        [HttpGet("AlbumArtist")]
-        public IEnumerable<AlbumArtist> GetAllAlbumArtist()
-        {
-            return server.GetAllAlbumArtists();
-        }
-
-        // GET: api/Music/Album
-        [HttpGet("Album")]
-        public IEnumerable<Album> GetAllAlbum()
-        {
-            return server.GetAllAlbum();
+            return server.GetMusicLibraryString();
         }
 
         // GET: api/Music/MusicFile/[GUID]
         [HttpGet("MusicFile/{id}")]
         public async Task<FileContentResult> GetMusicFile(Guid id)
         {
-            MusicFile musicFile = server.GetAllMusicFiles().Find(x => x.GUID == id);
+            MusicFile musicFile = server.GetMusicFile(id);
 
             if (musicFile == null)
                 return new FileContentResult(null, string.Empty);

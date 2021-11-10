@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -17,6 +16,7 @@ namespace ArkEcho.Server
         public ServerConfig Config { get; private set; } = null;
 
         private MusicLibrary library = null;
+
         private MusicWorker musicWorker = null;
 
         public IWebHost Host { get; set; }
@@ -50,7 +50,7 @@ namespace ArkEcho.Server
             else
             {
                 Console.WriteLine("Configuration for ArkEcho.Server:");
-                Console.WriteLine(Config.GetJsonAsString());
+                Console.WriteLine(Config.SaveToJsonString());
             }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
@@ -88,19 +88,14 @@ namespace ArkEcho.Server
             }
         }
 
-        public List<MusicFile> GetAllMusicFiles()
+        public string GetMusicLibraryString()
         {
-            return library.MusicFiles;
+            return library.SaveToJsonString();
         }
 
-        public List<AlbumArtist> GetAllAlbumArtists()
+        public MusicFile GetMusicFile(Guid guid)
         {
-            return library.AlbumArtists;
-        }
-
-        public List<Album> GetAllAlbum()
-        {
-            return library.Album;
+            return library.MusicFiles.Find(x => x.GUID == guid);
         }
 
         public void Stop()
