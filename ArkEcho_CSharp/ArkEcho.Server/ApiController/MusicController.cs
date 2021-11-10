@@ -15,7 +15,7 @@ namespace ArkEcho.Server
 
         // GET: api/Music/MusicFile
         [HttpGet("MusicFile")]
-        public IEnumerable<MusicFile> GeAlltMusicFiles()
+        public IEnumerable<MusicFile> GetAllMusicFiles()
         {
             return server.GetAllMusicFiles();
         }
