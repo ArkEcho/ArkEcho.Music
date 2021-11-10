@@ -46,7 +46,7 @@ namespace ArkEcho.Core
                 content = File.ReadAllText(filepath);
 
             // Load Props from JSON
-            bool foundCorrectExistingFile = SetFromJsonString(content);
+            bool foundCorrectExistingFile = LoadFromJsonString(content);
 
             if (RewriteAddMissingParams)
                 SaveToFile(Folder);
@@ -60,7 +60,7 @@ namespace ArkEcho.Core
 
             try
             {
-                File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -70,14 +70,14 @@ namespace ArkEcho.Core
             return true;
         }
 
-        public string GetJsonAsString()
+        public string SaveToJsonString()
         {
             JObject data = new JObject();
             handleProperties(data, Mode.PropToJson);
             return data.ToString().Replace("\\\\", "\\");
         }
 
-        public bool SetFromJsonString(string Json)
+        public bool LoadFromJsonString(string Json)
         {
             JObject data = null;
 
