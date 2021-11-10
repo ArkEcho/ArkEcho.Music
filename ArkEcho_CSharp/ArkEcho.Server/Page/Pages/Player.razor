@@ -5,6 +5,7 @@
 
 @inject IJSRuntime JS
 @inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
+@inject AppModel Model
 
 <p>MusicFileCount: @musicFileCounter</p>
 
@@ -66,11 +67,13 @@
 
     protected override Task OnInitializedAsync()
     {
+        Model.Initialize();
+
         JSPlayer.InitPlayer(JS, logOnPage);
         JSPlayer.TitleChanged += () => updatePlayerInfo();
         JSPlayer.PositionChanged += () => updatePlayerInfo();
         JSPlayer.PlayingChanged += () => updatePlayerInfo();
-        musicFileCounter = Server.GetAllMusicFiles().Count;
+        musicFileCounter = Model.Library.MusicFiles.Count;
         updatePlayerInfo();
         return base.OnInitializedAsync();
     }
@@ -91,7 +94,7 @@
 
     private void Search()
     {
-        Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+        Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
         List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
         JSPlayer.Start(Files, 0);
@@ -102,9 +105,9 @@
         //Core.MusicFile file = Server.GetAllMusicFiles().Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
         //List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
 
-        List<Core.MusicFile> all = Server.GetAllMusicFiles();
+        List<Core.MusicFile> all = Model.Library.MusicFiles;
         List<Core.MusicFile> Files = new List<Core.MusicFile>();
-        Server.GetAllAlbum()[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+        Model.Library.Album[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
         JSPlayer.Start(Files, 0);
     }

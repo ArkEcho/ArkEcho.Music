@@ -2,17 +2,20 @@
 
 namespace ArkEcho.Core
 {
-    // TODO: Alles Serializable
-    public class MusicLibrary
+    public class MusicLibrary : JsonBase
     {
-        public MusicLibrary() { }
+        public MusicLibrary() : base() { }
 
-        public List<AlbumArtist> AlbumArtists { get; private set; } = new List<AlbumArtist>();
+        [JsonProperty]
+        public List<AlbumArtist> AlbumArtists { get; set; } = new List<AlbumArtist>();
 
-        public List<Album> Album { get; private set; } = new List<Album>();
+        [JsonProperty]
+        public List<Album> Album { get; set; } = new List<Album>();
 
-        public List<MusicFile> MusicFiles { get; private set; } = new List<MusicFile>();
+        [JsonProperty]
+        public List<MusicFile> MusicFiles { get; set; } = new List<MusicFile>();
 
-        public List<Playlist> Playlists { get; private set; } = new List<Playlist>();
+        [JsonProperty]
+        public List<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }

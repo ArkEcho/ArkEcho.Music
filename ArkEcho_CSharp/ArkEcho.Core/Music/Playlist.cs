@@ -3,15 +3,18 @@ using System.Collections.Generic;
 
 namespace ArkEcho.Core
 {
-    public class Playlist
+    public class Playlist : JsonBase
     {
-        public string Name { get; private set; } = string.Empty;
+        [JsonProperty]
+        public string Name { get; set; } = string.Empty;
 
-        public Guid GUID { get; private set; } = new Guid();
+        [JsonProperty]
+        public Guid GUID { get; set; } = new Guid();
 
-        public SortedSet<Guid> MusicFiles { get; private set; } = new SortedSet<Guid>();
+        [JsonProperty]
+        public SortedSet<Guid> MusicFiles { get; set; } = new SortedSet<Guid>();
 
-        public Playlist(string Name)
+        public Playlist(string Name) : base()
         {
             this.Name = Name;
         }
