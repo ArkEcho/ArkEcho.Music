@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -23,20 +24,66 @@ namespace ArkEcho.Core
 
         protected class JsonProperty : Attribute { }
 
-        protected string GetJsonAsString()
+        public string FileName { get; private set; } = string.Empty;
+
+        protected JsonBase()
+        {
+        }
+
+        protected JsonBase(string FileName)
+        {
+            this.FileName = FileName;
+        }
+
+        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        {
+            string filepath = $"{Folder}\\{FileName}";
+
+            Console.WriteLine($"Loading Config File {filepath}");
+
+            string content = string.Empty;
+            if (File.Exists(filepath))
+                content = File.ReadAllText(filepath);
+
+            // Load Props from JSON
+            bool foundCorrectExistingFile = SetFromJsonString(content);
+
+            if (RewriteAddMissingParams)
+                SaveToFile(Folder);
+
+            return foundCorrectExistingFile;
+        }
+
+        public bool SaveToFile(string Folder)
+        {
+            string filepath = $"{Folder}\\{FileName}";
+
+            try
+            {
+                File.WriteAllText(filepath, GetJsonAsString(), System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception on saving JSON to File: {ex.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        public string GetJsonAsString()
         {
             JObject data = new JObject();
             handleProperties(data, Mode.PropToJson);
             return data.ToString().Replace("\\\\", "\\");
         }
 
-        protected bool LoadPropertiesFromJsonString(string Json)
+        public bool SetFromJsonString(string Json)
         {
             JObject data = null;
 
             if (!string.IsNullOrEmpty(Json))
             {
-                Json = Json.Replace("\\", "\\\\");
+                Json = Json.Replace("\\", "\\\\"); // TODO: Hack?
                 try
                 {
                     data = JObject.Parse(Json);
