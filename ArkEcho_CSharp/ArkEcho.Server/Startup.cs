@@ -1,12 +1,12 @@
 
 using ArkEcho.Server.Data;
-using ArkEcho.Server;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ArkEcho.Server
 {
@@ -31,6 +31,9 @@ namespace ArkEcho.Server
             services.AddRazorPages(options => options.RootDirectory = "/Page/Pages");
             services.AddServerSideBlazor();
 
+            services.AddBlazoredLocalStorage();
+
+            services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             services.AddScoped<WeatherForecastService>();
             services.AddScoped<AppModel>();
             services.AddScoped<ArkEcho.Player.ArkEchoJSPlayer>();
@@ -54,6 +57,7 @@ namespace ArkEcho.Server
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

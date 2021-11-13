@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -18,6 +19,8 @@ namespace ArkEcho.Server
         private MusicLibrary library = null;
 
         private MusicWorker musicWorker = null;
+
+        public List<User> Users = new List<User>();
 
         public IWebHost Host { get; set; }
 
