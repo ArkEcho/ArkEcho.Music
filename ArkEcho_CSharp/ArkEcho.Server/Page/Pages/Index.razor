@@ -1,6 +1,5 @@
 ﻿@page "/Index"
 
-@using System.Security.Claims
 @inject AppModel Model
 
 <h1>Hello, world!</h1>
@@ -19,14 +18,7 @@ Welcome to your new app.
 
 @code
 { //fsdf
-	[CascadingParameter]
-	private Task<AuthenticationState> authenticationStateTask { get; set; }
-	ClaimsPrincipal user;
 
-	protected override async Task OnInitializedAsync()
-	{
-		user = (await authenticationStateTask).User;
-	}
 	private int currentCount = 0;
 
 	private void IncrementCount()
