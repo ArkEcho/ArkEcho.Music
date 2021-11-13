@@ -90,12 +90,12 @@ namespace ArkEcho.Server
 
         public string GetMusicLibraryString()
         {
-            return library.SaveToJsonString();
+            return library != null ? library.SaveToJsonString() : string.Empty;
         }
 
         public MusicFile GetMusicFile(Guid guid)
         {
-            return library.MusicFiles.Find(x => x.GUID == guid);
+            return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;
         }
 
         public void Stop()
