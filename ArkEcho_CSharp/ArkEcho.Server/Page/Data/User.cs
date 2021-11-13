@@ -6,8 +6,7 @@ namespace ArkEcho.Server
     {
         public string EmailAddress { get; set; }
         public string Password { get; set; }
-        public Guid AccessToken { get; set; } = new Guid();
-        public string RoleDesc { get; set; } = "BENUTZERROLLE";
+        public Guid AccessToken { get; set; } = Guid.NewGuid();
     }
 
 }

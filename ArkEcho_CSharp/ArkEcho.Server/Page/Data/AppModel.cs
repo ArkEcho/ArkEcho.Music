@@ -24,5 +24,10 @@ namespace ArkEcho.Server
         {
             return Library.LoadFromJsonString(ArkEchoServer.Instance.GetMusicLibraryString());
         }
+
+        public User CheckUserForLogin(User user)
+        {
+            return ArkEchoServer.Instance.CheckUserForLogin(user);
+        }
     }
 }

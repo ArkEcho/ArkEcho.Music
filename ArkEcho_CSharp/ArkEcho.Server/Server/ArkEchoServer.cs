@@ -20,7 +20,7 @@ namespace ArkEcho.Server
 
         private MusicWorker musicWorker = null;
 
-        public List<User> Users = new List<User>();
+        private List<User> users = new List<User>();
 
         public IWebHost Host { get; set; }
 
@@ -70,7 +70,19 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
+            users.Add(new User() { EmailAddress = "test", Password = Encryption.Encrypt("test") });
+
             return Initialized;
+        }
+
+        public User CheckUserForLogin(User user)
+        {
+            return users.Find(x => x.EmailAddress.Equals(user.EmailAddress, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+        }
+
+        public User CheckUserToken(Guid token)
+        {
+            return users.Find(x => x.AccessToken.Equals(token));
         }
 
         public void LoadMusicLibrary()

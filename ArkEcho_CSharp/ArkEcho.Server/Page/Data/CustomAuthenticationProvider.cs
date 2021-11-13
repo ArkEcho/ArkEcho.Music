@@ -29,7 +29,7 @@ namespace ArkEcho.Server
 
             ClaimsIdentity identity = null;
 
-            User user = Server.ArkEchoServer.Instance.Users.Find(x => x.AccessToken.Equals(accessToken));
+            User user = Server.ArkEchoServer.Instance.CheckUserToken(accessToken);
             if (user != null)
                 identity = GetClaimsIdentity(user);
             else
@@ -44,22 +44,28 @@ namespace ArkEcho.Server
         {
             await _localStorageService.SetItemAsync("accessToken", user.AccessToken);
 
-            var identity = GetClaimsIdentity(user);
+            ClaimsIdentity identity = GetClaimsIdentity(user);
 
-            var claimsPrincipal = new ClaimsPrincipal(identity);
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
 
         public async Task MarkUserAsLoggedOut()
         {
-            await _localStorageService.RemoveItemAsync("accessToken");
+            try
+            {
+                await _localStorageService.RemoveItemAsync("accessToken");
+            }
+            catch (Exception ex)
+            {
+            }
 
             ClaimsIdentity identity = new ClaimsIdentity();
 
-            ClaimsPrincipal user = new ClaimsPrincipal(identity);
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
 
         private ClaimsIdentity GetClaimsIdentity(User user)

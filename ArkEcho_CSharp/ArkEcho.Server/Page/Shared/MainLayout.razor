@@ -2,6 +2,8 @@
 
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IJSRuntime jsRunTime
 
 <div class="page">
 	<div class="sidebar">
@@ -16,7 +18,7 @@
 				</Authorized>
 
 			</AuthorizeView>
-			<a href="/" @onclick="(() => Logout())">Logout</a>
+			<a @onclick="(() => Logout())">Logout</a>
 		</div>
 
 		<div class="content px-4">
@@ -29,5 +31,5 @@
 { public async Task Logout()
 	{
 		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
-		NavigationManager.NavigateTo("");
+		NavigationManager.NavigateTo("/");
 	} }
