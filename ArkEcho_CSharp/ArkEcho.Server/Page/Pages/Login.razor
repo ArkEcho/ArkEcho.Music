@@ -5,6 +5,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IJSRuntime jsRunTime
 
 <EditForm Model="@user" OnValidSubmit="@ValidateUser">
 	<div>
@@ -37,8 +38,6 @@
 
 @code {
 
-
-
 	private User user;
 	public string LoginMesssage { get; set; }
 
@@ -51,27 +50,20 @@
 	{
 		user = new User();
 
-		//claimsPrincipal = (await authenticationStateTask).User;
+		claimsPrincipal = (await authenticationStateTask).User;
 
-		//if (claimsPrincipal.Identity.IsAuthenticated)
-		//{
-		//	NavigationManager.NavigateTo("/index");
-		//}
-		//{
-		//	user.EmailAddress = "philip.cramer@gmail.com";
-		//	user.Password = "philip.cramer";
-		//}
-
+		if (claimsPrincipal.Identity.IsAuthenticated)
+			NavigationManager.NavigateTo("/index");
 	}
 
 	private async Task<bool> ValidateUser()
 	{
 		if (!string.IsNullOrEmpty(user.EmailAddress) && !string.IsNullOrEmpty(user.Password))
-			//var returnedUser = await userService.LoginAsync(user);
-			//{
-			//	await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(returnedUser);
+		{
+			// TODO check Password, add to Server etc.
+			await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(user);
 			NavigationManager.NavigateTo("/index");
-		//}
+		}
 		else
 			LoginMesssage = "Empty username or password";
 

@@ -1,5 +1,3 @@
-
-using ArkEcho.Server.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -34,7 +32,6 @@ namespace ArkEcho.Server
             services.AddBlazoredLocalStorage();
 
             services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-            services.AddScoped<WeatherForecastService>();
             services.AddScoped<AppModel>();
             services.AddScoped<ArkEcho.Player.ArkEchoJSPlayer>();
         }

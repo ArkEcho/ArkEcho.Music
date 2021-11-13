@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-@inject AppModel Model
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="page">
 	<div class="sidebar">
@@ -9,7 +10,13 @@
 
 	<div class="main">
 		<div class="top-row px-4">
-			<a href="https://docs.microsoft.com/aspnet/" target="_blank">Counter: @Model.Counter About</a>
+			<AuthorizeView>
+				<Authorized>
+					TEST
+				</Authorized>
+
+			</AuthorizeView>
+			<a href="/" @onclick="(() => Logout())">Logout</a>
 		</div>
 
 		<div class="content px-4">
@@ -19,10 +26,8 @@
 </div>
 
 @code
-{ protected override void OnInitialized()
-			{
-				// auf Event vom Model reagieren und das UI Updaten
-				Model.CounterChanged += () => InvokeAsync(StateHasChanged);
-
-				base.OnInitialized();
-			} }
+{ public async Task Logout()
+	{
+		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		NavigationManager.NavigateTo("");
+	} }

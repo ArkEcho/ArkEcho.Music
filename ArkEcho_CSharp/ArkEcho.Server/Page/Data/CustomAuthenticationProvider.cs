@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,21 +12,26 @@ namespace ArkEcho.Server
 
         public CustomAuthenticationStateProvider(ILocalStorageService localStorageService)
         {
-            //throw new Exception("CustomAuthenticationStateProviderException");
             _localStorageService = localStorageService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var accessToken = await _localStorageService.GetItemAsync<string>("accessToken");
+            Guid accessToken = Guid.Empty;
+            try
+            {
+                accessToken = await _localStorageService.GetItemAsync<Guid>("accessToken");
+            }
+            catch (Exception ex)
+            {
+                // TODO: On first render Exception because js cant work?!
+            }
 
             ClaimsIdentity identity = null;
 
-            if (!string.IsNullOrEmpty(accessToken))
-            {
-                User user = Server.ArkEchoServer.Instance.Users.Find(x => x.AccessToken.Equals(accessToken, System.StringComparison.OrdinalIgnoreCase));
+            User user = Server.ArkEchoServer.Instance.Users.Find(x => x.AccessToken.Equals(accessToken));
+            if (user != null)
                 identity = GetClaimsIdentity(user);
-            }
             else
                 identity = new ClaimsIdentity();
 
@@ -37,7 +43,6 @@ namespace ArkEcho.Server
         public async Task MarkUserAsAuthenticated(User user)
         {
             await _localStorageService.SetItemAsync("accessToken", user.AccessToken);
-            await _localStorageService.SetItemAsync("refreshToken", user.RefreshToken);
 
             var identity = GetClaimsIdentity(user);
 
@@ -48,7 +53,6 @@ namespace ArkEcho.Server
 
         public async Task MarkUserAsLoggedOut()
         {
-            await _localStorageService.RemoveItemAsync("refreshToken");
             await _localStorageService.RemoveItemAsync("accessToken");
 
             ClaimsIdentity identity = new ClaimsIdentity();
@@ -63,13 +67,7 @@ namespace ArkEcho.Server
             ClaimsIdentity claimsIdentity = new ClaimsIdentity();
 
             if (user.EmailAddress != null)
-            {
-                claimsIdentity = new ClaimsIdentity(new[]
-                                {
-                                    new Claim(ClaimTypes.Name, user.EmailAddress),
-                                    new Claim(ClaimTypes.Role, user.Role.RoleDesc),
-                                }, "apiauth_type");
-            }
+                claimsIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.EmailAddress), }, "apiauth_type");
 
             return claimsIdentity;
         }
