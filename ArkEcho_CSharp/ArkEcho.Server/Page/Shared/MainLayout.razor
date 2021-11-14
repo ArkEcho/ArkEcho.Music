@@ -15,17 +15,21 @@
 		<div class="top-row px-4">
 			<AuthorizeView>
 				<Authorized>
-					Logged in as @LoggedInText
+					<button class="btn btn-secondary" @onclick="Logout">Logout</button>
 				</Authorized>
 				<NotAuthorized>
 					NOT AUTHORIZED
 				</NotAuthorized>
 			</AuthorizeView>
-			<button class="btn btn-secondary" @onclick="Logout">Logout</button>
 		</div>
 
 		<div class="content px-4">
-			@Body
+			<div>
+				@Body
+			</div>
+			<div class="float-right">
+				<UserModalForm @ref="Modal"></UserModalForm>
+			</div>
 		</div>
 	</div>
 </div>
@@ -35,6 +39,8 @@
 	[CascadingParameter]
 	private Task<AuthenticationState> authenticationStateTask { get; set; }
 	ClaimsPrincipal claimsPrincipal;
+
+	private UserModalForm Modal { get; set; }
 
 	public string LoggedInText { get; set; } = string.Empty;
 
@@ -49,6 +55,7 @@
 	}
 	public async Task Logout()
 	{
-		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
-		NavigationManager.NavigateTo("/");
+		Modal.Open();
+		//await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		//NavigationManager.NavigateTo("/");
 	} }
