@@ -70,14 +70,14 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
-            users.Add(new User() { EmailAddress = "test", Password = Encryption.Encrypt("test") });
+            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
 
             return Initialized;
         }
 
         public User CheckUserForLogin(User user)
         {
-            return users.Find(x => x.EmailAddress.Equals(user.EmailAddress, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
         }
 
         public User CheckUserToken(Guid token)

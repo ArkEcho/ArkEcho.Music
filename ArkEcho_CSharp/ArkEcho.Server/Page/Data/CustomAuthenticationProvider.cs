@@ -18,22 +18,19 @@ namespace ArkEcho.Server
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             Guid accessToken = Guid.Empty;
+            ClaimsIdentity identity = new ClaimsIdentity();
+
             try
             {
                 accessToken = await _localStorageService.GetItemAsync<Guid>("accessToken");
+                User user = Server.ArkEchoServer.Instance.CheckUserToken(accessToken);
+                if (user != null)
+                    identity = GetClaimsIdentity(user);
             }
             catch (Exception ex)
             {
                 // TODO: On first render Exception because js cant work?!
             }
-
-            ClaimsIdentity identity = null;
-
-            User user = Server.ArkEchoServer.Instance.CheckUserToken(accessToken);
-            if (user != null)
-                identity = GetClaimsIdentity(user);
-            else
-                identity = new ClaimsIdentity();
 
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
@@ -72,8 +69,8 @@ namespace ArkEcho.Server
         {
             ClaimsIdentity claimsIdentity = new ClaimsIdentity();
 
-            if (user.EmailAddress != null)
-                claimsIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.EmailAddress), }, "apiauth_type");
+            if (user.UserName != null)
+                claimsIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, user.UserName), }, "apiauth_type");
 
             return claimsIdentity;
         }
