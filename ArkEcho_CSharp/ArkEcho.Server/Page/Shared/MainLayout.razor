@@ -15,7 +15,7 @@
 		<div class="top-row px-4">
 			<AuthorizeView>
 				<Authorized>
-					<button class="btn btn-secondary" @onclick="Logout">Logout</button>
+					<button class="btn btn-secondary" @onclick="UserIconClick">User</button>
 				</Authorized>
 				<NotAuthorized>
 					NOT AUTHORIZED
@@ -23,13 +23,12 @@
 			</AuthorizeView>
 		</div>
 
+		<div class="sidebar py-4 px-4 float-right" style="background-color:lightgray; display: @showUserSidebarCss">
+			<h2>@LoggedInText</h2>
+			<button class="btn btn-primary" @onclick="Logout">Logout</button>
+		</div>
 		<div class="content px-4">
-			<div>
-				@Body
-			</div>
-			<div class="float-right">
-				<UserModalForm @ref="Modal"></UserModalForm>
-			</div>
+			@Body
 		</div>
 	</div>
 </div>
@@ -40,7 +39,8 @@
 	private Task<AuthenticationState> authenticationStateTask { get; set; }
 	ClaimsPrincipal claimsPrincipal;
 
-	private UserModalForm Modal { get; set; }
+	private bool showUserSidebar = false;
+	private string showUserSidebarCss => showUserSidebar ? "block" : "none";
 
 	public string LoggedInText { get; set; } = string.Empty;
 
@@ -53,9 +53,15 @@
 		if (!claimsPrincipal.Identity.IsAuthenticated)
 			NavigationManager.NavigateTo("/");
 	}
-	public async Task Logout()
+	public async Task UserIconClick()
 	{
-		Modal.Open();
+		showUserSidebar = !showUserSidebar;
+		StateHasChanged();
 		//await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
 		//NavigationManager.NavigateTo("/");
+	}
+	public async Task Logout()
+	{
+		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		NavigationManager.NavigateTo("/");
 	} }
