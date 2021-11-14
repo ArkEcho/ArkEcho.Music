@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -18,6 +19,8 @@ namespace ArkEcho.Server
         private MusicLibrary library = null;
 
         private MusicWorker musicWorker = null;
+
+        private List<User> users = new List<User>();
 
         public IWebHost Host { get; set; }
 
@@ -67,7 +70,19 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
+            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
+
             return Initialized;
+        }
+
+        public User CheckUserForLogin(User user)
+        {
+            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+        }
+
+        public User CheckUserToken(Guid token)
+        {
+            return users.Find(x => x.AccessToken.Equals(token));
         }
 
         public void LoadMusicLibrary()
@@ -90,12 +105,12 @@ namespace ArkEcho.Server
 
         public string GetMusicLibraryString()
         {
-            return library.SaveToJsonString();
+            return library != null ? library.SaveToJsonString() : string.Empty;
         }
 
         public MusicFile GetMusicFile(Guid guid)
         {
-            return library.MusicFiles.Find(x => x.GUID == guid);
+            return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;
         }
 
         public void Stop()

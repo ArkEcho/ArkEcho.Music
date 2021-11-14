@@ -1,6 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
-@inject AppModel Model
+@using System.Security.Claims
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IJSRuntime jsRunTime
 
 <div class="page">
 	<div class="sidebar">
@@ -9,9 +13,20 @@
 
 	<div class="main">
 		<div class="top-row px-4">
-			<a href="https://docs.microsoft.com/aspnet/" target="_blank">Counter: @Model.Counter About</a>
+			<AuthorizeView>
+				<Authorized>
+					<button class="btn btn-secondary" @onclick="UserIconClick">User</button>
+				</Authorized>
+				<NotAuthorized>
+					NOT AUTHORIZED
+				</NotAuthorized>
+			</AuthorizeView>
 		</div>
 
+		<div class="sidebar py-4 px-4 float-right" style="background-color:lightgray; display: @showUserSidebarCss">
+			<h2>@LoggedInText</h2>
+			<button class="btn btn-primary" @onclick="Logout">Logout</button>
+		</div>
 		<div class="content px-4">
 			@Body
 		</div>
@@ -19,10 +34,34 @@
 </div>
 
 @code
-{ protected override void OnInitialized()
-			{
-				// auf Event vom Model reagieren und das UI Updaten
-				Model.CounterChanged += () => InvokeAsync(StateHasChanged);
+{ //ds
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+	ClaimsPrincipal claimsPrincipal;
 
-				base.OnInitialized();
-			} }
+	private bool showUserSidebar = false;
+	private string showUserSidebarCss => showUserSidebar ? "block" : "none";
+
+	public string LoggedInText { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		claimsPrincipal = (await authenticationStateTask).User;
+
+		LoggedInText = claimsPrincipal.Identities.ToList().Find(x => x.NameClaimType.Equals(ClaimTypes.Name, StringComparison.OrdinalIgnoreCase)).Name;
+
+		if (!claimsPrincipal.Identity.IsAuthenticated)
+			NavigationManager.NavigateTo("/");
+	}
+	public async Task UserIconClick()
+	{
+		showUserSidebar = !showUserSidebar;
+		StateHasChanged();
+		//await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		//NavigationManager.NavigateTo("/");
+	}
+	public async Task Logout()
+	{
+		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		NavigationManager.NavigateTo("/");
+	} }
