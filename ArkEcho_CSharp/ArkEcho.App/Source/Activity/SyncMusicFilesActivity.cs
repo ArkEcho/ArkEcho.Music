@@ -42,13 +42,24 @@ namespace ArkEcho.App
 
             string sdCardMusicFolder = ArkEcho.App.AppModel.GetMusicSDFolderPath();
 
-            string libraryString = await arkEchoRest.GetMusicLibrary();
+            //if ((ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
+            //|| (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted))
+            //{
+            //    ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, REQUEST);
+            //}
 
             //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
             //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
 
+
+            //File.Create($"{AppModel.GetMusicSDFolderPath()}/test2.txt");
+
             //string test = File.ReadAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt");
-            //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", libraryString);
+            //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", "Test");
+
+
+            string libraryString = await arkEchoRest.GetMusicLibrary();
+
 
             MusicLibrary lib = new MusicLibrary();
             if (!string.IsNullOrEmpty(libraryString))
