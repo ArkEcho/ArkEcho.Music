@@ -1,6 +1,5 @@
-﻿using Java.IO;
+﻿using ArkEcho.Core;
 using RestSharp;
-
 using System.Threading.Tasks;
 
 namespace ArkEcho.App.Connection
@@ -26,10 +25,19 @@ namespace ArkEcho.App.Connection
             IRestResponse response = null;
             response = client.Get(request);
 
+            response.Content = removeLeadingTrailingQuotas(response.Content);
+
             if (response.IsSuccessful)
-                return response.Content;
+                return ZipCompression.UnzipFromBase64(response.Content);
             else
                 return string.Empty;
+        }
+
+        private string removeLeadingTrailingQuotas(string textWithQuotas)
+        {
+            string result = textWithQuotas.Remove(0, 1);
+            result = result.Remove(result.Length - 1, 1);
+            return result;
         }
     }
 }

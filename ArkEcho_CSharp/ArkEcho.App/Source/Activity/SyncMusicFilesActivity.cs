@@ -1,12 +1,10 @@
-﻿using Android;
-using Android.App;
+﻿using Android.App;
 using Android.OS;
 using Android.Widget;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
 
 using System;
-using System.IO;
 
 namespace ArkEcho.App
 {
@@ -44,9 +42,7 @@ namespace ArkEcho.App
 
             string sdCardMusicFolder = ArkEcho.App.AppModel.GetMusicSDFolderPath();
 
-            string libraryString = string.Empty;
-
-            libraryString = await arkEchoRest.GetMusicLibrary();
+            string libraryString = await arkEchoRest.GetMusicLibrary();
 
             //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
             //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
@@ -54,7 +50,6 @@ namespace ArkEcho.App
             //string test = File.ReadAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt");
             //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", libraryString);
 
-            // TODO: Cant load from String -> Wrong Escape
             MusicLibrary lib = new MusicLibrary();
             if (!string.IsNullOrEmpty(libraryString))
             {

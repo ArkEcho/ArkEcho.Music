@@ -16,7 +16,8 @@ namespace ArkEcho.Server
         [HttpGet("Library")]
         public ObjectResult GetMusicLibrary()
         {
-            return Ok(server.GetMusicLibraryString());
+            string base64 = ZipCompression.ZipToBase64(server.GetMusicLibraryString());
+            return Ok(base64);
         }
 
         // GET: api/Music/MusicFile/[GUID]
