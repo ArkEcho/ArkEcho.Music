@@ -42,7 +42,7 @@ namespace ArkEcho.App
             {
                 Context context = Application.Context;
 
-                Java.IO.File[] dirs = context.GetExternalFilesDirs(null);
+                Java.IO.File[] dirs = context.GetExternalMediaDirs();//.GetExternalFilesDirs(null);
 
                 foreach (Java.IO.File folder in dirs)
                 {
@@ -53,7 +53,7 @@ namespace ArkEcho.App
                     {
                         baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
                         baseFolderPath += "Music/";
-                        break;
+                        //break;
                     }
                 }
             }

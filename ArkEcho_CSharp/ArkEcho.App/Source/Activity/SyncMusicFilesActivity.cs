@@ -5,6 +5,7 @@ using ArkEcho.App.Connection;
 using ArkEcho.Core;
 
 using System;
+using System.IO;
 
 namespace ArkEcho.App
 {
@@ -47,26 +48,32 @@ namespace ArkEcho.App
             //{
             //    ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, REQUEST);
             //}
+            //string path = Android.OS.Environment.ExternalStorageDirectory.Path;
+            try
+            {
+                //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
+                //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
+                //string test = "/storage/0000-0000/Android/data/ArkEcho.App/files";
 
-            //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
-            //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
-
-
-            //File.Create($"{AppModel.GetMusicSDFolderPath()}/test2.txt");
-
+                File.Create($"{Android.OS.Environment.DirectoryMusic}/test2.txt");
+            }
+            catch (Exception ex)
+            {
+                logInListView(ex.Message, Core.Resources.LogLevel.Error);
+            }
             //string test = File.ReadAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt");
             //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", "Test");
 
 
-            string libraryString = await arkEchoRest.GetMusicLibrary();
+            //string libraryString = await arkEchoRest.GetMusicLibrary();
 
 
-            MusicLibrary lib = new MusicLibrary();
-            if (!string.IsNullOrEmpty(libraryString))
-            {
-                if (lib.LoadFromJsonString(libraryString))
-                    logInListView(lib.MusicFiles.Count.ToString(), Core.Resources.LogLevel.Information);
-            }
+            //MusicLibrary lib = new MusicLibrary();
+            //if (!string.IsNullOrEmpty(libraryString))
+            //{
+            //    if (lib.LoadFromJsonString(libraryString))
+            //        logInListView(lib.MusicFiles.Count.ToString(), Core.Resources.LogLevel.Information);
+            //}
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
