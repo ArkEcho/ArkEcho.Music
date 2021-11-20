@@ -14,7 +14,7 @@ namespace ArkEcho.Player
         {
         }
 
-        protected override bool log(string Text, Resources.LogLevel Level)
+        protected override bool logImpl(string Text, Resources.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);
@@ -38,9 +38,9 @@ namespace ArkEcho.Player
                 }
                 return false;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                log(ex.Message, Resources.LogLevel.Error);
+                logImpl(ex.Message, Resources.LogLevel.Error);
                 return false;
             }
         }
@@ -50,15 +50,15 @@ namespace ArkEcho.Player
             try
             {
                 MusicFile File = PlayingFile;
-                if(File != null)
-                    mediaplayer.Media = new Media(libvlc, File.LocalFileName);
+                if (File != null)
+                    mediaplayer.Media = new Media(libvlc, File.GetFullFilePath());
 
                 if (StartOnLoad)
                     mediaplayer.Play();
             }
             catch (Exception ex)
             {
-                log(ex.Message, Resources.LogLevel.Error);
+                logImpl(ex.Message, Resources.LogLevel.Error);
             }
         }
 
@@ -94,7 +94,7 @@ namespace ArkEcho.Player
 
         protected override void setPositionImpl(int NewPosition)
         {
-            if(mediaplayer.Media != null)
+            if (mediaplayer.Media != null)
                 mediaplayer.Position = NewPosition / mediaplayer.Media.Duration;
         }
     }

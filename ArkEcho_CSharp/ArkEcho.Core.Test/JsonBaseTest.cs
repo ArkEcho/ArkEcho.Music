@@ -9,11 +9,15 @@ namespace ArkEcho.Core.Test
         public void TestSetAndGet()
         {
             string jsonOriginal = Properties.Resources.TestClass_txt;
+
             TestClass testclass = new TestClass();
 
-            string jsonBased = testclass.Load(jsonOriginal);
+            Assert.IsTrue(testclass.LoadFromJsonString(jsonOriginal));
 
-            Assert.IsTrue(jsonOriginal.Equals(jsonBased, System.StringComparison.OrdinalIgnoreCase));
+            string jsonBased = testclass.SaveToJsonString();
+            bool test = jsonOriginal.Equals(jsonBased, System.StringComparison.OrdinalIgnoreCase);
+
+            Assert.IsTrue(test);
         }
     }
 }

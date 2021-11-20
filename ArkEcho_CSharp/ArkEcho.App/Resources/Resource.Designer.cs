@@ -137,64 +137,73 @@ namespace ArkEcho.App
 			public const int imageViewCoverArt = 2130903042;
 			
 			// aapt resource value: 0x7F030003
-			public const int pbActionBarBack = 2130903043;
+			public const int logListView = 2130903043;
 			
 			// aapt resource value: 0x7F030004
-			public const int pbActionBarMenu = 2130903044;
+			public const int pbActionBarBack = 2130903044;
 			
 			// aapt resource value: 0x7F030005
-			public const int pbBackward = 2130903045;
+			public const int pbActionBarMenu = 2130903045;
 			
 			// aapt resource value: 0x7F030006
-			public const int pbConnectManually = 2130903046;
+			public const int pbBackward = 2130903046;
 			
 			// aapt resource value: 0x7F030007
-			public const int pbConnectWithQr = 2130903047;
+			public const int pbConnectManually = 2130903047;
 			
 			// aapt resource value: 0x7F030008
-			public const int pbForward = 2130903048;
+			public const int pbConnectWithQr = 2130903048;
 			
 			// aapt resource value: 0x7F030009
-			public const int pbPlay_Pause = 2130903049;
+			public const int pbForward = 2130903049;
 			
 			// aapt resource value: 0x7F03000A
-			public const int space1 = 2130903050;
+			public const int pbPlay_Pause = 2130903050;
 			
 			// aapt resource value: 0x7F03000B
-			public const int space2 = 2130903051;
+			public const int space1 = 2130903051;
 			
 			// aapt resource value: 0x7F03000C
-			public const int space3 = 2130903052;
+			public const int space2 = 2130903052;
 			
 			// aapt resource value: 0x7F03000D
-			public const int space4 = 2130903053;
+			public const int space3 = 2130903053;
 			
 			// aapt resource value: 0x7F03000E
-			public const int teAddress = 2130903054;
+			public const int space4 = 2130903054;
 			
 			// aapt resource value: 0x7F03000F
-			public const int top_menu_help = 2130903055;
+			public const int syncMusicButton = 2130903055;
 			
 			// aapt resource value: 0x7F030010
-			public const int top_menu_impressum = 2130903056;
+			public const int teAddress = 2130903056;
 			
 			// aapt resource value: 0x7F030011
-			public const int tvAddress = 2130903057;
+			public const int top_menu_help = 2130903057;
 			
 			// aapt resource value: 0x7F030012
-			public const int tvHeader = 2130903058;
+			public const int top_menu_impressum = 2130903058;
 			
 			// aapt resource value: 0x7F030013
-			public const int tvHilfe = 2130903059;
+			public const int top_menu_syncmusicfiles = 2130903059;
 			
 			// aapt resource value: 0x7F030014
-			public const int tvInterpretPlayer = 2130903060;
+			public const int tvAddress = 2130903060;
 			
 			// aapt resource value: 0x7F030015
-			public const int tvTitlePlayer = 2130903061;
+			public const int tvHeader = 2130903061;
 			
 			// aapt resource value: 0x7F030016
-			public const int twActionBarTitle = 2130903062;
+			public const int tvHilfe = 2130903062;
+			
+			// aapt resource value: 0x7F030017
+			public const int tvInterpretPlayer = 2130903063;
+			
+			// aapt resource value: 0x7F030018
+			public const int tvTitlePlayer = 2130903064;
+			
+			// aapt resource value: 0x7F030019
+			public const int twActionBarTitle = 2130903065;
 			
 			static Id()
 			{
@@ -213,19 +222,22 @@ namespace ArkEcho.App
 			public const int ActionBar = 2130968576;
 			
 			// aapt resource value: 0x7F040001
-			public const int Help = 2130968577;
+			public const int Connect = 2130968577;
 			
 			// aapt resource value: 0x7F040002
-			public const int Impressum = 2130968578;
+			public const int Help = 2130968578;
 			
 			// aapt resource value: 0x7F040003
-			public const int Main = 2130968579;
+			public const int Impressum = 2130968579;
 			
 			// aapt resource value: 0x7F040004
 			public const int Player = 2130968580;
 			
 			// aapt resource value: 0x7F040005
 			public const int Splash = 2130968581;
+			
+			// aapt resource value: 0x7F040006
+			public const int SyncMusicFiles = 2130968582;
 			
 			static Layout()
 			{
@@ -262,17 +274,17 @@ namespace ArkEcho.App
 			// aapt resource value: 0x7F060001
 			public const int ApplicationTitle = 2131099649;
 			
-			// aapt resource value: 0x7F06001A
-			public const int app_name = 2131099674;
+			// aapt resource value: 0x7F06001E
+			public const int app_name = 2131099678;
 			
 			// aapt resource value: 0x7F060002
-			public const int HelpActivityTextViewHeader = 2131099650;
+			public const int HelpActivityHeader = 2131099650;
 			
 			// aapt resource value: 0x7F060003
 			public const int HelpActivityTitle = 2131099651;
 			
 			// aapt resource value: 0x7F060004
-			public const int ImpressumActivityTextViewHeader = 2131099652;
+			public const int ImpressumActivityHeader = 2131099652;
 			
 			// aapt resource value: 0x7F060005
 			public const int ImpressumActivityTitle = 2131099653;
@@ -323,19 +335,31 @@ namespace ArkEcho.App
 			public const int QrScannerTextTop = 2131099668;
 			
 			// aapt resource value: 0x7F060015
-			public const int ToastEmptyWrongAddress = 2131099669;
+			public const int SyncMusicFilesActivityHeader = 2131099669;
 			
 			// aapt resource value: 0x7F060016
-			public const int ToastNoConnection = 2131099670;
+			public const int SyncMusicFilesActivityLog = 2131099670;
 			
 			// aapt resource value: 0x7F060017
-			public const int ToastQrScanFailed = 2131099671;
+			public const int SyncMusicFilesActivitySyncButton = 2131099671;
 			
 			// aapt resource value: 0x7F060018
-			public const int TopMenuHelp = 2131099672;
+			public const int SyncMusicFilesActivityTitle = 2131099672;
 			
 			// aapt resource value: 0x7F060019
-			public const int TopMenuImpressum = 2131099673;
+			public const int ToastEmptyWrongAddress = 2131099673;
+			
+			// aapt resource value: 0x7F06001A
+			public const int ToastNoConnection = 2131099674;
+			
+			// aapt resource value: 0x7F06001B
+			public const int ToastQrScanFailed = 2131099675;
+			
+			// aapt resource value: 0x7F06001C
+			public const int TopMenuHelp = 2131099676;
+			
+			// aapt resource value: 0x7F06001D
+			public const int TopMenuImpressum = 2131099677;
 			
 			static String()
 			{

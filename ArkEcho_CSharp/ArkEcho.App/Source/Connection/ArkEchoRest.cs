@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ArkEcho.Core;
+﻿using ArkEcho.Core;
 using RestSharp;
+using System.Threading.Tasks;
 
 namespace ArkEcho.App.Connection
 {
@@ -13,17 +10,34 @@ namespace ArkEcho.App.Connection
 
         public ArkEchoRest()
         {
-            client = new RestClient("https://192.168.178.21:5001/api");
+#if DEBUG
+            client = new RestClient("https://192.168.178.20:5001/api");
+#else
+            client = new RestClient("https://arkecho.de/api");
+#endif
         }
 
-        public async Task<IRestResponse> getMusicFileInfo()
+        public async Task<string> GetMusicLibrary()
         {
-            RestRequest request = new RestRequest("/Music/MusicFile", Method.GET);
+            RestRequest request = new RestRequest("Music/Library");
 
             // execute the request
             IRestResponse response = null;
-            await Task.Run(()=> response = client.Execute(request));
-            return response;
+            response = client.Get(request);
+
+            response.Content = removeLeadingTrailingQuotas(response.Content);
+
+            if (response.IsSuccessful)
+                return ZipCompression.UnzipFromBase64(response.Content);
+            else
+                return string.Empty;
+        }
+
+        private string removeLeadingTrailingQuotas(string textWithQuotas)
+        {
+            string result = textWithQuotas.Remove(0, 1);
+            result = result.Remove(result.Length - 1, 1);
+            return result;
         }
     }
 }

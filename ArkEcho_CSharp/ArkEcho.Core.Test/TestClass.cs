@@ -41,12 +41,5 @@ namespace ArkEcho.Core
         public SimpleTestClass[] ArrayClass { get; set; }
 
         public TestClass() { }
-
-        public string Load(string Json)
-        {
-            LoadPropertiesFromJsonString(Json);
-
-            return GetJsonAsString();
-        }
     }
 }

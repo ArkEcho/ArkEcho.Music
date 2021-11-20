@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -23,34 +24,80 @@ namespace ArkEcho.Core
 
         protected class JsonProperty : Attribute { }
 
-        protected string GetJsonAsString()
+        private string fileName = string.Empty;
+
+        protected JsonBase()
+        {
+        }
+
+        protected JsonBase(string FileName)
+        {
+            this.fileName = FileName;
+        }
+
+        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        {
+            string filepath = $"{Folder}\\{fileName}";
+
+            Console.WriteLine($"Loading Config File {filepath}");
+
+            string content = string.Empty;
+            if (File.Exists(filepath))
+                content = File.ReadAllText(filepath);
+
+            // Load Props from JSON
+            bool foundCorrectExistingFile = LoadFromJsonString(content);
+
+            if (RewriteAddMissingParams)
+                SaveToFile(Folder);
+
+            return foundCorrectExistingFile;
+        }
+
+        public bool SaveToFile(string Folder)
+        {
+            string filepath = $"{Folder}\\{fileName}";
+
+            try
+            {
+                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception on saving JSON to File: {ex.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        public string SaveToJsonString()
         {
             JObject data = new JObject();
             handleProperties(data, Mode.PropToJson);
-            return data.ToString().Replace("\\\\", "\\");
+            return data.ToString();
         }
 
-        protected bool LoadPropertiesFromJsonString(string Json)
+        public bool LoadFromJsonString(string Json)
         {
             JObject data = null;
 
             if (!string.IsNullOrEmpty(Json))
             {
-                Json = Json.Replace("\\", "\\\\");
                 try
                 {
                     data = JObject.Parse(Json);
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception on parsing the JSON: {ex.Message}");
+                }
             }
 
-            if (data != null)
-            {
-                handleProperties(data, Mode.JsonToProp);
-                return true;
-            }
-            else
+            if (data == null)
                 return false;
+
+            handleProperties(data, Mode.JsonToProp);
+            return true;
         }
 
         private void handleProperties(JObject Data, Mode Mode)
@@ -101,7 +148,7 @@ namespace ArkEcho.Core
 
         private bool isAllowedCollection(PropertyInfo Info)
         {
-            // TODO bessere Lösung?
+            // TODO bessere Lösung -> SortedSet on Playlist?
             return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase)
                 && Info.PropertyType.GenericTypeArguments.Length == 1;
         }

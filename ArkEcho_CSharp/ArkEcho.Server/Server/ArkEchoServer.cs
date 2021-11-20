@@ -1,5 +1,4 @@
-﻿using ArkEcho.Server;
-using ArkEcho.Core;
+﻿using ArkEcho.Core;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -11,12 +10,17 @@ namespace ArkEcho.Server
 {
     public sealed class ArkEchoServer : IDisposable
     {
+        private const string serverConfigFileName = "Config.json";
+
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
         public ServerConfig Config { get; private set; } = null;
 
         private MusicLibrary library = null;
+
         private MusicWorker musicWorker = null;
+
+        private List<User> users = new List<User>();
 
         public IWebHost Host { get; set; }
 
@@ -33,8 +37,10 @@ namespace ArkEcho.Server
 
             Console.WriteLine("Initializing ArkEcho.Server");
 
-            Config = new ServerConfig();
-            if (!Config.Load(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
+            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            Config = new ServerConfig(serverConfigFileName);
+            if (!Config.LoadFromFile(executingLocation, true))
             {
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;
@@ -45,7 +51,10 @@ namespace ArkEcho.Server
                 return false;
             }
             else
-                Config.WriteOutputToConsole();
+            {
+                Console.WriteLine("Configuration for ArkEcho.Server:");
+                Console.WriteLine(Config.SaveToJsonString());
+            }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
             LoadMusicLibrary();
@@ -61,7 +70,19 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
+            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
+
             return Initialized;
+        }
+
+        public User CheckUserForLogin(User user)
+        {
+            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+        }
+
+        public User CheckUserToken(Guid token)
+        {
+            return users.Find(x => x.AccessToken.Equals(token));
         }
 
         public void LoadMusicLibrary()
@@ -82,19 +103,14 @@ namespace ArkEcho.Server
             }
         }
 
-        public List<MusicFile> GetAllMusicFiles()
+        public string GetMusicLibraryString()
         {
-            return library.MusicFiles;
+            return library != null ? library.SaveToJsonString() : string.Empty;
         }
 
-        public List<AlbumArtist> GetAllAlbumArtists()
+        public MusicFile GetMusicFile(Guid guid)
         {
-            return library.AlbumArtists;
-        }
-
-        public List<Album> GetAllAlbum()
-        {
-            return library.Album;
+            return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;
         }
 
         public void Stop()
