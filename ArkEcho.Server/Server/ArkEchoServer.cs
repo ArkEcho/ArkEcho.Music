@@ -10,11 +10,11 @@ namespace ArkEcho.Server
 {
     public sealed class ArkEchoServer : IDisposable
     {
-        private const string serverConfigFileName = "Config.json";
+        private const string serverConfigFileName = "ServerConfig.json";
 
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
-        public ServerConfig Config { get; private set; } = null;
+        public ServerConfig ServerConfig { get; private set; } = null;
 
         private MusicLibrary library = null;
 
@@ -39,13 +39,13 @@ namespace ArkEcho.Server
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Config = new ServerConfig(serverConfigFileName);
-            if (!Config.LoadFromFile(executingLocation, true))
+            ServerConfig = new ServerConfig(serverConfigFileName);
+            if (!ServerConfig.LoadFromFile(executingLocation, true))
             {
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;
             }
-            else if (string.IsNullOrEmpty(Config.MusicFolder) || !Directory.Exists(Config.MusicFolder))
+            else if (string.IsNullOrEmpty(ServerConfig.MusicFolder) || !Directory.Exists(ServerConfig.MusicFolder))
             {
                 Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
@@ -53,7 +53,7 @@ namespace ArkEcho.Server
             else
             {
                 Console.WriteLine("Configuration for ArkEcho.Server:");
-                Console.WriteLine(Config.SaveToJsonString());
+                Console.WriteLine(ServerConfig.SaveToJsonString());
             }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
@@ -62,7 +62,7 @@ namespace ArkEcho.Server
             // Start the WebHost, Server and Controllers
             // Set WebRoot for Static Files (css etc.), use xcopy for output
             Host = WebHost.CreateDefaultBuilder()
-                            .UseUrls($"https://*:{Config.Port}")
+                            .UseUrls($"https://*:{ServerConfig.Port}")
                             .UseKestrel()
                             .UseStartup<Startup>()
                             //.UseWebRoot($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\wwwroot")
@@ -88,7 +88,7 @@ namespace ArkEcho.Server
         public void LoadMusicLibrary()
         {
             library = null;
-            musicWorker.RunWorkerAsync(Config.MusicFolder);
+            musicWorker.RunWorkerAsync(ServerConfig.MusicFolder);
         }
 
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

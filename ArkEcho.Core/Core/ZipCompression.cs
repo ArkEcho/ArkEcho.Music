@@ -17,16 +17,19 @@ namespace ArkEcho.Core
                 dest.Write(bytes, 0, cnt);
         }
 
-        public static string ZipToBase64(string unzipped)
+        public static string ZipStringToBase64(string unzipped)
         {
-            return Convert.ToBase64String(ZipToByteArray(unzipped));
+            return Convert.ToBase64String(ZipStringToByteArray(unzipped));
         }
 
-        public static byte[] ZipToByteArray(string unzipped)
+        public static byte[] ZipStringToByteArray(string unzipped)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(unzipped);
+            return ZipByteArray(Encoding.UTF8.GetBytes(unzipped));
+        }
 
-            using (MemoryStream msi = new MemoryStream(bytes))
+        public static byte[] ZipByteArray(byte[] array)
+        {
+            using (MemoryStream msi = new MemoryStream(array))
             using (MemoryStream mso = new MemoryStream())
             {
                 using (GZipStream gs = new GZipStream(mso, CompressionMode.Compress))
@@ -39,12 +42,17 @@ namespace ArkEcho.Core
             }
         }
 
-        public static string UnzipFromBase64(string zipped)
+        public static string UnzipFromBase64(string zippedBase64)
         {
-            return UnzipFromByteArray(Convert.FromBase64String(zipped));
+            return UnzipFromByteArray(Convert.FromBase64String(zippedBase64));
         }
 
         public static string UnzipFromByteArray(byte[] zipped)
+        {
+            return Encoding.UTF8.GetString(UnzipByteArray(zipped));
+        }
+
+        public static byte[] UnzipByteArray(byte[] zipped)
         {
             using (MemoryStream msi = new MemoryStream(zipped))
             using (MemoryStream mso = new MemoryStream())
@@ -55,9 +63,8 @@ namespace ArkEcho.Core
                     CopyTo(gs, mso);
                 }
 
-                return Encoding.UTF8.GetString(mso.ToArray());
+                return mso.ToArray();
             }
         }
-
     }
 }

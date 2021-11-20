@@ -1,5 +1,7 @@
-﻿using ArkEcho.Core;
-using RestSharp;
+﻿using RestSharp;
+using System;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App.Connection
@@ -8,29 +10,44 @@ namespace ArkEcho.App.Connection
     {
         private RestClient client;
 
-        public ArkEchoRest()
+        public ArkEchoRest(string connectionUrl)
         {
-#if DEBUG
-            client = new RestClient("https://192.168.178.20:5001/api");
-#else
-            client = new RestClient("https://arkecho.de/api");
-#endif
+            client = new RestClient(connectionUrl);
         }
 
         public async Task<string> GetMusicLibrary()
         {
-            RestRequest request = new RestRequest("Music/Library");
+            var restResponse = await makeRestCall("Music");
 
-            // execute the request
-            IRestResponse response = null;
-            response = client.Get(request);
-
-            response.Content = removeLeadingTrailingQuotas(response.Content);
-
-            if (response.IsSuccessful)
-                return ZipCompression.UnzipFromBase64(response.Content);
+            if (restResponse.IsSuccessful)
+            {
+                // TODO: Compression zu abschaltbar
+                restResponse.Content = removeLeadingTrailingQuotas(restResponse.Content);
+                return Encoding.UTF8.GetString(Convert.FromBase64String(restResponse.Content));//ZipCompression.UnzipFromBase64(restResponse.Content);
+            }
             else
                 return string.Empty;
+        }
+
+        public async Task<byte[]> GetMusicFile(Guid guid)
+        {
+            var restResponse = await makeRestCall($"Music/{guid}");
+
+            if (restResponse.IsSuccessful)
+            {
+                return restResponse.RawBytes;// ZipCompression.UnzipByteArray(restResponse.RawBytes);
+            }
+            else
+                return null;
+        }
+
+        private async Task<IRestResponse> makeRestCall(string path)
+        {
+            RestRequest request = new RestRequest(path);
+
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+            return await client.ExecuteAsync(request, cancellationTokenSource.Token);
         }
 
         private string removeLeadingTrailingQuotas(string textWithQuotas)

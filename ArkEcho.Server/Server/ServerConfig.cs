@@ -13,6 +13,9 @@ namespace ArkEcho.Server
         public bool Authorization { get; private set; } = false;
 
         [JsonProperty]
+        public bool Compression { get; private set; } = false;
+
+        [JsonProperty]
         public int Port { get; private set; } = 5001;
     }
 }

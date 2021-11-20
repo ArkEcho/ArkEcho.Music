@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -12,24 +13,35 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
-        // GET: api/Music/Library
-        [HttpGet("Library")]
-        public ObjectResult GetMusicLibrary()
+        // GET: api/Music
+        [HttpGet]
+        public ActionResult GetMusicLibrary()
         {
-            string base64 = ZipCompression.ZipToBase64(server.GetMusicLibraryString());
+            string base64 = string.Empty;
+
+            if (server.ServerConfig.Compression)
+                base64 = ZipCompression.ZipStringToBase64(server.GetMusicLibraryString());
+            else
+                base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(server.GetMusicLibraryString()));
+
             return Ok(base64);
         }
 
-        // GET: api/Music/MusicFile/[GUID]
-        [HttpGet("MusicFile/{id}")]
-        public async Task<FileContentResult> GetMusicFile(Guid id)
+        // GET: api/Music/[GUID]
+        [HttpGet("{guid}")]
+        public async Task<ActionResult> GetMusicFile(Guid guid)
         {
-            MusicFile musicFile = server.GetMusicFile(id);
+            if (guid == Guid.Empty)
+                return BadRequest();
+
+            MusicFile musicFile = server.GetMusicFile(guid);
 
             if (musicFile == null)
-                return new FileContentResult(null, string.Empty);
+                return BadRequest();
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());
+            if (server.ServerConfig.Compression)
+                content = ZipCompression.ZipByteArray(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
             result.FileDownloadName = Path.GetFileName(musicFile.FileName);
