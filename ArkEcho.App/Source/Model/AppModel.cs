@@ -12,19 +12,25 @@ namespace ArkEcho.App
     {
         public static AppModel Instance { get; } = new AppModel();
 
-        private ArkEchoRest rest = null;
+        public ArkEchoRest Rest { get; private set; } = null;
 
         public ArkEchoVLCPlayer Player { get; private set; } = null;
 
         private AppModel()
         {
-            rest = new Connection.ArkEchoRest();
-            Player = new Player.ArkEchoVLCPlayer();
         }
 
         public async Task<bool> Init()
         {
+            // TODO: From App.Config
+            string url = "https://192.168.178.20:5001/api";
+            //string url = "https://arkecho.de/api";
+
+            Rest = new Connection.ArkEchoRest(url);
+
+            Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
+
             await Task.Delay(5);
             return true;
         }
