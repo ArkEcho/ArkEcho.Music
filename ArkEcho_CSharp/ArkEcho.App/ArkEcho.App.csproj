@@ -36,6 +36,8 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
     <MandroidI18n />
+    <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
+    <AndroidSupportedAbis />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,16 +83,17 @@
     <Compile Include="Source\Activity\ExtendedActivity.cs" />
     <Compile Include="Source\Activity\HelpActivity.cs" />
     <Compile Include="Source\Activity\ImpressumActivity.cs" />
-    <Compile Include="Source\Activity\MainActivity.cs" />
+    <Compile Include="Source\Activity\ConnectActivity.cs" />
     <Compile Include="Source\Activity\PlayerActivity.cs" />
     <Compile Include="Source\Activity\SplashActivity.cs" />
+    <Compile Include="Source\Activity\SyncMusicFilesActivity.cs" />
     <Compile Include="Source\Model\AppModel.cs" />
     <Compile Include="Source\Model\ArkEchoVLCPlayer.cs" />
     <Compile Include="Source\Connection\ArkEchoRest.cs" />
     <Compile Include="Source\Connection\ArkEchoWebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\Main.axml">
+    <AndroidResource Include="Resources\layout\Connect.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -183,6 +186,17 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.NetAnalyzers.5.0.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\SyncMusicFiles.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResourceAnalysisConfig Include="Resources\values\file_paths.xml">
+      <SubType>Designer</SubType>
+    </AndroidResourceAnalysisConfig>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

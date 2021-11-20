@@ -1,18 +1,16 @@
 using Android.App;
 using Android.OS;
 using Android.Widget;
-
-using System.Threading.Tasks;
+using ArkEcho.Core;
 using System;
-using ArkEcho.App.Connection;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
     [Activity]
     public class PlayerActivity : ExtendedActivity
     {
-        bool backPressed = false;
-
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -36,12 +34,15 @@ namespace ArkEcho.App
 
         private void onPbPlay_PauseClicked(object sender, EventArgs e)
         {
+            string pathnew = $"{ArkEcho.App.AppModel.GetMusicSDFolderPath()}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+
+            MusicFile file = new MusicFile(pathnew);
+
+            AppModel.Instance.Player.Start(new List<MusicFile> { file }, 0);
         }
 
         public override async void OnBackPressed()
         {
-            backPressed = true;
-
             await Task.Delay(10);
 
             Finish();

@@ -87,16 +87,17 @@ namespace ArkEcho.Core
                 {
                     data = JObject.Parse(Json);
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception on parsing the JSON: {ex.Message}");
+                }
             }
 
-            if (data != null)
-            {
-                handleProperties(data, Mode.JsonToProp);
-                return true;
-            }
-            else
+            if (data == null)
                 return false;
+
+            handleProperties(data, Mode.JsonToProp);
+            return true;
         }
 
         private void handleProperties(JObject Data, Mode Mode)

@@ -51,7 +51,7 @@ namespace ArkEcho.Player
             {
                 MusicFile File = PlayingFile;
                 if (File != null)
-                    mediaplayer.Media = new Media(libvlc, File.LocalFileName);
+                    mediaplayer.Media = new Media(libvlc, File.GetFullFilePath());
 
                 if (StartOnLoad)
                     mediaplayer.Play();
