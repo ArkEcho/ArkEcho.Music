@@ -55,36 +55,42 @@ namespace ArkEcho.Server
                         Year = tagFile.Tag.Year,
                     };
 
-                    if (tagFile.Tag.FirstAlbumArtist != null && tagFile.Tag.Album != null)
+                    string albumArtistName = tagFile.Tag.FirstAlbumArtist;
+                    string albumName = tagFile.Tag.Album;
+
+                    if (string.IsNullOrEmpty(albumArtistName) || string.IsNullOrEmpty(albumName))
                     {
-                        albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
-                        if (albumArtist == null)
-                        {
-                            albumArtist = new AlbumArtist() { Name = tagFile.Tag.FirstAlbumArtist };
-                            library.AlbumArtists.Add(albumArtist);
-                        }
-
-                        album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
-                        if (album == null)
-                        {
-                            album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
-                            library.Album.Add(album);
-
-                            albumArtist.AlbumID.Add(album.GUID);
-                        }
-
-                        music.Album = album.GUID;
-                        music.AlbumArtist = albumArtist.GUID;
-
-                        if (music.Disc > album.DiscCount)
-                            album.DiscCount = music.Disc;
-
-                        if (music.Track > album.TrackCount)
-                            album.TrackCount = music.Track;
-
-                        album.MusicFiles.Add(music.GUID);
-                        albumArtist.MusicFileIDs.Add(music.GUID);
+                        Console.WriteLine($"Skipped! No Album/AlbumArtist {music.GetFullFilePath()}");
+                        continue;
                     }
+
+                    albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(albumArtistName, StringComparison.OrdinalIgnoreCase));
+                    if (albumArtist == null)
+                    {
+                        albumArtist = new AlbumArtist() { Name = albumArtistName };
+                        library.AlbumArtists.Add(albumArtist);
+                    }
+
+                    album = library.Album.Find(x => x.Name.Equals(albumName, StringComparison.OrdinalIgnoreCase));
+                    if (album == null)
+                    {
+                        album = new Album() { AlbumArtist = albumArtist.GUID, Name = albumName };
+                        library.Album.Add(album);
+
+                        albumArtist.AlbumID.Add(album.GUID);
+                    }
+
+                    music.Album = album.GUID;
+                    music.AlbumArtist = albumArtist.GUID;
+
+                    if (music.Disc > album.DiscCount)
+                        album.DiscCount = music.Disc;
+
+                    if (music.Track > album.TrackCount)
+                        album.TrackCount = music.Track;
+
+                    album.MusicFiles.Add(music.GUID);
+                    albumArtist.MusicFileIDs.Add(music.GUID);
 
                     library.MusicFiles.Add(music);
                 }

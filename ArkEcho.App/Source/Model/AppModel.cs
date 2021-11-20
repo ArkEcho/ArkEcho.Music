@@ -18,6 +18,7 @@ namespace ArkEcho.App
 
         private AppModel()
         {
+            // TODO: Dispose
         }
 
         public async Task<bool> Init()

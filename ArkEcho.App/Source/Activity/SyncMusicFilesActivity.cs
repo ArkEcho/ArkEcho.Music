@@ -23,7 +23,7 @@ namespace ArkEcho.App
 
             adapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleListItem1);
 
-            logListView = FindViewById<ListView>(Resource.Id.logListView);
+            logListView = FindViewById<ListView>(Resource.Id.syncLogListView);
             logListView.Adapter = adapter;
 
             syncMusicFilesButton = FindViewById<Button>(Resource.Id.syncMusicButton);
@@ -53,32 +53,30 @@ namespace ArkEcho.App
 
             logInListView($"Music File Count: {lib.MusicFiles.Count.ToString()}", Core.Resources.LogLevel.Information);
 
-            MusicFile testFile = lib.MusicFiles.Find(x => x.Title.StartsWith("Vespertilio"));
-
-            if (testFile == null)
+            foreach (MusicFile file in lib.MusicFiles.FindAll(x => x.AlbumArtist == lib.AlbumArtists.Find(y => y.Name.Equals("Alligatoah")).GUID))
             {
-                logInListView($"Can't find MusicFile {testFile.FileName}!", Core.Resources.LogLevel.Information);
-                return;
-            }
-            else
-                logInListView($"Loading {testFile.FileName}...", Core.Resources.LogLevel.Information);
+                logInListView($"Loading {file.FileName}...", Core.Resources.LogLevel.Information);
 
-            byte[] fileBytes = await AppModel.Instance.Rest.GetMusicFile(testFile.GUID);
+                byte[] fileBytes = await AppModel.Instance.Rest.GetMusicFile(file.GUID);
 
-            if (fileBytes.Length == 0)
-            {
-                logInListView($"Error loading MusicFile {testFile.FileName} from Server!", Core.Resources.LogLevel.Information);
-                return;
-            }
-            else
-                logInListView($"Writing {testFile.FileName}", Core.Resources.LogLevel.Information);
+                if (fileBytes.Length == 0)
+                {
+                    logInListView($"Error loading MusicFile {file.FileName} from Server!", Core.Resources.LogLevel.Information);
+                    return;
+                }
+                else
+                    logInListView($"Writing {file.FileName}", Core.Resources.LogLevel.Information);
 
-            string sdCardMusicFolder = AppModel.GetAndroidMediaAppSDFolderPath();
-            File.Delete($"{sdCardMusicFolder}/{testFile.FileName}");
+                file.Folder = $"{AppModel.GetAndroidMediaAppSDFolderPath()}/{lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist).Name}/{lib.Album.Find(x => x.GUID == file.Album).Name}";
 
-            using (FileStream stream = new FileStream($"{sdCardMusicFolder}/{testFile.FileName}", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-            {
-                await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
+                Directory.CreateDirectory(file.Folder);
+                if (File.Exists(file.GetFullFilePath()))
+                    File.Delete(file.GetFullFilePath());
+
+                using (FileStream stream = new FileStream(file.GetFullFilePath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+                {
+                    await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
+                }
             }
 
             logInListView($"Success!", Core.Resources.LogLevel.Information);
@@ -88,6 +86,8 @@ namespace ArkEcho.App
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
+
+            logListView.ScrollTo(0, logListView.ChildCount - 1);
 
             return true;
         }
