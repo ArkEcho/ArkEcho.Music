@@ -35,7 +35,7 @@ namespace ArkEcho.App
             return true;
         }
 
-        public static string GetMusicSDFolderPath()
+        public static string GetAndroidMediaAppSDFolderPath()
         {
             string baseFolderPath = string.Empty;
             try
@@ -52,7 +52,7 @@ namespace ArkEcho.App
                     if (IsRemovable && !IsEmulated)
                     {
                         baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
-                        baseFolderPath += "Music/";
+                        baseFolderPath += "media/ArkEcho.App/";
                         //break;
                     }
                 }

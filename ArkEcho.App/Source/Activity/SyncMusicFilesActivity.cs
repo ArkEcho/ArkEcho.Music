@@ -5,7 +5,6 @@ using ArkEcho.App.Connection;
 using ArkEcho.Core;
 
 using System;
-using System.IO;
 
 namespace ArkEcho.App
 {
@@ -41,45 +40,49 @@ namespace ArkEcho.App
         {
             logInListView("Loading Music Library from Remote Server", Core.Resources.LogLevel.Information);
 
-            string sdCardMusicFolder = ArkEcho.App.AppModel.GetMusicSDFolderPath();
+            //string sdCardMusicFolder = ArkEcho.App.AppModel.GetAndroidMediaAppSDFolderPath();
 
-            //if ((ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
-            //|| (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted))
+            //try
             //{
-            //    ActivityCompat.RequestPermissions(this, new string[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, REQUEST);
+            //    using (FileStream stream = new FileStream($"{sdCardMusicFolder}/tester.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            //    {
+            //        byte[] test = Encoding.UTF8.GetBytes("Test");
+            //        stream.Write(test, 0, test.Length);
+            //    }
+            //    using (FileStream stream2 = new FileStream($"{sdCardMusicFolder}/tester.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+            //    {
+            //        byte[] test2 = Encoding.UTF8.GetBytes("Hello World");
+            //        stream2.Write(test2, 0, test2.Length);
+            //    }
+            //    File.Delete($"{sdCardMusicFolder}/tester.txt");
             //}
-            //string path = Android.OS.Environment.ExternalStorageDirectory.Path;
-            try
-            {
-                //string[] PERMISSIONS_TO_REQUEST = { Manifest.Permission.WriteExternalStorage };
-                //RequestPermissions(PERMISSIONS_TO_REQUEST, 1000);
-                //string test = "/storage/0000-0000/Android/data/ArkEcho.App/files";
-
-                File.Create($"{Android.OS.Environment.DirectoryMusic}/test2.txt");
-            }
-            catch (Exception ex)
-            {
-                logInListView(ex.Message, Core.Resources.LogLevel.Error);
-            }
-            //string test = File.ReadAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt");
-            //File.WriteAllText($"{AppModel.GetMusicSDFolderPath()}/test.txt", "Test");
-
-
-            //string libraryString = await arkEchoRest.GetMusicLibrary();
-
-
-            //MusicLibrary lib = new MusicLibrary();
-            //if (!string.IsNullOrEmpty(libraryString))
+            //catch (Exception ex)
             //{
-            //    if (lib.LoadFromJsonString(libraryString))
-            //        logInListView(lib.MusicFiles.Count.ToString(), Core.Resources.LogLevel.Information);
+            //    logInListView(ex.Message, Core.Resources.LogLevel.Error);
             //}
+
+            string libraryString = await arkEchoRest.GetMusicLibrary();
+            if (string.IsNullOrEmpty(libraryString))
+            {
+                logInListView("No response from the Server!", Core.Resources.LogLevel.Information);
+                return;
+            }
+
+            MusicLibrary lib = new MusicLibrary();
+            if (!lib.LoadFromJsonString(libraryString))
+            {
+                logInListView("Cant load json!", Core.Resources.LogLevel.Information);
+                return;
+            }
+
+            logInListView(lib.MusicFiles.Count.ToString(), Core.Resources.LogLevel.Information);
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
+
             return true;
         }
     }

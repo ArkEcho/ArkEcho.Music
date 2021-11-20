@@ -34,7 +34,7 @@ namespace ArkEcho.App
 
         private void onPbPlay_PauseClicked(object sender, EventArgs e)
         {
-            string pathnew = $"{ArkEcho.App.AppModel.GetMusicSDFolderPath()}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+            string pathnew = $"{ArkEcho.App.AppModel.GetAndroidMediaAppSDFolderPath()}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
 
             MusicFile file = new MusicFile(pathnew);
 

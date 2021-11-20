@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using RestSharp;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App.Connection
@@ -21,14 +22,14 @@ namespace ArkEcho.App.Connection
         {
             RestRequest request = new RestRequest("Music/Library");
 
-            // execute the request
-            IRestResponse response = null;
-            response = client.Get(request);
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-            response.Content = removeLeadingTrailingQuotas(response.Content);
+            var restResponse = await client.ExecuteAsync(request, cancellationTokenSource.Token);
 
-            if (response.IsSuccessful)
-                return ZipCompression.UnzipFromBase64(response.Content);
+            restResponse.Content = removeLeadingTrailingQuotas(restResponse.Content);
+
+            if (restResponse.IsSuccessful)
+                return ZipCompression.UnzipFromBase64(restResponse.Content);
             else
                 return string.Empty;
         }
