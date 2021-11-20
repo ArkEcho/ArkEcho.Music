@@ -58,6 +58,7 @@ namespace ArkEcho.Server
 
             app.UseEndpoints(endpoints =>
             {
+                // TODO: Bei falschem api/ call andere fallback page -> kein controller geladen
                 // Web API
                 endpoints.MapControllers();
 
