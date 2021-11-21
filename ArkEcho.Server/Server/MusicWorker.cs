@@ -105,13 +105,13 @@ namespace ArkEcho.Server
             else
             {
                 List<string> test = music.GetFullFilePath().Split(@"/").ToList();
-                if (!test[test.Count - 3].Equals(albumArtistName))
+                if (!test[test.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullFilePath()}");
                     return false;
                 }
 
-                if (!test[test.Count - 2].Equals(albumName))
+                if (!test[test.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullFilePath()}");
                     return false;

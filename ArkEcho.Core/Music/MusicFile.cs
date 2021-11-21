@@ -51,6 +51,8 @@ namespace ArkEcho.Core
             this.FileName = info.Name;
 
             string extensionCleared = info.Extension.Substring(1);
+
+            // TODO: Bessere Lösung, vorher prüfen?
             if (Resources.SupportedFileFormats.Contains(extensionCleared))
                 FileFormat = extensionCleared;
             else
