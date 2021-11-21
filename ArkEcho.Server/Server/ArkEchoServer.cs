@@ -95,7 +95,10 @@ namespace ArkEcho.Server
         {
             Console.WriteLine($"Worker Completed!");
             if (e.Result != null)
+            {
                 library = (MusicLibrary)e.Result;
+                Console.WriteLine($"Found {library.MusicFiles.Count} Music Files");
+            }
             else
             {
                 Console.WriteLine("### Error loading Music Library, stopping!");

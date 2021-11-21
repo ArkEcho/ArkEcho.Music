@@ -35,6 +35,7 @@ namespace ArkEcho.Core
             this.fileName = FileName;
         }
 
+        // TODO: Async laden
         public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
             string filepath = $"{Folder}\\{fileName}";
@@ -289,6 +290,7 @@ namespace ArkEcho.Core
             return jObj;
         }
 
+        // TODO: Uri?
         private bool checkPrimitiveTypeAndFunction(Type Type, Func Function, JObject Data, PropertyInfo Info, Mode Mode)
         {
             if (Type == typeof(string))
