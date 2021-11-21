@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.OS;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
 using ArkEcho.Player;
@@ -7,20 +8,24 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
-    public class AppModel : IDisposable
+    public class AppModel
     {
         public static AppModel Instance { get; } = new AppModel();
 
         public ArkEchoRest Rest { get; private set; } = null;
 
         public ArkEchoVLCPlayer Player { get; private set; } = null;
+        public MusicLibrary Library { get; private set; } = null;
+
+        private PowerManager powerManager = null;
+        private PowerManager.WakeLock wakeLock = null;
 
         private AppModel()
         {
             // TODO: Dispose
         }
 
-        public async Task<bool> Init()
+        public async Task<bool> Init(PowerManager powerManager)
         {
             // TODO: From App.Config
             string url = "https://192.168.178.20:5001/api";
@@ -31,8 +36,21 @@ namespace ArkEcho.App
             Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
 
+            // Create Wake Lock
+            this.powerManager = powerManager;
+            wakeLock = powerManager.NewWakeLock(WakeLockFlags.Full, "ArkEchoLock");
+
             await Task.Delay(5);
             return true;
+        }
+
+        public void PreventLock()
+        {
+            wakeLock.Acquire();
+        }
+        public void AllowLock()
+        {
+            wakeLock.Release();
         }
 
         public bool Log(string Text, Resources.LogLevel Level)
@@ -66,24 +84,10 @@ namespace ArkEcho.App
             return baseFolderPath;
         }
 
-        private bool disposed;
-
-        protected virtual void Dispose(bool disposing)
+        public bool SetMusicLibrary(string libraryString)
         {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-
-                }
-                disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            Library = new MusicLibrary();
+            return Library.LoadFromJsonString(libraryString);
         }
     }
 }

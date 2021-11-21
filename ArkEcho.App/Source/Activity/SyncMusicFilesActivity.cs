@@ -1,14 +1,16 @@
 ﻿using Android.App;
+using Android.Content.PM;
 using Android.OS;
 using Android.Widget;
 using ArkEcho.Core;
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
-    [Activity]
+    [Activity(ScreenOrientation = ScreenOrientation.Portrait)]
     public class SyncMusicFilesActivity : ExtendedActivity
     {
         Button syncMusicFilesButton = null;
@@ -35,30 +37,39 @@ namespace ArkEcho.App
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
-            //this.Window.AddFlags(WindowManagerFlags.KeepScreenOn);
-
+            AppModel.Instance.PreventLock();
             logInListView("Loading Music Library from Remote Server", Core.Resources.LogLevel.Information);
 
             string libraryString = await AppModel.Instance.Rest.GetMusicLibrary();
             if (string.IsNullOrEmpty(libraryString))
             {
                 logInListView("No response from the Server!", Core.Resources.LogLevel.Information);
+                AppModel.Instance.AllowLock();
                 return;
             }
 
-            MusicLibrary lib = new MusicLibrary();
-            if (!lib.LoadFromJsonString(libraryString))
+            if (!AppModel.Instance.SetMusicLibrary(libraryString))
             {
                 logInListView("Cant load json!", Core.Resources.LogLevel.Information);
+                AppModel.Instance.AllowLock();
                 return;
             }
 
+            MusicLibrary lib = AppModel.Instance.Library;
             logInListView($"Music File Count: {lib.MusicFiles.Count.ToString()}", Core.Resources.LogLevel.Information);
 
             string mediaFolderPath = AppModel.GetAndroidMediaAppSDFolderPath();
             foreach (MusicFile file in lib.MusicFiles.FindAll(x => x.AlbumArtist == lib.AlbumArtists.Find(y => y.Name.Equals("Alligatoah")).GUID))
             {
                 logInListView($"Loading {file.FileName}...", Core.Resources.LogLevel.Information);
+
+                file.Folder = $"{mediaFolderPath}/{lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist).Name}/{lib.Album.Find(x => x.GUID == file.Album).Name}";
+
+                if (!Directory.Exists(file.Folder))
+                    Directory.CreateDirectory(file.Folder);
+
+                if (File.Exists(file.GetFullFilePath()))
+                    continue;
 
                 byte[] fileBytes = await AppModel.Instance.Rest.GetMusicFile(file.GUID);
 
@@ -70,14 +81,6 @@ namespace ArkEcho.App
                 else
                     logInListView($"Writing {file.FileName}", Core.Resources.LogLevel.Information);
 
-                file.Folder = $"{mediaFolderPath}/{lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist).Name}/{lib.Album.Find(x => x.GUID == file.Album).Name}";
-
-                if (!Directory.Exists(file.Folder))
-                    Directory.CreateDirectory(file.Folder);
-
-                if (File.Exists(file.GetFullFilePath()))
-                    File.Delete(file.GetFullFilePath());
-
                 using (FileStream stream = new FileStream(file.GetFullFilePath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
                 {
                     await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
@@ -86,13 +89,17 @@ namespace ArkEcho.App
 
             logInListView($"Success!", Core.Resources.LogLevel.Information);
 
-            //this.Window.ClearFlags(WindowManagerFlags.KeepScreenOn);
+            await Task.Delay(1000);
+
+            AppModel.Instance.AllowLock();
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
+
+            logListView.SmoothScrollToPositionFromTop(logListView.LastVisiblePosition, 0);
 
             return true;
         }
