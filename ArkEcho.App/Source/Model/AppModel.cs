@@ -1,5 +1,4 @@
 ﻿using Android.App;
-using Android.Content;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
 using ArkEcho.Player;
@@ -47,24 +46,18 @@ namespace ArkEcho.App
             string baseFolderPath = string.Empty;
             try
             {
-                Context context = Application.Context;
-
-                Java.IO.File[] dirs = context.GetExternalMediaDirs();//.GetExternalFilesDirs(null);
-
-                foreach (Java.IO.File folder in dirs)
+                foreach (Java.IO.File folder in Application.Context.GetExternalMediaDirs())
                 {
                     bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
                     bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
 
                     if (IsRemovable && !IsEmulated)
                     {
-                        baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
-                        baseFolderPath += "media/ArkEcho.App/";
-                        //break;
+                        baseFolderPath = folder.Path;
+                        break;
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine("GetBaseFolderPath caused the following exception: {0}", ex);

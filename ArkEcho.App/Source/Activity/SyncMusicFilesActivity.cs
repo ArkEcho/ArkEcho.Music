@@ -35,6 +35,8 @@ namespace ArkEcho.App
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
+            //this.Window.AddFlags(WindowManagerFlags.KeepScreenOn);
+
             logInListView("Loading Music Library from Remote Server", Core.Resources.LogLevel.Information);
 
             string libraryString = await AppModel.Instance.Rest.GetMusicLibrary();
@@ -53,6 +55,7 @@ namespace ArkEcho.App
 
             logInListView($"Music File Count: {lib.MusicFiles.Count.ToString()}", Core.Resources.LogLevel.Information);
 
+            string mediaFolderPath = AppModel.GetAndroidMediaAppSDFolderPath();
             foreach (MusicFile file in lib.MusicFiles.FindAll(x => x.AlbumArtist == lib.AlbumArtists.Find(y => y.Name.Equals("Alligatoah")).GUID))
             {
                 logInListView($"Loading {file.FileName}...", Core.Resources.LogLevel.Information);
@@ -67,9 +70,11 @@ namespace ArkEcho.App
                 else
                     logInListView($"Writing {file.FileName}", Core.Resources.LogLevel.Information);
 
-                file.Folder = $"{AppModel.GetAndroidMediaAppSDFolderPath()}/{lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist).Name}/{lib.Album.Find(x => x.GUID == file.Album).Name}";
+                file.Folder = $"{mediaFolderPath}/{lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist).Name}/{lib.Album.Find(x => x.GUID == file.Album).Name}";
 
-                Directory.CreateDirectory(file.Folder);
+                if (!Directory.Exists(file.Folder))
+                    Directory.CreateDirectory(file.Folder);
+
                 if (File.Exists(file.GetFullFilePath()))
                     File.Delete(file.GetFullFilePath());
 
@@ -80,14 +85,14 @@ namespace ArkEcho.App
             }
 
             logInListView($"Success!", Core.Resources.LogLevel.Information);
+
+            //this.Window.ClearFlags(WindowManagerFlags.KeepScreenOn);
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
-
-            logListView.ScrollTo(0, logListView.ChildCount - 1);
 
             return true;
         }

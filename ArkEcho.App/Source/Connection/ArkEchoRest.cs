@@ -13,6 +13,7 @@ namespace ArkEcho.App.Connection
         public ArkEchoRest(string connectionUrl)
         {
             client = new RestClient(connectionUrl);
+            client.Timeout = 5000;
         }
 
         public async Task<string> GetMusicLibrary()
