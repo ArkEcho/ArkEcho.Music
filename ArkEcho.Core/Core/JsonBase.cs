@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
@@ -35,8 +36,7 @@ namespace ArkEcho.Core
             this.fileName = FileName;
         }
 
-        // TODO: Async laden
-        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        public async Task<bool> LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
             string filepath = $"{Folder}\\{fileName}";
 
@@ -44,24 +44,25 @@ namespace ArkEcho.Core
 
             string content = string.Empty;
             if (File.Exists(filepath))
-                content = File.ReadAllText(filepath);
+                content = await File.ReadAllTextAsync(filepath);
 
             // Load Props from JSON
-            bool foundCorrectExistingFile = LoadFromJsonString(content);
+            bool foundCorrectExistingFile = await Task.Factory.StartNew(() => foundCorrectExistingFile = LoadFromJsonString(content));
 
             if (RewriteAddMissingParams)
-                SaveToFile(Folder);
+                await SaveToFile(Folder);
 
             return foundCorrectExistingFile;
         }
 
-        public bool SaveToFile(string Folder)
+        public async Task<bool> SaveToFile(string Folder)
         {
             string filepath = $"{Folder}\\{fileName}";
 
             try
             {
-                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
+                string json = await Task.Factory.StartNew(() => json = SaveToJsonString());
+                await File.WriteAllTextAsync(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {

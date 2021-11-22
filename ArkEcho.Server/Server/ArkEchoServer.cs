@@ -40,7 +40,7 @@ namespace ArkEcho.Server
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             ServerConfig = new ServerConfig(serverConfigFileName);
-            if (!ServerConfig.LoadFromFile(executingLocation, true))
+            if (!ServerConfig.LoadFromFile(executingLocation, true).Result)
             {
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;

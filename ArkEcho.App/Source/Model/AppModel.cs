@@ -12,6 +12,8 @@ namespace ArkEcho.App
     {
         public static AppModel Instance { get; } = new AppModel();
 
+        public AppConfig Config { get; private set; } = null;
+
         public ArkEchoRest Rest { get; private set; } = null;
 
         public ArkEchoVLCPlayer Player { get; private set; } = null;
@@ -20,6 +22,8 @@ namespace ArkEcho.App
         private PowerManager powerManager = null;
         private PowerManager.WakeLock wakeLock = null;
 
+        private const string configFileName = "AppConfig.json";
+
         private AppModel()
         {
             // TODO: Dispose
@@ -27,11 +31,15 @@ namespace ArkEcho.App
 
         public async Task<bool> Init(PowerManager powerManager)
         {
-            // TODO: From App.Config
-            string url = "https://192.168.178.20:5001/api";
-            //string url = "https://arkecho.de/api";
+            Config = new AppConfig(configFileName);
+            await Config.LoadFromFile(GetAndroidInternalPath());
 
-            Rest = new Connection.ArkEchoRest(url);
+            if (string.IsNullOrEmpty(Config.ServerAddress))
+                Config.ServerAddress = "https://192.168.178.20:5001/api";
+
+            await Config.SaveToFile(GetAndroidInternalPath());
+
+            Rest = new Connection.ArkEchoRest(Config.ServerAddress);
 
             Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
@@ -82,6 +90,11 @@ namespace ArkEcho.App
             }
 
             return baseFolderPath;
+        }
+
+        public static string GetAndroidInternalPath()
+        {
+            return Application.Context.FilesDir.Path;
         }
 
         public bool SetMusicLibrary(string libraryString)

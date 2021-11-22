@@ -7,6 +7,7 @@ namespace ArkEcho.Core
 {
     public static class ZipCompression
     {
+        // TODO: Async
         private static void CopyTo(Stream src, Stream dest)
         {
             byte[] bytes = new byte[4096];
@@ -42,6 +43,7 @@ namespace ArkEcho.Core
             }
         }
 
+        // TODO: Bessere Funktionsnamen mit UTF8, Base64 und Zip etc.
         public static string UnzipFromBase64(string zippedBase64)
         {
             return UnzipFromByteArray(Convert.FromBase64String(zippedBase64));
