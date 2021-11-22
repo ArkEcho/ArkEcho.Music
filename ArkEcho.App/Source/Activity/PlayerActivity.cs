@@ -34,9 +34,10 @@ namespace ArkEcho.App
 
         private void onPbPlay_PauseClicked(object sender, EventArgs e)
         {
-            string pathnew = $"{ArkEcho.App.AppModel.GetAndroidMediaAppSDFolderPath()}Alligatoah/Triebwerke/Alligatoah - Amnesie.mp3";
+            if (AppModel.Instance.Library == null)
+                return;
 
-            MusicFile file = new MusicFile(pathnew);
+            MusicFile file = AppModel.Instance.Library.MusicFiles.Find(x => x.Title.Equals("Du bist schön", StringComparison.OrdinalIgnoreCase));
 
             AppModel.Instance.Player.Start(new List<MusicFile> { file }, 0);
         }

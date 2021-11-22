@@ -46,10 +46,13 @@ namespace ArkEcho.Core
         {
             FileInfo info = new FileInfo(FilePath);
 
-            this.Folder = info.DirectoryName;
+            this.Folder = PathHandling.ReplaceBackForwardSlashPath(info.DirectoryName);
+
             this.FileName = info.Name;
 
             string extensionCleared = info.Extension.Substring(1);
+
+            // TODO: Bessere Lösung, vorher prüfen?
             if (Resources.SupportedFileFormats.Contains(extensionCleared))
                 FileFormat = extensionCleared;
             else

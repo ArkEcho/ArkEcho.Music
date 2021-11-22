@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,19 +10,21 @@
         android:text="@string/SyncMusicFilesActivityHeader"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="50mm"
-        android:layout_height="10mm"/>
+        android:layout_height="5mm"/>
     <Button
         android:id="@+id/syncMusicButton"
         android:text="@string/SyncMusicFilesActivitySyncButton"
         android:layout_width="50mm"
-        android:layout_height="10mm"/>
+        android:layout_height="10mm"
+        android:layout_gravity="center"/>
     <TextView
         android:text="@string/SyncMusicFilesActivityLog"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="50mm"
-        android:layout_height="10mm"/>
+        android:layout_height="5mm"/>
     <ListView
-        android:id="@+id/logListView"
-        android:layout_width="50mm"
-        android:layout_height="60mm"/>
+        android:id="@+id/syncLogListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="fill"/>
 </LinearLayout>

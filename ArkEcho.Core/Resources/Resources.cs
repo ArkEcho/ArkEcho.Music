@@ -16,7 +16,7 @@ namespace ArkEcho.Core
         {
             "mp3",
             "m4a",
-            //"wma"
+            "wma"
         };
     }
 }
