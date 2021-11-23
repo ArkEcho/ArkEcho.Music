@@ -2,7 +2,6 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
@@ -29,7 +28,7 @@ namespace ArkEcho.App
             await AppModel.Instance.Init((PowerManager)this.GetSystemService(Context.PowerService));
 
             // Bisschen Verzögerung
-            await Task.Delay(250);
+            //await Task.Delay(250);
 
             StartActivity(typeof(PlayerActivity));
             Finish();

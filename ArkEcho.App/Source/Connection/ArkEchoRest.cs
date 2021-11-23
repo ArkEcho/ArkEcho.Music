@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using ArkEcho.Core;
+using RestSharp;
 using System;
 using System.Text;
 using System.Threading;
@@ -22,9 +23,12 @@ namespace ArkEcho.App.Connection
 
             if (restResponse.IsSuccessful)
             {
-                // TODO: Compression zu abschaltbar
                 restResponse.Content = removeLeadingTrailingQuotas(restResponse.Content);
-                return Encoding.UTF8.GetString(Convert.FromBase64String(restResponse.Content));//ZipCompression.UnzipFromBase64(restResponse.Content);
+
+                if (AppModel.Instance.Config.Compression)
+                    return ZipCompression.UnzipFromBase64(restResponse.Content);
+                else
+                    return Encoding.UTF8.GetString(Convert.FromBase64String(restResponse.Content));
             }
             else
                 return string.Empty;
@@ -36,7 +40,10 @@ namespace ArkEcho.App.Connection
 
             if (restResponse.IsSuccessful)
             {
-                return restResponse.RawBytes;// ZipCompression.UnzipByteArray(restResponse.RawBytes);
+                if (AppModel.Instance.Config.Compression)
+                    return ZipCompression.UnzipByteArray(restResponse.RawBytes);
+                else
+                    return restResponse.RawBytes;
             }
             else
                 return null;

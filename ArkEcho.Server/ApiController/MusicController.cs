@@ -15,16 +15,16 @@ namespace ArkEcho.Server
 
         // GET: api/Music
         [HttpGet]
-        public ActionResult GetMusicLibrary()
+        public async Task<ActionResult> GetMusicLibrary()
         {
-            string base64 = string.Empty;
+            string lib = await server.GetMusicLibraryString();
 
             if (server.ServerConfig.Compression)
-                base64 = ZipCompression.ZipStringToBase64(server.GetMusicLibraryString());
+                lib = ZipCompression.ZipStringToBase64(lib);
             else
-                base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(server.GetMusicLibraryString()));
+                lib = Convert.ToBase64String(Encoding.UTF8.GetBytes(lib));
 
-            return Ok(base64);
+            return Ok(lib);
         }
 
         // GET: api/Music/[GUID]

@@ -12,6 +12,8 @@ namespace ArkEcho.App
     {
         public static AppModel Instance { get; } = new AppModel();
 
+        public AppConfig Config { get; private set; } = null;
+
         public ArkEchoRest Rest { get; private set; } = null;
 
         public ArkEchoVLCPlayer Player { get; private set; } = null;
@@ -20,6 +22,9 @@ namespace ArkEcho.App
         private PowerManager powerManager = null;
         private PowerManager.WakeLock wakeLock = null;
 
+        private const string configFileName = "AppConfig.json";
+        private const string libraryFileName = "MusicLibrary.json";
+
         private AppModel()
         {
             // TODO: Dispose
@@ -27,12 +32,22 @@ namespace ArkEcho.App
 
         public async Task<bool> Init(PowerManager powerManager)
         {
-            // TODO: From App.Config
-            string url = "https://192.168.178.20:5001/api";
-            //string url = "https://arkecho.de/api";
+            // Config and Rest
+            Config = new AppConfig(configFileName);
+            await Config.LoadFromFile(GetAndroidInternalPath());
 
-            Rest = new Connection.ArkEchoRest(url);
+            if (string.IsNullOrEmpty(Config.ServerAddress))
+                Config.ServerAddress = "https://192.168.178.20:5001/api";
 
+            await Config.SaveToFile(GetAndroidInternalPath());
+
+            Rest = new Connection.ArkEchoRest(Config.ServerAddress);
+
+            // Library
+            Library = new MusicLibrary(libraryFileName);
+            await Library.LoadFromFile(GetAndroidInternalPath());
+
+            // Player
             Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
 
@@ -40,7 +55,6 @@ namespace ArkEcho.App
             this.powerManager = powerManager;
             wakeLock = powerManager.NewWakeLock(WakeLockFlags.Full, "ArkEchoLock");
 
-            await Task.Delay(5);
             return true;
         }
 
@@ -84,10 +98,19 @@ namespace ArkEcho.App
             return baseFolderPath;
         }
 
-        public bool SetMusicLibrary(string libraryString)
+        public static string GetAndroidInternalPath()
         {
-            Library = new MusicLibrary();
-            return Library.LoadFromJsonString(libraryString);
+            return Application.Context.FilesDir.Path;
+        }
+
+        public async Task<bool> SetMusicLibrary(string libraryString)
+        {
+            Library = new MusicLibrary(libraryFileName);
+
+            bool result = await Library.LoadFromJsonString(libraryString);
+            result &= await Library.SaveToFile(GetAndroidInternalPath());
+
+            return result;
         }
     }
 }

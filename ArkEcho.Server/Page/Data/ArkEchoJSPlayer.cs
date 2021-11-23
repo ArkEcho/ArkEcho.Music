@@ -56,11 +56,10 @@ namespace ArkEcho.Player
 
         protected override void loadImpl(bool StartOnLoad)
         {
-            // TODO: Adresse dynamisch
             if (PlayingFile != null)
             {
-                // ÄNDERN BEI RELEASE
-                string source = $"https://localhost:5001/api/Music/MusicFile/{PlayingFile.GUID}";
+                // TODO: Aus Config?
+                string source = $"https://localhost:5001/api/Music/{PlayingFile.GUID}";
                 JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
             }
         }

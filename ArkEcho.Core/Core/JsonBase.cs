@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
@@ -35,8 +36,7 @@ namespace ArkEcho.Core
             this.fileName = FileName;
         }
 
-        // TODO: Async laden
-        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        public async Task<bool> LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
             string filepath = $"{Folder}\\{fileName}";
 
@@ -44,24 +44,25 @@ namespace ArkEcho.Core
 
             string content = string.Empty;
             if (File.Exists(filepath))
-                content = File.ReadAllText(filepath);
+                content = await File.ReadAllTextAsync(filepath);
 
             // Load Props from JSON
-            bool foundCorrectExistingFile = LoadFromJsonString(content);
+            bool foundCorrectExistingFile = await LoadFromJsonString(content);
 
             if (RewriteAddMissingParams)
-                SaveToFile(Folder);
+                await SaveToFile(Folder);
 
             return foundCorrectExistingFile;
         }
 
-        public bool SaveToFile(string Folder)
+        public async Task<bool> SaveToFile(string Folder)
         {
             string filepath = $"{Folder}\\{fileName}";
 
             try
             {
-                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
+                string json = await SaveToJsonString();
+                await File.WriteAllTextAsync(filepath, json, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -71,22 +72,23 @@ namespace ArkEcho.Core
             return true;
         }
 
-        public string SaveToJsonString()
+        public async Task<string> SaveToJsonString()
         {
             JObject data = new JObject();
-            handleProperties(data, Mode.PropToJson);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.PropToJson));
             return data.ToString();
         }
 
-        public bool LoadFromJsonString(string Json)
+        public async Task<bool> LoadFromJsonString(string Json)
         {
+            // TODO: What if already set?
             JObject data = null;
 
             if (!string.IsNullOrEmpty(Json))
             {
                 try
                 {
-                    data = JObject.Parse(Json);
+                    data = await Task.Factory.StartNew(() => data = JObject.Parse(Json));
                 }
                 catch (Exception ex)
                 {
@@ -97,7 +99,7 @@ namespace ArkEcho.Core
             if (data == null)
                 return false;
 
-            handleProperties(data, Mode.JsonToProp);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.JsonToProp));
             return true;
         }
 

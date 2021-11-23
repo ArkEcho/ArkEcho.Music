@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -40,7 +41,7 @@ namespace ArkEcho.Server
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             ServerConfig = new ServerConfig(serverConfigFileName);
-            if (!ServerConfig.LoadFromFile(executingLocation, true))
+            if (!ServerConfig.LoadFromFile(executingLocation, true).Result)
             {
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;
@@ -53,7 +54,7 @@ namespace ArkEcho.Server
             else
             {
                 Console.WriteLine("Configuration for ArkEcho.Server:");
-                Console.WriteLine(ServerConfig.SaveToJsonString());
+                Console.WriteLine(ServerConfig.SaveToJsonString().Result);
             }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
@@ -106,9 +107,9 @@ namespace ArkEcho.Server
             }
         }
 
-        public string GetMusicLibraryString()
+        public async Task<string> GetMusicLibraryString()
         {
-            return library != null ? library.SaveToJsonString() : string.Empty;
+            return library != null ? await library.SaveToJsonString() : string.Empty;
         }
 
         public MusicFile GetMusicFile(Guid guid)

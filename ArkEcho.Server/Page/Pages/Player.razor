@@ -65,9 +65,9 @@
 
     private List<string> Logs = new List<string>();
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        Model.Initialize();
+        await Model.Initialize();
 
         JSPlayer.InitPlayer(JS, logOnPage);
         JSPlayer.TitleChanged += () => updatePlayerInfo();
@@ -75,7 +75,8 @@
         JSPlayer.PlayingChanged += () => updatePlayerInfo();
         musicFileCounter = Model.Library.MusicFiles.Count;
         updatePlayerInfo();
-        return base.OnInitializedAsync();
+
+        await base.OnInitializedAsync();
     }
 
     private bool logOnPage(string Text, Resources.LogLevel Level)
