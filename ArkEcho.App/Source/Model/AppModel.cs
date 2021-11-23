@@ -23,6 +23,7 @@ namespace ArkEcho.App
         private PowerManager.WakeLock wakeLock = null;
 
         private const string configFileName = "AppConfig.json";
+        private const string libraryFileName = "MusicLibrary.json";
 
         private AppModel()
         {
@@ -31,6 +32,7 @@ namespace ArkEcho.App
 
         public async Task<bool> Init(PowerManager powerManager)
         {
+            // Config and Rest
             Config = new AppConfig(configFileName);
             await Config.LoadFromFile(GetAndroidInternalPath());
 
@@ -41,6 +43,11 @@ namespace ArkEcho.App
 
             Rest = new Connection.ArkEchoRest(Config.ServerAddress);
 
+            // Library
+            Library = new MusicLibrary(libraryFileName);
+            await Library.LoadFromFile(GetAndroidInternalPath());
+
+            // Player
             Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
 
@@ -48,7 +55,6 @@ namespace ArkEcho.App
             this.powerManager = powerManager;
             wakeLock = powerManager.NewWakeLock(WakeLockFlags.Full, "ArkEchoLock");
 
-            await Task.Delay(5);
             return true;
         }
 
@@ -97,10 +103,14 @@ namespace ArkEcho.App
             return Application.Context.FilesDir.Path;
         }
 
-        public bool SetMusicLibrary(string libraryString)
+        public async Task<bool> SetMusicLibrary(string libraryString)
         {
-            Library = new MusicLibrary();
-            return Library.LoadFromJsonString(libraryString);
+            Library = new MusicLibrary(libraryFileName);
+
+            bool result = await Library.LoadFromJsonString(libraryString);
+            result &= await Library.SaveToFile(GetAndroidInternalPath());
+
+            return result;
         }
     }
 }
