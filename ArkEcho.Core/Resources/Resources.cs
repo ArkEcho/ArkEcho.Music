@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ArkEcho.Core
+namespace ArkEcho
 {
     public class Resources
     {

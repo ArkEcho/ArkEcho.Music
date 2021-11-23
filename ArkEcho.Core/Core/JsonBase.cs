@@ -47,7 +47,7 @@ namespace ArkEcho.Core
                 content = await File.ReadAllTextAsync(filepath);
 
             // Load Props from JSON
-            bool foundCorrectExistingFile = await Task.Factory.StartNew(() => foundCorrectExistingFile = LoadFromJsonString(content));
+            bool foundCorrectExistingFile = await LoadFromJsonString(content);
 
             if (RewriteAddMissingParams)
                 await SaveToFile(Folder);
@@ -61,8 +61,8 @@ namespace ArkEcho.Core
 
             try
             {
-                string json = await Task.Factory.StartNew(() => json = SaveToJsonString());
-                await File.WriteAllTextAsync(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
+                string json = await SaveToJsonString();
+                await File.WriteAllTextAsync(filepath, json, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -72,22 +72,23 @@ namespace ArkEcho.Core
             return true;
         }
 
-        public string SaveToJsonString()
+        public async Task<string> SaveToJsonString()
         {
             JObject data = new JObject();
-            handleProperties(data, Mode.PropToJson);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.PropToJson));
             return data.ToString();
         }
 
-        public bool LoadFromJsonString(string Json)
+        public async Task<bool> LoadFromJsonString(string Json)
         {
+            // TODO: What if already set?
             JObject data = null;
 
             if (!string.IsNullOrEmpty(Json))
             {
                 try
                 {
-                    data = JObject.Parse(Json);
+                    data = await Task.Factory.StartNew(() => data = JObject.Parse(Json));
                 }
                 catch (Exception ex)
                 {
@@ -98,7 +99,7 @@ namespace ArkEcho.Core
             if (data == null)
                 return false;
 
-            handleProperties(data, Mode.JsonToProp);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.JsonToProp));
             return true;
         }
 
