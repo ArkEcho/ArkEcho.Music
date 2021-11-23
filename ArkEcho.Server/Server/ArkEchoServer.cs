@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -53,7 +54,7 @@ namespace ArkEcho.Server
             else
             {
                 Console.WriteLine("Configuration for ArkEcho.Server:");
-                Console.WriteLine(ServerConfig.SaveToJsonString());
+                Console.WriteLine(ServerConfig.SaveToJsonString().Result);
             }
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
@@ -106,9 +107,9 @@ namespace ArkEcho.Server
             }
         }
 
-        public string GetMusicLibraryString()
+        public async Task<string> GetMusicLibraryString()
         {
-            return library != null ? library.SaveToJsonString() : string.Empty;
+            return library != null ? await library.SaveToJsonString() : string.Empty;
         }
 
         public MusicFile GetMusicFile(Guid guid)
