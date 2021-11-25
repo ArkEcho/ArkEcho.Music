@@ -1,7 +1,6 @@
 ﻿using ArkEcho.Core;
 using RestSharp;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,9 +25,9 @@ namespace ArkEcho.App.Connection
                 restResponse.Content = removeLeadingTrailingQuotas(restResponse.Content);
 
                 if (AppModel.Instance.Config.Compression)
-                    return ZipCompression.UnzipFromBase64(restResponse.Content);
+                    return await ZipCompression.UnzipBase64(restResponse.Content);
                 else
-                    return Encoding.UTF8.GetString(Convert.FromBase64String(restResponse.Content));
+                    return restResponse.Content.FromBase64().GetString();
             }
             else
                 return string.Empty;
@@ -41,7 +40,7 @@ namespace ArkEcho.App.Connection
             if (restResponse.IsSuccessful)
             {
                 if (AppModel.Instance.Config.Compression)
-                    return ZipCompression.UnzipByteArray(restResponse.RawBytes);
+                    return await ZipCompression.Unzip(restResponse.RawBytes);
                 else
                     return restResponse.RawBytes;
             }

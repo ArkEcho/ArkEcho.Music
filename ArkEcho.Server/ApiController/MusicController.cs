@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -20,9 +19,9 @@ namespace ArkEcho.Server
             string lib = await server.GetMusicLibraryString();
 
             if (server.ServerConfig.Compression)
-                lib = ZipCompression.ZipStringToBase64(lib);
+                lib = await ZipCompression.ZipToBase64(lib);
             else
-                lib = Convert.ToBase64String(Encoding.UTF8.GetBytes(lib));
+                lib = lib.GetByteArray().ToBase64();
 
             return Ok(lib);
         }
@@ -31,6 +30,7 @@ namespace ArkEcho.Server
         [HttpGet("{guid}")]
         public async Task<ActionResult> GetMusicFile(Guid guid)
         {
+            // TODO: Logging!
             if (guid == Guid.Empty)
                 return BadRequest();
 
@@ -41,7 +41,7 @@ namespace ArkEcho.Server
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());
             if (server.ServerConfig.Compression)
-                content = ZipCompression.ZipByteArray(content);
+                content = await ZipCompression.Zip(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
             result.FileDownloadName = Path.GetFileName(musicFile.FileName);

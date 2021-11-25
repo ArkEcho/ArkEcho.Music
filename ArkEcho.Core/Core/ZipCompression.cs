@@ -1,71 +1,57 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
     public static class ZipCompression
     {
-        // TODO: Async
-        private static void CopyTo(Stream src, Stream dest)
+        private static async Task CopyTo(Stream src, Stream dest)
         {
             byte[] bytes = new byte[4096];
+            int cnt = 0;
 
-            int cnt;
-
-            while ((cnt = src.Read(bytes, 0, bytes.Length)) != 0)
-                dest.Write(bytes, 0, cnt);
+            while ((cnt = await src.ReadAsync(bytes, 0, bytes.Length)) != 0)
+                await dest.WriteAsync(bytes, 0, cnt);
         }
 
-        public static string ZipStringToBase64(string unzipped)
+        public static async Task<string> ZipToBase64(string unzipped)
         {
-            return Convert.ToBase64String(ZipStringToByteArray(unzipped));
+            byte[] arr = await Zip(unzipped.GetByteArray());
+            return arr.ToBase64();
         }
 
-        public static byte[] ZipStringToByteArray(string unzipped)
+        public static async Task<byte[]> Zip(byte[] array)
         {
-            return ZipByteArray(Encoding.UTF8.GetBytes(unzipped));
-        }
-
-        public static byte[] ZipByteArray(byte[] array)
-        {
-            using (MemoryStream msi = new MemoryStream(array))
-            using (MemoryStream mso = new MemoryStream())
+            using (MemoryStream inStream = new MemoryStream(array))
             {
-                using (GZipStream gs = new GZipStream(mso, CompressionMode.Compress))
+                using (MemoryStream outStream = new MemoryStream())
                 {
-                    //msi.CopyTo(gs);
-                    CopyTo(msi, gs);
-                }
+                    using (GZipStream gs = new GZipStream(outStream, CompressionMode.Compress))
+                        await CopyTo(inStream, gs);
 
-                return mso.ToArray();
+                    return outStream.ToArray();
+                }
             }
         }
 
-        // TODO: Bessere Funktionsnamen mit UTF8, Base64 und Zip etc.
-        public static string UnzipFromBase64(string zippedBase64)
+        public static async Task<string> UnzipBase64(string zippedBase64)
         {
-            return UnzipFromByteArray(Convert.FromBase64String(zippedBase64));
+            byte[] arr = await Unzip(zippedBase64.FromBase64());
+            return arr.GetString();
         }
 
-        public static string UnzipFromByteArray(byte[] zipped)
+        public static async Task<byte[]> Unzip(byte[] zipped)
         {
-            return Encoding.UTF8.GetString(UnzipByteArray(zipped));
-        }
-
-        public static byte[] UnzipByteArray(byte[] zipped)
-        {
-            using (MemoryStream msi = new MemoryStream(zipped))
-            using (MemoryStream mso = new MemoryStream())
+            using (MemoryStream inStream = new MemoryStream(zipped))
             {
-                using (GZipStream gs = new GZipStream(msi, CompressionMode.Decompress))
+                using (MemoryStream outStream = new MemoryStream())
                 {
-                    //gs.CopyTo(mso);
-                    CopyTo(gs, mso);
-                }
+                    using (GZipStream gs = new GZipStream(inStream, CompressionMode.Decompress))
+                        await CopyTo(gs, outStream);
 
-                return mso.ToArray();
+                    return outStream.ToArray();
+                }
             }
         }
     }
