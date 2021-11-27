@@ -81,18 +81,19 @@ namespace ArkEcho.App
             {
                 foreach (MusicFile file in lib.MusicFiles)
                 {
-                    file.Folder = getMusicFileFolder(file, lib);
-                    if (string.IsNullOrEmpty(file.Folder))
+                    string folder = getMusicFileFolder(file, lib);
+                    if (string.IsNullOrEmpty(folder))
                     {
                         logInListView($"Error building Path for {file.FileName}", ArkEcho.Resources.LogLevel.Information);
                         AppModel.Instance.AllowLock();
                         return;
                     }
+                    file.Folder = new Uri(folder);
 
                     okFiles.Add(file.GetFullFilePath());
 
-                    if (!Directory.Exists(file.Folder))
-                        Directory.CreateDirectory(file.Folder);
+                    if (!Directory.Exists(file.Folder.AbsolutePath))
+                        Directory.CreateDirectory(file.Folder.AbsolutePath);
 
                     if (File.Exists(file.GetFullFilePath()))
                         continue;

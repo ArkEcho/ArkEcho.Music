@@ -29,7 +29,7 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
-        public string Folder { get; set; } = string.Empty;
+        public Uri Folder { get; set; } = null;
 
         [JsonProperty]
         public string FileName { get; set; } = string.Empty;
@@ -46,22 +46,14 @@ namespace ArkEcho.Core
         {
             FileInfo info = new FileInfo(FilePath);
 
-            this.Folder = PathHandling.ReplaceBackForwardSlashPath(info.DirectoryName);
-
+            this.Folder = new Uri(info.DirectoryName);
             this.FileName = info.Name;
-
-            string extensionCleared = info.Extension.Substring(1);
-
-            // TODO: Bessere Lösung, vorher prüfen?
-            if (Resources.SupportedFileFormats.Contains(extensionCleared))
-                FileFormat = extensionCleared;
-            else
-                FileFormat = "ERROR";
+            this.FileFormat = info.Extension.Substring(1);
         }
 
         public string GetFullFilePath()
         {
-            return $"{Folder}/{FileName}";
+            return $"{Folder.LocalPath}\\{FileName}";
         }
     }
 }

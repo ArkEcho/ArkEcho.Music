@@ -92,7 +92,7 @@ namespace ArkEcho.Server
             foreach (string subdirectory in Directory.GetDirectories(DirectoryPath))
                 results.AddRange(getAllFilesSubSearch(subdirectory, FileExtensionFilter));
 
-            return PathHandling.ReplaceBackForwardSlashPathList(results);
+            return results;
         }
 
         private bool checkFolderStructureAndTags(MusicFile music, string albumName, string albumArtistName)
@@ -104,14 +104,14 @@ namespace ArkEcho.Server
             }
             else
             {
-                List<string> test = music.GetFullFilePath().Split(@"/").ToList();
-                if (!test[test.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
+                List<string> parts = music.GetFullFilePath().Split("\\").ToList();
+                if (!parts[parts.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullFilePath()}");
                     return false;
                 }
 
-                if (!test[test.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
+                if (!parts[parts.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullFilePath()}");
                     return false;
