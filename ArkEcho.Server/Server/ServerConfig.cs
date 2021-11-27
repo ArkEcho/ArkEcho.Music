@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using System;
 
 namespace ArkEcho.Server
 {
@@ -7,7 +8,7 @@ namespace ArkEcho.Server
         public ServerConfig(string FileName) : base(FileName) { }
 
         [JsonProperty]
-        public string MusicFolder { get; private set; } = string.Empty;
+        public Uri MusicFolder { get; private set; } = null;
 
         [JsonProperty]
         public bool Authorization { get; private set; } = false;

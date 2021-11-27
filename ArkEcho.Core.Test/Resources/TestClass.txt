@@ -5,6 +5,7 @@
   "String": "tEsTStRing",
   "Guid": "936da01f-9abd-4d9d-80c7-02af85c822a8",
   "DateTime": "2030-12-12T12:23:45",
+  "Uri": "C:/Test/Folder",
   "ListInt": [
     987,
     678

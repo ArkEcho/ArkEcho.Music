@@ -46,7 +46,7 @@ namespace ArkEcho.Server
                 Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
                 return false;
             }
-            else if (string.IsNullOrEmpty(ServerConfig.MusicFolder) || !Directory.Exists(ServerConfig.MusicFolder))
+            else if (string.IsNullOrEmpty(ServerConfig.MusicFolder.AbsolutePath) || !Directory.Exists(ServerConfig.MusicFolder.AbsolutePath))
             {
                 Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
@@ -89,7 +89,7 @@ namespace ArkEcho.Server
         public void LoadMusicLibrary()
         {
             library = null;
-            musicWorker.RunWorkerAsync(ServerConfig.MusicFolder);
+            musicWorker.RunWorkerAsync(ServerConfig.MusicFolder.AbsolutePath);
         }
 
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

@@ -29,6 +29,9 @@ namespace ArkEcho.Core.Test
         public DateTime DateTime { get; set; }
 
         [JsonProperty]
+        public Uri Uri { get; set; }
+
+        [JsonProperty]
         public List<int> ListInt { get; set; }
 
         [JsonProperty]
