@@ -3,6 +3,7 @@ using System.IO;
 
 namespace ArkEcho.Core
 {
+    // TODO: Debug Display
     public class MusicFile : JsonBase
     {
         [JsonProperty]
@@ -51,9 +52,14 @@ namespace ArkEcho.Core
             this.FileFormat = info.Extension.Substring(1);
         }
 
-        public string GetFullFilePath()
+        public string GetFullPathWindows()
         {
             return $"{Folder.LocalPath}\\{FileName}";
+        }
+
+        public string GetFullPathAndroid()
+        {
+            return $"{Folder.LocalPath}/{FileName}";
         }
     }
 }
