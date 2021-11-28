@@ -40,92 +40,63 @@ namespace ArkEcho.App
         {
             AppModel.Instance.PreventLock();
 
-            MusicLibrary lib = null;
-            try
+            logInListView("Loading MusicLibrary", ArkEcho.Resources.LogLevel.Information);
+
+            bool loadlib = await AppModel.Instance.LoadLibraryFromServer(logInListView);
+            if (!loadlib)
             {
-                logInListView("Loading MusicLibrary", ArkEcho.Resources.LogLevel.Information);
-
-                string libraryString = await AppModel.Instance.Rest.GetMusicLibrary();
-                if (string.IsNullOrEmpty(libraryString))
-                {
-                    logInListView("No response from the Server!", ArkEcho.Resources.LogLevel.Information);
-                    AppModel.Instance.AllowLock();
-                    return;
-                }
-
-                bool loadLibrary = await AppModel.Instance.SetMusicLibrary(libraryString);
-                if (!loadLibrary)
-                {
-                    logInListView("Cant load json!", ArkEcho.Resources.LogLevel.Information);
-                    AppModel.Instance.AllowLock();
-                    return;
-                }
-
-                lib = AppModel.Instance.Library;
-                logInListView($"Music File Count: {lib.MusicFiles.Count.ToString()}", ArkEcho.Resources.LogLevel.Information);
-
-                await Task.Delay(200);
-            }
-            catch (Exception ex)
-            {
-                logInListView($"Exception loading MusicLibrary: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
                 AppModel.Instance.AllowLock();
                 return;
             }
 
-            logInListView($"Loading and Checking Files", ArkEcho.Resources.LogLevel.Information);
+            logInListView($"Checking Files", ArkEcho.Resources.LogLevel.Information);
             await Task.Delay(200);
 
-            List<string> okFiles = new List<string>();
-            try
+            List<MusicFile> exist = new List<MusicFile>();
+            List<MusicFile> missing = new List<MusicFile>();
+            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(logInListView, exist, missing);
+
+            if (!checkLib)
             {
-                foreach (MusicFile file in lib.MusicFiles)
-                {
-                    string folder = getMusicFileFolder(file, lib);
-                    if (string.IsNullOrEmpty(folder))
-                    {
-                        logInListView($"Error building Path for {file.FileName}", ArkEcho.Resources.LogLevel.Information);
-                        AppModel.Instance.AllowLock();
-                        return;
-                    }
-                    file.Folder = new Uri(folder);
-
-                    okFiles.Add(file.GetFullFilePath());
-
-                    if (!Directory.Exists(file.Folder.AbsolutePath))
-                        Directory.CreateDirectory(file.Folder.AbsolutePath);
-
-                    if (File.Exists(file.GetFullFilePath()))
-                        continue;
-
-                    logInListView($"Loading {file.FileName}", ArkEcho.Resources.LogLevel.Information);
-
-                    byte[] fileBytes = await AppModel.Instance.Rest.GetMusicFile(file.GUID);
-
-                    if (fileBytes.Length == 0)
-                    {
-                        logInListView($"Error loading {file.FileName} from Server!", ArkEcho.Resources.LogLevel.Information);
-                        AppModel.Instance.AllowLock();
-                        return;
-                    }
-
-                    using (FileStream stream = new FileStream(file.GetFullFilePath(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                    {
-                        await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                logInListView($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
                 AppModel.Instance.AllowLock();
                 return;
+            }
+
+            if (missing.Count > 0)
+            {
+                logInListView($"Loading {missing.Count} Files", ArkEcho.Resources.LogLevel.Information);
+                await Task.Delay(200);
+
+                try
+                {
+                    foreach (MusicFile file in missing)
+                    {
+                        logInListView($"Loading {file.FileName}", ArkEcho.Resources.LogLevel.Information);
+
+                        bool success = await AppModel.Instance.LoadFileFromServer(file, logInListView);
+                        if (!success)
+                        {
+                            logInListView($"Error loading {file.FileName} from Server!", ArkEcho.Resources.LogLevel.Information);
+                            AppModel.Instance.AllowLock();
+                            return;
+                        }
+
+                        exist.Add(file);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logInListView($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
+                    AppModel.Instance.AllowLock();
+                    return;
+                }
             }
 
             logInListView($"Cleaning Up", ArkEcho.Resources.LogLevel.Information);
             await Task.Delay(200);
 
-            cleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), okFiles);
+            // TODO: Nach AppModel
+            await Task.Factory.StartNew(() => cleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist));
 
             logInListView($"Success!", ArkEcho.Resources.LogLevel.Information);
             await Task.Delay(1000);
@@ -133,16 +104,14 @@ namespace ArkEcho.App
             AppModel.Instance.AllowLock();
         }
 
-        private void cleanUpFolder(string folder, List<string> okFiles)
+        private void cleanUpFolder(string folder, List<MusicFile> okFiles)
         {
             foreach (string subFolder in Directory.GetDirectories(folder))
-                cleanUpFolder(subFolder, okFiles);
+                cleanUpFolder(subFolder, okFiles); // Rekursion
 
             foreach (string file in Directory.GetFiles(folder))
             {
-                if (!string.IsNullOrEmpty(okFiles.Find(x => x.Equals(file, StringComparison.OrdinalIgnoreCase))))
-                    continue;
-                else
+                if (okFiles.Find(x => x.GetFullPathAndroid().Equals(file, StringComparison.OrdinalIgnoreCase)) == null)
                     File.Delete(file);
             }
 
@@ -150,24 +119,13 @@ namespace ArkEcho.App
                 Directory.Delete(folder);
         }
 
-        private string getMusicFileFolder(MusicFile file, MusicLibrary lib)
-        {
-            string mediaFolderPath = AppModel.GetAndroidMediaAppSDFolderPath();
-            Album album = lib.Album.Find(x => x.GUID == file.Album);
-            AlbumArtist artist = lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist);
-
-            if (album == null || artist == null)
-                return string.Empty;
-
-            return $"{mediaFolderPath}/{artist.Name}/{album.Name}";
-        }
-
-        private void logInListView(string text, Resources.LogLevel level)
+        private bool logInListView(string text, Resources.LogLevel level)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
 
             logListView.SmoothScrollToPositionFromTop(logListView.LastVisiblePosition, 0);
+            return true;
         }
     }
 }
