@@ -24,8 +24,9 @@ namespace ArkEcho.Server
             }
 
             MusicLibrary library = new MusicLibrary();
+            List<string> errors = new List<string>();
 
-            foreach (string filePath in getAllFilesSubSearch(MusicDirectoryPath, Resources.SupportedFileFormats))
+            foreach (string filePath in getAllFilesSubSearch(MusicDirectoryPath, Resources.SupportedFileFormats, errors))
             {
                 AlbumArtist albumArtist = null;
                 Album album = null;
@@ -76,21 +77,30 @@ namespace ArkEcho.Server
                 }
             }
 
+            if (errors.Count > 0)
+                Console.WriteLine($"There were {errors.Count} on parsing the Music Folder!");
+
             // TODO: Media Player Playlist parsen und in neues Format
 
             e.Result = library;
         }
 
-        private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter)
+        private List<string> getAllFilesSubSearch(string DirectoryPath, List<string> FileExtensionFilter, List<string> ErrorFolder)
         {
-            // TODO: Access Violation on AppData etc.
             List<string> results = new List<string>();
 
-            List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
-            results.AddRange(filesInDirectory.FindAll(x => FileExtensionFilter.Find(y => $".{y}".Equals(Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)) != null));
+            try
+            {
+                List<string> filesInDirectory = Directory.GetFiles(DirectoryPath).ToList();
+                results.AddRange(filesInDirectory.FindAll(x => FileExtensionFilter.Find(y => $".{y}".Equals(Path.GetExtension(x), StringComparison.OrdinalIgnoreCase)) != null));
 
-            foreach (string subdirectory in Directory.GetDirectories(DirectoryPath))
-                results.AddRange(getAllFilesSubSearch(subdirectory, FileExtensionFilter));
+                foreach (string subdirectory in Directory.GetDirectories(DirectoryPath))
+                    results.AddRange(getAllFilesSubSearch(subdirectory, FileExtensionFilter, ErrorFolder));
+            }
+            catch (Exception ex)
+            {
+                ErrorFolder.Add(ex.Message);
+            }
 
             return results;
         }
