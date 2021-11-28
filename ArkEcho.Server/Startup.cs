@@ -58,13 +58,13 @@ namespace ArkEcho.Server
 
             app.UseEndpoints(endpoints =>
             {
-                // TODO: Bei falschem api/ call andere fallback page -> kein controller geladen
                 // Web API
                 endpoints.MapControllers();
 
                 // Blazor Page
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+
+                endpoints.MapFallbackToPage("/_Fallback");
             });
         }
     }
