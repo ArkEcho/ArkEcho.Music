@@ -81,6 +81,7 @@ namespace ArkEcho.Server
                 Console.WriteLine($"There were {errors.Count} on parsing the Music Folder!");
 
             // TODO: Media Player Playlist parsen und in neues Format
+            // TODO: WMP Listen Upload, Eigene Playlists erstellen speichern verwalten
 
             e.Result = library;
         }

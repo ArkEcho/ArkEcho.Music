@@ -1,9 +1,15 @@
-using ArkEcho.Server;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
 namespace ArkEcho.Server
 {
+    /* TODO
+	 * Anzeige
+			-> Interpreten A-Z -> Doppel & dreifach Interpreten zusammenfassen
+			-> Album A-Z
+			-> Titel A-Z
+			-> Ordner	-> Baumstruktur, ganzen Ordner abspielen
+	*/
     public static class Program
     {
         public static void Main(string[] args)
@@ -15,7 +21,7 @@ namespace ArkEcho.Server
                     Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
                     return;
                 }
-                else                
+                else
                     ArkEchoServer.Instance.Host.Run(); // Starts Event Cycle and API 
 
                 if (ArkEchoServer.Instance.RestartRequested)
