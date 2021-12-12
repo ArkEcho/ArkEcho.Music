@@ -1,5 +1,5 @@
 ﻿using Android.App;
-using Android.Content;
+using Android.OS;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
 using ArkEcho.Player;
@@ -8,25 +8,63 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.App
 {
-    public class AppModel : IDisposable
+    public class AppModel
     {
         public static AppModel Instance { get; } = new AppModel();
 
-        private ArkEchoRest rest = null;
+        public AppConfig Config { get; private set; } = null;
+
+        public ArkEchoRest Rest { get; private set; } = null;
 
         public ArkEchoVLCPlayer Player { get; private set; } = null;
+        public MusicLibrary Library { get; private set; } = null;
+
+        private PowerManager powerManager = null;
+        private PowerManager.WakeLock wakeLock = null;
+
+        private const string configFileName = "AppConfig.json";
+        private const string libraryFileName = "MusicLibrary.json";
 
         private AppModel()
         {
-            rest = new Connection.ArkEchoRest();
-            Player = new Player.ArkEchoVLCPlayer();
+            // TODO: Dispose
         }
 
-        public async Task<bool> Init()
+        public async Task<bool> Init(PowerManager powerManager)
         {
+            // Config and Rest
+            Config = new AppConfig(configFileName);
+            await Config.LoadFromFile(GetAndroidInternalPath());
+
+            if (string.IsNullOrEmpty(Config.ServerAddress))
+                Config.ServerAddress = "https://192.168.178.20:5001/api";
+
+            await Config.SaveToFile(GetAndroidInternalPath());
+
+            Rest = new Connection.ArkEchoRest(Config.ServerAddress);
+
+            // Library
+            Library = new MusicLibrary(libraryFileName);
+            await Library.LoadFromFile(GetAndroidInternalPath());
+
+            // Player
+            Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
-            await Task.Delay(5);
+
+            // Create Wake Lock
+            this.powerManager = powerManager;
+            wakeLock = powerManager.NewWakeLock(WakeLockFlags.Full, "ArkEchoLock");
+
             return true;
+        }
+
+        public void PreventLock()
+        {
+            wakeLock.Acquire();
+        }
+        public void AllowLock()
+        {
+            wakeLock.Release();
         }
 
         public bool Log(string Text, Resources.LogLevel Level)
@@ -35,29 +73,23 @@ namespace ArkEcho.App
             return true;
         }
 
-        public static string GetMusicSDFolderPath()
+        public static string GetAndroidMediaAppSDFolderPath()
         {
             string baseFolderPath = string.Empty;
             try
             {
-                Context context = Application.Context;
-
-                Java.IO.File[] dirs = context.GetExternalMediaDirs();//.GetExternalFilesDirs(null);
-
-                foreach (Java.IO.File folder in dirs)
+                foreach (Java.IO.File folder in Application.Context.GetExternalMediaDirs())
                 {
                     bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
                     bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
 
                     if (IsRemovable && !IsEmulated)
                     {
-                        baseFolderPath = folder.Path.Substring(0, folder.Path.IndexOf("Android/") + 8);
-                        baseFolderPath += "Music/";
-                        //break;
+                        baseFolderPath = folder.Path;
+                        break;
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine("GetBaseFolderPath caused the following exception: {0}", ex);
@@ -66,24 +98,19 @@ namespace ArkEcho.App
             return baseFolderPath;
         }
 
-        private bool disposed;
-
-        protected virtual void Dispose(bool disposing)
+        public static string GetAndroidInternalPath()
         {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-
-                }
-                disposed = true;
-            }
+            return Application.Context.FilesDir.Path;
         }
 
-        public void Dispose()
+        public async Task<bool> SetMusicLibrary(string libraryString)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            Library = new MusicLibrary(libraryFileName);
+
+            bool result = await Library.LoadFromJsonString(libraryString);
+            result &= await Library.SaveToFile(GetAndroidInternalPath());
+
+            return result;
         }
     }
 }

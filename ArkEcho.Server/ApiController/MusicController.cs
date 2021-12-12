@@ -12,24 +12,36 @@ namespace ArkEcho.Server
     {
         ArkEchoServer server = ArkEchoServer.Instance;
 
-        // GET: api/Music/Library
-        [HttpGet("Library")]
-        public ObjectResult GetMusicLibrary()
+        // GET: api/Music
+        [HttpGet]
+        public async Task<ActionResult> GetMusicLibrary()
         {
-            string base64 = ZipCompression.ZipToBase64(server.GetMusicLibraryString());
-            return Ok(base64);
+            string lib = await server.GetMusicLibraryString();
+
+            if (server.ServerConfig.Compression)
+                lib = await ZipCompression.ZipToBase64(lib);
+            else
+                lib = lib.GetByteArray().ToBase64();
+
+            return Ok(lib);
         }
 
-        // GET: api/Music/MusicFile/[GUID]
-        [HttpGet("MusicFile/{id}")]
-        public async Task<FileContentResult> GetMusicFile(Guid id)
+        // GET: api/Music/[GUID]
+        [HttpGet("{guid}")]
+        public async Task<ActionResult> GetMusicFile(Guid guid)
         {
-            MusicFile musicFile = server.GetMusicFile(id);
+            // TODO: Logging!
+            if (guid == Guid.Empty)
+                return BadRequest();
+
+            MusicFile musicFile = server.GetMusicFile(guid);
 
             if (musicFile == null)
-                return new FileContentResult(null, string.Empty);
+                return BadRequest();
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullFilePath());
+            if (server.ServerConfig.Compression)
+                content = await ZipCompression.Zip(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
             result.FileDownloadName = Path.GetFileName(musicFile.FileName);

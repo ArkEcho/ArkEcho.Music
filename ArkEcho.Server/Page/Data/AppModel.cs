@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using System;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
@@ -20,9 +21,10 @@ namespace ArkEcho.Server
             Library = new MusicLibrary();
         }
 
-        public bool Initialize()
+        public async Task<bool> Initialize()
         {
-            return Library.LoadFromJsonString(ArkEchoServer.Instance.GetMusicLibraryString());
+            string lib = await ArkEchoServer.Instance.GetMusicLibraryString();
+            return await Library.LoadFromJsonString(lib);
         }
 
         public User CheckUserForLogin(User user)

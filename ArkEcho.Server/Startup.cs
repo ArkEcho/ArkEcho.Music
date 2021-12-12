@@ -63,7 +63,8 @@ namespace ArkEcho.Server
 
                 // Blazor Page
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+
+                endpoints.MapFallbackToPage("/_Fallback");
             });
         }
     }

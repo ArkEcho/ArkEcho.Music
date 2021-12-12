@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
@@ -35,32 +36,35 @@ namespace ArkEcho.Core
             this.fileName = FileName;
         }
 
-        public bool LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
+        public async Task<bool> LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
             string filepath = $"{Folder}\\{fileName}";
+            bool foundCorrectExistingFile = false;
 
             Console.WriteLine($"Loading Config File {filepath}");
 
-            string content = string.Empty;
             if (File.Exists(filepath))
-                content = File.ReadAllText(filepath);
+            {
+                string content = await File.ReadAllTextAsync(filepath);
 
-            // Load Props from JSON
-            bool foundCorrectExistingFile = LoadFromJsonString(content);
+                // Load Props from JSON
+                foundCorrectExistingFile = await LoadFromJsonString(content);
+            }
 
             if (RewriteAddMissingParams)
-                SaveToFile(Folder);
+                await SaveToFile(Folder);
 
             return foundCorrectExistingFile;
         }
 
-        public bool SaveToFile(string Folder)
+        public async Task<bool> SaveToFile(string Folder)
         {
             string filepath = $"{Folder}\\{fileName}";
 
             try
             {
-                File.WriteAllText(filepath, SaveToJsonString(), System.Text.Encoding.UTF8);
+                string json = await SaveToJsonString();
+                await File.WriteAllTextAsync(filepath, json, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
@@ -70,14 +74,14 @@ namespace ArkEcho.Core
             return true;
         }
 
-        public string SaveToJsonString()
+        public async Task<string> SaveToJsonString()
         {
             JObject data = new JObject();
-            handleProperties(data, Mode.PropToJson);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.PropToJson));
             return data.ToString();
         }
 
-        public bool LoadFromJsonString(string Json)
+        public async Task<bool> LoadFromJsonString(string Json)
         {
             JObject data = null;
 
@@ -85,7 +89,7 @@ namespace ArkEcho.Core
             {
                 try
                 {
-                    data = JObject.Parse(Json);
+                    data = await Task.Factory.StartNew(() => data = JObject.Parse(Json));
                 }
                 catch (Exception ex)
                 {
@@ -96,7 +100,7 @@ namespace ArkEcho.Core
             if (data == null)
                 return false;
 
-            handleProperties(data, Mode.JsonToProp);
+            await Task.Factory.StartNew(() => handleProperties(data, Mode.JsonToProp));
             return true;
         }
 
@@ -148,8 +152,7 @@ namespace ArkEcho.Core
 
         private bool isAllowedCollection(PropertyInfo Info)
         {
-            // TODO bessere Lösung -> SortedSet on Playlist?
-            return Info.PropertyType.UnderlyingSystemType.Name.Equals(typeof(List<>).Name, StringComparison.OrdinalIgnoreCase)
+            return Info.PropertyType.UnderlyingSystemType.FullName.Contains("System.Collections.Generic", StringComparison.OrdinalIgnoreCase)
                 && Info.PropertyType.GenericTypeArguments.Length == 1;
         }
 
@@ -350,6 +353,12 @@ namespace ArkEcho.Core
                 if (Function == Func.PrimType) handlePrimitiveType<float>(Data, Info, Mode);
                 else if (Function == Func.PrimArray) handlePrimitiveArray<float>(Data, Info, Mode);
                 else if (Function == Func.PrimCollection) handlePrimitiveCollection<float>(Data, Info, Mode);
+            }
+            else if (Type == typeof(Uri))
+            {
+                if (Function == Func.PrimType) handlePrimitiveType<Uri>(Data, Info, Mode);
+                else if (Function == Func.PrimArray) handlePrimitiveArray<Uri>(Data, Info, Mode);
+                else if (Function == Func.PrimCollection) handlePrimitiveCollection<Uri>(Data, Info, Mode);
             }
             else
                 return false; // Not a supported Primitive Type

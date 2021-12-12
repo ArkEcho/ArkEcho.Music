@@ -54,7 +54,7 @@ namespace ArkEcho.Server
             {
                 await _localStorageService.RemoveItemAsync("accessToken");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

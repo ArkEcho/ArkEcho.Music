@@ -6,6 +6,8 @@ namespace ArkEcho.Core
     {
         public MusicLibrary() : base() { }
 
+        public MusicLibrary(string fileName) : base(fileName) { }
+
         [JsonProperty]
         public List<AlbumArtist> AlbumArtists { get; set; } = new List<AlbumArtist>();
 
