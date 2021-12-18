@@ -1,5 +1,4 @@
 using Android.App;
-using Android.Content;
 using Android.OS;
 using System.Net;
 
@@ -25,10 +24,7 @@ namespace ArkEcho.App
         {
             base.OnResume();
 
-            await AppModel.Instance.Init((PowerManager)this.GetSystemService(Context.PowerService));
-
-            // Bisschen Verzögerung
-            //await Task.Delay(250);
+            await AppModel.Instance.Init(this);
 
             StartActivity(typeof(PlayerActivity));
             Finish();

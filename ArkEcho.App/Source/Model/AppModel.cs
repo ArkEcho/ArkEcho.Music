@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.OS;
 using ArkEcho.App.Connection;
 using ArkEcho.Core;
@@ -32,7 +33,7 @@ namespace ArkEcho.App
             // TODO: Dispose
         }
 
-        public async Task<bool> Init(PowerManager powerManager)
+        public async Task<bool> Init(Activity activity)
         {
             // Config and Rest
             Config = new AppConfig(configFileName);
@@ -49,17 +50,26 @@ namespace ArkEcho.App
             Library = new MusicLibrary(libraryFileName);
             await Library.LoadFromFile(GetAndroidInternalPath());
 
-            // TODO: CheckFiles in Library!
+            // TODO: Save Path in Library on serializing? Set on CheckLIbrary Function, what if user tries to start not loaded File?
+            Task.Factory.StartNew(() => checkLibraryOnStartup());
 
             // Player
             Player = new Player.ArkEchoVLCPlayer();
             Player.InitPlayer(Log);
 
             // Create Wake Lock
-            this.powerManager = powerManager;
+            this.powerManager = (PowerManager)activity.GetSystemService(Context.PowerService);
             wakeLock = powerManager.NewWakeLock(WakeLockFlags.Full, "ArkEchoLock");
 
             return true;
+        }
+
+        private async Task checkLibraryOnStartup()
+        {
+            List<MusicFile> exist = new List<MusicFile>();
+            List<MusicFile> missing = new List<MusicFile>();
+
+            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(Log, exist, missing);
         }
 
         public async Task<bool> LoadLibraryFromServer(Resources.LoggingDelegate logInListView)
@@ -73,8 +83,12 @@ namespace ArkEcho.App
                     return false;
                 }
 
-                bool loadLibrary = await SetMusicLibrary(libraryString);
-                if (!loadLibrary)
+                Library = new MusicLibrary(libraryFileName);
+
+                bool result = await Library.LoadFromJsonString(libraryString);
+                result &= await Library.SaveToFile(GetAndroidInternalPath());
+
+                if (!result)
                 {
                     logInListView?.Invoke("Cant load json!", ArkEcho.Resources.LogLevel.Information);
                     return false;
@@ -157,6 +171,33 @@ namespace ArkEcho.App
             return success;
         }
 
+
+        public async Task CleanUpFolder(string folder, List<MusicFile> okFiles)
+        {
+            foreach (string subFolder in Directory.GetDirectories(folder))
+                await CleanUpFolder(subFolder, okFiles); // Rekursion
+
+            await Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    foreach (string file in Directory.GetFiles(folder))
+                    {
+                        if (okFiles.Find(x => x.GetFullPathAndroid().Equals(file, StringComparison.OrdinalIgnoreCase)) == null)
+                            File.Delete(file);
+                    }
+
+                    if (Directory.GetDirectories(folder).Length == 0 && Directory.GetFiles(folder).Length == 0)
+                        Directory.Delete(folder);
+                }
+                catch (Exception ex)
+                {
+                    Log($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
+                }
+            }
+            );
+        }
+
         private string getMusicFileFolder(MusicFile file, MusicLibrary lib)
         {
             string mediaFolderPath = AppModel.GetAndroidMediaAppSDFolderPath();
@@ -212,16 +253,6 @@ namespace ArkEcho.App
         public static string GetAndroidInternalPath()
         {
             return Application.Context.FilesDir.Path;
-        }
-
-        public async Task<bool> SetMusicLibrary(string libraryString)
-        {
-            Library = new MusicLibrary(libraryFileName);
-
-            bool result = await Library.LoadFromJsonString(libraryString);
-            result &= await Library.SaveToFile(GetAndroidInternalPath());
-
-            return result;
         }
     }
 }
