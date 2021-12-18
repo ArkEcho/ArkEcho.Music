@@ -39,11 +39,13 @@ namespace ArkEcho.Server
             Console.WriteLine("Initializing ArkEcho.Server");
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            // TODO: MusicFilePath with \\?
+
+            // TODO: MusicFilePath in json with \\?
+
             ServerConfig = new ServerConfig(serverConfigFileName);
             if (!ServerConfig.LoadFromFile(executingLocation, true).Result)
             {
-                Console.WriteLine("### No Config File found -> created new one, please configure. Stopping Server");
+                Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Server");
                 return false;
             }
             else if (string.IsNullOrEmpty(ServerConfig.MusicFolder.LocalPath) || !Directory.Exists(ServerConfig.MusicFolder.LocalPath))
