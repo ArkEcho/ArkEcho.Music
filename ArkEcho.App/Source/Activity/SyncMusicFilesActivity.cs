@@ -6,7 +6,6 @@ using ArkEcho.Core;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -95,28 +94,12 @@ namespace ArkEcho.App
             logInListView($"Cleaning Up", ArkEcho.Resources.LogLevel.Information);
             await Task.Delay(200);
 
-            // TODO: Nach AppModel
-            await Task.Factory.StartNew(() => cleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist));
+            await AppModel.Instance.CleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist);
 
             logInListView($"Success!", ArkEcho.Resources.LogLevel.Information);
             await Task.Delay(1000);
 
             AppModel.Instance.AllowLock();
-        }
-
-        private void cleanUpFolder(string folder, List<MusicFile> okFiles)
-        {
-            foreach (string subFolder in Directory.GetDirectories(folder))
-                cleanUpFolder(subFolder, okFiles); // Rekursion
-
-            foreach (string file in Directory.GetFiles(folder))
-            {
-                if (okFiles.Find(x => x.GetFullPathAndroid().Equals(file, StringComparison.OrdinalIgnoreCase)) == null)
-                    File.Delete(file);
-            }
-
-            if (Directory.GetDirectories(folder).Length == 0 && Directory.GetFiles(folder).Length == 0)
-                Directory.Delete(folder);
         }
 
         private bool logInListView(string text, Resources.LogLevel level)
