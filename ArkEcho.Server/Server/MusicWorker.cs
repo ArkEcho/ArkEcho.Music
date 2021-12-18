@@ -110,21 +110,21 @@ namespace ArkEcho.Server
         {
             if (string.IsNullOrEmpty(albumArtistName) || string.IsNullOrEmpty(albumName))
             {
-                Console.WriteLine($"Skipped! No Album/AlbumArtist {music.GetFullFilePath()}");
+                Console.WriteLine($"Skipped! No Album/AlbumArtist {music.GetFullPathWindows()}");
                 return false; ;
             }
             else
             {
-                List<string> parts = music.GetFullFilePath().Split("\\").ToList();
+                List<string> parts = music.GetFullPathWindows().Split("\\").ToList();
                 if (!parts[parts.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullFilePath()}");
+                    Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullPathWindows()}");
                     return false;
                 }
 
                 if (!parts[parts.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullFilePath()}");
+                    Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullPathWindows()}");
                     return false;
                 }
             }
