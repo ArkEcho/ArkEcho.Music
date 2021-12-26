@@ -8,7 +8,7 @@ namespace ArkEcho.Server
         public ServerConfig(string FileName) : base(FileName) { }
 
         [JsonProperty]
-        public Uri MusicFolder { get; private set; } = null;
+        public Uri MusicFolder { get; private set; } = new Uri("about:blank");
 
         [JsonProperty]
         public bool Authorization { get; private set; } = false;
