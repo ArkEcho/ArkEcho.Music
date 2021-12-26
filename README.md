@@ -1,4 +1,4 @@
-![Logo](ArkEcho.Core\Resources\arkecho_logo\arkecho_logo_whole_dark.png)
+![Logo](ArkEcho.Core/Resources/logo/arkecho_logo_whole_blue.png)
 
 ### Description
 This is a private, non-commercial Project, developed by ArkEcho.
