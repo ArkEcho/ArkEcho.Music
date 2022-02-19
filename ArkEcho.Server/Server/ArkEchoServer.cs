@@ -23,6 +23,9 @@ namespace ArkEcho.Server
 
         private List<User> users = new List<User>();
 
+
+        private LoggingWorker lw = null;
+
         public IWebHost Host { get; set; }
 
         private ArkEchoServer()
@@ -53,11 +56,12 @@ namespace ArkEcho.Server
                 Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
-            else
-            {
-                Console.WriteLine("Configuration for ArkEcho.Server:");
-                Console.WriteLine(ServerConfig.SaveToJsonString().Result);
-            }
+
+            lw = new LoggingWorker(ServerConfig.LoggingFolder.LocalPath);
+            lw.RunWorkerAsync();
+
+            Console.WriteLine("Configuration for ArkEcho.Server:");
+            Console.WriteLine(ServerConfig.SaveToJsonString().Result);
 
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
             LoadMusicLibrary();
@@ -75,7 +79,20 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
 
+            ServerLogger logger = new ServerLogger("Main");
+            ServerLogger logger2 = new ServerLogger("Rest");
+
+            logger.Log("Test1", LogLevel.Static);
+            logger2.Log("Test2", LogLevel.Error);
+            logger.Log("Test3", LogLevel.Important);
+            logger2.Log("Test4", LogLevel.Debug);
+
             return Initialized;
+        }
+
+        public void AddLogMessage(LogMessage log)
+        {
+            lw.AddLogMessage(log);
         }
 
         public User CheckUserForLogin(User user)

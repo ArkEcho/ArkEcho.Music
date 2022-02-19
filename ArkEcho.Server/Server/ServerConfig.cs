@@ -11,6 +11,9 @@ namespace ArkEcho.Server
         public Uri MusicFolder { get; private set; } = new Uri("about:blank");
 
         [JsonProperty]
+        public Uri LoggingFolder { get; private set; } = new Uri("about:blank");
+
+        [JsonProperty]
         public bool Authorization { get; private set; } = false;
 
         [JsonProperty]
