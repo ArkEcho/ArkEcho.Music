@@ -16,7 +16,27 @@ namespace ArkEcho.Core
             Context = context.ToUpper();
         }
 
-        public void Log(string message, LogLevel level)
+        public void LogStatic(string message)
+        {
+            log(message, Logging.LogLevel.Static);
+        }
+
+        public void LogError(string message)
+        {
+            log(message, Logging.LogLevel.Error);
+        }
+
+        public void LogImportant(string message)
+        {
+            log(message, Logging.LogLevel.Important);
+        }
+
+        public void LogDebug(string message)
+        {
+            log(message, Logging.LogLevel.Debug);
+        }
+
+        private void log(string message, Logging.LogLevel level)
         {
             LogMessage msg = new LogMessage()
             {

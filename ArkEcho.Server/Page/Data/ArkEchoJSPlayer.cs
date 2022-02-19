@@ -1,11 +1,10 @@
-﻿using ArkEcho.Core;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace ArkEcho.Player
 {
     public class ArkEchoJSPlayer : ArkEchoPlayer
     {
-        private Resources.LoggingDelegate logDelegate = null;
+        private Logging.LoggingDelegate logDelegate = null;
 
         public IJSRuntime JS { get; private set; }
 
@@ -13,7 +12,7 @@ namespace ArkEcho.Player
         {
         }
 
-        public bool InitPlayer(IJSRuntime JS, Resources.LoggingDelegate LogDelegate)
+        public bool InitPlayer(IJSRuntime JS, Logging.LoggingDelegate LogDelegate)
         {
             if (LogDelegate != null && JS != null)
             {
@@ -47,7 +46,7 @@ namespace ArkEcho.Player
             this.Playing = Playing;
         }
 
-        protected override bool logImpl(string Text, Resources.LogLevel Level)
+        protected override bool logImpl(string Text, Logging.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);

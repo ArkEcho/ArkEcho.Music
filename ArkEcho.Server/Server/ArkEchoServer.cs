@@ -82,10 +82,10 @@ namespace ArkEcho.Server
             ServerLogger logger = new ServerLogger("Main");
             ServerLogger logger2 = new ServerLogger("Rest");
 
-            logger.Log("Test1", LogLevel.Static);
-            logger2.Log("Test2", LogLevel.Error);
-            logger.Log("Test3", LogLevel.Important);
-            logger2.Log("Test4", LogLevel.Debug);
+            logger.LogStatic("Test1");
+            logger2.LogError("Test2");
+            logger.LogImportant("Test3");
+            logger2.LogDebug("Test4");
 
             return Initialized;
         }

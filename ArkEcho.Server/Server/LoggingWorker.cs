@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace ArkEcho.Server
@@ -62,7 +63,8 @@ namespace ArkEcho.Server
             {
                 try
                 {
-                    fs = new StreamWriter(getLogFileName(logger), true, System.Text.Encoding.UTF8);
+                    fs = new StreamWriter(new FileStream(getLogFileName(logger), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
+                    fs.BaseStream.Seek(0, SeekOrigin.End);
                 }
                 catch (Exception ex)
                 {

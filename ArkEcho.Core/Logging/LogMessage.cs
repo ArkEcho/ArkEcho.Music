@@ -2,18 +2,6 @@
 
 namespace ArkEcho.Core
 {
-    public enum LogLevel
-    {
-        Static = 0,
-        Error,
-        Important,
-        Debug,
-    }
-
-    public static class LogStatic
-    {
-
-    }
 
     public class LogMessage : JsonBase
     {
@@ -24,7 +12,7 @@ namespace ArkEcho.Core
         public DateTime TimeStamp { get; set; }
 
         [JsonProperty]
-        public LogLevel Level { get; set; }
+        public Logging.LogLevel Level { get; set; }
 
         [JsonProperty]
         public string Message { get; set; }
@@ -45,13 +33,13 @@ namespace ArkEcho.Core
         {
             switch (Level)
             {
-                case LogLevel.Static:
+                case Logging.LogLevel.Static:
                     return "S";
-                case LogLevel.Error:
+                case Logging.LogLevel.Error:
                     return "E";
-                case LogLevel.Important:
+                case Logging.LogLevel.Important:
                     return "I";
-                case LogLevel.Debug:
+                case Logging.LogLevel.Debug:
                     return "D";
             }
             return "__ERROR__";
