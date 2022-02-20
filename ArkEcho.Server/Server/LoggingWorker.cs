@@ -1,7 +1,6 @@
 ﻿using ArkEcho.Core;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -17,13 +16,10 @@ namespace ArkEcho.Server
 
         private ConcurrentQueue<LogMessage> loggingQueue = null;
 
-        private Dictionary<string, StreamWriter> logFiles = null;
-
         public LoggingWorker(string logFolder) : base()
         {
             this.logFolder = logFolder;
             loggingQueue = new();
-            logFiles = new();
 
             DoWork += LoggingWorker_DoWork;
         }
@@ -40,18 +36,16 @@ namespace ArkEcho.Server
             while (!stop)
             {
                 if (loggingQueue.TryDequeue(out LogMessage log))
-                    writeLogMessage(log);
+                {
+                    using (StreamWriter fs = getFileStream(log.Origin))
+                    {
+                        fs?.WriteLine(log.ToLogString());
+                        fs?.Flush();
+                    }
+                }
             }
 
             working = false;
-        }
-
-        private void writeLogMessage(LogMessage log)
-        {
-            StreamWriter fs = getFileStream(log.Origin);
-
-            fs?.WriteLine(log.ToLogString());
-            fs?.Flush();
         }
 
         private StreamWriter getFileStream(Logger logger)
@@ -59,19 +53,16 @@ namespace ArkEcho.Server
             // TODO: Log File Rotation, open new if Filestream voll
 
             StreamWriter fs = null;
-            if (!logFiles.TryGetValue(logger.Name, out fs))
-            {
-                try
-                {
-                    fs = new StreamWriter(new FileStream(getLogFileName(logger), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
-                    fs.BaseStream.Seek(0, SeekOrigin.End);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception opening Logging FileStream: {ex.Message}");
-                }
+            string logFileName = getLogFileName(logger);
 
-                logFiles.Add(logger.Name, fs);
+            try
+            {
+                fs = new StreamWriter(new FileStream(getLogFileName(logger), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
+                fs.BaseStream.Seek(0, SeekOrigin.End);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception opening Logging FileStream: {ex.Message}");
             }
 
             return fs;
@@ -92,14 +83,7 @@ namespace ArkEcho.Server
                 {
                     stop = true;
 
-                    for (int i = 0; i < 10; i++)
-                        Thread.Sleep(500);
-
-                    foreach (StreamWriter fs in logFiles.Values)
-                    {
-                        fs.Flush();
-                        fs.Dispose();
-                    }
+                    Thread.Sleep(1000);
                 }
             }
 
