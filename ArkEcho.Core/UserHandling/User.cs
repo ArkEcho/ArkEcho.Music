@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArkEcho.Server
+namespace ArkEcho.Core
 {
     public class User
     {
