@@ -94,7 +94,7 @@ namespace ArkEcho.Server
 
         public User CheckUserForLogin(User user)
         {
-            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(user.Password, StringComparison.OrdinalIgnoreCase));
         }
 
         public User CheckUserToken(Guid token)
