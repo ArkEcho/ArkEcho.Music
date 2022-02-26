@@ -39,7 +39,7 @@ namespace ArkEcho.App
         {
             AppModel.Instance.PreventLock();
 
-            logInListView("Loading MusicLibrary", ArkEcho.Resources.LogLevel.Information);
+            logInListView("Loading MusicLibrary", Logging.LogLevel.Debug);
 
             bool loadlib = await AppModel.Instance.LoadLibraryFromServer(logInListView);
             if (!loadlib)
@@ -48,7 +48,7 @@ namespace ArkEcho.App
                 return;
             }
 
-            logInListView($"Checking Files", ArkEcho.Resources.LogLevel.Information);
+            logInListView($"Checking Files", Logging.LogLevel.Debug);
             await Task.Delay(200);
 
             List<MusicFile> exist = new List<MusicFile>();
@@ -63,19 +63,19 @@ namespace ArkEcho.App
 
             if (missing.Count > 0)
             {
-                logInListView($"Loading {missing.Count} Files", ArkEcho.Resources.LogLevel.Information);
+                logInListView($"Loading {missing.Count} Files", Logging.LogLevel.Debug);
                 await Task.Delay(200);
 
                 try
                 {
                     foreach (MusicFile file in missing)
                     {
-                        logInListView($"Loading {file.FileName}", ArkEcho.Resources.LogLevel.Information);
+                        logInListView($"Loading {file.FileName}", Logging.LogLevel.Debug);
 
                         bool success = await AppModel.Instance.LoadFileFromServer(file, logInListView);
                         if (!success)
                         {
-                            logInListView($"Error loading {file.FileName} from Server!", ArkEcho.Resources.LogLevel.Information);
+                            logInListView($"Error loading {file.FileName} from Server!", Logging.LogLevel.Error);
                             AppModel.Instance.AllowLock();
                             return;
                         }
@@ -85,24 +85,24 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    logInListView($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
+                    logInListView($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
                     AppModel.Instance.AllowLock();
                     return;
                 }
             }
 
-            logInListView($"Cleaning Up", ArkEcho.Resources.LogLevel.Information);
+            logInListView($"Cleaning Up", Logging.LogLevel.Debug);
             await Task.Delay(200);
 
             await AppModel.Instance.CleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist);
 
-            logInListView($"Success!", ArkEcho.Resources.LogLevel.Information);
+            logInListView($"Success!", Logging.LogLevel.Important);
             await Task.Delay(1000);
 
             AppModel.Instance.AllowLock();
         }
 
-        private bool logInListView(string text, Resources.LogLevel level)
+        private bool logInListView(string text, Logging.LogLevel level)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
