@@ -142,7 +142,7 @@ namespace ArkEcho.Player
 
         public void Start(List<MusicFile> MusicFiles, int Index)
         {
-            logImpl($"Starting {MusicFiles.Count} Files", Resources.LogLevel.Information);
+            logImpl($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
 
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
@@ -251,7 +251,7 @@ namespace ArkEcho.Player
             Forward();
         }
 
-        protected abstract bool logImpl(string Text, Resources.LogLevel Level);
+        protected abstract bool logImpl(string Text, Logging.LogLevel Level);
         protected abstract void loadImpl(bool StartOnLoad);
         protected abstract void disposeImpl();
         protected abstract void playImpl();

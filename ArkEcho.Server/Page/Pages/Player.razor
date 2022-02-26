@@ -79,7 +79,7 @@
         await base.OnInitializedAsync();
     }
 
-    private bool logOnPage(string Text, Resources.LogLevel Level)
+    private bool logOnPage(string Text, Logging.LogLevel Level)
     {
         Logs.Add($"{Level}\t-\t{Text}");
         return true;
