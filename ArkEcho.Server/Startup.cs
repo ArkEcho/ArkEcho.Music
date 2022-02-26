@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace ArkEcho.Server
 {
@@ -20,23 +19,27 @@ namespace ArkEcho.Server
         {
             services.AddSingleton(ArkEchoServer.Instance);
             services.AddControllers();
+
+            // For Wasm Page
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                builder.WithOrigins("https://localhost:5001")
+                       .AllowAnyMethod()
+                       .AllowAnyOrigin()
+                       .AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-                app.UseDeveloperExceptionPage();
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
-
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
+
+            // For Wasm Page
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {
