@@ -3,13 +3,6 @@ using System;
 
 namespace ArkEcho.Server
 {
-    /* TODO
-	 * Anzeige
-			-> Interpreten A-Z -> Doppel & dreifach Interpreten zusammenfassen
-			-> Album A-Z
-			-> Titel A-Z
-			-> Ordner	-> Baumstruktur, ganzen Ordner abspielen
-	*/
     public static class Program
     {
         public static void Main(string[] args)

@@ -10,6 +10,13 @@ namespace ArkEcho.WebPage
 {
     public class Program
     {
+        /* TODO
+	 * Anzeige
+			-> Interpreten A-Z -> Doppel & dreifach Interpreten zusammenfassen
+			-> Album A-Z
+			-> Titel A-Z
+			-> Ordner	-> Baumstruktur, ganzen Ordner abspielen
+	*/
         public static async Task Main(string[] args)
         {
             WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);

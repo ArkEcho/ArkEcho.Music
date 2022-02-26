@@ -40,7 +40,7 @@ namespace ArkEcho.App
             await Config.LoadFromFile(GetAndroidInternalPath());
 
             if (string.IsNullOrEmpty(Config.ServerAddress))
-                Config.ServerAddress = "https://192.168.178.20:5001/api";
+                Config.ServerAddress = "https://192.168.178.20:5002/api";
 
             await Config.SaveToFile(GetAndroidInternalPath());
 
