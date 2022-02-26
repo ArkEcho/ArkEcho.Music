@@ -1,0 +1,79 @@
+﻿@page  "/Login"
+
+@using System.Security.Claims
+
+@layout CenteredCardLayout
+
+@inject AppModel Model
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IJSRuntime jsRunTime
+
+<EditForm Model="@user" OnValidSubmit="@ValidateUser">
+    <div>
+        <br /><br /><br /><br /><br />
+    </div>
+    <div>
+        <h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div class="col-12 row">
+        <input class="form-control col-12" @bind="user.UserName" placeholder="email address" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <input type="password" class="form-control col-12" @bind="user.Password" placeholder="password" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <span class="col-12"></span>
+        <input type="submit" class="form-control col-6 btn btn-primary" value="Login" />
+        @*<a href="/signup" class="col-3">Sign up</a>*@
+    </div>
+    <br />
+    <div class="col-12 row" style="text-align:left; font-weight:bold">
+        <span class="col-12">@LoginMesssage</span>
+    </div>
+</EditForm>
+
+@code
+{//
+    private User user;
+    public string LoginMesssage { get; set; }
+
+    ClaimsPrincipal claimsPrincipal;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        user = new User();
+
+        claimsPrincipal = (await authenticationStateTask).User;
+
+        if (claimsPrincipal.Identity.IsAuthenticated)
+            NavigationManager.NavigateTo("/index");
+    }
+
+    private async Task<bool> ValidateUser()
+    {
+        if (!string.IsNullOrEmpty(user.UserName) && !string.IsNullOrEmpty(user.Password))
+        {
+            User loggedInUser = Model.CheckUserForLogin(user);
+            if (loggedInUser != null)
+            {
+                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(loggedInUser);
+                NavigationManager.NavigateTo("/index");
+            }
+            else
+                LoginMesssage = "Username or passwort wrong";
+        }
+        else
+            LoginMesssage = "Empty username or password";
+
+        return await Task.FromResult(true);
+    } }

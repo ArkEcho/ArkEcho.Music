@@ -1,3 +1,5 @@
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,7 +15,13 @@ namespace ArkEcho.WebPage
             WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
+            // Authentication & Authorization
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
+            // Local Storage
+            builder.Services.AddBlazoredLocalStorage();
+
             builder.Services.AddScoped(sp => new AppModel());
             builder.Services.AddScoped(sp => new ArkEchoJSPlayer());
 
