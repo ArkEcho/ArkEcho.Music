@@ -66,7 +66,7 @@ namespace ArkEcho.WebPage
             if (PlayingFile != null)
             {
                 // TODO: Aus Config?
-                string source = $"https://localhost:5002/api/Music/{PlayingFile.GUID}";
+                string source = $"https://192.168.178.20:5002/api/Music/{PlayingFile.GUID}";
                 JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
             }
         }

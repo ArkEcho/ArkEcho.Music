@@ -23,7 +23,6 @@ namespace ArkEcho.WebPage
             builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddScoped(sp => new AppModel());
-            builder.Services.AddScoped(sp => new ArkEchoJSPlayer());
 
             builder.Services.AddScoped<Authentication>();
 

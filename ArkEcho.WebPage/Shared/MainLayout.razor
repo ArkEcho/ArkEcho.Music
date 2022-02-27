@@ -1,12 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
-@inject AppModel Model
-@inject ArkEchoJSPlayer JSPlayer
 @inject IJSRuntime JS
+@inject AppModel Model
+
 @inject NavigationManager NavigationManager
-@inject Authentication Authentication
 @inject Blazored.LocalStorage.ILocalStorageService localStorageService
-@inject IJSRuntime jsRunTime
+@inject Authentication Authentication
 
 <div class="page">
     <div class="sidebar">
@@ -41,13 +40,11 @@
         if (!await Authentication.GetAuthenticationState())
             NavigationManager.NavigateTo("/");
 
-        if (!await Model.Initialize())
+        if (!await Model.Initialize(JS))
         {
             Console.WriteLine("Error Initializing AppModel!");
             return;
         }
-
-        JSPlayer.InitPlayer(JS);
     }
 
     public async Task UserIconClick()

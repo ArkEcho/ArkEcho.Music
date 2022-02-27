@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
@@ -11,6 +12,8 @@ namespace ArkEcho.WebPage
 
         public ArkEchoRest Rest { get; private set; } = null;
 
+        public ArkEchoJSPlayer Player { get; set; } = null;
+
         private bool initialized = false;
 
         public AppModel()
@@ -18,7 +21,7 @@ namespace ArkEcho.WebPage
             Rest = new ArkEchoRest("https://192.168.178.20:5002", false);
         }
 
-        public async Task<bool> Initialize()
+        public async Task<bool> Initialize(IJSRuntime jsRuntime)
         {
             if (initialized)
                 return true;
@@ -28,20 +31,22 @@ namespace ArkEcho.WebPage
                 Library = new MusicLibrary();
                 string lib = await Rest.GetMusicLibrary();
                 await Library.LoadFromJsonString(lib);
+
                 if (Library.MusicFiles.Count > 0)
                 {
                     Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
-                    initialized = true;
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine($"Error initializing AppModel");
-                    return false;
+
+                    Player = new ArkEchoJSPlayer();
+                    if (Player.InitPlayer(jsRuntime))
+                    {
+                        initialized = true;
+                        return true;
+                    }
                 }
             }
-            // TODO
-            return true;
+
+            Console.WriteLine($"Error initializing AppModel");
+            return false;
         }
     }
 }
