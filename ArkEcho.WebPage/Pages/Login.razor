@@ -56,12 +56,12 @@
     {
         if (!string.IsNullOrEmpty(user.UserName) && !string.IsNullOrEmpty(user.Password))
         {
-            Console.WriteLine($"Before LogIn, {user.AccessToken}");
+            //Console.WriteLine($"Before LogIn, {user.AccessToken}");
 
             User loggedInUser = await Authentication.AuthenticateUserForLogin(user);
             if (loggedInUser != null)
             {
-                Console.WriteLine($"Logged In, {loggedInUser.AccessToken}");
+                //Console.WriteLine($"Logged In, {loggedInUser.AccessToken}");
 
                 await Authentication.MarkUserAsAuthenticated(loggedInUser);
 

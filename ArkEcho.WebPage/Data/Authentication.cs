@@ -24,13 +24,13 @@ namespace ArkEcho.WebPage
             try
             {
                 accessToken = await localStorageService.GetItemAsync<Guid>("accessToken");
-                Console.WriteLine($"Access Token from LocalStorage: {accessToken}");
+                //Console.WriteLine($"Access Token from LocalStorage: {accessToken}");
 
                 User user = await model.Rest.CheckUserToken(accessToken);
 
                 if (user != null)
                 {
-                    Console.WriteLine($"User Checked OK");
+                    //Console.WriteLine($"User Checked OK");
                     return true;
                 }
             }
@@ -49,7 +49,7 @@ namespace ArkEcho.WebPage
         public async Task MarkUserAsAuthenticated(User user)
         {
             await localStorageService.SetItemAsync("accessToken", user.AccessToken);
-            Console.WriteLine($"Added Token To LocalStorage: {user.AccessToken}");
+            //Console.WriteLine($"Added Token To LocalStorage: {user.AccessToken}");
         }
 
         public async Task MarkUserAsLoggedOut()
@@ -57,7 +57,7 @@ namespace ArkEcho.WebPage
             try
             {
                 await localStorageService.RemoveItemAsync("accessToken");
-                Console.WriteLine($"Removed Token From LocalStorage");
+                //Console.WriteLine($"Removed Token From LocalStorage");
             }
             catch (Exception)
             {

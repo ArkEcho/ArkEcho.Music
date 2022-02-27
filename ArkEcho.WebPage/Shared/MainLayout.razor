@@ -34,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("MainLayout OnInitializedAsync");
+        //Console.WriteLine("MainLayout OnInitializedAsync");
 
         if (!await Authentication.GetAuthenticationState())
             NavigationManager.NavigateTo("/");
