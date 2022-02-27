@@ -43,7 +43,7 @@ namespace ArkEcho.Server
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            // TODO: MusicFilePath in json with \\?
+            // TODO: MusicFilePath in json with \\? C:\Users\steph\Music\ -> Exception
 
             ServerConfig = new ServerConfig(serverConfigFileName);
             if (!ServerConfig.LoadFromFile(executingLocation, true).Result)
@@ -66,18 +66,15 @@ namespace ArkEcho.Server
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
             LoadMusicLibrary();
 
-            // Start the WebHost, Server and Controllers
-            // Set WebRoot for Static Files (css etc.), use xcopy for output
             Host = WebHost.CreateDefaultBuilder()
                             .UseUrls($"https://*:{ServerConfig.Port}")
                             .UseKestrel()
                             .UseStartup<Startup>()
-                            //.UseWebRoot($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\wwwroot")
                             .Build();
 
             Initialized = true;
 
-            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
+            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
             ServerLogger logger = new ServerLogger("Main");
             ServerLogger logger2 = new ServerLogger("Rest");
@@ -95,7 +92,7 @@ namespace ArkEcho.Server
             lw.AddLogMessage(log);
         }
 
-        public User CheckUserForLogin(User user)
+        public User AuthenticateUserForLogin(User user)
         {
             return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
         }

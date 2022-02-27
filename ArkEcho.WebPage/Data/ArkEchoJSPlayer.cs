@@ -1,6 +1,8 @@
-﻿using Microsoft.JSInterop;
+﻿using ArkEcho.Player;
+using Microsoft.JSInterop;
+using System;
 
-namespace ArkEcho.Player
+namespace ArkEcho.WebPage
 {
     public class ArkEchoJSPlayer : ArkEchoPlayer
     {
@@ -12,11 +14,11 @@ namespace ArkEcho.Player
         {
         }
 
-        public bool InitPlayer(IJSRuntime JS, Logging.LoggingDelegate LogDelegate)
+        public bool InitPlayer(IJSRuntime JS)
         {
-            if (LogDelegate != null && JS != null)
+            if (JS != null)
             {
-                logDelegate = LogDelegate;
+                logDelegate = logConsole;
                 this.JS = JS;
                 Initialized = true;
 
@@ -26,6 +28,12 @@ namespace ArkEcho.Player
                 return Initialized;
             }
             return false;
+        }
+
+        private bool logConsole(string text, ArkEcho.Logging.LogLevel level)
+        {
+            Console.WriteLine(text);
+            return true;
         }
 
         [JSInvokable]
@@ -58,7 +66,7 @@ namespace ArkEcho.Player
             if (PlayingFile != null)
             {
                 // TODO: Aus Config?
-                string source = $"https://localhost:5001/api/Music/{PlayingFile.GUID}";
+                string source = $"https://192.168.178.20:5002/api/Music/{PlayingFile.GUID}";
                 JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
             }
         }

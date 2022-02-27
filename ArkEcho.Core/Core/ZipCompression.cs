@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core
@@ -18,7 +20,7 @@ namespace ArkEcho.Core
         public static async Task<string> ZipToBase64(string unzipped)
         {
             byte[] arr = await Zip(unzipped.GetByteArray());
-            return arr.ToBase64();
+            return Convert.ToBase64String(arr);
         }
 
         public static async Task<byte[]> Zip(byte[] array)
@@ -37,8 +39,8 @@ namespace ArkEcho.Core
 
         public static async Task<string> UnzipBase64(string zippedBase64)
         {
-            byte[] arr = await Unzip(zippedBase64.FromBase64());
-            return arr.GetString();
+            byte[] arr = await Unzip(Convert.FromBase64String(zippedBase64));
+            return Encoding.Default.GetString(arr);
         }
 
         public static async Task<byte[]> Unzip(byte[] zipped)

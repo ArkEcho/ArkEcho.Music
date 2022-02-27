@@ -1,7 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using ArkEcho.App.Connection;
 using ArkEcho.Core;
 using ArkEcho.Player;
 using System;
@@ -40,11 +39,11 @@ namespace ArkEcho.App
             await Config.LoadFromFile(GetAndroidInternalPath());
 
             if (string.IsNullOrEmpty(Config.ServerAddress))
-                Config.ServerAddress = "https://192.168.178.20:5001/api";
+                Config.ServerAddress = "https://192.168.178.20:5002";
 
             await Config.SaveToFile(GetAndroidInternalPath());
 
-            Rest = new Connection.ArkEchoRest(Config.ServerAddress);
+            Rest = new ArkEchoRest(Config.ServerAddress, Config.Compression);
 
             // Library
             Library = new MusicLibrary(libraryFileName);
@@ -72,14 +71,14 @@ namespace ArkEcho.App
             bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(Log, exist, missing);
         }
 
-        public async Task<bool> LoadLibraryFromServer(Resources.LoggingDelegate logInListView)
+        public async Task<bool> LoadLibraryFromServer(Logging.LoggingDelegate logInListView)
         {
             try
             {
                 string libraryString = await Rest.GetMusicLibrary();
                 if (string.IsNullOrEmpty(libraryString))
                 {
-                    logInListView?.Invoke("No response from the Server!", ArkEcho.Resources.LogLevel.Information);
+                    logInListView?.Invoke("No response from the Server!", Logging.LogLevel.Static);
                     return false;
                 }
 
@@ -90,23 +89,23 @@ namespace ArkEcho.App
 
                 if (!result)
                 {
-                    logInListView?.Invoke("Cant load json!", ArkEcho.Resources.LogLevel.Information);
+                    logInListView?.Invoke("Cant load json!", Logging.LogLevel.Error);
                     return false;
                 }
 
-                logInListView?.Invoke($"Music File Count: {Library.MusicFiles.Count.ToString()}", ArkEcho.Resources.LogLevel.Information);
+                logInListView?.Invoke($"Music File Count: {Library.MusicFiles.Count.ToString()}", Logging.LogLevel.Debug);
 
                 await Task.Delay(200);
                 return true;
             }
             catch (Exception ex)
             {
-                logInListView?.Invoke($"Exception loading MusicLibrary: {ex.Message}", ArkEcho.Resources.LogLevel.Error);
+                logInListView?.Invoke($"Exception loading MusicLibrary: {ex.Message}", Logging.LogLevel.Error);
                 return false;
             }
         }
 
-        public async Task<bool> LoadFileFromServer(MusicFile file, Resources.LoggingDelegate logInListView)
+        public async Task<bool> LoadFileFromServer(MusicFile file, Logging.LoggingDelegate logInListView)
         {
             if (file == null)
                 return false;
@@ -127,12 +126,12 @@ namespace ArkEcho.App
             }
             catch (Exception ex)
             {
-                logInListView?.Invoke($"Exception loading MusicFile {file.Title}: {ex.Message}", ArkEcho.Resources.LogLevel.Error);
+                logInListView?.Invoke($"Exception loading MusicFile {file.Title}: {ex.Message}", Logging.LogLevel.Error);
                 return false;
             }
         }
 
-        public async Task<bool> CheckLibraryWithLocalFolder(Resources.LoggingDelegate logInListView, List<MusicFile> exist, List<MusicFile> missing)
+        public async Task<bool> CheckLibraryWithLocalFolder(Logging.LoggingDelegate logInListView, List<MusicFile> exist, List<MusicFile> missing)
         {
             bool success = false;
             await Task.Factory.StartNew(() =>
@@ -144,7 +143,7 @@ namespace ArkEcho.App
                         string folder = getMusicFileFolder(file, Library);
                         if (string.IsNullOrEmpty(folder))
                         {
-                            logInListView?.Invoke($"Error building Path for {file.FileName}", ArkEcho.Resources.LogLevel.Information);
+                            logInListView?.Invoke($"Error building Path for {file.FileName}", Logging.LogLevel.Error);
                             break;
                         }
 
@@ -163,7 +162,7 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    logInListView?.Invoke($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
+                    logInListView?.Invoke($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
                 }
             }
             );
@@ -192,7 +191,7 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    Log($"Exception loading MusicFiles: {ex.Message}", ArkEcho.Resources.LogLevel.Information);
+                    Log($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
                 }
             }
             );
@@ -219,7 +218,7 @@ namespace ArkEcho.App
             wakeLock.Release();
         }
 
-        public bool Log(string Text, Resources.LogLevel Level)
+        public bool Log(string Text, Logging.LogLevel Level)
         {
             // TODO
             return true;

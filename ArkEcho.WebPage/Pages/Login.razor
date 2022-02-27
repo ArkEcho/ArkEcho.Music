@@ -5,7 +5,7 @@
 @layout CenteredCardLayout
 
 @inject AppModel Model
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Authentication Authentication
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorageService
 @inject IJSRuntime jsRunTime
@@ -44,33 +44,31 @@
     private User user;
     public string LoginMesssage { get; set; }
 
-    ClaimsPrincipal claimsPrincipal;
-
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
     protected async override Task OnInitializedAsync()
     {
         user = new User();
 
-        claimsPrincipal = (await authenticationStateTask).User;
-
-        if (claimsPrincipal.Identity.IsAuthenticated)
-            NavigationManager.NavigateTo("/index");
+        if (await Authentication.GetAuthenticationState())
+            NavigationManager.NavigateTo("/Index");
     }
 
     private async Task<bool> ValidateUser()
     {
         if (!string.IsNullOrEmpty(user.UserName) && !string.IsNullOrEmpty(user.Password))
         {
-            User loggedInUser = Model.CheckUserForLogin(user);
+            //Console.WriteLine($"Before LogIn, {user.AccessToken}");
+
+            User loggedInUser = await Authentication.AuthenticateUserForLogin(user);
             if (loggedInUser != null)
             {
-                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticated(loggedInUser);
-                NavigationManager.NavigateTo("/index");
+                //Console.WriteLine($"Logged In, {loggedInUser.AccessToken}");
+
+                await Authentication.MarkUserAsAuthenticated(loggedInUser);
+
+                NavigationManager.NavigateTo("/Index");
             }
             else
-                LoginMesssage = "Username or passwort wrong";
+                LoginMesssage = "Username or password wrong";
         }
         else
             LoginMesssage = "Empty username or password";

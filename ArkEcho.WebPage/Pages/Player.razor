@@ -2,9 +2,7 @@
 
 @layout MainLayout
 
-@inject ArkEcho.Server.ArkEchoServer Server
 @inject IJSRuntime JS
-@inject ArkEcho.Player.ArkEchoJSPlayer JSPlayer
 @inject AppModel Model
 
 <p>MusicFileCount: @musicFileCounter</p>
@@ -26,22 +24,22 @@
 <br />
 <br />
 <label for="volume">Volume:</label>
-<input type="number" id="volume" @bind="JSPlayer.Volume" min="0" max="100">
+<input type="number" id="volume" @bind="Model.Player.Volume" min="0" max="100">
 
 <br />
 <label for="playing">Playing:</label>
-<input type="checkbox" id="playing" name="playing" checked="@JSPlayer.Playing">
+<input type="checkbox" id="playing" name="playing" checked="@Model.Player.Playing">
 <br />
 <label for="muted">Mute:</label>
-<input type="checkbox" id="muted" name="muted" checked="@JSPlayer.Mute">
+<input type="checkbox" id="muted" name="muted" checked="@Model.Player.Mute">
 <br />
 <label for="shuffle">Shuffle:</label>
-<input type="checkbox" id="shuffle" name="shuffle" checked="@JSPlayer.Shuffle">
+<input type="checkbox" id="shuffle" name="shuffle" checked="@Model.Player.Shuffle">
 <br />
 <p>@SongInfo</p>
 
-<p>@JSPlayer.Position</p>
-
+<p>@Model.Player.Position</p>
+<!--
 <table class="table" style="width: 50%">
     <thead>
         <tr>
@@ -55,7 +53,7 @@
     <td>@log</td>
 </tr>}
     </tbody>
-</table>
+</table>-->
 
 @code
 { private string SongInfo = string.Empty;
@@ -67,12 +65,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Model.Initialize();
-
-        JSPlayer.InitPlayer(JS, logOnPage);
-        JSPlayer.TitleChanged += () => updatePlayerInfo();
-        JSPlayer.PositionChanged += () => updatePlayerInfo();
-        JSPlayer.PlayingChanged += () => updatePlayerInfo();
+        Model.Player.TitleChanged += () => updatePlayerInfo();
+        Model.Player.PositionChanged += () => updatePlayerInfo();
+        Model.Player.PlayingChanged += () => updatePlayerInfo();
         musicFileCounter = Model.Library.MusicFiles.Count;
         updatePlayerInfo();
 
@@ -87,8 +82,8 @@
 
     private void updatePlayerInfo()
     {
-        if (JSPlayer.PlayingFile != null)
-            SongInfo = $"{JSPlayer.PlayingFile.Title} - {JSPlayer.PlayingFile.Performer}";
+        if (Model.Player.PlayingFile != null)
+            SongInfo = $"{Model.Player.PlayingFile.Title} - {Model.Player.PlayingFile.Performer}";
 
         InvokeAsync(StateHasChanged);
     }
@@ -98,7 +93,7 @@
         Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
         List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
-        JSPlayer.Start(Files, 0);
+        Model.Player.Start(Files, 0);
     }
 
     private void Init()
@@ -108,47 +103,48 @@
 
         List<Core.MusicFile> all = Model.Library.MusicFiles;
         List<Core.MusicFile> Files = new List<Core.MusicFile>();
+
         Model.Library.Album[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
-        JSPlayer.Start(Files, 0);
+        Model.Player.Start(Files, 0);
     }
 
     private void Play()
     {
-        JSPlayer.Play();
+        Model.Player.Play();
     }
 
     private void Pause()
     {
-        JSPlayer.Pause();
+        Model.Player.Pause();
     }
 
     private void PlayPause()
     {
-        JSPlayer.PlayPause();
+        Model.Player.PlayPause();
     }
 
     private void Stop()
     {
-        JSPlayer.Stop();
+        Model.Player.Stop();
     }
 
     private void Shuffle()
     {
-        JSPlayer.Shuffle = !JSPlayer.Shuffle;
+        Model.Player.Shuffle = !Model.Player.Shuffle;
     }
 
     private void Mute()
     {
-        JSPlayer.Mute = !JSPlayer.Mute;
+        Model.Player.Mute = !Model.Player.Mute;
     }
 
     private void Backward()
     {
-        JSPlayer.Backward();
+        Model.Player.Backward();
     }
 
     private void Forward()
     {
-        JSPlayer.Forward();
+        Model.Player.Forward();
     } }

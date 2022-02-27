@@ -8,20 +8,20 @@ namespace ArkEcho.Player
     {
         private LibVLC libvlc = null;
         private MediaPlayer mediaplayer = null;
-        private Resources.LoggingDelegate logDelegate = null;
+        private Logging.LoggingDelegate logDelegate = null;
 
         public ArkEchoVLCPlayer() : base()
         {
         }
 
-        protected override bool logImpl(string Text, Resources.LogLevel Level)
+        protected override bool logImpl(string Text, Logging.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);
             return false;
         }
 
-        public bool InitPlayer(Resources.LoggingDelegate LogDelegate)
+        public bool InitPlayer(Logging.LoggingDelegate LogDelegate)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace ArkEcho.Player
             }
             catch (Exception ex)
             {
-                logImpl(ex.Message, Resources.LogLevel.Error);
+                logImpl(ex.Message, Logging.LogLevel.Error);
                 return false;
             }
         }
@@ -58,7 +58,7 @@ namespace ArkEcho.Player
             }
             catch (Exception ex)
             {
-                logImpl(ex.Message, Resources.LogLevel.Error);
+                logImpl(ex.Message, Logging.LogLevel.Error);
             }
         }
 
