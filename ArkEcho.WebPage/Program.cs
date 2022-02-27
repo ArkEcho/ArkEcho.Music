@@ -1,9 +1,6 @@
 using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ArkEcho.WebPage
@@ -22,17 +19,13 @@ namespace ArkEcho.WebPage
             WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            // Authentication & Authorization
-            builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
             // Local Storage
             builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddScoped(sp => new AppModel());
             builder.Services.AddScoped(sp => new ArkEchoJSPlayer());
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddScoped<Authentication>();
 
             await builder.Build().RunAsync();
         }

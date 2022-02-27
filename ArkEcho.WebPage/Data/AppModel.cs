@@ -15,23 +15,19 @@ namespace ArkEcho.WebPage
         // TODO: private?
         public MusicLibrary Library { get; private set; } = null;
 
+        public ArkEchoRest Rest { get; private set; } = null;
+
         public AppModel()
         {
             Counter = 0;
             Library = new MusicLibrary();
+            Rest = new ArkEchoRest("https://192.168.178.20:5002", false);
         }
 
         public async Task<bool> Initialize()
         {
-            // TODO
-            //string lib = await ArkEchoServer.Instance.GetMusicLibraryString();
-            return true;//await Library.LoadFromJsonString(lib);
-        }
-
-        public User CheckUserForLogin(User user)
-        {
-            // TODO
-            return new User();//ArkEchoServer.Instance.CheckUserForLogin(user);
+            string lib = await Rest.GetMusicLibrary();
+            return await Library.LoadFromJsonString(lib);
         }
     }
 }
