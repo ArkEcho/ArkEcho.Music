@@ -2,9 +2,9 @@
 
 @layout MainLayout
 
-@inject IJSRuntime JS
-@inject ArkEchoJSPlayer JSPlayer
 @inject AppModel Model
+@inject ArkEchoJSPlayer JSPlayer
+@inject IJSRuntime JS
 
 <p>MusicFileCount: @musicFileCounter</p>
 
@@ -40,7 +40,7 @@
 <p>@SongInfo</p>
 
 <p>@JSPlayer.Position</p>
-
+<!--
 <table class="table" style="width: 50%">
     <thead>
         <tr>
@@ -52,10 +52,9 @@
         {
 <tr>
     <td>@log</td>
-</tr>
-}
+</tr>}
     </tbody>
-</table>
+</table>-->
 
 @code
 { private string SongInfo = string.Empty;
@@ -67,9 +66,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await Model.Initialize();
-
-        JSPlayer.InitPlayer(JS, logOnPage);
         JSPlayer.TitleChanged += () => updatePlayerInfo();
         JSPlayer.PositionChanged += () => updatePlayerInfo();
         JSPlayer.PlayingChanged += () => updatePlayerInfo();

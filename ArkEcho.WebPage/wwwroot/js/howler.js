@@ -8,6 +8,11 @@
  *  MIT License
  */
 
+/*
+ TODO: Kurz version
+ */
+console.log("howler.js loaded");
+
 (function () {
 
     'use strict';

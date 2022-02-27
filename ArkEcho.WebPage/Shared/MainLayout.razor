@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
-@using System.Security.Claims
+@inject AppModel Model
+@inject ArkEchoJSPlayer JSPlayer
+@inject IJSRuntime JS
 @inject NavigationManager NavigationManager
 @inject Authentication Authentication
 @inject Blazored.LocalStorage.ILocalStorageService localStorageService
@@ -38,6 +40,14 @@
 
         if (!await Authentication.GetAuthenticationState())
             NavigationManager.NavigateTo("/");
+
+        if (!await Model.Initialize())
+        {
+            Console.WriteLine("Error Initializing AppModel!");
+            return;
+        }
+
+        JSPlayer.InitPlayer(JS);
     }
 
     public async Task UserIconClick()

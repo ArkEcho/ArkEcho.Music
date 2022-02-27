@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Player;
 using Microsoft.JSInterop;
+using System;
 
 namespace ArkEcho.WebPage
 {
@@ -13,11 +14,11 @@ namespace ArkEcho.WebPage
         {
         }
 
-        public bool InitPlayer(IJSRuntime JS, Logging.LoggingDelegate LogDelegate)
+        public bool InitPlayer(IJSRuntime JS)
         {
-            if (LogDelegate != null && JS != null)
+            if (JS != null)
             {
-                logDelegate = LogDelegate;
+                logDelegate = logConsole;
                 this.JS = JS;
                 Initialized = true;
 
@@ -27,6 +28,12 @@ namespace ArkEcho.WebPage
                 return Initialized;
             }
             return false;
+        }
+
+        private bool logConsole(string text, ArkEcho.Logging.LogLevel level)
+        {
+            Console.WriteLine(text);
+            return true;
         }
 
         [JSInvokable]

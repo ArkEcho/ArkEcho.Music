@@ -2,6 +2,8 @@
  TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
  */
 
+console.log("HowlerPlayer.js loaded");
+
 class HowlerPlayer {
     constructor() {
         this.stepCount = 0;
@@ -55,7 +57,7 @@ class HowlerPlayer {
             }
         });
 
-        this.LogPlayer('Init Succeed');
+        this.LogPlayer('Init Audio Succeed');
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
@@ -76,7 +78,7 @@ class HowlerPlayer {
     DisposeAudio() {
         this.stop = true;
         this.sound.unload();
-        this.LogPlayer('Disposed');
+        this.LogPlayer('Disposed Audio');
     }
 
     PlayAudio() {
