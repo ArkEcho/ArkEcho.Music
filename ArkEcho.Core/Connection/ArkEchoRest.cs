@@ -44,7 +44,7 @@ namespace ArkEcho.Core
                     return null;
 
                 User user = new User();
-                user.LoadFromJsonString(content);
+                await user.LoadFromJsonString(content);
                 return user;
             }
             else

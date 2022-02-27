@@ -11,7 +11,7 @@ namespace ArkEcho.Core
         public string Password { get; set; }
 
         [JsonProperty]
-        public Guid AccessToken { get; set; } = Guid.NewGuid();
+        public Guid AccessToken { get; set; } = Guid.Empty;
     }
 
 }

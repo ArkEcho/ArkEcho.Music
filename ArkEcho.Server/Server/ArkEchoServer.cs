@@ -74,7 +74,7 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
-            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test") });
+            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
             ServerLogger logger = new ServerLogger("Main");
             ServerLogger logger2 = new ServerLogger("Rest");
