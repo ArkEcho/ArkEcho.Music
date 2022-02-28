@@ -1,4 +1,4 @@
-﻿@page  "/"
+﻿@page "/"
 
 @using System.Security.Claims
 
@@ -40,7 +40,7 @@
 </EditForm>
 
 @code
-{//
+{
     private User user;
     public string LoginMesssage { get; set; }
 
@@ -74,4 +74,5 @@
             LoginMesssage = "Empty username or password";
 
         return await Task.FromResult(true);
-    } }
+    }
+}

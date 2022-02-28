@@ -28,7 +28,8 @@
 </div>
 
 @code
-{ private bool showUserSidebar = false;
+{ 
+    private bool showUserSidebar = false;
     private string showUserSidebarCss => showUserSidebar ? "block" : "none";
 
     public string LoggedInText { get; set; } = string.Empty;
@@ -59,4 +60,5 @@
     {
         await Authentication.MarkUserAsLoggedOut();
         NavigationManager.NavigateTo("/");
-    } }
+    }
+}

@@ -26,29 +26,28 @@
 }
 
 
-@code {
-
-
-public Guid Guid = Guid.NewGuid();
-public string ModalDisplay = "none;";
-public string ModalClass = "";
-public bool ShowBackdrop = false;
-
-public void Open()
+@code 
 {
-	ModalDisplay = "block;";
-	ModalClass = "Show";
-	ShowBackdrop = true;
-	StateHasChanged();
-}
+	public Guid Guid = Guid.NewGuid();
+	public string ModalDisplay = "none;";
+	public string ModalClass = "";
+	public bool ShowBackdrop = false;
 
-public void Close()
-{
-	ModalDisplay = "none";
-	ModalClass = "";
-	ShowBackdrop = false;
-	StateHasChanged();
-}
+	public void Open()
+	{
+		ModalDisplay = "block;";
+		ModalClass = "Show";
+		ShowBackdrop = true;
+		StateHasChanged();
+	}
+
+	public void Close()
+	{
+		ModalDisplay = "none";
+		ModalClass = "";
+		ShowBackdrop = false;
+		StateHasChanged();
+	}
 /* Used by:
 HTML:
 				<UserModalForm @ref="Modal"></UserModalForm>
