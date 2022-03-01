@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -42,7 +43,7 @@ namespace ArkEcho.Server
                         Year = tagFile.Tag.Year,
                     };
 
-                    if (!checkFolderStructureAndTags(music, tagFile.Tag.Album, tagFile.Tag.FirstAlbumArtist))
+                    if (!checkFolderStructureAndTags(music, tagFile.Tag))
                         continue;
 
                     albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
@@ -56,6 +57,11 @@ namespace ArkEcho.Server
                     if (album == null)
                     {
                         album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
+
+                        MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
+                        Image image = Image.FromStream(ms);
+                        album.Cover = (Bitmap)image;
+
                         library.Album.Add(album);
 
                         albumArtist.AlbumID.Add(album.GUID);
@@ -106,23 +112,28 @@ namespace ArkEcho.Server
             return results;
         }
 
-        private bool checkFolderStructureAndTags(MusicFile music, string albumName, string albumArtistName)
+        private bool checkFolderStructureAndTags(MusicFile music, TagLib.Tag tag)
         {
-            if (string.IsNullOrEmpty(albumArtistName) || string.IsNullOrEmpty(albumName))
+            if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))
             {
                 Console.WriteLine($"Skipped! No Album/AlbumArtist {music.GetFullPathWindows()}");
-                return false; ;
+                return false;
+            }
+            else if (tag.Pictures.Length == 0)
+            {
+                Console.WriteLine($"File has no Album Cover! {music.GetFullPathWindows()}");
+                return false;
             }
             else
             {
                 List<string> parts = music.GetFullPathWindows().Split("\\").ToList();
-                if (!parts[parts.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
+                if (!parts[parts.Count - 3].Equals(tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullPathWindows()}");
                     return false;
                 }
 
-                if (!parts[parts.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
+                if (!parts[parts.Count - 2].Equals(tag.Album, StringComparison.OrdinalIgnoreCase))
                 {
                     Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullPathWindows()}");
                     return false;
