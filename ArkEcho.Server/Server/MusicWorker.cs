@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -59,8 +58,7 @@ namespace ArkEcho.Server
                         album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
 
                         MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-                        Image image = Image.FromStream(ms);
-                        album.Cover = (Bitmap)image;
+                        album.Cover = ms.ToArray();
 
                         library.Album.Add(album);
 

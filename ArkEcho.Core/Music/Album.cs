@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace ArkEcho.Core
 {
@@ -27,7 +26,7 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
-        public Bitmap Cover { get; set; } = null;
+        public byte[] Cover { get; set; } = null;
 
         public Album() : base() { }
     }
