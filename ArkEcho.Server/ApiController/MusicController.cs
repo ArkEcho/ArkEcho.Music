@@ -48,5 +48,20 @@ namespace ArkEcho.Server
 
             return result;
         }
+        // GET: api/Music/AlbumCover/[GUID]
+        [HttpGet("AlbumCover/{guid}")]
+        public async Task<ActionResult> GetAlbumCover(Guid guid)
+        {
+            // TODO: Logging!
+            if (guid == Guid.Empty)
+                return BadRequest();
+
+            byte[] cover = server.GetAlbumCover(guid);
+
+            if (cover == null)
+                return BadRequest();
+
+            return Ok(Convert.ToBase64String(cover));
+        }
     }
 }

@@ -26,6 +26,8 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
+        public byte[] Cover { get; set; } = null;
+
         public Album() : base() { }
     }
 }

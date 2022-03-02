@@ -2,12 +2,10 @@
 
 namespace ArkEcho.Core
 {
-    public abstract class Logger : JsonBase
+    public abstract class Logger
     {
-        [JsonProperty]
         public string Name { get; set; }
 
-        [JsonProperty]
         public string Context { get; set; }
 
         public Logger(string name, string context)

@@ -68,6 +68,16 @@ namespace ArkEcho.Core
                 return string.Empty;
         }
 
+        public async Task<string> GetAlbumCover(Guid guid)
+        {
+            HttpResponseMessage response = await getRequest($"/api/Music/AlbumCover/{guid}");
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadAsStringAsync();
+            else
+                return string.Empty;
+        }
+
         public async Task<byte[]> GetMusicFile(Guid guid)
         {
             HttpResponseMessage response = await getRequest($"/api/Music/{guid}");
