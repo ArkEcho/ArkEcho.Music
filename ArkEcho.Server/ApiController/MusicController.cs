@@ -56,12 +56,12 @@ namespace ArkEcho.Server
             if (guid == Guid.Empty)
                 return BadRequest();
 
-            byte[] cover = server.GetAlbumCover(guid);
+            string cover = ArkEchoServer.Instance.GetAlbumCover(guid);
 
-            if (cover == null)
+            if (!string.IsNullOrEmpty(cover))
                 return BadRequest();
 
-            return Ok(Convert.ToBase64String(cover));
+            return Ok(cover);
         }
     }
 }

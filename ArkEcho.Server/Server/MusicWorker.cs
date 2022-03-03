@@ -57,8 +57,8 @@ namespace ArkEcho.Server
                     {
                         album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
 
-                        MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data);
-                        album.Cover = ms.ToArray();
+                        using (MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data))
+                            album.Cover64 = Convert.ToBase64String(ms.ToArray());
 
                         library.Album.Add(album);
 
