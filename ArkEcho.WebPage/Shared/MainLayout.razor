@@ -25,12 +25,11 @@
         <div class="content px-4">
             @Body
         </div>
-
     </div>
 </div>
 
 @code
-{ 
+{
     private bool showUserSidebar = false;
     private string showUserSidebarCss => showUserSidebar ? "block" : "none";
 
@@ -38,24 +37,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //Console.WriteLine("MainLayout OnInitializedAsync");
+        Console.WriteLine("MainLayout OnInitializedAsync");
 
         if (!await Authentication.GetAuthenticationState())
             NavigationManager.NavigateTo("/");
 
-        if (!await Model.Initialize(JS))
-        {
-            Console.WriteLine("Error Initializing AppModel!");
-            return;
-        }
+        Task.Factory.StartNew(() => Model.Initialize(JS));
     }
 
     public async Task UserIconClick()
     {
         showUserSidebar = !showUserSidebar;
-        StateHasChanged();
-        //await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
-        //NavigationManager.NavigateTo("/");
+        await InvokeAsync(StateHasChanged);
     }
 
     public async Task Logout()

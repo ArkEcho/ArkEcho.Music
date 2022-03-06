@@ -8,7 +8,7 @@ namespace ArkEcho.WebPage
     {
         private Logging.LoggingDelegate logDelegate = null;
 
-        public IJSRuntime JS { get; private set; }
+        public IJSRuntime JS { get; private set; } = null;
 
         public ArkEchoJSPlayer() : base()
         {
@@ -16,18 +16,20 @@ namespace ArkEcho.WebPage
 
         public bool InitPlayer(IJSRuntime JS)
         {
-            if (JS != null)
-            {
-                logDelegate = logConsole;
-                this.JS = JS;
-                Initialized = true;
+            if (JS == null)
+                return false;
 
-                var dotNetReference = DotNetObjectReference.Create(this);
-                JS.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
-
+            if (Initialized)
                 return Initialized;
-            }
-            return false;
+
+            logDelegate = logConsole;
+            this.JS = JS;
+
+            var dotNetReference = DotNetObjectReference.Create(this);
+            JS.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
+
+            Initialized = true;
+            return Initialized;
         }
 
         private bool logConsole(string text, ArkEcho.Logging.LogLevel level)

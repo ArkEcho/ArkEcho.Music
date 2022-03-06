@@ -2,7 +2,7 @@
  TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
  */
 
-console.log("HowlerPlayer.js loaded");
+//console.log("HowlerPlayer.js loaded");
 
 class HowlerPlayer {
     constructor() {
@@ -113,12 +113,12 @@ class HowlerPlayer {
 
     SetAudioPosition(NewTime) {
         this.sound.seek(NewTime);
-        this.LogPlayer('Sound Position is ' + this.sound.seek());
+        //this.LogPlayer('Sound Position is ' + this.sound.seek());
     }
 
     GetAudioPosition() {
         var pos = Math.round(this.sound.seek());
-        this.LogPlayer('Sound Position is ' + pos);
+        //this.LogPlayer('Sound Position is ' + pos);
         return pos;
     }
 

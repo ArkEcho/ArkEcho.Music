@@ -18,30 +18,30 @@ namespace ArkEcho.WebPage
 
         public AppModel()
         {
+            Library = new MusicLibrary();
+            Player = new ArkEchoJSPlayer();
             Rest = new ArkEchoRest("https://192.168.178.20:5002", false);
         }
 
         public async Task<bool> Initialize(IJSRuntime jsRuntime)
         {
+            if (jsRuntime == null)
+                return false;
+
             if (initialized)
                 return true;
 
-            if (Library == null)
+            string lib = await Rest.GetMusicLibrary();
+            await Library.LoadFromJsonString(lib);
+
+            if (Library.MusicFiles.Count > 0)
             {
-                Library = new MusicLibrary();
-                string lib = await Rest.GetMusicLibrary();
-                await Library.LoadFromJsonString(lib);
+                Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
 
-                if (Library.MusicFiles.Count > 0)
+                if (Player.InitPlayer(jsRuntime))
                 {
-                    Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
-
-                    Player = new ArkEchoJSPlayer();
-                    if (Player.InitPlayer(jsRuntime))
-                    {
-                        initialized = true;
-                        return true;
-                    }
+                    initialized = true;
+                    return true;
                 }
             }
 

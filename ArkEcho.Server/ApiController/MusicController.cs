@@ -58,7 +58,7 @@ namespace ArkEcho.Server
 
             string cover = ArkEchoServer.Instance.GetAlbumCover(guid);
 
-            if (!string.IsNullOrEmpty(cover))
+            if (string.IsNullOrEmpty(cover))
                 return BadRequest();
 
             return Ok(cover);
