@@ -1,51 +1,26 @@
 ﻿using ArkEcho.Core;
 using System;
-using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
-using System.Threading;
 
 namespace ArkEcho.Server
 {
-    public class LoggingWorker : BackgroundWorker
+    public class ServerLoggingWorker : LoggingWorker
     {
-        private bool stop = false;
-        private bool working = false;
         private string logFolder = string.Empty;
 
-        private ConcurrentQueue<LogMessage> loggingQueue = null;
-
-        public LoggingWorker(string logFolder) : base()
+        public ServerLoggingWorker(string logFolder) : base()
         {
             this.logFolder = logFolder;
-            loggingQueue = new();
-
-            DoWork += LoggingWorker_DoWork;
         }
 
-        public void AddLogMessage(LogMessage log)
+        protected override void HandleLogMessage(LogMessage log)
         {
-            loggingQueue.Enqueue(log);
-        }
-
-        private void LoggingWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            working = true;
-
-            while (!stop)
+            using (StreamWriter fs = getFileStream(log.Origin))
             {
-                if (loggingQueue.TryDequeue(out LogMessage log))
-                {
-                    using (StreamWriter fs = getFileStream(log.Origin))
-                    {
-                        fs?.WriteLine(log.ToLogString());
-                        fs?.Flush();
-                    }
-                }
+                fs?.WriteLine(log.ToLogString());
+                fs?.Flush();
             }
-
-            working = false;
         }
 
         private StreamWriter getFileStream(Logger logger)
@@ -73,7 +48,7 @@ namespace ArkEcho.Server
             return Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{logger.Name}.log");
         }
 
-        bool disposed = false;
+        private bool disposed = false;
 
         protected override void Dispose(bool Disposing)
         {
@@ -81,9 +56,6 @@ namespace ArkEcho.Server
             {
                 if (Disposing)
                 {
-                    stop = true;
-
-                    Thread.Sleep(1000);
                 }
             }
 

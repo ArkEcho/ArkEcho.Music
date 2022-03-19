@@ -57,7 +57,7 @@ namespace ArkEcho.Server
                 return false;
             }
 
-            lw = new LoggingWorker(ServerConfig.LoggingFolder.LocalPath);
+            lw = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath);
             lw.RunWorkerAsync();
 
             Console.WriteLine("Configuration for ArkEcho.Server:");
@@ -76,13 +76,15 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
-            ServerLogger logger = new ServerLogger("Main");
-            ServerLogger logger2 = new ServerLogger("Rest");
+            Logger logger = new Logger("Server", "Main", lw);
+            Logger logger2 = new Logger("Server", "Rest", lw);
+            Logger logger3 = new Logger("App", "Test", lw);
 
             logger.LogStatic("Test1");
             logger2.LogError("Test2");
             logger.LogImportant("Test3");
             logger2.LogDebug("Test4");
+            logger3.LogDebug("Test2");
 
             return Initialized;
         }
