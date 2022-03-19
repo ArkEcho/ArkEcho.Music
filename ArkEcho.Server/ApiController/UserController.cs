@@ -1,16 +1,17 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticateController : ControllerBase
+    public class AuthenticateController : ArkEchoController
     {
-        ArkEchoServer server = ArkEchoServer.Instance;
+        public AuthenticateController() : base("Authenticate")
+        {
+        }
 
         [HttpPost("Login")]
         public async Task<ActionResult> AuthenticateUserForLogin()
@@ -21,10 +22,10 @@ namespace ArkEcho.Server
             string userRequestString = await getStringFromHttpBody();
             userRequestString = userRequestString.FromBase64();
 
-            User user = new User();
+            User user = new();
             await user.LoadFromJsonString(userRequestString);
 
-            User checkedUser = server.AuthenticateUserForLogin(user);
+            User checkedUser = Server.AuthenticateUserForLogin(user);
 
             return await checkUserMakeAnswer(checkedUser);
         }
@@ -39,7 +40,7 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            User checkedUser = server.CheckUserToken(guid);
+            User checkedUser = Server.CheckUserToken(guid);
 
             return await checkUserMakeAnswer(checkedUser);
         }
@@ -53,13 +54,6 @@ namespace ArkEcho.Server
             }
             else
                 return BadRequest();
-        }
-
-        private async Task<string> getStringFromHttpBody()
-        {
-            Stream req = HttpContext.Request.Body;
-
-            return await new StreamReader(req).ReadToEndAsync();
         }
     }
 }
