@@ -24,6 +24,7 @@ namespace ArkEcho.Server
             LogMessage message = new();
             await message.LoadFromJsonString(requestString);
 
+            Server.LoggingWorker.AddLogMessage(message);
 
             return Ok();
         }

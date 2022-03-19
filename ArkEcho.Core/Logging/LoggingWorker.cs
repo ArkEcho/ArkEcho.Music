@@ -10,10 +10,12 @@ namespace ArkEcho.Core
 
         private ConcurrentQueue<LogMessage> loggingQueue = null;
 
-        public LoggingWorker() : base()
-        {
-            loggingQueue = new ConcurrentQueue<LogMessage>();
+        private Logging.LogLevel logLevel;
 
+        public LoggingWorker(Logging.LogLevel logLevel) : base()
+        {
+            this.logLevel = logLevel;
+            loggingQueue = new ConcurrentQueue<LogMessage>();
             DoWork += LoggingWorker_DoWork;
         }
 
@@ -26,10 +28,8 @@ namespace ArkEcho.Core
         {
             while (!stop)
             {
-                if (loggingQueue.TryDequeue(out LogMessage log))
-                {
+                if (loggingQueue.TryDequeue(out LogMessage log) && log.Level <= logLevel)
                     HandleLogMessage(log);
-                }
             }
         }
 

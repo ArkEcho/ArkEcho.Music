@@ -55,13 +55,13 @@ namespace ArkEcho.Server
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath);
+            LoggingWorker = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath, (Logging.LogLevel)ServerConfig.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
             logger = new Logger("Server", "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
-            logger.LogStatic(ServerConfig.SaveToJsonString().Result);
+            logger.LogStatic($"\r\n{ServerConfig.SaveToJsonString().Result}");
 
             musicWorker = new MusicWorker(LoggingWorker);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;

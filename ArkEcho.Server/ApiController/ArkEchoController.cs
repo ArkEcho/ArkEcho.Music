@@ -7,10 +7,11 @@ namespace ArkEcho.Server
 {
     public abstract class ArkEchoController : ControllerBase
     {
-        protected Logger Logger = null;
-        protected string ControllerName = string.Empty;
+        protected Logger Logger { get; private set; } = null;
 
-        protected ArkEchoServer Server = ArkEchoServer.Instance;
+        protected string ControllerName { get; private set; } = string.Empty;
+
+        protected ArkEchoServer Server { get; private set; } = ArkEchoServer.Instance;
 
         public ArkEchoController(string controllerName) : base()
         {

@@ -9,7 +9,7 @@ namespace ArkEcho.Server
     {
         private string logFolder = string.Empty;
 
-        public ServerLoggingWorker(string logFolder) : base()
+        public ServerLoggingWorker(string logFolder, Logging.LogLevel logLevel) : base(logLevel)
         {
             this.logFolder = logFolder;
         }
