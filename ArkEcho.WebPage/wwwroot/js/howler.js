@@ -11,7 +11,7 @@
 /*
  TODO: Kurz version
  */
-console.log("howler.js loaded");
+//console.log("howler.js loaded");
 
 (function () {
 

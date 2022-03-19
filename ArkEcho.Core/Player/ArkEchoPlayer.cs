@@ -19,7 +19,6 @@ namespace ArkEcho.Player
 
         public List<MusicFile> ListToPlay { get; private set; } = null;
 
-
         public MusicFile PlayingFile { get; private set; } = null;
 
         private int songIndex = 0;

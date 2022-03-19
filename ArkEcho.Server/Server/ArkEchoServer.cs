@@ -133,9 +133,9 @@ namespace ArkEcho.Server
             return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;
         }
 
-        public byte[] GetAlbumCover(Guid guid)
+        public string GetAlbumCover(Guid guid)
         {
-            return library != null ? library.Album.Find(x => x.GUID == guid).Cover : null;
+            return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
         }
 
         public void Stop()
