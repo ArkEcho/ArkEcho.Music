@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
 using System;
 
 namespace ArkEcho.Server
@@ -15,7 +14,7 @@ namespace ArkEcho.Server
                     return;
                 }
                 else
-                    ArkEchoServer.Instance.Host.Run(); // Starts Event Cycle and API 
+                    ArkEchoServer.Instance.Start(); // Starts Event Cycle and API 
 
                 if (ArkEchoServer.Instance.RestartRequested)
                     System.Diagnostics.Process.Start("ArkEcho.Server.exe");

@@ -13,33 +13,30 @@ namespace ArkEcho.Server
     {
         private const string serverConfigFileName = "ServerConfig.json";
 
+        private IWebHost host = null;
+        private MusicLibrary library = null;
+        private MusicWorker musicWorker = null;
+        private List<User> users = new List<User>();
+        private Logger logger = null;
+
+        /// <summary>
+        /// SingleTon
+        /// </summary>
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
         public ServerConfig ServerConfig { get; private set; } = null;
 
-        private MusicLibrary library = null;
-
-        private MusicWorker musicWorker = null;
-
-        private List<User> users = new List<User>();
-
-
-        private LoggingWorker lw = null;
-
-        public IWebHost Host { get; set; }
+        public LoggingWorker LoggingWorker { get; private set; } = null;
 
         private ArkEchoServer()
         {
             library = new MusicLibrary();
-            musicWorker = new MusicWorker();
         }
 
         public bool Init()
         {
             if (Initialized)
                 return Initialized;
-
-            Console.WriteLine("Initializing ArkEcho.Server");
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -57,16 +54,21 @@ namespace ArkEcho.Server
                 return false;
             }
 
-            lw = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath);
-            lw.RunWorkerAsync();
+            // We have the config -> initialize logging
+            LoggingWorker = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath);
+            LoggingWorker.RunWorkerAsync();
 
-            Console.WriteLine("Configuration for ArkEcho.Server:");
-            Console.WriteLine(ServerConfig.SaveToJsonString().Result);
+            logger = new Logger("Server", "Main", LoggingWorker);
 
+            logger.LogStatic("Configuration for ArkEcho.Server:");
+            logger.LogStatic(ServerConfig.SaveToJsonString().Result);
+
+            musicWorker = new MusicWorker(LoggingWorker);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
+
             LoadMusicLibrary();
 
-            Host = WebHost.CreateDefaultBuilder()
+            host = WebHost.CreateDefaultBuilder()
                             .UseUrls($"https://*:{ServerConfig.Port}")
                             .UseKestrel()
                             .UseStartup<Startup>()
@@ -76,22 +78,7 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
-            Logger logger = new Logger("Server", "Main", lw);
-            Logger logger2 = new Logger("Server", "Rest", lw);
-            Logger logger3 = new Logger("App", "Test", lw);
-
-            logger.LogStatic("Test1");
-            logger2.LogError("Test2");
-            logger.LogImportant("Test3");
-            logger2.LogDebug("Test4");
-            logger3.LogDebug("Test2");
-
             return Initialized;
-        }
-
-        public void AddLogMessage(LogMessage log)
-        {
-            lw.AddLogMessage(log);
         }
 
         public User AuthenticateUserForLogin(User user)
@@ -112,15 +99,14 @@ namespace ArkEcho.Server
 
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            Console.WriteLine($"Worker Completed!");
             if (e.Result != null)
             {
                 library = (MusicLibrary)e.Result;
-                Console.WriteLine($"Found {library.MusicFiles.Count} Music Files");
+                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files");
             }
             else
             {
-                Console.WriteLine("### Error loading Music Library, stopping!");
+                logger.LogError("### Error loading Music Library, stopping!");
                 Stop();
             }
         }
@@ -140,9 +126,14 @@ namespace ArkEcho.Server
             return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
         }
 
+        public void Start()
+        {
+            host.Run();
+        }
+
         public void Stop()
         {
-            Host.StopAsync();
+            host.StopAsync();
         }
 
         public void Restart()
