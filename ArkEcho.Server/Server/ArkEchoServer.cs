@@ -78,6 +78,10 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
+            //
+            //for (int i = 0; i < 10000; i++)
+            //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
+
             return Initialized;
         }
 

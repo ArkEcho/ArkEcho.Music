@@ -8,7 +8,7 @@ namespace ArkEcho.Server
 {
     public class ServerLoggingWorker : LoggingWorker
     {
-        private struct LogFile
+        public class LogFile
         {
             public LogFile(string name, string fileName)
             {
@@ -16,12 +16,18 @@ namespace ArkEcho.Server
                 this.FileName = fileName;
             }
 
-            public string Name { get; private set; }
-            public string FileName { get; private set; }
+            public string Name { get; set; } = string.Empty;
+            public string FileName { get; set; } = string.Empty;
+
+            public string GetFullFileName()
+            {
+                return $"{FileName}{logFileExtension}";
+            }
         }
 
-        private string logFileExtension = ".log";
+        private const string logFileExtension = ".log";
         private string logFolder = string.Empty;
+
         private int maxFiles = 10;
         private long logFileSizeMax = 10485760; // 10mb
 
@@ -34,26 +40,47 @@ namespace ArkEcho.Server
 
         protected override void HandleLogMessage(LogMessage log)
         {
-            StreamWriter fs = null;
+            LogFile file = logFiles.FindLast(x => x.Name == log.Name);
 
-            LogFile file = logFiles.Find(x => x.Name == log.Name);
-            if (string.IsNullOrEmpty(file.FileName))
-            {
-                file = new LogFile(log.Name, getNewLogFileName(log)); // New Logging/File
-                logFiles.Add(file);
-            }
+            if (file == null)
+                file = createNewLogFile(log.Name, 0);
             else
             {
-                //FileInfo fileInfo = new FileInfo(fileName);
-                //if (fileInfo.Length > logFileSizeMax)
-                //{
-                //    List<string> files = logFiles.V;
-                //}
+                FileInfo fileInfo = new FileInfo(file.GetFullFileName());
+
+                if (fileInfo.Length > logFileSizeMax)
+                {
+                    List<LogFile> files = logFiles.FindAll(x => x.Name == file.Name);
+                    if (files.Count >= maxFiles)
+                    {
+                        // Remove old File
+                        LogFile fileToRemove = files[0];
+                        File.Delete(fileToRemove.GetFullFileName());
+                        files.Remove(fileToRemove);
+                        logFiles.Remove(fileToRemove);
+
+                        // Rotation -> Name_1 to Name_0; Name_2 to Name_1...
+                        for (int i = 0; i < files.Count; i++)
+                        {
+                            LogFile fileToMod = files[i];
+                            string oldFullFileName = fileToMod.GetFullFileName();
+                            string oldFileName = fileToMod.FileName;
+
+                            fileToMod.FileName = oldFileName.Substring(0, oldFileName.Length - 1) + i;
+
+                            File.Move(oldFullFileName, fileToMod.GetFullFileName());
+                        }
+                    }
+
+                    file = createNewLogFile(log.Name, files.Count);
+                }
             }
+
+            StreamWriter fs = null;
 
             try
             {
-                fs = new StreamWriter(new FileStream($"{file.FileName}{logFileExtension}", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
+                fs = new StreamWriter(new FileStream(file.GetFullFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
                 fs.BaseStream.Seek(0, SeekOrigin.End);
             }
             catch (Exception ex)
@@ -68,9 +95,12 @@ namespace ArkEcho.Server
             }
         }
 
-        private string getNewLogFileName(LogMessage logger)
+        private LogFile createNewLogFile(string name, int index)
         {
-            return Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{logger.Name}_0");
+            string fileName = Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{name}_{index}");
+            LogFile file = new LogFile(name, fileName);
+            logFiles.Add(file);
+            return file;
         }
 
         private bool disposed = false;
