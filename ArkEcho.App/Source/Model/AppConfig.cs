@@ -11,5 +11,8 @@ namespace ArkEcho.App
 
         [JsonProperty]
         public bool Compression { get; set; } = false;
+
+        [JsonProperty]
+        public int LogLevel { get; set; } = 2;
     }
 }

@@ -16,4 +16,10 @@
     <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Logging\LoggingWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

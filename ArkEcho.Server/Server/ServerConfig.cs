@@ -18,5 +18,8 @@ namespace ArkEcho.Server
 
         [JsonProperty]
         public int Port { get; private set; } = 5002;
+
+        [JsonProperty]
+        public int LogLevel { get; set; } = 2;
     }
 }

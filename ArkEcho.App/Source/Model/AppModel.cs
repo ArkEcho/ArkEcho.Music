@@ -12,20 +12,26 @@ namespace ArkEcho.App
 {
     public class AppModel
     {
+        /// <summary>
+        /// SingleTon
+        /// </summary>
         public static AppModel Instance { get; } = new AppModel();
 
-        public AppConfig Config { get; private set; } = null;
+        private AppConfig config = null;
 
-        public ArkEchoRest Rest { get; private set; } = null;
+        private ArkEchoRest rest = null;
 
-        public ArkEchoVLCPlayer Player { get; private set; } = null;
-        public MusicLibrary Library { get; private set; } = null;
+        private RestLoggingWorker loggingWorker = null;
+        private Logger logger = null;
 
         private PowerManager powerManager = null;
         private PowerManager.WakeLock wakeLock = null;
 
         private const string configFileName = "AppConfig.json";
         private const string libraryFileName = "MusicLibrary.json";
+        public ArkEchoVLCPlayer Player { get; private set; } = null;
+
+        public MusicLibrary Library { get; private set; } = null;
 
         private AppModel()
         {
@@ -35,26 +41,35 @@ namespace ArkEcho.App
         public async Task<bool> Init(Activity activity)
         {
             // Config and Rest
-            Config = new AppConfig(configFileName);
-            await Config.LoadFromFile(GetAndroidInternalPath());
+            config = new AppConfig(configFileName);
+            await config.LoadFromFile(GetAndroidInternalPath());
 
-            if (string.IsNullOrEmpty(Config.ServerAddress))
-                Config.ServerAddress = "https://192.168.178.20:5002";
+            if (string.IsNullOrEmpty(config.ServerAddress))
+                config.ServerAddress = "https://192.168.178.20:5002";
 
-            await Config.SaveToFile(GetAndroidInternalPath());
+            await config.SaveToFile(GetAndroidInternalPath());
 
-            Rest = new ArkEchoRest(Config.ServerAddress, Config.Compression);
+            rest = new ArkEchoRest(config.ServerAddress, config.Compression);
+
+            loggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
+            loggingWorker.RunWorkerAsync();
+
+            logger = new Logger("App", "Main", loggingWorker);
+
+            string configString = await config.SaveToJsonString();
+            logger.LogStatic($"App Configuration:");
+            logger.LogStatic($"\r\n{configString}");
 
             // Library
             Library = new MusicLibrary(libraryFileName);
             await Library.LoadFromFile(GetAndroidInternalPath());
 
             // TODO: Save Path in Library on serializing? Set on CheckLIbrary Function, what if user tries to start not loaded File?
-            Task.Factory.StartNew(() => checkLibraryOnStartup());
+            Task.Run(() => checkLibraryOnStartup());
 
             // Player
             Player = new Player.ArkEchoVLCPlayer();
-            Player.InitPlayer(Log);
+            Player.InitPlayer();
 
             // Create Wake Lock
             this.powerManager = (PowerManager)activity.GetSystemService(Context.PowerService);
@@ -68,14 +83,14 @@ namespace ArkEcho.App
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
 
-            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(Log, exist, missing);
+            bool checkLib = await CheckLibraryWithLocalFolder(null, exist, missing);
         }
 
         public async Task<bool> LoadLibraryFromServer(Logging.LoggingDelegate logInListView)
         {
             try
             {
-                string libraryString = await Rest.GetMusicLibrary();
+                string libraryString = await rest.GetMusicLibrary();
                 if (string.IsNullOrEmpty(libraryString))
                 {
                     logInListView?.Invoke("No response from the Server!", Logging.LogLevel.Static);
@@ -112,7 +127,7 @@ namespace ArkEcho.App
 
             try
             {
-                byte[] fileBytes = await AppModel.Instance.Rest.GetMusicFile(file.GUID);
+                byte[] fileBytes = await rest.GetMusicFile(file.GUID);
 
                 if (fileBytes.Length == 0)
                     return false;
@@ -191,7 +206,7 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    Log($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
+                    //Log($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
                 }
             }
             );
@@ -199,7 +214,7 @@ namespace ArkEcho.App
 
         private string getMusicFileFolder(MusicFile file, MusicLibrary lib)
         {
-            string mediaFolderPath = AppModel.GetAndroidMediaAppSDFolderPath();
+            string mediaFolderPath = GetAndroidMediaAppSDFolderPath();
             Album album = lib.Album.Find(x => x.GUID == file.Album);
             AlbumArtist artist = lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist);
 
@@ -216,12 +231,6 @@ namespace ArkEcho.App
         public void AllowLock()
         {
             wakeLock.Release();
-        }
-
-        public bool Log(string Text, Logging.LogLevel Level)
-        {
-            // TODO
-            return true;
         }
 
         public static string GetAndroidMediaAppSDFolderPath()

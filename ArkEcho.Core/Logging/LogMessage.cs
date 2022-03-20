@@ -6,7 +6,10 @@ namespace ArkEcho.Core
     public class LogMessage : JsonBase
     {
         [JsonProperty]
-        public Logger Origin { get; set; }
+        public string Name { get; set; }
+
+        [JsonProperty]
+        public string Context { get; set; }
 
         [JsonProperty]
         public DateTime TimeStamp { get; set; }
@@ -25,8 +28,8 @@ namespace ArkEcho.Core
         private string contextWithPoints()
         {
             string points = string.Empty;
-            for (int i = 8 - Origin.Context.Length; i > 0; i--) points += ".";
-            return Origin.Context + points;
+            for (int i = 8 - Context.Length; i > 0; i--) points += ".";
+            return Context + points;
         }
 
         private string shortLevel()

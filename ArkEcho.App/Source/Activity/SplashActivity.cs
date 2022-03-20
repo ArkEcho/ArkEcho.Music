@@ -1,6 +1,5 @@
 using Android.App;
 using Android.OS;
-using System.Net;
 
 namespace ArkEcho.App
 {
@@ -10,13 +9,6 @@ namespace ArkEcho.App
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
-
-            // TODO: Disable on Release Build
-            ServicePointManager.ServerCertificateValidationCallback +=  // Disable https Error Fails -> Trust Failure
-                    (sender, certificate, chain, sslPolicyErrors) => true;
-
             SetContentView(Resource.Layout.Splash);
         }
 

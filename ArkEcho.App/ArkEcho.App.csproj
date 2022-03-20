@@ -106,7 +106,6 @@
     <Compile Include="Source\Model\AppConfig.cs" />
     <Compile Include="Source\Model\AppModel.cs" />
     <Compile Include="Source\Model\ArkEchoVLCPlayer.cs" />
-    <Compile Include="Source\Connection\ArkEchoWebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Connect.axml">

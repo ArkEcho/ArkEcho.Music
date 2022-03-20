@@ -12,7 +12,11 @@ namespace ArkEcho.Core
 
         public ArkEchoRest(string connectionUrl, bool compression)
         {
-            client = new HttpClient() { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 30) };
+            // TODO: Disable on Release Build
+            HttpClientHandler handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
+
+            client = new HttpClient(handler) { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 30) };
 
             this.compression = compression;
         }
@@ -21,14 +25,12 @@ namespace ArkEcho.Core
         {
             string bodyContent = await userToAuthenticate.SaveToJsonString();
             HttpResponseMessage restResponse = await postRequest("/api/Authenticate/Login", bodyContent.ToBase64());
-
             return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         public async Task<User> CheckUserToken(Guid guid)
         {
             HttpResponseMessage restResponse = await postRequest("/api/Authenticate/Token", guid.ToString());
-
             return await checkAndReturnAuthenticateResult(restResponse);
         }
 
@@ -92,6 +94,13 @@ namespace ArkEcho.Core
             }
             else
                 return null;
+        }
+
+        public async Task<bool> PostLogging(LogMessage logMessage)
+        {
+            string bodyContent = await logMessage.SaveToJsonString();
+            HttpResponseMessage restResponse = await postRequest("/api/Logging", bodyContent.ToBase64());
+            return restResponse.IsSuccessStatusCode;
         }
 
         private async Task<HttpResponseMessage> getRequest(string path)
