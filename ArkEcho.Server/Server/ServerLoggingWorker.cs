@@ -16,19 +16,18 @@ namespace ArkEcho.Server
 
         protected override void HandleLogMessage(LogMessage log)
         {
-            using (StreamWriter fs = getFileStream(log.Origin))
+            using (StreamWriter fs = getFileStream(log))
             {
                 fs?.WriteLine(log.ToLogString());
                 fs?.Flush();
             }
         }
 
-        private StreamWriter getFileStream(Logger logger)
+        private StreamWriter getFileStream(LogMessage logger)
         {
             // TODO: Log File Rotation, open new if Filestream voll
 
             StreamWriter fs = null;
-            string logFileName = getLogFileName(logger);
 
             try
             {
@@ -43,7 +42,7 @@ namespace ArkEcho.Server
             return fs;
         }
 
-        private string getLogFileName(Logger logger)
+        private string getLogFileName(LogMessage logger)
         {
             return Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{logger.Name}.log");
         }

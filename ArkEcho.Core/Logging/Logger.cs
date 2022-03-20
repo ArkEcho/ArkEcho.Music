@@ -41,9 +41,10 @@ namespace ArkEcho.Core
         {
             LogMessage msg = new LogMessage()
             {
+                Name = Name,
+                Context = Context,
                 Level = level,
                 Message = message,
-                Origin = this,
                 TimeStamp = DateTime.Now
             };
 
