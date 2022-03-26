@@ -1,19 +1,18 @@
-﻿using ArkEcho.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ArkEcho.Player
+namespace ArkEcho.Core
 {
     // TODO: JSONBase -> Einstellungen nach Nutzer speichern
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
-    public abstract class ArkEchoPlayer
+    public abstract class Player
     {
         public event Action TitleChanged;
         public event Action PositionChanged;
         public event Action PlayingChanged;
 
-        public ArkEchoPlayer() { }
+        public Player() { }
 
         public bool Initialized { get; protected set; }
 

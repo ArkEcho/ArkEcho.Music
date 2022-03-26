@@ -2,7 +2,6 @@
 using Android.Content;
 using Android.OS;
 using ArkEcho.Core;
-using ArkEcho.Player;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +18,7 @@ namespace ArkEcho.App
 
         private AppConfig config = null;
 
-        private ArkEchoRest rest = null;
+        private Rest rest = null;
 
         private RestLoggingWorker loggingWorker = null;
         private Logger logger = null;
@@ -29,7 +28,7 @@ namespace ArkEcho.App
 
         private const string configFileName = "AppConfig.json";
         private const string libraryFileName = "MusicLibrary.json";
-        public ArkEchoVLCPlayer Player { get; private set; } = null;
+        public VLCPlayer Player { get; private set; } = null;
 
         public MusicLibrary Library { get; private set; } = null;
 
@@ -49,7 +48,7 @@ namespace ArkEcho.App
 
             await config.SaveToFile(GetAndroidInternalPath());
 
-            rest = new ArkEchoRest(config.ServerAddress, config.Compression);
+            rest = new Rest(config.ServerAddress, config.Compression);
 
             loggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
             loggingWorker.RunWorkerAsync();
@@ -68,7 +67,7 @@ namespace ArkEcho.App
             Task.Run(() => checkLibraryOnStartup());
 
             // Player
-            Player = new Player.ArkEchoVLCPlayer();
+            Player = new VLCPlayer();
             Player.InitPlayer();
 
             // Create Wake Lock

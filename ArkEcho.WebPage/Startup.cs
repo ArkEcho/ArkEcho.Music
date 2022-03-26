@@ -28,7 +28,7 @@ namespace ArkEcho.WebPage
 
             services.AddScoped<Authentication>();
             services.AddScoped<AppModel>();
-            services.AddScoped<ArkEchoJSPlayer>();
+            services.AddScoped<JSPlayer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
