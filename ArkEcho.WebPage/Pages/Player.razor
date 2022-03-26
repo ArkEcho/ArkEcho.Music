@@ -1,0 +1,129 @@
+﻿@page "/Player"
+
+@layout MainLayout
+
+@inject IJSRuntime JS
+@inject AppModel Model
+
+<p>MusicFileCount: @musicFileCounter</p>
+
+<input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
+<button class="btn btn-primary" @onclick="Search">Suche</button>
+
+<br />
+<button class="btn btn-primary" @onclick="Init">Init</button>
+
+<br />
+<br />
+<label for="volume">Volume:</label>
+<input type="number" id="volume" @bind="Model.Player.Volume" min="0" max="100">
+
+<br />
+<label for="playing">Playing:</label>
+<input type="checkbox" id="playing" name="playing" checked="@Model.Player.Playing">
+<br />
+<label for="muted">Mute:</label>
+<input type="checkbox" id="muted" name="muted" checked="@Model.Player.Mute">
+<br />
+<label for="shuffle">Shuffle:</label>
+<input type="checkbox" id="shuffle" name="shuffle" checked="@Model.Player.Shuffle">
+<br />
+<p>@SongInfo</p>
+
+<p>@Model.Player.Position</p>
+<br />
+<img src=@Image64 width=100 height=100/>
+
+    <!--
+<table class="table" style="width: 50%">
+    <thead>
+        <tr>
+            <th>Logging</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (string log in Logs)
+{
+        <tr>
+    <td>@log</td>
+        </tr>
+}
+    </tbody>
+</table>
+-->
+
+@code
+{
+    private string Image64 = string.Empty;
+    private string SongInfo = string.Empty;
+
+    private int musicFileCounter = 0;
+    private string searchMusicValue = string.Empty;
+
+    private List<string> Logs = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Player.TitleChanged += () => titleChanged();
+        Model.Player.PositionChanged += () => positionChanged();
+        Model.Player.PlayingChanged += () => playingChanged();
+
+        musicFileCounter = Model.Library.MusicFiles.Count;
+
+        await InvokeAsync(StateHasChanged);
+
+        await base.OnInitializedAsync();
+    }
+
+    private bool logOnPage(string Text, Logging.LogLevel Level)
+    {
+        Logs.Add($"{Level}\t-\t{Text}");
+        return true;
+    }
+
+    private async Task titleChanged()
+    {
+        MusicFile file = Model.Player.PlayingFile;
+        if (file == null)
+            return;
+
+        SongInfo = $"{file.Title} - {file.Performer}";
+        await setAlbumCoverFromServer();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task positionChanged()
+    {
+        await InvokeAsync(StateHasChanged);     
+    }
+
+    private async Task playingChanged()
+    {        
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task setAlbumCoverFromServer()
+    {        
+        string result = await Model.Rest.GetAlbumCover(Model.Player.PlayingFile.Album);
+        Image64 =  $"data:image/png;base64,{result}";
+    }
+
+    private void Search()
+    {
+        Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        Model.Player.Start(Files, 0);
+    }
+
+    private void Init()
+    {
+        List<Core.MusicFile> all = Model.Library.MusicFiles;
+        List<Core.MusicFile> Files = new List<Core.MusicFile>();
+
+        Model.Library.Album[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+
+        Model.Player.Start(Files, 0);
+    }
+}
