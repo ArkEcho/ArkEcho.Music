@@ -10,9 +10,14 @@ namespace ArkEcho
             return inputString.Replace("\r\n", "").Replace("\n", "");
         }
 
-        public static byte[] FromBase64(this string inputString)
+        public static string ToBase64(this string inputString)
         {
-            return Convert.FromBase64String(inputString);
+            return Convert.ToBase64String(Encoding.Default.GetBytes(inputString));
+        }
+
+        public static string FromBase64(this string inputString)
+        {
+            return Encoding.Default.GetString(Convert.FromBase64String(inputString));
         }
 
         public static byte[] GetByteArray(this string inputString)

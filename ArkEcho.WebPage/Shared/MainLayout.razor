@@ -1,0 +1,59 @@
+﻿@inherits LayoutComponentBase
+
+@inject IJSRuntime JS
+@inject AppModel Model
+
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject Authentication Authentication
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <PlayerControl />
+        <div class="top-row px-4">
+            <button class="btn btn-secondary" @onclick="UserIconClick">User</button>
+        </div>
+
+        <div class="sidebar py-4 px-4 float-right" style="background-color:lightgray; display: @showUserSidebarCss">
+            <h2>@LoggedInText</h2>
+            <button class="btn btn-primary" @onclick="Logout">Logout</button>
+        </div>
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code
+{
+    private bool showUserSidebar = false;
+    private string showUserSidebarCss => showUserSidebar ? "block" : "none";
+
+    public string LoggedInText { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("MainLayout OnInitializedAsync");
+
+        if (!await Authentication.GetAuthenticationState())
+            NavigationManager.NavigateTo("/");
+
+        Task.Factory.StartNew(() => Model.Initialize(JS));
+    }
+
+    public async Task UserIconClick()
+    {
+        showUserSidebar = !showUserSidebar;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task Logout()
+    {
+        await Authentication.MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo("/");
+    }
+}

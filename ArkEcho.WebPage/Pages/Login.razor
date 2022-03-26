@@ -1,0 +1,78 @@
+﻿@page "/"
+
+@using System.Security.Claims
+
+@layout CenteredCardLayout
+
+@inject AppModel Model
+@inject Authentication Authentication
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
+@inject IJSRuntime jsRunTime
+
+<EditForm Model="@user" OnValidSubmit="@ValidateUser">
+    <div>
+        <br /><br /><br /><br /><br />
+    </div>
+    <div>
+        <h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div class="col-12 row">
+        <input class="form-control col-12" @bind="user.UserName" placeholder="email address" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <input type="password" class="form-control col-12" @bind="user.Password" placeholder="password" />
+    </div>
+    <br />
+    <div class="col-12 row">
+        <span class="col-12"></span>
+        <input type="submit" class="form-control col-6 btn btn-primary" value="Login" />
+        @*<a href="/signup" class="col-3">Sign up</a>*@
+    </div>
+    <br />
+    <div class="col-12 row" style="text-align:left; font-weight:bold">
+        <span class="col-12">@LoginMesssage</span>
+    </div>
+</EditForm>
+
+@code
+{
+    private User user;
+    public string LoginMesssage { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        user = new User();
+
+        if (await Authentication.GetAuthenticationState())
+            NavigationManager.NavigateTo("/Index");
+    }
+
+    private async Task<bool> ValidateUser()
+    {
+        if (!string.IsNullOrEmpty(user.UserName) && !string.IsNullOrEmpty(user.Password))
+        {
+            //Console.WriteLine($"Before LogIn, {user.AccessToken}");
+
+            User loggedInUser = await Authentication.AuthenticateUserForLogin(user);
+            if (loggedInUser != null)
+            {
+                //Console.WriteLine($"Logged In, {loggedInUser.AccessToken}");
+
+                await Authentication.MarkUserAsAuthenticated(loggedInUser);
+
+                NavigationManager.NavigateTo("/Index");
+            }
+            else
+                LoginMesssage = "Username or password wrong";
+        }
+        else
+            LoginMesssage = "Empty username or password";
+
+        return await Task.FromResult(true);
+    }
+}

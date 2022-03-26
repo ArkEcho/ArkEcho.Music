@@ -9,8 +9,11 @@ namespace ArkEcho.Server
 {
     public class MusicWorker : BackgroundWorker
     {
-        public MusicWorker() : base()
+        private Logger logger = null;
+
+        public MusicWorker(LoggingWorker lw) : base()
         {
+            logger = new Logger("Server", "MusicWorker", lw);
             DoWork += MusicWorker_DoWork;
         }
 
@@ -42,7 +45,7 @@ namespace ArkEcho.Server
                         Year = tagFile.Tag.Year,
                     };
 
-                    if (!checkFolderStructureAndTags(music, tagFile.Tag.Album, tagFile.Tag.FirstAlbumArtist))
+                    if (!checkFolderStructureAndTags(music, tagFile.Tag))
                         continue;
 
                     albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
@@ -56,6 +59,10 @@ namespace ArkEcho.Server
                     if (album == null)
                     {
                         album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
+
+                        using (MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data))
+                            album.Cover64 = Convert.ToBase64String(ms.ToArray());
+
                         library.Album.Add(album);
 
                         albumArtist.AlbumID.Add(album.GUID);
@@ -78,7 +85,7 @@ namespace ArkEcho.Server
             }
 
             if (errors.Count > 0)
-                Console.WriteLine($"There were {errors.Count} on parsing the Music Folder!");
+                logger.LogError($"There were {errors.Count} on parsing the Music Folder!");
 
             // TODO: Media Player Playlist parsen und in neues Format
             // TODO: WMP Listen Upload, Eigene Playlists erstellen speichern verwalten
@@ -106,25 +113,30 @@ namespace ArkEcho.Server
             return results;
         }
 
-        private bool checkFolderStructureAndTags(MusicFile music, string albumName, string albumArtistName)
+        private bool checkFolderStructureAndTags(MusicFile music, TagLib.Tag tag)
         {
-            if (string.IsNullOrEmpty(albumArtistName) || string.IsNullOrEmpty(albumName))
+            if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))
             {
-                Console.WriteLine($"Skipped! No Album/AlbumArtist {music.GetFullPathWindows()}");
-                return false; ;
+                logger.LogError($"Skipped! No Album/AlbumArtist {music.GetFullPathWindows()}");
+                return false;
+            }
+            else if (tag.Pictures.Length == 0)
+            {
+                logger.LogError($"File has no Album Cover! {music.GetFullPathWindows()}");
+                return false;
             }
             else
             {
                 List<string> parts = music.GetFullPathWindows().Split("\\").ToList();
-                if (!parts[parts.Count - 3].Equals(albumArtistName, StringComparison.OrdinalIgnoreCase))
+                if (!parts[parts.Count - 3].Equals(tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Skipped! AlbumArtist != Foldername {music.GetFullPathWindows()}");
+                    logger.LogError($"Skipped! AlbumArtist != Foldername {music.GetFullPathWindows()}");
                     return false;
                 }
 
-                if (!parts[parts.Count - 2].Equals(albumName, StringComparison.OrdinalIgnoreCase))
+                if (!parts[parts.Count - 2].Equals(tag.Album, StringComparison.OrdinalIgnoreCase))
                 {
-                    Console.WriteLine($"Skipped! Albumname != Foldername {music.GetFullPathWindows()}");
+                    logger.LogError($"Skipped! Albumname != Foldername {music.GetFullPathWindows()}");
                     return false;
                 }
             }

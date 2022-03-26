@@ -8,20 +8,22 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MusicController : ControllerBase
+    public class MusicController : ArkEchoController
     {
-        ArkEchoServer server = ArkEchoServer.Instance;
+        public MusicController() : base("Music")
+        {
+        }
 
         // GET: api/Music
         [HttpGet]
         public async Task<ActionResult> GetMusicLibrary()
         {
-            string lib = await server.GetMusicLibraryString();
+            string lib = await Server.GetMusicLibraryString();
 
-            if (server.ServerConfig.Compression)
+            if (Server.ServerConfig.Compression)
                 lib = await ZipCompression.ZipToBase64(lib);
             else
-                lib = lib.GetByteArray().ToBase64();
+                lib = lib.ToBase64();
 
             return Ok(lib);
         }
@@ -34,13 +36,13 @@ namespace ArkEcho.Server
             if (guid == Guid.Empty)
                 return BadRequest();
 
-            MusicFile musicFile = server.GetMusicFile(guid);
+            MusicFile musicFile = Server.GetMusicFile(guid);
 
             if (musicFile == null)
                 return BadRequest();
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullPathWindows());
-            if (server.ServerConfig.Compression)
+            if (Server.ServerConfig.Compression)
                 content = await ZipCompression.Zip(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
@@ -48,70 +50,20 @@ namespace ArkEcho.Server
 
             return result;
         }
+        // GET: api/Music/AlbumCover/[GUID]
+        [HttpGet("AlbumCover/{guid}")]
+        public async Task<ActionResult> GetAlbumCover(Guid guid)
+        {
+            // TODO: Logging!
+            if (guid == Guid.Empty)
+                return BadRequest();
 
-        // PUT: api/MusicFiles/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutMusicFile(long id, MusicFile musicFile)
-        //{
-        //    if (id != musicFile.ID)
-        //    {
-        //        return BadRequest();
-        //    }
+            string cover = Server.GetAlbumCover(guid);
 
-        //    context.Entry(musicFile).State = EntityState.Modified;
+            if (string.IsNullOrEmpty(cover))
+                return BadRequest();
 
-        //    try
-        //    {
-        //        await context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!MusicFileExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
-        // POST: api/MusicFiles
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        //[HttpPost]
-        //public async Task<ActionResult<MusicFile>> PostMusicFile(MusicFile musicFile)
-        //{
-        //    context.MusicFiles.Add(musicFile);
-        //    await context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetMusicFile", new { id = musicFile.ID }, musicFile);
-        //}
-
-        // DELETE: api/MusicFiles/5
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult<MusicFile>> DeleteMusicFile(long id)
-        //{
-        //    var musicFile = await context.MusicFiles.FindAsync(id);
-        //    if (musicFile == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    context.MusicFiles.Remove(musicFile);
-        //    await context.SaveChangesAsync();
-
-        //    return musicFile;
-        //}
-
-        //private bool MusicFileExists(long id)
-        //{
-        //    return context.MusicFiles.Any(e => e.ID == id);
-        //}
+            return Ok(cover);
+        }
     }
 }

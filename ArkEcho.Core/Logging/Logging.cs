@@ -1,4 +1,4 @@
-﻿namespace ArkEcho
+﻿namespace ArkEcho.Core
 {
     public static class Logging
     {

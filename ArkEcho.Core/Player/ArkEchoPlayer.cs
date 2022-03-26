@@ -6,6 +6,7 @@ using System.Linq;
 namespace ArkEcho.Player
 {
     // TODO: JSONBase -> Einstellungen nach Nutzer speichern
+    // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     public abstract class ArkEchoPlayer
     {
         public event Action TitleChanged;
@@ -17,7 +18,6 @@ namespace ArkEcho.Player
         public bool Initialized { get; protected set; }
 
         public List<MusicFile> ListToPlay { get; private set; } = null;
-
 
         public MusicFile PlayingFile { get; private set; } = null;
 

@@ -4,29 +4,31 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ControlController : ControllerBase
+    public class ControlController : ArkEchoController
     {
-        ArkEchoServer server = ArkEchoServer.Instance;
+        public ControlController() : base("Control")
+        {
+        }
 
         // GET: api/Control/ReloadMusicLibrary
         [HttpGet("LoadMusicLibrary")]
         public void ControlLoadMusicLibrary()
         {
-            server.LoadMusicLibrary();
+            Server.LoadMusicLibrary();
         }
 
         // GET: api/Control/StopServer
         [HttpGet("StopServer")]
         public void ControlStopServer()
         {
-            server.Stop();
+            Server.Stop();
         }
 
         // GET: api/Control/RestartServer
         [HttpGet("RestartServer")]
         public void ControlRestartServer()
         {
-            server.Restart();
+            Server.Restart();
         }
 
         // GET: api/Control/[ID]

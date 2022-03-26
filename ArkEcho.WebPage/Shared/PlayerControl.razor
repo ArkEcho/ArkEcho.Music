@@ -1,0 +1,58 @@
+﻿
+@inject IJSRuntime JS
+@inject AppModel Model
+
+<div style="background-color:lightgray">
+    <button class="btn btn-primary" @onclick="Play">Play</button>
+    <button class="btn btn-primary" @onclick="Pause">Pause</button>
+    <button class="btn btn-primary" @onclick="PlayPause">PlayPause</button>
+    <button class="btn btn-primary" @onclick="Stop">Stop</button>
+    <button class="btn btn-primary" @onclick="Mute">Mute</button>
+    <button class="btn btn-primary" @onclick="Shuffle">Shuffle</button>
+    <button class="btn btn-primary" @onclick="Backward">Backward</button>
+    <button class="btn btn-primary" @onclick="Forward">Forward</button>
+</div>
+
+
+@code 
+{    
+    private void Play()
+    {
+        Model.Player.Play();
+    }
+
+    private void Pause()
+    {
+        Model.Player.Pause();
+    }
+
+    private void PlayPause()
+    {
+        Model.Player.PlayPause();
+    }
+
+    private void Stop()
+    {
+        Model.Player.Stop();
+    }
+
+    private void Shuffle()
+    {
+        Model.Player.Shuffle = !Model.Player.Shuffle;
+    }
+
+    private void Mute()
+    {
+        Model.Player.Mute = !Model.Player.Mute;
+    }
+
+    private void Backward()
+    {
+        Model.Player.Backward();
+    }
+
+    private void Forward()
+    {
+        Model.Player.Forward();
+    }
+}

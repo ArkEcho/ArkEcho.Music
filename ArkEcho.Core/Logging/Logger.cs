@@ -2,18 +2,19 @@
 
 namespace ArkEcho.Core
 {
-    public abstract class Logger : JsonBase
+    public class Logger
     {
-        [JsonProperty]
-        public string Name { get; set; }
+        public readonly string Name = string.Empty;
 
-        [JsonProperty]
-        public string Context { get; set; }
+        public readonly string Context = string.Empty;
 
-        public Logger(string name, string context)
+        private LoggingWorker worker = null;
+
+        public Logger(string name, string context, LoggingWorker worker)
         {
             Name = name.ToUpper();
             Context = context.ToUpper();
+            this.worker = worker;
         }
 
         public void LogStatic(string message)
@@ -40,15 +41,14 @@ namespace ArkEcho.Core
         {
             LogMessage msg = new LogMessage()
             {
+                Name = Name,
+                Context = Context,
                 Level = level,
                 Message = message,
-                Origin = this,
                 TimeStamp = DateTime.Now
             };
 
-            transferLog(msg);
+            worker.AddLogMessage(msg);
         }
-
-        protected abstract void transferLog(LogMessage log);
     }
 }

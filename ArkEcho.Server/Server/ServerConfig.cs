@@ -14,12 +14,12 @@ namespace ArkEcho.Server
         public Uri LoggingFolder { get; private set; } = new Uri("about:blank");
 
         [JsonProperty]
-        public bool Authorization { get; private set; } = false;
-
-        [JsonProperty]
         public bool Compression { get; private set; } = false;
 
         [JsonProperty]
-        public int Port { get; private set; } = 5001;
+        public int Port { get; private set; } = 5002;
+
+        [JsonProperty]
+        public int LogLevel { get; set; } = 2;
     }
 }
