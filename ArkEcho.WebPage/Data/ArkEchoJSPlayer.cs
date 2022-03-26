@@ -1,4 +1,5 @@
-﻿using ArkEcho.Player;
+﻿using ArkEcho.Core;
+using ArkEcho.Player;
 using Microsoft.JSInterop;
 using System;
 
@@ -32,7 +33,7 @@ namespace ArkEcho.WebPage
             return Initialized;
         }
 
-        private bool logConsole(string text, ArkEcho.Logging.LogLevel level)
+        private bool logConsole(string text, Logging.LogLevel level)
         {
             Console.WriteLine(text);
             return true;
