@@ -44,6 +44,11 @@ namespace ArkEcho.WebPage
             }
 
             rest = new Rest(Config.ServerAddress, Config.Compression);
+            if (!rest.CheckConnection())
+            {
+                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping WebPage");
+                return false;
+            }
 
             LoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)Config.LogLevel);
             LoggingWorker.RunWorkerAsync();

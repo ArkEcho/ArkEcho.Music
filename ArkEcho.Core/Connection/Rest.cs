@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core
@@ -9,6 +8,8 @@ namespace ArkEcho.Core
     {
         private HttpClient client = null;
         private bool compression = false;
+
+        public int Timeout { get; set; } = 5000;
 
         public Rest(string connectionUrl, bool compression)
         {
@@ -21,22 +22,28 @@ namespace ArkEcho.Core
             this.compression = compression;
         }
 
+        public bool CheckConnection()
+        {
+            HttpResponseMessage response = makeRequest(HttpMethod.Get, "/api/Control", string.Empty);
+            return response != null;
+        }
+
         public async Task<User> AuthenticateUserForLogin(User userToAuthenticate)
         {
             string bodyContent = await userToAuthenticate.SaveToJsonString();
-            HttpResponseMessage restResponse = await postRequest("/api/Authenticate/Login", bodyContent.ToBase64());
+            HttpResponseMessage restResponse = makeRequest(HttpMethod.Post, "/api/Authenticate/Login", bodyContent.ToBase64());
             return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         public async Task<User> CheckUserToken(Guid guid)
         {
-            HttpResponseMessage restResponse = await postRequest("/api/Authenticate/Token", guid.ToString());
+            HttpResponseMessage restResponse = makeRequest(HttpMethod.Post, "/api/Authenticate/Token", guid.ToString());
             return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         private async Task<User> checkAndReturnAuthenticateResult(HttpResponseMessage response)
         {
-            if (response.IsSuccessStatusCode)
+            if (response != null && response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync();
 
@@ -55,9 +62,9 @@ namespace ArkEcho.Core
 
         public async Task<string> GetMusicLibrary()
         {
-            HttpResponseMessage response = await getRequest("/api/Music");
+            HttpResponseMessage response = makeRequest(HttpMethod.Get, "/api/Music", string.Empty);
 
-            if (response.IsSuccessStatusCode)
+            if (response != null && response.IsSuccessStatusCode)
             {
                 string content = await response.Content.ReadAsStringAsync();
 
@@ -72,9 +79,9 @@ namespace ArkEcho.Core
 
         public async Task<string> GetAlbumCover(Guid guid)
         {
-            HttpResponseMessage response = await getRequest($"/api/Music/AlbumCover/{guid}");
+            HttpResponseMessage response = makeRequest(HttpMethod.Get, $"/api/Music/AlbumCover/{guid}", string.Empty);
 
-            if (response.IsSuccessStatusCode)
+            if (response != null && response.IsSuccessStatusCode)
                 return await response.Content.ReadAsStringAsync();
             else
                 return string.Empty;
@@ -82,9 +89,9 @@ namespace ArkEcho.Core
 
         public async Task<byte[]> GetMusicFile(Guid guid)
         {
-            HttpResponseMessage response = await getRequest($"/api/Music/{guid}");
+            HttpResponseMessage response = makeRequest(HttpMethod.Get, $"/api/Music/{guid}", string.Empty);
 
-            if (response.IsSuccessStatusCode)
+            if (response != null && response.IsSuccessStatusCode)
             {
                 byte[] content = await response.Content.ReadAsByteArrayAsync();
                 if (compression)
@@ -99,34 +106,31 @@ namespace ArkEcho.Core
         public async Task<bool> PostLogging(LogMessage logMessage)
         {
             string bodyContent = await logMessage.SaveToJsonString();
-            HttpResponseMessage restResponse = await postRequest("/api/Logging", bodyContent.ToBase64());
-            return restResponse.IsSuccessStatusCode;
+            HttpResponseMessage response = makeRequest(HttpMethod.Post, "/api/Logging", bodyContent.ToBase64());
+            return response != null && response.IsSuccessStatusCode;
         }
 
-        private async Task<HttpResponseMessage> getRequest(string path)
+        private HttpResponseMessage makeRequest(HttpMethod method, string path, string httpContent)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, path);
+            HttpRequestMessage request = new HttpRequestMessage(method, path);
+            if (!string.IsNullOrEmpty(httpContent))
+                request.Content = new StringContent(httpContent);
 
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            HttpResponseMessage response = null;
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    response = client.SendAsync(request).Result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception making Rest call: {ex.Message}");
+                }
+            }
+            ).Wait(Timeout);
 
-            return await client.SendAsync(request, cancellationTokenSource.Token);
+            return response;
         }
-
-        private async Task<HttpResponseMessage> postRequest(string path, string httpContent)
-        {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, path);
-            request.Content = new StringContent(httpContent);
-
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
-            return await client.SendAsync(request, cancellationTokenSource.Token);
-        }
-
-        //private string removeLeadingTrailingQuotas(string textWithQuotas)
-        //{
-        //    string result = textWithQuotas.Remove(0, 1);
-        //    result = result.Remove(result.Length - 1, 1);
-        //    return result;
-        //}
     }
 }
