@@ -20,7 +20,7 @@ namespace ArkEcho.Server
         {
             string lib = await Server.GetMusicLibraryString();
 
-            if (Server.ServerConfig.Compression)
+            if (Server.Config.Compression)
                 lib = await ZipCompression.ZipToBase64(lib);
             else
                 lib = lib.ToBase64();
@@ -42,7 +42,7 @@ namespace ArkEcho.Server
                 return BadRequest();
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullPathWindows());
-            if (Server.ServerConfig.Compression)
+            if (Server.Config.Compression)
                 content = await ZipCompression.Zip(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");

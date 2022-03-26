@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+using System;
 
 namespace ArkEcho.WebPage
 {
@@ -14,13 +13,16 @@ namespace ArkEcho.WebPage
     {
         public static void Main(string[] args)
         {
-            // TODO: Singleton und Port per Config
-            WebHost.CreateDefaultBuilder()
-                               .UseUrls($"https://*:5001")
-                               .UseKestrel()
-                               .UseStartup<Startup>()
-                               .Build()
-                               .Run();
+            using (WebPageManager.Instance)
+            {
+                if (!WebPageManager.Instance.Init())
+                {
+                    Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
+                    return;
+                }
+                else
+                    WebPageManager.Instance.Start(); // Starts Event Cycle and API
+            }
         }
     }
 }

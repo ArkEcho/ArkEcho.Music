@@ -19,14 +19,14 @@ namespace ArkEcho.Server
         private List<User> users = new List<User>();
         private Logger logger = null;
 
-        /// <summary>
+        /// <summary>   
         /// SingleTon
         /// </summary>
         public static ArkEchoServer Instance { get; } = new ArkEchoServer();
 
-        public ServerConfig ServerConfig { get; private set; } = null;
+        public ServerConfig Config { get; private set; } = null;
 
-        public LoggingWorker LoggingWorker { get; private set; } = null;
+        public ServerLoggingWorker LoggingWorker { get; private set; } = null;
 
         private ArkEchoServer()
         {
@@ -42,26 +42,26 @@ namespace ArkEcho.Server
 
             // TODO: MusicFilePath in json with \\? C:\Users\steph\Music\ -> Exception
 
-            ServerConfig = new ServerConfig(serverConfigFileName);
-            if (!ServerConfig.LoadFromFile(executingLocation, true).Result)
+            Config = new ServerConfig(serverConfigFileName);
+            if (!Config.LoadFromFile(executingLocation, true).Result)
             {
                 Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Server");
                 return false;
             }
-            else if (string.IsNullOrEmpty(ServerConfig.MusicFolder.LocalPath) || !Directory.Exists(ServerConfig.MusicFolder.LocalPath))
+            else if (string.IsNullOrEmpty(Config.MusicFolder.LocalPath) || !Directory.Exists(Config.MusicFolder.LocalPath))
             {
                 Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new ServerLoggingWorker(ServerConfig.LoggingFolder.LocalPath, (Logging.LogLevel)ServerConfig.LogLevel);
+            LoggingWorker = new ServerLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
             logger = new Logger("Server", "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
-            logger.LogStatic($"\r\n{ServerConfig.SaveToJsonString().Result}");
+            logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
 
             musicWorker = new MusicWorker(LoggingWorker);
             musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
@@ -69,7 +69,7 @@ namespace ArkEcho.Server
             LoadMusicLibrary();
 
             host = WebHost.CreateDefaultBuilder()
-                            .UseUrls($"https://*:{ServerConfig.Port}")
+                            .UseUrls($"https://*:{Config.Port}")
                             .UseKestrel()
                             .UseStartup<Startup>()
                             .Build();
@@ -98,7 +98,7 @@ namespace ArkEcho.Server
         public void LoadMusicLibrary()
         {
             library = null;
-            musicWorker.RunWorkerAsync(ServerConfig.MusicFolder.LocalPath);
+            musicWorker.RunWorkerAsync(Config.MusicFolder.LocalPath);
         }
 
         private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -150,6 +150,8 @@ namespace ArkEcho.Server
 
         public bool RestartRequested { get; private set; } = false;
 
+        #region Dispose
+
         private bool disposed;
 
         private void Dispose(bool disposing)
@@ -171,5 +173,7 @@ namespace ArkEcho.Server
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        #endregion
     }
 }
