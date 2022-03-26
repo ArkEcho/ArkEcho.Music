@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public class ArkEchoRest
+    public class Rest
     {
         private HttpClient client = null;
         private bool compression = false;
 
-        public ArkEchoRest(string connectionUrl, bool compression)
+        public Rest(string connectionUrl, bool compression)
         {
             // TODO: Disable on Release Build
             HttpClientHandler handler = new HttpClientHandler();

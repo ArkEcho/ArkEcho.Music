@@ -2,13 +2,13 @@
 using LibVLCSharp.Shared;
 using System;
 
-namespace ArkEcho.Player
+namespace ArkEcho.App
 {
-    public class ArkEchoVLCPlayer : ArkEchoPlayer
+    public class VLCPlayer : Player
     {
         private LibVLC libvlc = null;
         private MediaPlayer mediaplayer = null;
-        public ArkEchoVLCPlayer() : base()
+        public VLCPlayer() : base()
         {
         }
 

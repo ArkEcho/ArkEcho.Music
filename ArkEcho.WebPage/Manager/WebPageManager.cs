@@ -14,7 +14,7 @@ namespace ArkEcho.WebPage
         private IWebHost host = null;
         private Logger logger = null;
         private MusicLibrary library = null;
-        private ArkEchoRest rest = null;
+        private Rest rest = null;
 
         public static WebPageManager Instance { get; private set; } = new WebPageManager();
 
@@ -43,7 +43,7 @@ namespace ArkEcho.WebPage
                 return false;
             }
 
-            rest = new ArkEchoRest(Config.ServerAddress, Config.Compression);
+            rest = new Rest(Config.ServerAddress, Config.Compression);
 
             LoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)Config.LogLevel);
             LoggingWorker.RunWorkerAsync();

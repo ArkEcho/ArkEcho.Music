@@ -1,17 +1,16 @@
 ﻿using ArkEcho.Core;
-using ArkEcho.Player;
 using Microsoft.JSInterop;
 using System;
 
 namespace ArkEcho.WebPage
 {
-    public class ArkEchoJSPlayer : ArkEchoPlayer
+    public class JSPlayer : Player
     {
         private Logging.LoggingDelegate logDelegate = null;
 
         public IJSRuntime JS { get; private set; } = null;
 
-        public ArkEchoJSPlayer() : base()
+        public JSPlayer() : base()
         {
         }
 
