@@ -17,7 +17,10 @@ namespace ArkEcho.Server
         public async Task<ActionResult> AuthenticateUserForLogin()
         {
             if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
                 return BadRequest();
+            }
 
             string userRequestString = await getStringFromHttpBody();
             userRequestString = userRequestString.FromBase64();
@@ -34,7 +37,10 @@ namespace ArkEcho.Server
         public async Task<ActionResult> CheckUserToken()
         {
             if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
                 return BadRequest();
+            }
 
             string guidString = await getStringFromHttpBody();
 

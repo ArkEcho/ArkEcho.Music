@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ArkEcho.Core
 {
-    // TODO: Debug Display
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class MusicFile : JsonBase
     {
         [JsonProperty]
@@ -60,6 +61,14 @@ namespace ArkEcho.Core
         public string GetFullPathAndroid()
         {
             return $"{Folder.LocalPath}/{FileName}";
+        }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return $"{Title} - {Performer}";
+            }
         }
     }
 }
