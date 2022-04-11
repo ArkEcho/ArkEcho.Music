@@ -31,13 +31,16 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
-        public Uri Folder { get; set; } = null;
+        [JsonProperty]
+        public long Duration { get; set; } = 0;
 
         [JsonProperty]
         public string FileName { get; set; } = string.Empty;
 
         [JsonProperty]
         public string FileFormat { get; set; } = string.Empty;
+
+        public Uri Folder { get; set; } = null;
 
         /// <summary>
         /// ONLY FOR SERIALIZATION
@@ -67,7 +70,7 @@ namespace ArkEcho.Core
         {
             get
             {
-                return $"{Title} - {Performer}";
+                return $"{Performer} - {Title}";
             }
         }
     }
