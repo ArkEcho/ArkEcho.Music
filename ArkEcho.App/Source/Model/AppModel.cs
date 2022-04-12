@@ -4,6 +4,7 @@ using Android.OS;
 using ArkEcho.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace ArkEcho.App
 
         private Rest rest = null;
 
-        private RestLoggingWorker loggingWorker = null;
+        public RestLoggingWorker RestLoggingWorker { get; private set; } = null;
         private Logger logger = null;
 
         private PowerManager powerManager = null;
@@ -50,10 +51,10 @@ namespace ArkEcho.App
 
             rest = new Rest(config.ServerAddress, config.Compression);
 
-            loggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
-            loggingWorker.RunWorkerAsync();
+            RestLoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
+            RestLoggingWorker.RunWorkerAsync();
 
-            logger = new Logger("App", "Main", loggingWorker);
+            logger = new Logger("App", "Main", RestLoggingWorker);
 
             string configString = await config.SaveToJsonString();
             logger.LogStatic($"App Configuration:");
@@ -63,7 +64,6 @@ namespace ArkEcho.App
             Library = new MusicLibrary(libraryFileName);
             await Library.LoadFromFile(GetAndroidInternalPath());
 
-            // TODO: Save Path in Library on serializing? Set on CheckLIbrary Function, what if user tries to start not loaded File?
             Task.Run(() => checkLibraryOnStartup());
 
             // Player
@@ -82,17 +82,22 @@ namespace ArkEcho.App
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
 
-            bool checkLib = await CheckLibraryWithLocalFolder(null, exist, missing);
+            bool checkLib = await CheckLibraryWithLocalFolder(exist, missing);
+
+            // TODO: What now
         }
 
-        public async Task<bool> LoadLibraryFromServer(Logging.LoggingDelegate logInListView)
+        public async Task<bool> LoadLibraryFromServer()
         {
             try
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
                 string libraryString = await rest.GetMusicLibrary();
                 if (string.IsNullOrEmpty(libraryString))
                 {
-                    logInListView?.Invoke("No response from the Server!", Logging.LogLevel.Static);
+                    logger.LogStatic("No response from the Server!");
                     return false;
                 }
 
@@ -103,29 +108,33 @@ namespace ArkEcho.App
 
                 if (!result)
                 {
-                    logInListView?.Invoke("Cant load json!", Logging.LogLevel.Error);
+                    logger.LogError("Cant load json!");
                     return false;
                 }
 
-                logInListView?.Invoke($"Music File Count: {Library.MusicFiles.Count.ToString()}", Logging.LogLevel.Debug);
+                sw.Stop();
+                logger.LogImportant($"Loading MusicLibrary took {sw.ElapsedMilliseconds}ms, Music File Count: {Library.MusicFiles.Count.ToString()}");
 
                 await Task.Delay(200);
                 return true;
             }
             catch (Exception ex)
             {
-                logInListView?.Invoke($"Exception loading MusicLibrary: {ex.Message}", Logging.LogLevel.Error);
+                logger.LogError($"Exception loading MusicLibrary: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> LoadFileFromServer(MusicFile file, Logging.LoggingDelegate logInListView)
+        public async Task<bool> LoadFileFromServer(MusicFile file)
         {
             if (file == null)
                 return false;
 
             try
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
                 byte[] fileBytes = await rest.GetMusicFile(file.GUID);
 
                 if (fileBytes.Length == 0)
@@ -136,18 +145,33 @@ namespace ArkEcho.App
                     await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
                 }
 
-                return File.Exists(file.GetFullPathAndroid());
+                sw.Stop();
+
+                if (File.Exists(file.GetFullPathAndroid()))
+                {
+                    logger.LogImportant($"Success loading MusicFile in {sw.ElapsedMilliseconds}, {file.GetFullPathAndroid()}");
+                    return true;
+                }
+                else
+                {
+                    logger.LogError($"Error loading MusicFile, {file.GetFullPathAndroid()}");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                logInListView?.Invoke($"Exception loading MusicFile {file.Title}: {ex.Message}", Logging.LogLevel.Error);
+                logger.LogError($"Exception loading MusicFile {file.Title}: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> CheckLibraryWithLocalFolder(Logging.LoggingDelegate logInListView, List<MusicFile> exist, List<MusicFile> missing)
+        public async Task<bool> CheckLibraryWithLocalFolder(List<MusicFile> exist, List<MusicFile> missing)
         {
             bool success = false;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             await Task.Factory.StartNew(() =>
             {
                 try
@@ -157,7 +181,7 @@ namespace ArkEcho.App
                         string folder = getMusicFileFolder(file, Library);
                         if (string.IsNullOrEmpty(folder))
                         {
-                            logInListView?.Invoke($"Error building Path for {file.FileName}", Logging.LogLevel.Error);
+                            logger.LogError($"Error building Path for {file.FileName}");
                             break;
                         }
 
@@ -176,10 +200,12 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    logInListView?.Invoke($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
+                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
                 }
             }
             );
+
+            logger.LogImportant($"Checking Library with Local Folder took {sw.ElapsedMilliseconds}ms");
 
             return success;
         }
@@ -205,7 +231,7 @@ namespace ArkEcho.App
                 }
                 catch (Exception ex)
                 {
-                    //Log($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
+                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
                 }
             }
             );

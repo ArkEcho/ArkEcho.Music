@@ -48,6 +48,9 @@ namespace ArkEcho.Server
             {
                 FileInfo fileInfo = new FileInfo(file.GetFullFileName());
 
+                // TODO: Log File deleted on the Run
+                // TODO: Error als S\ geloggt von App kommend
+
                 if (fileInfo.Length > logFileSizeMax)
                 {
                     List<LogFile> files = logFiles.FindAll(x => x.Name == file.Name);

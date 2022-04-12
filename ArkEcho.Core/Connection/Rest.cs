@@ -9,7 +9,7 @@ namespace ArkEcho.Core
         private HttpClient client = null;
         private bool compression = false;
 
-        public int Timeout { get; set; } = 5000;
+        public int Timeout { get; set; } = 10000;
 
         public Rest(string connectionUrl, bool compression)
         {
@@ -100,7 +100,7 @@ namespace ArkEcho.Core
                     return content;
             }
             else
-                return null;
+                return new byte[0];
         }
 
         public async Task<bool> PostLogging(LogMessage logMessage)

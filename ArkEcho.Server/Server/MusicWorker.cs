@@ -128,7 +128,7 @@ namespace ArkEcho.Server
                 logger.LogError($"File has no Album Cover! {music.GetFullPathWindows()}");
                 return false;
             }
-            else if (music.Duration > maxDuration) // TODO: Alle Musik längen
+            else if (music.Duration > maxDuration) // TODO: Alle Musik längen, Timeout bei Rest, Kompression
             {
                 logger.LogError($"Skipped! File Duration is longer than 20min max! {music.GetFullPathWindows()}");
                 return false;
