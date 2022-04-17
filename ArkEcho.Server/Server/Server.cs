@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
-    public sealed class ArkEchoServer : IDisposable
+    public sealed class Server : IDisposable
     {
         private const string serverConfigFileName = "ServerConfig.json";
 
@@ -22,13 +22,13 @@ namespace ArkEcho.Server
         /// <summary>   
         /// SingleTon
         /// </summary>
-        public static ArkEchoServer Instance { get; } = new ArkEchoServer();
+        public static Server Instance { get; } = new Server();
 
         public ServerConfig Config { get; private set; } = null;
 
         public ServerLoggingWorker LoggingWorker { get; private set; } = null;
 
-        private ArkEchoServer()
+        private Server()
         {
             library = new MusicLibrary();
         }
