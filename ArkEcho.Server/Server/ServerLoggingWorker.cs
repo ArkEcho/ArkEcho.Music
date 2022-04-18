@@ -48,7 +48,6 @@ namespace ArkEcho.Server
             {
                 FileInfo fileInfo = new FileInfo(file.GetFullFileName());
 
-                // TODO: Log File deleted on the Run
                 // TODO: Error als S\ geloggt von App kommend
 
                 if (fileInfo.Length > logFileSizeMax)
@@ -79,30 +78,31 @@ namespace ArkEcho.Server
                 }
             }
 
-            StreamWriter fs = null;
-
             try
             {
-                fs = new StreamWriter(new FileStream(file.GetFullFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
-                fs.BaseStream.Seek(0, SeekOrigin.End);
+                if (!Directory.Exists(logFolder))
+                    Directory.CreateDirectory(logFolder);
+
+                using (StreamWriter fs = new StreamWriter(new FileStream(file.GetFullFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8))
+                {
+                    fs.BaseStream.Seek(0, SeekOrigin.End);
+                    fs.WriteLine(log.ToLogString());
+                    fs.Flush();
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception opening Logging FileStream: {ex.Message}");
-            }
-
-            using (fs)
-            {
-                fs?.WriteLine(log.ToLogString());
-                fs?.Flush();
+                Console.WriteLine($"Exception writing Log: {ex.Message}");
             }
         }
 
         private LogFile createNewLogFile(string name, int index)
         {
             string fileName = Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{name}_{index}");
+
             LogFile file = new LogFile(name, fileName);
             logFiles.Add(file);
+
             return file;
         }
 
