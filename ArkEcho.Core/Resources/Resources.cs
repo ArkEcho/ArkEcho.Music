@@ -13,7 +13,7 @@ namespace ArkEcho
 
         public static readonly List<string> SupportedPlaylistFileFormats = new List<string>()
         {
-            "wpl",
+            "wpl", // Windows Media Player
         };
     }
 }

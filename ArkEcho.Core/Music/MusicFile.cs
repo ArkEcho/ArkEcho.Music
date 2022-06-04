@@ -47,9 +47,9 @@ namespace ArkEcho.Core
         /// </summary>
         public MusicFile() : base() { }
 
-        public MusicFile(string FilePath) : base()
+        public MusicFile(string filePath) : base()
         {
-            FileInfo info = new FileInfo(FilePath);
+            FileInfo info = new FileInfo(filePath);
 
             this.Folder = new Uri(info.DirectoryName);
             this.FileName = info.Name;

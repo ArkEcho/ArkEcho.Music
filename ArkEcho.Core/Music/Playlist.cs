@@ -1,22 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ArkEcho.Core
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Playlist : JsonBase
     {
+        [JsonProperty]
+        public Guid GUID { get; set; } = Guid.NewGuid();
+
         [JsonProperty]
         public string Name { get; set; } = string.Empty;
 
         [JsonProperty]
-        public Guid GUID { get; set; } = new Guid();
-
-        [JsonProperty]
         public SortedSet<Guid> MusicFiles { get; set; } = new SortedSet<Guid>();
 
-        public Playlist(string Name) : base()
+        public Playlist() : base() { }
+
+        private string DebuggerDisplay
         {
-            this.Name = Name;
+            get
+            {
+                return $"{Name}";
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ArkEcho.Core
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class AlbumArtist : JsonBase
     {
         [JsonProperty]
@@ -18,5 +20,13 @@ namespace ArkEcho.Core
         public string Name { get; set; } = string.Empty;
 
         public AlbumArtist() : base() { }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return $"{Name}";
+            }
+        }
     }
 }
