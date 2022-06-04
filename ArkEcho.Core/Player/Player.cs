@@ -4,7 +4,9 @@ using System.Linq;
 
 namespace ArkEcho.Core
 {
-    // TODO: JSONBase -> Einstellungen nach Nutzer speichern
+
+    // TODO: Eigene Playlists erstellen speichern verwalten
+
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     public abstract class Player
     {

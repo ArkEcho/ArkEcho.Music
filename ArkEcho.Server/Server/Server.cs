@@ -53,6 +53,11 @@ namespace ArkEcho.Server
                 Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
+            else if (Directory.GetFiles(Config.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(Config.MusicFolder.LocalPath).Length == 0)
+            {
+                Console.WriteLine("### Given Music Directory is empty!");                
+                return false;
+            }
 
             // We have the config -> initialize logging
             LoggingWorker = new ServerLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);

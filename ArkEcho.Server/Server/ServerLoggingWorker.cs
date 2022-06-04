@@ -40,6 +40,7 @@ namespace ArkEcho.Server
 
         protected override void HandleLogMessage(LogMessage log)
         {
+            // TODO Refactoring
             LogFile file = logFiles.FindLast(x => x.Name == log.Name);
 
             if (file == null)
