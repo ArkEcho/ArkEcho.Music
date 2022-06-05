@@ -20,7 +20,7 @@ namespace ArkEcho.Server
         private void MusicWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             string musicDirectoryPath = (string)e.Argument;
-            
+
             MusicLibrary library = new MusicLibrary();
             List<string> errors = new List<string>();
 

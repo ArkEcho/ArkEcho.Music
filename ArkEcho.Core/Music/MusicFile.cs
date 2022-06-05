@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace ArkEcho.Core
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class MusicFile : JsonBase
+    public class MusicFile : TransferFileBase
     {
         [JsonProperty]
         public Guid GUID { get; set; } = Guid.NewGuid();
@@ -34,36 +33,13 @@ namespace ArkEcho.Core
         [JsonProperty]
         public long Duration { get; set; } = 0;
 
-        [JsonProperty]
-        public string FileName { get; set; } = string.Empty;
-
-        [JsonProperty]
-        public string FileFormat { get; set; } = string.Empty;
-
-        public Uri Folder { get; set; } = null;
-
         /// <summary>
         /// ONLY FOR SERIALIZATION
         /// </summary>
         public MusicFile() : base() { }
 
-        public MusicFile(string filePath) : base()
+        public MusicFile(string filePath) : base(filePath)
         {
-            FileInfo info = new FileInfo(filePath);
-
-            this.Folder = new Uri(info.DirectoryName);
-            this.FileName = info.Name;
-            this.FileFormat = info.Extension.Substring(1);
-        }
-
-        public string GetFullPathWindows()
-        {
-            return $"{Folder.LocalPath}\\{FileName}";
-        }
-
-        public string GetFullPathAndroid()
-        {
-            return $"{Folder.LocalPath}/{FileName}";
         }
 
         private string DebuggerDisplay
