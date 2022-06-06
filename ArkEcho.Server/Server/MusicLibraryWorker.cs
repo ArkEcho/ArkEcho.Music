@@ -4,6 +4,7 @@ using PlaylistsNET.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -23,7 +24,10 @@ namespace ArkEcho.Server
         {
             // TODO: Library laden aus Datei
             // TODO: Diff Funktionen aus App überführen -> nur neue Laden, Library bereinigen, Playlists prüfen
+            logger.LogStatic($"Start loading MusicLibrary...");
 
+            Stopwatch sw = new();
+            sw.Start();
             string musicDirectoryPath = (string)e.Argument;
 
             MusicLibrary library = new();
@@ -31,6 +35,9 @@ namespace ArkEcho.Server
 
             loadMusicFiles(musicDirectoryPath, library);
             loadPlaylistFiles(musicDirectoryPath, library);
+
+            sw.Stop();
+            logger.LogStatic($"Finished loading MusicLibrary in {sw.ElapsedMilliseconds}ms, {library.MusicFiles.Count} Music Files & {library.Playlists.Count} Playlists");
 
             e.Result = library;
         }

@@ -41,6 +41,7 @@ namespace ArkEcho.App
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
+            // TODO: Playlists laden
             AppModel.Instance.PreventLock();
 
             logger.LogStatic($"Starting Music Sync!");

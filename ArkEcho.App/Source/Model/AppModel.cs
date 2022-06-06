@@ -113,7 +113,7 @@ namespace ArkEcho.App
                 }
 
                 sw.Stop();
-                logger.LogImportant($"Loading MusicLibrary took {sw.ElapsedMilliseconds}ms, Music File Count: {Library.MusicFiles.Count.ToString()}");
+                logger.LogImportant($"Loading MusicLibrary took {sw.ElapsedMilliseconds}ms, MusicFiles {Library.MusicFiles.Count.ToString()}, Playlists {Library.Playlists.Count.ToString()}");
 
                 await Task.Delay(200);
                 return true;
@@ -149,18 +149,18 @@ namespace ArkEcho.App
 
                 if (File.Exists(file.GetFullPathAndroid()))
                 {
-                    logger.LogImportant($"Success loading MusicFile in {sw.ElapsedMilliseconds}, {file.GetFullPathAndroid()}");
+                    logger.LogImportant($"Success loading File in {sw.ElapsedMilliseconds}, {file.GetFullPathAndroid()}");
                     return true;
                 }
                 else
                 {
-                    logger.LogError($"Error loading MusicFile, {file.GetFullPathAndroid()}");
+                    logger.LogError($"Error loading File, {file.GetFullPathAndroid()}");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError($"Exception loading MusicFile {file.Title}: {ex.Message}");
+                logger.LogError($"Exception loading File {file.Title}: {ex.Message}");
                 return false;
             }
         }

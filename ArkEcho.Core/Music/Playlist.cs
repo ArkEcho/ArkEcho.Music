@@ -15,7 +15,7 @@ namespace ArkEcho.Core
         public string Title { get; set; } = string.Empty;
 
         [JsonProperty]
-        public SortedSet<Guid> MusicFiles { get; set; } = new SortedSet<Guid>();
+        public List<Guid> MusicFiles { get; set; } = new List<Guid>();
 
         /// <summary>
         /// For Serialization and Unit Tests

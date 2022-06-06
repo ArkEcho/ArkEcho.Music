@@ -6,12 +6,12 @@ namespace ArkEcho.Core
     public class TransferFileBase : JsonBase
     {
         [JsonProperty]
-        public string FileName { get; private set; }
+        public string FileName { get; set; }
 
         [JsonProperty]
-        public string FileFormat { get; private set; }
+        public string FileFormat { get; set; }
 
-        public Uri Folder { get; private set; }
+        public Uri Folder { get; set; }
 
         /// <summary>
         /// ONLY FOR SERIALIZATION

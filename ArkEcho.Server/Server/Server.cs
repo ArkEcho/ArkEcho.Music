@@ -111,10 +111,7 @@ namespace ArkEcho.Server
         private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (e.Result != null)
-            {
                 library = (MusicLibrary)e.Result;
-                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files & {library.Playlists.Count} Playlists");
-            }
             else
             {
                 logger.LogError("### Error loading Music Library, stopping!");
