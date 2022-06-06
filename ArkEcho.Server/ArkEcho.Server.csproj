@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Server\MusicWorker.cs">
+    <Compile Update="Server\MusicLibraryWorker.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

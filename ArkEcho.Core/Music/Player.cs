@@ -4,9 +4,7 @@ using System.Linq;
 
 namespace ArkEcho.Core
 {
-
-    // TODO: Eigene Playlists erstellen speichern verwalten
-
+    // TODO: Unit Test
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     public abstract class Player
     {

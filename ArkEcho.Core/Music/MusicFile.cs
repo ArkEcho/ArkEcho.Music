@@ -34,7 +34,7 @@ namespace ArkEcho.Core
         public long Duration { get; set; } = 0;
 
         /// <summary>
-        /// ONLY FOR SERIALIZATION
+        /// For Serialization and Unit Tests
         /// </summary>
         public MusicFile() : base() { }
 

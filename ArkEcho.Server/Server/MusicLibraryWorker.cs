@@ -1,4 +1,6 @@
 ﻿using ArkEcho.Core;
+using PlaylistsNET.Content;
+using PlaylistsNET.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,18 +9,21 @@ using System.Linq;
 
 namespace ArkEcho.Server
 {
-    public class MusicWorker : BackgroundWorker
+    public class MusicLibraryWorker : BackgroundWorker
     {
         private Logger logger = null;
 
-        public MusicWorker(LoggingWorker lw) : base()
+        public MusicLibraryWorker(LoggingWorker lw) : base()
         {
             logger = new Logger("Server", "MusicWorker", lw);
-            DoWork += MusicWorker_DoWork;
+            DoWork += MusicLibraryWorker_DoWork;
         }
 
-        private void MusicWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            // TODO: Library laden aus Datei
+            // TODO: Diff Funktionen aus App überführen -> nur neue Laden, Library bereinigen, Playlists prüfen
+
             string musicDirectoryPath = (string)e.Argument;
 
             MusicLibrary library = new MusicLibrary();
@@ -32,9 +37,21 @@ namespace ArkEcho.Server
 
         private void loadPlaylistFiles(string musicDirectoryPath, MusicLibrary library)
         {
-            // TODO: Media Player Playlist parsen und in neues Format
             foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedPlaylistFileFormats))
             {
+                Playlist playlist = new Playlist(filePath);
+
+                WplContent content = new WplContent();
+                WplPlaylist wplplaylist = null;
+
+                using (FileStream stream = new FileStream(filePath, FileMode.Open))
+                    wplplaylist = content.GetFromStream(stream);
+
+                playlist.Title = wplplaylist.Title;
+
+                // TODO: Media Player Playlist parsen
+
+                library.Playlists.Add(playlist);
             }
         }
 
