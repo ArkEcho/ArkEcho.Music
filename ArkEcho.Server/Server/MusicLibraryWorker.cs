@@ -1,4 +1,6 @@
 ﻿using ArkEcho.Core;
+using PlaylistsNET.Content;
+using PlaylistsNET.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,22 +9,25 @@ using System.Linq;
 
 namespace ArkEcho.Server
 {
-    public class MusicWorker : BackgroundWorker
+    public class MusicLibraryWorker : BackgroundWorker
     {
         private Logger logger = null;
 
-        public MusicWorker(LoggingWorker lw) : base()
+        public MusicLibraryWorker(LoggingWorker lw) : base()
         {
             logger = new Logger("Server", "MusicWorker", lw);
-            DoWork += MusicWorker_DoWork;
+            DoWork += MusicLibraryWorker_DoWork;
         }
 
-        private void MusicWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            // TODO: Library laden aus Datei
+            // TODO: Diff Funktionen aus App überführen -> nur neue Laden, Library bereinigen, Playlists prüfen
+
             string musicDirectoryPath = (string)e.Argument;
-            
-            MusicLibrary library = new MusicLibrary();
-            List<string> errors = new List<string>();
+
+            MusicLibrary library = new();
+            List<string> errors = new();
 
             loadMusicFiles(musicDirectoryPath, library);
             loadPlaylistFiles(musicDirectoryPath, library);
@@ -32,9 +37,46 @@ namespace ArkEcho.Server
 
         private void loadPlaylistFiles(string musicDirectoryPath, MusicLibrary library)
         {
-            // TODO: Media Player Playlist parsen und in neues Format
             foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedPlaylistFileFormats))
             {
+                Playlist playlist = new(filePath);
+
+                if (loadPlaylist(library, filePath, playlist))
+                    library.Playlists.Add(playlist);
+            }
+        }
+
+        private bool loadPlaylist(MusicLibrary library, string filePath, Playlist playlist)
+        {
+            // TODO: Mehr Playlist Formate
+            switch (playlist.FileFormat)
+            {
+                case "wpl":
+                    WplContent content = new();
+                    WplPlaylist wpl = null;
+
+                    using (FileStream stream = new(filePath, FileMode.Open))
+                        wpl = content.GetFromStream(stream);
+
+                    playlist.Title = wpl.Title;
+                    mapPlaylistEntriesToMusicFiles(playlist, wpl.GetTracksPaths(), library);
+
+                    return playlist.MusicFiles.Count > 0;
+            }
+            logger.LogError($"Unknown Playlist Format {playlist.FileFormat}");
+            return false;
+        }
+
+        private void mapPlaylistEntriesToMusicFiles(Playlist playlist, List<string> playlistEntries, MusicLibrary library)
+        {
+            foreach (string entry in playlistEntries)
+            {
+                FileInfo info = new(entry); // WPL saves the Paths with &ng212 statt '
+                MusicFile file = library.MusicFiles.Find(y => y.GetFullPathWindows().EndsWith(info.ToString().Substring(5), StringComparison.OrdinalIgnoreCase));
+                if (file != null)
+                    playlist.MusicFiles.Add(file.GUID);
+                else
+                    logger.LogError($"Error parsing Playlist {playlist.Title}, {info.ToString()} not found!");
             }
         }
 
@@ -49,7 +91,7 @@ namespace ArkEcho.Server
                     continue;
                 }
 
-                MusicFile music = new MusicFile(filePath)
+                MusicFile music = new(filePath)
                 {
                     Title = tagFile.Tag.Title,
                     Performer = tagFile.Tag.FirstPerformer,
@@ -107,7 +149,7 @@ namespace ArkEcho.Server
 
         private List<string> getAllFilesSubSearch(string directoryPath, List<string> fileExtensionFilter)
         {
-            List<string> results = new List<string>();
+            List<string> results = new();
 
             try
             {

@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
+    // TODO: Eigene Playlists erstellen speichern verwalten
+    // TODO: Playlists ändern und über Rest übertragen
     public sealed class Server : IDisposable
     {
         private const string serverConfigFileName = "ServerConfig.json";
 
         private IWebHost host = null;
         private MusicLibrary library = null;
-        private MusicWorker musicWorker = null;
+        private MusicLibraryWorker musicWorker = null;
         private List<User> users = new List<User>();
         private Logger logger = null;
 
@@ -55,7 +57,7 @@ namespace ArkEcho.Server
             }
             else if (Directory.GetFiles(Config.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(Config.MusicFolder.LocalPath).Length == 0)
             {
-                Console.WriteLine("### Given Music Directory is empty!");                
+                Console.WriteLine("### Given Music Directory is empty!");
                 return false;
             }
 
@@ -68,8 +70,8 @@ namespace ArkEcho.Server
             logger.LogStatic("Configuration for ArkEcho.Server:");
             logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
 
-            musicWorker = new MusicWorker(LoggingWorker);
-            musicWorker.RunWorkerCompleted += MusicWorker_RunWorkerCompleted;
+            musicWorker = new MusicLibraryWorker(LoggingWorker);
+            musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
 
             LoadMusicLibrary();
 
@@ -106,12 +108,12 @@ namespace ArkEcho.Server
             musicWorker.RunWorkerAsync(Config.MusicFolder.LocalPath);
         }
 
-        private void MusicWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (e.Result != null)
             {
                 library = (MusicLibrary)e.Result;
-                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files");
+                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files & {library.Playlists.Count} Playlists");
             }
             else
             {
