@@ -40,7 +40,7 @@ namespace ArkEcho.Core
         {
             get
             {
-                return $"{Title}";
+                return $"{Title}, {MusicFiles.Count} Files";
             }
         }
     }

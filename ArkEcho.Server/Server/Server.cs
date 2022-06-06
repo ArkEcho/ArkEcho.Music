@@ -113,7 +113,7 @@ namespace ArkEcho.Server
             if (e.Result != null)
             {
                 library = (MusicLibrary)e.Result;
-                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files");
+                logger.LogStatic($"Loaded {library.MusicFiles.Count} Music Files & {library.Playlists.Count} Playlists");
             }
             else
             {
