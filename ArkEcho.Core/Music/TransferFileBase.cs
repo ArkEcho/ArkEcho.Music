@@ -27,14 +27,12 @@ namespace ArkEcho.Core
             this.FileFormat = info.Extension.Substring(1);
         }
 
-        public string GetFullPathWindows()
+        public string FullPath
         {
-            return $"{Folder.LocalPath}\\{FileName}";
-        }
-
-        public string GetFullPathAndroid()
-        {
-            return $"{Folder.LocalPath}/{FileName}";
+            get
+            {
+                return $"{Folder.LocalPath}{Resources.FilePathDivider}{FileName}";
+            }
         }
     }
 }

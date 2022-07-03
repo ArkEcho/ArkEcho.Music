@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace ArkEcho
 {
     public class Resources
     {
         public const string PLAYLISTFOLDER = "Wiedergabelisten";
+
+        public static readonly string FilePathDivider = getPathDiv();
 
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()
         {
@@ -20,5 +24,16 @@ namespace ArkEcho
             "pls",
             "zpl"
         };
+
+        private static string getPathDiv()
+        {
+            string osDescription = RuntimeInformation.OSDescription;
+            if (osDescription.Contains("Windows", StringComparison.OrdinalIgnoreCase))
+                return "\\";
+            else if (osDescription.Contains("Android"))
+                return "/";
+            else
+                throw new Exception($"Unknown OS! OSDescription: {osDescription}");
+        }
     }
 }

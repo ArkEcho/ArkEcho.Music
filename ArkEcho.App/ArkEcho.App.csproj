@@ -105,6 +105,7 @@
     <Compile Include="Source\Activity\SyncMusicFilesActivity.cs" />
     <Compile Include="Source\Model\AppConfig.cs" />
     <Compile Include="Source\Model\AppModel.cs" />
+    <Compile Include="Source\Model\LibrarySyncAndroid.cs" />
     <Compile Include="Source\Model\VLCPlayer.cs" />
   </ItemGroup>
   <ItemGroup>

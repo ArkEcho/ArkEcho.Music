@@ -5,7 +5,6 @@ using Android.Widget;
 using ArkEcho.Core;
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -63,60 +62,17 @@ namespace ArkEcho.App
             adapter.NotifyDataSetChanged();
             await Task.Delay(200);
 
-            logger.LogImportant($"Checking Files");
+            //if (!checkLib)
+            //{
+            //    AppModel.Instance.AllowLock();
+            //    return;
+            //}
 
-            List<MusicFile> exist = new List<MusicFile>();
-            List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(exist, missing);
+            //adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Checked local Folder, {missing.Count} missing. Loading...");
+            //adapter.NotifyDataSetChanged();
+            //await Task.Delay(200);
 
-            if (!checkLib)
-            {
-                AppModel.Instance.AllowLock();
-                return;
-            }
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Checked local Folder, {missing.Count} missing. Loading...");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
-
-            if (missing.Count > 0)
-            {
-                logger.LogImportant($"Loading {missing.Count} Files");
-
-                try
-                {
-                    foreach (MusicFile file in missing)
-                    {
-                        logger.LogDebug($"Loading {file.FileName}");
-
-                        bool success = await AppModel.Instance.LoadFileFromServer(file);
-                        if (!success)
-                        {
-                            logger.LogError($"Error loading {file.FileName} from Server!");
-                            //AppModel.Instance.AllowLock();
-                            //return;
-                        }
-
-                        exist.Add(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
-                    AppModel.Instance.AllowLock();
-                    return;
-                }
-            }
-
-            logger.LogImportant($"Cleaning Up");
-
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Cleaning up!");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
-
-            await AppModel.Instance.CleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist);
-
-            logger.LogStatic($"Success!");
 
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Success");
             adapter.NotifyDataSetChanged();

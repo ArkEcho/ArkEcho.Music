@@ -5,7 +5,6 @@ using ArkEcho.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -82,7 +81,7 @@ namespace ArkEcho.App
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
 
-            bool checkLib = await CheckLibraryWithLocalFolder(exist, missing);
+            //bool checkLib = await CheckLibraryWithLocalFolder(exist, missing);
 
             // TODO: What now
         }
@@ -125,140 +124,7 @@ namespace ArkEcho.App
             }
         }
 
-        public async Task<bool> LoadFileFromServer(MusicFile file)
-        {
-            if (file == null)
-                return false;
-
-            try
-            {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-
-                byte[] fileBytes = await rest.GetMusicFile(file.GUID);
-
-                if (fileBytes.Length == 0)
-                    return false;
-
-                using (FileStream stream = new FileStream(file.GetFullPathAndroid(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
-                {
-                    await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
-                }
-
-                sw.Stop();
-
-                if (File.Exists(file.GetFullPathAndroid()))
-                {
-                    logger.LogImportant($"Success loading File in {sw.ElapsedMilliseconds}, {file.GetFullPathAndroid()}");
-                    return true;
-                }
-                else
-                {
-                    logger.LogError($"Error loading File, {file.GetFullPathAndroid()}");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"Exception loading File {file.Title}: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<bool> CheckLibraryWithLocalFolder(List<MusicFile> exist, List<MusicFile> missing)
-        {
-            bool success = false;
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            await Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    foreach (MusicFile file in Library.MusicFiles)
-                    {
-                        string folder = getMusicFileFolder(file, Library);
-                        if (string.IsNullOrEmpty(folder))
-                        {
-                            logger.LogError($"Error building Path for {file.FileName}");
-                            break;
-                        }
-
-                        file.Folder = new Uri(folder);
-
-                        if (!Directory.Exists(file.Folder.LocalPath) || !File.Exists(file.GetFullPathAndroid()))
-                        {
-                            Directory.CreateDirectory(file.Folder.LocalPath);
-                            missing.Add(file);
-                        }
-                        else
-                            exist.Add(file);
-                    }
-
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
-                }
-            }
-            );
-
-            logger.LogImportant($"Checking Library with Local Folder took {sw.ElapsedMilliseconds}ms");
-
-            return success;
-        }
-
-
-        public async Task CleanUpFolder(string folder, List<MusicFile> okFiles)
-        {
-            foreach (string subFolder in Directory.GetDirectories(folder))
-                await CleanUpFolder(subFolder, okFiles); // Rekursion
-
-            await Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    foreach (string file in Directory.GetFiles(folder))
-                    {
-                        if (okFiles.Find(x => x.GetFullPathAndroid().Equals(file, StringComparison.OrdinalIgnoreCase)) == null)
-                            File.Delete(file);
-                    }
-
-                    if (Directory.GetDirectories(folder).Length == 0 && Directory.GetFiles(folder).Length == 0)
-                        Directory.Delete(folder);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
-                }
-            }
-            );
-        }
-
-        private string getMusicFileFolder(MusicFile file, MusicLibrary lib)
-        {
-            string mediaFolderPath = GetAndroidMediaAppSDFolderPath();
-            Album album = lib.Album.Find(x => x.GUID == file.Album);
-            AlbumArtist artist = lib.AlbumArtists.Find(x => x.GUID == file.AlbumArtist);
-
-            if (album == null || artist == null)
-                return string.Empty;
-
-            return $"{mediaFolderPath}/{artist.Name}/{album.Name}";
-        }
-
-        public void PreventLock()
-        {
-            wakeLock.Acquire();
-        }
-        public void AllowLock()
-        {
-            wakeLock.Release();
-        }
-
-        public static string GetAndroidMediaAppSDFolderPath()
+        private static string GetAndroidMediaAppSDFolderPath()
         {
             string baseFolderPath = string.Empty;
             try
@@ -281,6 +147,16 @@ namespace ArkEcho.App
             }
 
             return baseFolderPath;
+        }
+
+        public void PreventLock()
+        {
+            wakeLock.Acquire();
+        }
+
+        public void AllowLock()
+        {
+            wakeLock.Release();
         }
 
         public static string GetAndroidInternalPath()
