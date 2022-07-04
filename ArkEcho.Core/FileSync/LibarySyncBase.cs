@@ -8,6 +8,19 @@ namespace ArkEcho.Core
 {
     public abstract class LibarySyncBase
     {
+        public class ProgressEventArgs
+        {
+            public string Message { get; set; } = string.Empty;
+            public int ProgressPercent { get; set; } = 0;
+
+            public ProgressEventArgs(string message, int progressPercent)
+            {
+                this.Message = message;
+                this.ProgressPercent = progressPercent;
+            }
+        }
+        public event EventHandler<ProgressEventArgs> Progress;
+
         private Rest rest = null;
         protected Logger logger = null;
 
