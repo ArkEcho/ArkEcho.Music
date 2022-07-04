@@ -9,22 +9,31 @@ namespace ArkEcho.Core
     public abstract class LibarySyncBase
     {
         private Rest rest = null;
-        private Logger logger = null;
+        protected Logger logger = null;
 
-        public LibarySyncBase(Rest rest, Logger logger)
+        public LibarySyncBase(Rest rest)
         {
             this.rest = rest;
-            this.logger = logger;
         }
 
-        public async Task<bool> SyncMusicLibrary(MusicLibrary library, string musicFolder)
+        public async Task<bool> SyncMusicLibrary(string musicFolder, MusicLibrary library)
         {
+            if (library == null)
+            {
+                logger.LogError("Given library is null!");
+                return false;
+            }
+            else if (string.IsNullOrEmpty(musicFolder))
+            {
+                logger.LogError($"Empty MusicFolder String!");
+                return false;
+            }
 
             logger.LogImportant($"Checking Files");
 
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await CheckLibraryWithLocalFolder(musicFolder, library, exist, missing);
+            bool checkLib = await checkLibraryWithLocalFolder(musicFolder, library, exist, missing);
 
             if (!checkLib)
             {
@@ -40,7 +49,7 @@ namespace ArkEcho.Core
 
             logger.LogImportant($"Cleaning Up");
 
-            await CleanUpFolder(musicFolder, exist);
+            await cleanUpFolder(musicFolder, exist);
 
             logger.LogStatic($"Success!");
 
@@ -111,7 +120,7 @@ namespace ArkEcho.Core
             }
         }
 
-        private async Task<bool> CheckLibraryWithLocalFolder(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing)
+        private async Task<bool> checkLibraryWithLocalFolder(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing)
         {
             bool success = false;
 
@@ -157,10 +166,10 @@ namespace ArkEcho.Core
         }
 
 
-        private async Task CleanUpFolder(string folder, List<MusicFile> okFiles)
+        private async Task cleanUpFolder(string folder, List<MusicFile> okFiles)
         {
             foreach (string subFolder in Directory.GetDirectories(folder))
-                await CleanUpFolder(subFolder, okFiles); // Rekursion
+                await cleanUpFolder(subFolder, okFiles); // Rekursion
 
             await Task.Factory.StartNew(() =>
             {

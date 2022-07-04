@@ -10,6 +10,11 @@ namespace ArkEcho
 
         public static readonly string FilePathDivider = getPathDiv();
 
+        public const string ARKECHOAPP = "ArkEcho.App";
+        public const string ARKECHOSERVER = "ArkEcho.Server";
+        public const string ARKECHOWEBPAGE = "ArkEcho.WebPage";
+        public const string ARKECHODESKTOP = "ArkEcho.Desktop";
+
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()
         {
             "mp3",

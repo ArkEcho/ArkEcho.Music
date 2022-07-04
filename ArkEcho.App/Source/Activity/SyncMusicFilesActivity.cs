@@ -35,7 +35,7 @@ namespace ArkEcho.App
             setActionBarButtonMenuHidden(true);
             setActionBarTitleText(GetString(Resource.String.SyncMusicFilesActivityTitle));
 
-            logger = new Logger($"App", "SyncActivity", AppModel.Instance.RestLoggingWorker);
+            logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "SyncActivity", AppModel.Instance.RestLoggingWorker);
         }
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)

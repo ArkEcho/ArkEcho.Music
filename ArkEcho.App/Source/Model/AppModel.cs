@@ -53,7 +53,7 @@ namespace ArkEcho.App
             RestLoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
             RestLoggingWorker.RunWorkerAsync();
 
-            logger = new Logger("App", "Main", RestLoggingWorker);
+            logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "Main", RestLoggingWorker);
 
             string configString = await config.SaveToJsonString();
             logger.LogStatic($"App Configuration:");

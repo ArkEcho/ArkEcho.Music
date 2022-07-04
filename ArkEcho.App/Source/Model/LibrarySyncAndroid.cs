@@ -4,9 +4,9 @@ namespace ArkEcho.App
 {
     public class LibrarySyncAndroid : LibarySyncBase
     {
-        public LibrarySyncAndroid(Rest rest, Logger logger) : base(rest, logger)
+        public LibrarySyncAndroid(Rest rest) : base(rest)
         {
-            // TODO entfernen?
+            logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "MusicSync", AppModel.Instance.RestLoggingWorker);
         }
     }
 }
