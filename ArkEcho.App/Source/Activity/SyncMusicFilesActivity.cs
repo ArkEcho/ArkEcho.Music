@@ -5,7 +5,6 @@ using Android.Widget;
 using ArkEcho.Core;
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -36,93 +35,55 @@ namespace ArkEcho.App
             setActionBarButtonMenuHidden(true);
             setActionBarTitleText(GetString(Resource.String.SyncMusicFilesActivityTitle));
 
-            logger = new Logger($"App", "SyncActivity", AppModel.Instance.RestLoggingWorker);
+            logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "SyncActivity", AppModel.Instance.RestLoggingWorker);
         }
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
-            // TODO: Playlists laden
-            AppModel.Instance.PreventLock();
+            void lockScreen()
+            {
+                AppModel.Instance.PreventLock();
+            }
+            async Task endLock()
+            {
+                await Task.Delay(1000);
+                AppModel.Instance.AllowLock();
+            }
+
+            lockScreen();
 
             logger.LogStatic($"Starting Music Sync!");
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Starting");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
+            await showProgress("Starting");
 
             logger.LogImportant("Loading MusicLibrary");
 
             bool loadlib = await AppModel.Instance.LoadLibraryFromServer();
             if (!loadlib)
             {
-                AppModel.Instance.AllowLock();
+                await endLock();
                 return;
             }
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Done loading library");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
+            await showProgress("Done loading Library... Sync and CleanUp!");
 
-            logger.LogImportant($"Checking Files");
-
-            List<MusicFile> exist = new List<MusicFile>();
-            List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(exist, missing);
-
-            if (!checkLib)
+            bool syncMusicFiles = await AppModel.Instance.SyncMusicFiles();
+            if (!syncMusicFiles)
             {
-                AppModel.Instance.AllowLock();
+                await endLock();
                 return;
             }
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Checked local Folder, {missing.Count} missing. Loading...");
+            await showProgress("Success");
+
+            await endLock();
+        }
+
+        private async Task showProgress(string text)
+        {
+            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
-
-            if (missing.Count > 0)
-            {
-                logger.LogImportant($"Loading {missing.Count} Files");
-
-                try
-                {
-                    foreach (MusicFile file in missing)
-                    {
-                        logger.LogDebug($"Loading {file.FileName}");
-
-                        bool success = await AppModel.Instance.LoadFileFromServer(file);
-                        if (!success)
-                        {
-                            logger.LogError($"Error loading {file.FileName} from Server!");
-                            //AppModel.Instance.AllowLock();
-                            //return;
-                        }
-
-                        exist.Add(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
-                    AppModel.Instance.AllowLock();
-                    return;
-                }
-            }
-
-            logger.LogImportant($"Cleaning Up");
-
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Cleaning up!");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
-
-            await AppModel.Instance.CleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist);
-
-            logger.LogStatic($"Success!");
-
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Success");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(1000);
-
-            AppModel.Instance.AllowLock();
+            await Task.Delay(100);
         }
     }
 }

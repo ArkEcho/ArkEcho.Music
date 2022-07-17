@@ -42,7 +42,7 @@ namespace ArkEcho.App
             {
                 MusicFile File = PlayingFile;
                 if (File != null)
-                    mediaplayer.Media = new Media(libvlc, File.GetFullPathAndroid());
+                    mediaplayer.Media = new Media(libvlc, File.FullPath);
 
                 if (StartOnLoad)
                     mediaplayer.Play();

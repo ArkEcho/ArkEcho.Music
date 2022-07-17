@@ -52,7 +52,7 @@ namespace ArkEcho.Server
             if (musicFile == null)
                 return BadRequest();
 
-            byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.GetFullPathWindows());
+            byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.FullPath);
             if (Server.Config.Compression)
                 content = await ZipCompression.Zip(content);
 

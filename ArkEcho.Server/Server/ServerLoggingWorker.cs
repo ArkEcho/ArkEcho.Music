@@ -50,7 +50,7 @@ namespace ArkEcho.Server
                 FileInfo fileInfo = new FileInfo(file.GetFullFileName());
 
                 // TODO: Error als S\ geloggt von App kommend
-
+                // TODO: Alle APP Logs in gleiches, wenn gelöscht Exception
                 if (fileInfo.Length > logFileSizeMax)
                 {
                     List<LogFile> files = logFiles.FindAll(x => x.Name == file.Name);

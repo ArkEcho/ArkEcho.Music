@@ -48,7 +48,7 @@ namespace ArkEcho.Core
                 TimeStamp = DateTime.Now
             };
 
-            worker.AddLogMessage(msg);
+            worker?.AddLogMessage(msg);
         }
     }
 }
