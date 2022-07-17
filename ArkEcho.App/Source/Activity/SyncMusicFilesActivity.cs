@@ -40,45 +40,50 @@ namespace ArkEcho.App
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
-            // TODO: Playlists laden
-            AppModel.Instance.PreventLock();
+            void lockScreen()
+            {
+                AppModel.Instance.PreventLock();
+            }
+            async Task endLock()
+            {
+                await Task.Delay(1000);
+                AppModel.Instance.AllowLock();
+            }
+
+            lockScreen();
 
             logger.LogStatic($"Starting Music Sync!");
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Starting");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
+            await showProgress("Starting");
 
             logger.LogImportant("Loading MusicLibrary");
 
             bool loadlib = await AppModel.Instance.LoadLibraryFromServer();
             if (!loadlib)
             {
-                AppModel.Instance.AllowLock();
+                await endLock();
                 return;
             }
 
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Done loading library");
+            await showProgress("Done loading Library... Sync and CleanUp!");
+
+            bool syncMusicFiles = await AppModel.Instance.SyncMusicFiles();
+            if (!syncMusicFiles)
+            {
+                await endLock();
+                return;
+            }
+
+            await showProgress("Success");
+
+            await endLock();
+        }
+
+        private async Task showProgress(string text)
+        {
+            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
-            await Task.Delay(200);
-
-            //if (!checkLib)
-            //{
-            //    AppModel.Instance.AllowLock();
-            //    return;
-            //}
-
-            //adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Checked local Folder, {missing.Count} missing. Loading...");
-            //adapter.NotifyDataSetChanged();
-            //await Task.Delay(200);
-
-
-
-            adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: Success");
-            adapter.NotifyDataSetChanged();
-            await Task.Delay(1000);
-
-            AppModel.Instance.AllowLock();
+            await Task.Delay(100);
         }
     }
 }

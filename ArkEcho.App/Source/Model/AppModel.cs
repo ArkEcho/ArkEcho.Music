@@ -3,7 +3,6 @@ using Android.Content;
 using Android.OS;
 using ArkEcho.Core;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -25,7 +24,7 @@ namespace ArkEcho.App
 
         private PowerManager powerManager = null;
         private PowerManager.WakeLock wakeLock = null;
-
+        private LibrarySyncAndroid librarySync = null;
         private const string configFileName = "AppConfig.json";
         private const string libraryFileName = "MusicLibrary.json";
         public VLCPlayer Player { get; private set; } = null;
@@ -63,7 +62,7 @@ namespace ArkEcho.App
             Library = new MusicLibrary(libraryFileName);
             await Library.LoadFromFile(GetAndroidInternalPath());
 
-            Task.Run(() => checkLibraryOnStartup());
+            librarySync = new LibrarySyncAndroid(rest);
 
             // Player
             Player = new VLCPlayer();
@@ -76,14 +75,9 @@ namespace ArkEcho.App
             return true;
         }
 
-        private async Task checkLibraryOnStartup()
+        public async Task<bool> SyncMusicFiles()
         {
-            List<MusicFile> exist = new List<MusicFile>();
-            List<MusicFile> missing = new List<MusicFile>();
-
-            //bool checkLib = await CheckLibraryWithLocalFolder(exist, missing);
-
-            // TODO: What now
+            return await librarySync.SyncMusicLibrary(getAndroidMediaAppSDFolderPath(), Library);
         }
 
         public async Task<bool> LoadLibraryFromServer()
@@ -124,7 +118,7 @@ namespace ArkEcho.App
             }
         }
 
-        private static string GetAndroidMediaAppSDFolderPath()
+        private static string getAndroidMediaAppSDFolderPath()
         {
             string baseFolderPath = string.Empty;
             try
