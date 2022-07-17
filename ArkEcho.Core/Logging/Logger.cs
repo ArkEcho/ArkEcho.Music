@@ -41,6 +41,7 @@ namespace ArkEcho.Core
         {
             LogMessage msg = new LogMessage()
             {
+                OriginGuid = worker.OriginGuid,
                 Name = Name,
                 Context = Context,
                 Level = level,

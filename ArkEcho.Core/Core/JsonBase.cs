@@ -10,6 +10,8 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
+        // TODO: Enums für z.B LogLevel
+
         private enum Mode
         {
             PropToJson = 0,

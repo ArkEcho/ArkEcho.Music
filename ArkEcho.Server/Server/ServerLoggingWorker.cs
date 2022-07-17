@@ -8,14 +8,16 @@ namespace ArkEcho.Server
 {
     public class ServerLoggingWorker : LoggingWorker
     {
-        public class LogFile
+        private class LogFile
         {
-            public LogFile(string name, string fileName)
+            public LogFile(Guid guid, string name, string fileName)
             {
+                this.OriginGuid = guid;
                 this.Name = name;
                 this.FileName = fileName;
             }
 
+            public Guid OriginGuid { get; set; } = Guid.Empty;
             public string Name { get; set; } = string.Empty;
             public string FileName { get; set; } = string.Empty;
 
@@ -40,42 +42,25 @@ namespace ArkEcho.Server
 
         protected override void HandleLogMessage(LogMessage log)
         {
-            // TODO Refactoring
-            LogFile file = logFiles.FindLast(x => x.Name == log.Name);
+            // TODO: Error als S\ geloggt von App kommend -> Enums in JsonBase
 
-            if (file == null)
-                file = createNewLogFile(log.Name, 0);
+            LogFile file = null;
+            List<LogFile> files = logFiles.FindAll(x => x.Name == log.Name && x.OriginGuid == log.OriginGuid);
+
+            if (files.Count == 0) // First log File
+                file = createNewLogFile(log.OriginGuid, log.Name, 0);
             else
             {
+                file = files[files.Count - 1];
                 FileInfo fileInfo = new FileInfo(file.GetFullFileName());
 
-                // TODO: Error als S\ geloggt von App kommend
-                // TODO: Alle APP Logs in gleiches, wenn gelöscht Exception
-                if (fileInfo.Length > logFileSizeMax)
+                // TODO: Wenn Datei(en) gelöscht Exception
+                if (fileInfo.Length > logFileSizeMax) // Create new if its too big
                 {
-                    List<LogFile> files = logFiles.FindAll(x => x.Name == file.Name);
                     if (files.Count >= maxFiles)
-                    {
-                        // Remove old File
-                        LogFile fileToRemove = files[0];
-                        File.Delete(fileToRemove.GetFullFileName());
-                        files.Remove(fileToRemove);
-                        logFiles.Remove(fileToRemove);
+                        deleteAndRotateFiles(files);
 
-                        // Rotation -> Name_1 to Name_0; Name_2 to Name_1...
-                        for (int i = 0; i < files.Count; i++)
-                        {
-                            LogFile fileToMod = files[i];
-                            string oldFullFileName = fileToMod.GetFullFileName();
-                            string oldFileName = fileToMod.FileName;
-
-                            fileToMod.FileName = oldFileName.Substring(0, oldFileName.Length - 1) + i;
-
-                            File.Move(oldFullFileName, fileToMod.GetFullFileName());
-                        }
-                    }
-
-                    file = createNewLogFile(log.Name, files.Count);
+                    file = createNewLogFile(log.OriginGuid, log.Name, files.Count);
                 }
             }
 
@@ -93,16 +78,39 @@ namespace ArkEcho.Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception writing Log: {ex.Message}");
+                Console.WriteLine($"Exception writing Log: {ex.GetFullMessage()}");
             }
         }
 
-        private LogFile createNewLogFile(string name, int index)
+        private void deleteAndRotateFiles(List<LogFile> files)
+        {
+            // Remove old File
+            LogFile fileToRemove = files[0];
+            File.Delete(fileToRemove.GetFullFileName());
+            files.Remove(fileToRemove);
+            logFiles.Remove(fileToRemove);
+
+            // Rotation -> Name_1 to Name_0; Name_2 to Name_1...
+            for (int i = 0; i < files.Count; i++)
+            {
+                LogFile fileToRotate = files[i];
+                string oldFullFileName = fileToRotate.GetFullFileName();
+                string oldFileName = fileToRotate.FileName;
+
+                fileToRotate.FileName = oldFileName.Substring(0, oldFileName.Length - 1) + i;
+
+                File.Move(oldFullFileName, fileToRotate.GetFullFileName());
+            }
+        }
+
+        private LogFile createNewLogFile(Guid originGuid, string name, int index)
         {
             string fileName = Path.Combine(logFolder, $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{name}_{index}");
 
-            LogFile file = new LogFile(name, fileName);
+            LogFile file = new LogFile(originGuid, name, fileName);
             logFiles.Add(file);
+
+            // TODO: Guid und Datei Header schreiben?
 
             return file;
         }
