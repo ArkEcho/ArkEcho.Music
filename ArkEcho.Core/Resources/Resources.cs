@@ -37,6 +37,8 @@ namespace ArkEcho
                 return "\\";
             else if (osDescription.Contains("Android"))
                 return "/";
+            else if (osDescription.Contains("Unix") && RuntimeInformation.FrameworkDescription.Contains("Mono", StringComparison.OrdinalIgnoreCase))
+                return "/";
             else
                 throw new Exception($"Unknown OS! OSDescription: {osDescription}");
         }

@@ -50,7 +50,7 @@ namespace ArkEcho.Core
 
             if (!checkLib)
             {
-                // Log
+                logger.LogError("Error checking the Library with the local Folder");
                 return false;
             }
 
@@ -86,7 +86,7 @@ namespace ArkEcho.Core
             }
             catch (Exception ex)
             {
-                logger.LogError($"Exception loading MusicFiles: {ex.Message}");
+                logger.LogError($"Exception loading MusicFiles: {ex.GetFullMessage()}");
                 return false;
             }
             return true;
@@ -128,7 +128,7 @@ namespace ArkEcho.Core
             }
             catch (Exception ex)
             {
-                logger.LogError($"Exception loading File {file.Title}: {ex.Message}");
+                logger.LogError($"Exception loading File {file.Title}: {ex.GetFullMessage()}");
                 return false;
             }
         }
@@ -168,7 +168,7 @@ namespace ArkEcho.Core
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
+                    logger.LogError($"Exception loading MusicFiles: {ex.GetFullMessage()}");
                 }
             }
             );
@@ -199,7 +199,7 @@ namespace ArkEcho.Core
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"Exception loading MusicFiles: {ex.Message}");
+                    logger.LogError($"Exception loading MusicFiles: {ex.GetFullMessage()}");
                 }
             }
             );
