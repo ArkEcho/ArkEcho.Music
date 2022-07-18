@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public class Rest
+    public class Rest : IRest
     {
         private HttpClient client = null;
         private bool compression = false;
