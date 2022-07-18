@@ -28,7 +28,7 @@ namespace ArkEcho.Server
 
         public ServerConfig Config { get; private set; } = null;
 
-        public ServerLoggingWorker LoggingWorker { get; private set; } = null;
+        public FileLoggingWorker LoggingWorker { get; private set; } = null;
 
         private Server()
         {
@@ -62,7 +62,7 @@ namespace ArkEcho.Server
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new ServerLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);
+            LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
             logger = new Logger("Server", "Main", LoggingWorker);
@@ -85,8 +85,7 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
-            //
-            //for (int i = 0; i < 10000; i++)
+            //for (int i = 0; i < 50000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
             return Initialized;

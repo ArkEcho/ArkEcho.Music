@@ -17,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Logging\FileLoggingWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Logging\LoggingWorker.cs">
       <SubType>Component</SubType>
     </Compile>
