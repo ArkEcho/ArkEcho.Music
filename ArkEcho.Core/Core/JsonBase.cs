@@ -121,7 +121,20 @@ namespace ArkEcho.Core
                     else if (info.PropertyType.IsArray)
                         handleArray(Data, info, Mode);
                 }
+                else if (info.PropertyType.IsEnum)
+                    handleEnum(Data, info, Mode);
             }
+        }
+
+        private void handleEnum(JObject data, PropertyInfo info, Mode mode)
+        {
+            if (mode == Mode.JsonToProp)
+            {
+                if (Enum.TryParse(info.PropertyType, data[info.Name].ToString(), out object result))
+                    info.SetValue(this, result);
+            }
+            else if (mode == Mode.PropToJson)
+                data[info.Name] = (dynamic)(int)info.GetValue(this); // Enums as int
         }
 
         private void handleJsonClass(JObject Data, PropertyInfo Info, Mode Mode)
