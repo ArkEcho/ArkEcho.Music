@@ -10,8 +10,6 @@ namespace ArkEcho.Core
 {
     public abstract class JsonBase
     {
-        // TODO: Enums für z.B LogLevel
-
         private enum Mode
         {
             PropToJson = 0,
@@ -80,18 +78,21 @@ namespace ArkEcho.Core
         {
             JObject data = new JObject();
             await Task.Factory.StartNew(() => handleProperties(data, Mode.PropToJson));
-            return data.ToString();
+            string result = data.ToString();
+            result = result.Replace("\\\\", "\\");
+            return result;
         }
 
-        public async Task<bool> LoadFromJsonString(string Json)
+        public async Task<bool> LoadFromJsonString(string json)
         {
             JObject data = null;
 
-            if (!string.IsNullOrEmpty(Json))
+            if (!string.IsNullOrEmpty(json))
             {
                 try
                 {
-                    data = await Task.Factory.StartNew(() => data = JObject.Parse(Json));
+                    json = json.Replace("\\", "\\\\");
+                    data = await Task.Factory.StartNew(() => data = JObject.Parse(json));
                 }
                 catch (Exception ex)
                 {

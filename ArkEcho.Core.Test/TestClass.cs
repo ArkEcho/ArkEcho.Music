@@ -37,7 +37,10 @@ namespace ArkEcho.Core.Test
         public DateTime DateTime { get; set; }
 
         [JsonProperty]
-        public Uri Uri { get; set; }
+        public Uri UriSlash { get; set; }
+
+        [JsonProperty]
+        public Uri UriBackSlash { get; set; }
 
         [JsonProperty]
         public TestEnum Enum { get; set; }
