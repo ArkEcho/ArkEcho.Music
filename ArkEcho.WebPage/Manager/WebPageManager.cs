@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace ArkEcho.WebPage
 {
+    // TODO: Mehr Logging, besonders im Player
     public class WebPageManager : IDisposable
     {
         private const string webPageConfigFileName = "WebPageConfig.json";
