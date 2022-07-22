@@ -16,6 +16,6 @@ namespace ArkEcho.WebPage
         public bool Compression { get; private set; } = false;
 
         [JsonProperty]
-        public int LogLevel { get; set; } = 2;
+        public Logging.LogLevel LogLevel { get; set; } = Logging.LogLevel.Important;
     }
 }

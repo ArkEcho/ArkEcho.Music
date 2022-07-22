@@ -49,7 +49,7 @@ namespace ArkEcho.App
 
             rest = new Rest(config.ServerAddress, config.Compression);
 
-            RestLoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)config.LogLevel);
+            RestLoggingWorker = new RestLoggingWorker(rest, config.LogLevel);
             RestLoggingWorker.RunWorkerAsync();
 
             logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "Main", RestLoggingWorker);

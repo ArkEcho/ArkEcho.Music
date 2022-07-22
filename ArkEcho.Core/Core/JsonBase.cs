@@ -79,8 +79,8 @@ namespace ArkEcho.Core
             JObject jsonData = new JObject();
             await Task.Factory.StartNew(() => handleProperties(jsonData, JsonHandlingMode.PropertiesToJson));
 
-            string jsonString = jsonData.ToString().UnEscapeString();
-            return jsonString;
+            // TODO: Only Unescape URI Strings
+            return jsonData.ToString();
         }
 
         public async Task<bool> LoadFromJsonString(string jsonString)
@@ -92,7 +92,7 @@ namespace ArkEcho.Core
 
             try
             {
-                jsonString = jsonString.EscapeString(); // Escape URI Backslashes etc.
+                // TODO: Only Escape URI Strings
                 jsonData = await Task.Factory.StartNew(() => jsonData = JObject.Parse(jsonString));
             }
             catch (Exception ex)
