@@ -76,34 +76,34 @@ namespace ArkEcho.Core
 
         public async Task<string> SaveToJsonString()
         {
-            JObject data = new JObject();
-            await Task.Factory.StartNew(() => handleProperties(data, JsonHandlingMode.PropertiesToJson));
-            string result = data.ToString();
-            result = result.Replace("\\\\", "\\");
-            return result;
+            JObject jsonData = new JObject();
+            await Task.Factory.StartNew(() => handleProperties(jsonData, JsonHandlingMode.PropertiesToJson));
+
+            string jsonString = jsonData.ToString().UnEscapeString();
+            return jsonString;
         }
 
-        public async Task<bool> LoadFromJsonString(string json)
+        public async Task<bool> LoadFromJsonString(string jsonString)
         {
-            JObject data = null;
+            JObject jsonData = null;
 
-            if (!string.IsNullOrEmpty(json))
-            {
-                try
-                {
-                    json = json.Replace("\\", "\\\\");
-                    data = await Task.Factory.StartNew(() => data = JObject.Parse(json));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception on parsing the JSON: {ex.Message}");
-                }
-            }
-
-            if (data == null)
+            if (string.IsNullOrEmpty(jsonString))
                 return false;
 
-            await Task.Factory.StartNew(() => handleProperties(data, JsonHandlingMode.JsonToProperties));
+            try
+            {
+                jsonString = jsonString.EscapeString(); // Escape URI Backslashes etc.
+                jsonData = await Task.Factory.StartNew(() => jsonData = JObject.Parse(jsonString));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception on parsing the JSON: {ex.Message}");
+            }
+
+            if (jsonData == null)
+                return false;
+
+            await Task.Factory.StartNew(() => handleProperties(jsonData, JsonHandlingMode.JsonToProperties));
             return true;
         }
 

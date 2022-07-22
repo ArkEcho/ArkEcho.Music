@@ -42,8 +42,6 @@ namespace ArkEcho.Server
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            // TODO: MusicFilePath in json with \\? C:\Users\steph\Music\ -> Exception
-
             Config = new ServerConfig(serverConfigFileName);
             if (!Config.LoadFromFile(executingLocation, true).Result)
             {
@@ -62,7 +60,7 @@ namespace ArkEcho.Server
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);
+            LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
             logger = new Logger("Server", "Main", LoggingWorker);
