@@ -10,6 +10,14 @@ namespace ArkEcho.Core.Test
     }
     public class TestClass : JsonBase
     {
+        public enum TestEnum
+        {
+            Spring = 0,
+            Summer,
+            Autumn,
+            Winter
+        }
+
         [JsonProperty]
         public bool Boolean { get; set; }
 
@@ -29,7 +37,13 @@ namespace ArkEcho.Core.Test
         public DateTime DateTime { get; set; }
 
         [JsonProperty]
-        public Uri Uri { get; set; }
+        public Uri UriSlash { get; set; }
+
+        [JsonProperty]
+        public Uri UriBackSlash { get; set; }
+
+        [JsonProperty]
+        public TestEnum Enum { get; set; }
 
         [JsonProperty]
         public List<int> ListInt { get; set; }
