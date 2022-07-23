@@ -176,6 +176,7 @@ namespace ArkEcho.Server
 
         private bool checkFolderStructureAndTags(MusicFile music, TagLib.Tag tag)
         {
+            // TODO: Max File Size statt Duration
             long maxDuration = 20 * 60 * 1000; // Max 20min
 
             if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))

@@ -11,13 +11,13 @@ namespace ArkEcho.Core
         public class FileChunk : JsonBase
         {
             [JsonProperty]
-            public Guid Guid { get; set; } = Guid.NewGuid();
+            public Guid GUID { get; set; } = Guid.NewGuid();
 
             [JsonProperty]
-            public long Size { get; set; } = 0;
+            public int Size { get; set; } = 0;
 
             [JsonProperty]
-            public long Position { get; set; } = 0;
+            public int Position { get; set; } = 0;
         }
 
         [JsonProperty]
@@ -52,6 +52,10 @@ namespace ArkEcho.Core
             this.Folder = new Uri(info.DirectoryName);
             this.FileName = info.Name;
             this.FileFormat = info.Extension.Substring(1);
+
+            if (info.Length > Resources.MaxFileSize)
+                throw new Exception($"File is too large, {filePath}!");
+
             this.FileSize = info.Length;
 
             createCheckSumAndChunks();
@@ -76,8 +80,8 @@ namespace ArkEcho.Core
 
             Chunks = new List<FileChunk>();
 
-            long position = 0;
-            long sizeToChunk = FileSize;
+            int position = 0;
+            int sizeToChunk = (int)FileSize;
 
             do
             {
