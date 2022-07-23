@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,6 +8,18 @@ namespace ArkEcho.Core
 {
     public class TransferFileBase : JsonBase
     {
+        public class FileChunk : JsonBase
+        {
+            [JsonProperty]
+            public Guid Guid { get; set; } = Guid.NewGuid();
+
+            [JsonProperty]
+            public long Size { get; set; } = 0;
+
+            [JsonProperty]
+            public long Position { get; set; } = 0;
+        }
+
         [JsonProperty]
         public string FileName { get; set; }
 
@@ -18,6 +31,9 @@ namespace ArkEcho.Core
 
         [JsonProperty]
         public string CheckSum { get; set; }
+
+        [JsonProperty]
+        public List<FileChunk> Chunks { get; set; }
 
         public Uri Folder { get; set; }
 
@@ -38,11 +54,6 @@ namespace ArkEcho.Core
             createCheckSumAndChunks();
         }
 
-        private void createCheckSumAndChunks()
-        {
-            CheckSum = getMD5Hash(FullPath);
-        }
-
         public bool TestCheckSum()
         {
             return getMD5Hash(FullPath) == CheckSum;
@@ -54,6 +65,28 @@ namespace ArkEcho.Core
             {
                 return $"{Folder.LocalPath}{Resources.FilePathDivider}{FileName}";
             }
+        }
+
+        private void createCheckSumAndChunks()
+        {
+            CheckSum = getMD5Hash(FullPath);
+
+            Chunks = new List<FileChunk>();
+
+            long position = 0;
+            long sizeToChunk = FileSize;
+
+            do
+            {
+                FileChunk chunk = new FileChunk();
+                chunk.Position = position;
+                chunk.Size = sizeToChunk > Resources.RestChunkSize ? Resources.RestChunkSize : sizeToChunk;
+                Chunks.Add(chunk);
+
+                sizeToChunk -= chunk.Size;
+                position += chunk.Size;
+            }
+            while (sizeToChunk > 0);
         }
 
         private string getMD5Hash(string filePath)
