@@ -21,6 +21,9 @@ namespace ArkEcho.Core
         }
 
         [JsonProperty]
+        public Guid GUID { get; set; } = Guid.NewGuid();
+
+        [JsonProperty]
         public string FileName { get; set; }
 
         [JsonProperty]

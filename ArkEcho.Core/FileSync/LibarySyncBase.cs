@@ -102,6 +102,7 @@ namespace ArkEcho.Core
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
+                // TODO: Use GetFile instead -> Copy Memorystream to FileStream
                 byte[] fileBytes = await rest.GetMusicFile(file.GUID);
 
                 if (fileBytes.Length == 0)
