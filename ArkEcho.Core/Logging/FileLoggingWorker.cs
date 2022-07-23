@@ -44,8 +44,6 @@ namespace ArkEcho.Server
 
         protected override void HandleLogMessage(LogMessage log)
         {
-            // TODO: Error als S\ geloggt von App kommend -> Enums in JsonBase
-
             LogFile file = getLogFile(log);
 
             try

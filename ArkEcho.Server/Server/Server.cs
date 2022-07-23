@@ -63,7 +63,7 @@ namespace ArkEcho.Server
             LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
-            logger = new Logger("Server", "Main", LoggingWorker);
+            logger = new Logger(Resources.ARKECHOSERVER, "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
             logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");

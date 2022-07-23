@@ -6,6 +6,7 @@ namespace ArkEcho.Core
 {
     // TODO: Unit Test
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
+    // TODO: Mehr Logging
     public abstract class Player
     {
         public event Action TitleChanged;
@@ -21,14 +22,6 @@ namespace ArkEcho.Core
         public MusicFile PlayingFile { get; private set; } = null;
 
         private int songIndex = 0;
-
-        private void setPlayingFile()
-        {
-            if (ListToPlay != null && ListToPlay.Count > songIndex && songIndex >= 0)
-                PlayingFile = Shuffle ? ListToPlay[shuffledIndexList[songIndex]] : ListToPlay[songIndex];
-            else
-                PlayingFile = null;
-        }
 
 
         #region Volume
@@ -149,18 +142,26 @@ namespace ArkEcho.Core
 
             setShuffleList();
 
-            load(true);
+            loadNextPlayingFile(true);
         }
 
-        private void load(bool StartOnLoad)
+        private void loadNextPlayingFile(bool StartOnLoad)
         {
             disposeImpl();
             Position = 0;
 
-            setPlayingFile();
+            PlayingFile = null;
 
-            loadImpl(StartOnLoad);
-            TitleChanged?.Invoke();
+            if (ListToPlay == null || songIndex >= ListToPlay.Count || songIndex < 0)
+                return;
+
+            PlayingFile = Shuffle ? ListToPlay[shuffledIndexList[songIndex]] : ListToPlay[songIndex];
+
+            if (PlayingFile != null)
+            {
+                loadImpl(StartOnLoad);
+                TitleChanged?.Invoke();
+            }
         }
 
         public void Play()
@@ -197,15 +198,15 @@ namespace ArkEcho.Core
                     if (Shuffle)
                     {
                         setShuffleList();
-                        load(true);
+                        loadNextPlayingFile(true);
                     }
                     else
-                        load(false);
+                        loadNextPlayingFile(false);
                 }
                 else
                 {
                     songIndex++;
-                    load(true);
+                    loadNextPlayingFile(true);
                 }
             }
         }
@@ -224,7 +225,7 @@ namespace ArkEcho.Core
                     if (Shuffle)
                     {
                         setShuffleList();
-                        load(true);
+                        loadNextPlayingFile(true);
                     }
                     else
                     {
@@ -235,7 +236,7 @@ namespace ArkEcho.Core
                 else
                 {
                     songIndex--;
-                    load(true);
+                    loadNextPlayingFile(true);
                 }
             }
         }
