@@ -63,7 +63,7 @@ namespace ArkEcho.Core
 
         public bool TestCheckSum()
         {
-            return getMD5Hash(FullPath) == CheckSum;
+            return GetFileHashAsBase64(FullPath) == CheckSum;
         }
 
         public string FullPath
@@ -76,7 +76,7 @@ namespace ArkEcho.Core
 
         private void createCheckSumAndChunks()
         {
-            CheckSum = getMD5Hash(FullPath);
+            CheckSum = GetFileHashAsBase64(FullPath);
 
             Chunks = new List<FileChunk>();
 
@@ -96,7 +96,7 @@ namespace ArkEcho.Core
             while (sizeToChunk > 0);
         }
 
-        private string getMD5Hash(string filePath)
+        public static string GetFileHashAsBase64(string filePath)
         {
             using (FileStream stream = File.OpenRead(filePath))
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core
@@ -11,12 +12,14 @@ namespace ArkEcho.Core
             Post,
         }
 
+        // TODO: IDisposable
         public abstract class HttpResponseBase
         {
             public bool Success { get; set; } = false;
 
             public abstract Task<string> GetResultContentAsStringAsync();
             public abstract Task<byte[]> GetResultContentAsByteArrayAsync();
+            public abstract Task CopyContentToStreamAsync(Stream stream);
         }
 
         private bool compression = false;
@@ -93,7 +96,7 @@ namespace ArkEcho.Core
                 return string.Empty;
         }
 
-        public async Task<byte[]> GetMusicFile(Guid guid)
+        public async Task<byte[]> GetMusicFile(Guid guid) // TODO: Still needed? Rest Endpoint needed for JS Player
         {
             HttpResponseBase response = makeRequest(HttpMethods.Get, $"/api/Music/{guid}", string.Empty);
 
@@ -116,9 +119,36 @@ namespace ArkEcho.Core
             return response != null && response.Success;
         }
 
-        public async Task<byte[]> GetFile(TransferFileBase tfb)
+        public async Task<MemoryStream> GetFile(TransferFileBase tfb)
         {
-            throw new NotImplementedException();
+            MemoryStream stream = null;
+            try
+            {
+                stream = new MemoryStream(new byte[tfb.FileSize]);
+
+                foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
+                {
+                    HttpResponseBase response = makeRequest(HttpMethods.Get,
+                        $"/api/Files/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty);
+
+                    if (!response.Success)
+                    {
+                        stream.Dispose();
+                        return null;
+                    }
+
+                    stream.Position = chunk.Position;
+
+                    await response.CopyContentToStreamAsync(stream);
+                }
+
+                return stream;
+            }
+            catch
+            {
+                stream?.Dispose();
+                return null;
+            }
         }
 
         protected abstract HttpResponseBase makeRequest(HttpMethods method, string path, string httpContent);

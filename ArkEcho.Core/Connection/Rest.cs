@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -15,9 +16,15 @@ namespace ArkEcho.Core
             public HttpResponse(HttpResponseMessage responseMessage)
             {
                 this.responseMessage = responseMessage;
+                Success = responseMessage.IsSuccessStatusCode;
             }
 
-            public override Task<byte[]> GetResultContentAsByteArrayAsync()
+            public override Task CopyContentToStreamAsync(Stream stream)
+            {
+                return responseMessage.Content.CopyToAsync(stream);
+            }
+
+            public override Task<byte[]> GetResultContentAsByteArrayAsync() // TODO: Still needed?
             {
                 return responseMessage.Content.ReadAsByteArrayAsync();
             }

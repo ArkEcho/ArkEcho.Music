@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core
@@ -33,6 +34,6 @@ namespace ArkEcho.Core
 
     public interface IRestFiles : IRest
     {
-        Task<byte[]> GetFile(TransferFileBase tfb);
+        Task<MemoryStream> GetFile(TransferFileBase tfb);
     }
 }
