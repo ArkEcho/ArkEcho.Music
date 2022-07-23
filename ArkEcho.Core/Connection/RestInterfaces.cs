@@ -1,0 +1,38 @@
+﻿using System;
+using System.Threading.Tasks;
+
+namespace ArkEcho.Core
+{
+    public interface IRest
+    {
+        int Timeout { get; set; }
+
+        bool CheckConnection();
+    }
+
+    public interface IRestLogging : IRest
+    {
+        Task<bool> PostLogging(LogMessage logMessage);
+    }
+
+    public interface IRestUser : IRest
+    {
+        Task<User> AuthenticateUserForLogin(User userToAuthenticate);
+
+        Task<User> CheckUserToken(Guid guid);
+    }
+
+    public interface IRestMusic : IRest
+    {
+        Task<string> GetMusicLibrary();
+
+        Task<string> GetAlbumCover(Guid guid);
+
+        Task<byte[]> GetMusicFile(Guid guid);
+    }
+
+    public interface IRestFiles : IRest
+    {
+        Task<byte[]> GetFile(TransferFileBase tfb);
+    }
+}

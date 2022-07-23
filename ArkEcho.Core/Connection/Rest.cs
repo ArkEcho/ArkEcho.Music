@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public class Rest : IRest
+    public class Rest : IRestLogging, IRestUser, IRestMusic, IRestFiles
     {
         private HttpClient client = null;
         private bool compression = false;
@@ -108,6 +108,11 @@ namespace ArkEcho.Core
             string bodyContent = await logMessage.SaveToJsonString();
             HttpResponseMessage response = makeRequest(HttpMethod.Post, "/api/Logging", bodyContent.ToBase64());
             return response != null && response.IsSuccessStatusCode;
+        }
+
+        public async Task<byte[]> GetFile(TransferFileBase tfb)
+        {
+            throw new NotImplementedException();
         }
 
         private HttpResponseMessage makeRequest(HttpMethod method, string path, string httpContent)
