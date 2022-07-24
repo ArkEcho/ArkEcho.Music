@@ -129,7 +129,7 @@ namespace ArkEcho.Core
                 foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
                 {
                     HttpResponseBase response = makeRequest(HttpMethods.Get,
-                        $"/api/Files/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty);
+                        $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty);
 
                     if (!response.Success)
                     {
