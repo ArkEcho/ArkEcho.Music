@@ -38,7 +38,7 @@ namespace ArkEcho.Core
 
         public Rest(string connectionUrl, bool compression) : base(compression)
         {
-            // TODO: Disable on Release Build
+            // Disable on Release Build?
             HttpClientHandler handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
 

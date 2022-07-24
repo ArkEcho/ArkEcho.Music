@@ -25,9 +25,7 @@ namespace ArkEcho.Core
             {
                 if (!disposedValue)
                 {
-                    if (disposing)
-                    {
-                    }
+                    if (disposing) { }
                     disposedValue = true;
                 }
             }
@@ -49,21 +47,21 @@ namespace ArkEcho.Core
 
         public bool CheckConnection()
         {
-            HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Control", string.Empty);
-            return response != null;
+            using (HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Control", string.Empty))
+                return response != null;
         }
 
         public async Task<User> AuthenticateUserForLogin(User userToAuthenticate)
         {
             string bodyContent = await userToAuthenticate.SaveToJsonString();
-            HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64());
-            return await checkAndReturnAuthenticateResult(restResponse);
+            using (HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
+                return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         public async Task<User> CheckUserToken(Guid guid)
         {
-            HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString());
-            return await checkAndReturnAuthenticateResult(restResponse);
+            using (HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
+                return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         private async Task<User> checkAndReturnAuthenticateResult(HttpResponseBase response)
@@ -87,10 +85,11 @@ namespace ArkEcho.Core
 
         public async Task<string> GetMusicLibrary()
         {
-            HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Music", string.Empty);
-
-            if (response != null && response.Success)
+            using (HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Music", string.Empty))
             {
+                if (response == null || !response.Success)
+                    return string.Empty;
+
                 string content = await response.GetResultContentAsStringAsync();
 
                 if (compression)
@@ -98,25 +97,25 @@ namespace ArkEcho.Core
                 else
                     return content.FromBase64();
             }
-            else
-                return string.Empty;
         }
 
         public async Task<string> GetAlbumCover(Guid guid)
         {
-            HttpResponseBase response = makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover/{guid}", string.Empty);
+            using (HttpResponseBase response = makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover/{guid}", string.Empty))
+            {
+                if (response == null || !response.Success)
+                    return string.Empty;
 
-            if (response != null && response.Success)
                 return await response.GetResultContentAsStringAsync();
-            else
-                return string.Empty;
+            }
         }
 
         public async Task<bool> PostLogging(LogMessage logMessage)
         {
             string bodyContent = await logMessage.SaveToJsonString();
-            HttpResponseBase response = makeRequest(HttpMethods.Post, "/api/Logging", bodyContent.ToBase64());
-            return response != null && response.Success;
+
+            using (HttpResponseBase response = makeRequest(HttpMethods.Post, "/api/Logging", bodyContent.ToBase64()))
+                return response != null && response.Success;
         }
 
         public async Task<MemoryStream> GetFile(TransferFileBase tfb)
@@ -128,18 +127,19 @@ namespace ArkEcho.Core
 
                 foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
                 {
-                    HttpResponseBase response = makeRequest(HttpMethods.Get,
-                        $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty);
-
-                    if (response == null || !response.Success)
+                    using (HttpResponseBase response = makeRequest(HttpMethods.Get,
+                        $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty))
                     {
-                        stream?.Dispose();
-                        return null;
+                        if (response == null || !response.Success)
+                        {
+                            stream?.Dispose();
+                            return null;
+                        }
+
+                        stream.Position = chunk.Position;
+
+                        await response.CopyContentToStreamAsync(stream);
                     }
-
-                    stream.Position = chunk.Position;
-
-                    await response.CopyContentToStreamAsync(stream);
                 }
 
                 return stream;
