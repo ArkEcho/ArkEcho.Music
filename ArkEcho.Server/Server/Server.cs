@@ -116,6 +116,19 @@ namespace ArkEcho.Server
             }
         }
 
+        public List<TransferFileBase> GetAllFiles()
+        {
+            if (library == null)
+                return null;
+
+            List<TransferFileBase> list = new();
+
+            list.AddRange(library.MusicFiles);
+            list.AddRange(library.Playlists);
+
+            return list;
+        }
+
         public async Task<string> GetMusicLibraryString()
         {
             return library != null ? await library.SaveToJsonString() : string.Empty;
