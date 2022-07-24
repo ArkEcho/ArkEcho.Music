@@ -28,6 +28,12 @@ namespace ArkEcho.Core
             {
                 return responseMessage.Content.ReadAsStringAsync();
             }
+
+            protected override void Dispose(bool disposing)
+            {
+                responseMessage?.Dispose();
+                base.Dispose(disposing);
+            }
         }
 
         public Rest(string connectionUrl, bool compression) : base(compression)

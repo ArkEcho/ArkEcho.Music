@@ -12,13 +12,30 @@ namespace ArkEcho.Core
             Post,
         }
 
-        // TODO: IDisposable
-        public abstract class HttpResponseBase
+        public abstract class HttpResponseBase : IDisposable
         {
+            private bool disposedValue;
+
             public bool Success { get; set; } = false;
 
             public abstract Task<string> GetResultContentAsStringAsync();
             public abstract Task CopyContentToStreamAsync(Stream stream);
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!disposedValue)
+                {
+                    if (disposing)
+                    {
+                    }
+                    disposedValue = true;
+                }
+            }
+
+            public void Dispose()
+            {
+                Dispose(disposing: true);
+            }
         }
 
         private bool compression = false;
