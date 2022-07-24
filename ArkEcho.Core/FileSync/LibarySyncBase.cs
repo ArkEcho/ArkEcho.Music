@@ -102,16 +102,29 @@ namespace ArkEcho.Core
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
-                // TODO: Use GetFile instead -> Copy Memorystream to FileStream
-                byte[] fileBytes = await rest.GetMusicFile(file.GUID);
-
-                if (fileBytes.Length == 0)
-                    return false;
-
-                using (FileStream stream = new FileStream(file.FullPath, FileMode.OpenOrCreate,
-                    FileAccess.ReadWrite, FileShare.None))
+                using (MemoryStream dataStream = await rest.GetFile(file))
                 {
-                    await stream.WriteAsync(fileBytes, 0, fileBytes.Length);
+                    if (dataStream.Length == 0)
+                    {
+                        logger.LogError($"Error transfering File, Stream is empty - {file.FullPath}");
+                        return false;
+                    }
+
+                    using (FileStream stream = new FileStream(file.FullPath, FileMode.OpenOrCreate,
+                        FileAccess.ReadWrite, FileShare.None))
+                    {
+                        dataStream.Seek(0, SeekOrigin.Begin);
+                        await dataStream.CopyToAsync(stream);
+                    }
+                }
+
+                if (!file.TestCheckSum())
+                {
+                    if (File.Exists(file.FullPath))
+                        File.Delete(file.FullPath);
+
+                    logger.LogError($"Error transfering File, Checksum not okay - {file.FullPath}");
+                    return false;
                 }
 
                 sw.Stop();
