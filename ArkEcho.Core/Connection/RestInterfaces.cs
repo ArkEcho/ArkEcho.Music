@@ -28,8 +28,6 @@ namespace ArkEcho.Core
         Task<string> GetMusicLibrary();
 
         Task<string> GetAlbumCover(Guid guid);
-
-        Task<byte[]> GetMusicFile(Guid guid);
     }
 
     public interface IRestFiles : IRest

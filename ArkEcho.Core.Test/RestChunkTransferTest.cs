@@ -111,12 +111,13 @@ namespace ArkEcho.Core.Test
                 string checkSumOne = TransferFileBase.GetFileHashAsBase64(testFileOne);
                 string checkSumTwo = TransferFileBase.GetFileHashAsBase64(testFileTwo);
 
+                // We cant use "TestCheckSum()" because we created a new file with another name
                 Assert.IsTrue(tfbOne.CheckSum == checkSumOne);
                 Assert.IsTrue(tfbTwo.CheckSum == checkSumTwo);
             }
             catch
             {
-                Assert.IsTrue(false, "Exception Test!");
+                Assert.IsTrue(false, "Exception in RunningTest!");
             }
             finally
             {

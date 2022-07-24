@@ -18,7 +18,6 @@ namespace ArkEcho.Core
             public bool Success { get; set; } = false;
 
             public abstract Task<string> GetResultContentAsStringAsync();
-            public abstract Task<byte[]> GetResultContentAsByteArrayAsync();
             public abstract Task CopyContentToStreamAsync(Stream stream);
         }
 
@@ -96,22 +95,6 @@ namespace ArkEcho.Core
                 return string.Empty;
         }
 
-        public async Task<byte[]> GetMusicFile(Guid guid) // TODO: Still needed? Rest Endpoint needed for JS Player
-        {
-            HttpResponseBase response = makeRequest(HttpMethods.Get, $"/api/Music/{guid}", string.Empty);
-
-            if (response != null && response.Success)
-            {
-                byte[] content = await response.GetResultContentAsByteArrayAsync();
-                if (compression)
-                    return await ZipCompression.Unzip(content);
-                else
-                    return content;
-            }
-            else
-                return new byte[0];
-        }
-
         public async Task<bool> PostLogging(LogMessage logMessage)
         {
             string bodyContent = await logMessage.SaveToJsonString();
@@ -131,9 +114,9 @@ namespace ArkEcho.Core
                     HttpResponseBase response = makeRequest(HttpMethods.Get,
                         $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty);
 
-                    if (!response.Success)
+                    if (response == null || !response.Success)
                     {
-                        stream.Dispose();
+                        stream?.Dispose();
                         return null;
                     }
 

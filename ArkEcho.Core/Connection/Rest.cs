@@ -24,11 +24,6 @@ namespace ArkEcho.Core
                 return responseMessage.Content.CopyToAsync(stream);
             }
 
-            public override Task<byte[]> GetResultContentAsByteArrayAsync() // TODO: Still needed?
-            {
-                return responseMessage.Content.ReadAsByteArrayAsync();
-            }
-
             public override Task<string> GetResultContentAsStringAsync()
             {
                 return responseMessage.Content.ReadAsStringAsync();

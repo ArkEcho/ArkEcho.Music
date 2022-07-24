@@ -24,11 +24,6 @@ namespace ArkEcho.Core.Test
                 return stream.WriteAsync(data, 0, data.Length);
             }
 
-            public override Task<byte[]> GetResultContentAsByteArrayAsync()
-            {
-                throw new NotImplementedException();
-            }
-
             public override Task<string> GetResultContentAsStringAsync()
             {
                 throw new NotImplementedException();
@@ -45,7 +40,7 @@ namespace ArkEcho.Core.Test
             if (method != HttpMethods.Get)
                 return null;
 
-            if (path.StartsWith("/api/Files/ChunkTransfer?"))
+            if (path.StartsWith("/api/File/ChunkTransfer?"))
             {
                 return ChunkTransfer(path);
             }
