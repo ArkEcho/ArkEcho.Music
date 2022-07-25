@@ -15,6 +15,9 @@ namespace ArkEcho
         public const string ARKECHOWEBPAGE = "ArkEcho.WebPage";
         public const string ARKECHODESKTOP = "ArkEcho.Desktop";
 
+        public const int MaxFileSize = int.MaxValue; // ~2Gb
+        public const int RestChunkSize = 15728640; // 15mb
+
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()
         {
             "mp3",

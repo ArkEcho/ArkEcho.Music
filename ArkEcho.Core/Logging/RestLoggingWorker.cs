@@ -4,9 +4,9 @@ namespace ArkEcho.Core
 {
     public class RestLoggingWorker : LoggingWorker
     {
-        IRest restClient = null;
+        IRestLogging restClient = null;
 
-        public RestLoggingWorker(IRest restClient, Logging.LogLevel logLevel) : base(logLevel)
+        public RestLoggingWorker(IRestLogging restClient, Logging.LogLevel logLevel) : base(logLevel)
         {
             this.restClient = restClient;
         }

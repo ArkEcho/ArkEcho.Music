@@ -7,9 +7,6 @@ namespace ArkEcho.Core
     public class MusicFile : TransferFileBase
     {
         [JsonProperty]
-        public Guid GUID { get; set; } = Guid.NewGuid();
-
-        [JsonProperty]
         public Guid Album { get; set; } = Guid.Empty;
 
         [JsonProperty]

@@ -16,7 +16,7 @@ namespace ArkEcho.Server
 
         public MusicLibraryWorker(LoggingWorker lw) : base()
         {
-            logger = new Logger("Server", "MusicWorker", lw);
+            logger = new Logger(Resources.ARKECHOSERVER, "MusicWorker", lw);
             DoWork += MusicLibraryWorker_DoWork;
         }
 
@@ -98,19 +98,30 @@ namespace ArkEcho.Server
                     continue;
                 }
 
-                MusicFile music = new(filePath)
+                MusicFile music = null;
+                try
                 {
-                    Title = tagFile.Tag.Title,
-                    Performer = tagFile.Tag.FirstPerformer,
-                    Disc = tagFile.Tag.Disc,
-                    Track = tagFile.Tag.Track,
-                    Year = tagFile.Tag.Year,
-                    Duration = Convert.ToInt64(tagFile.Properties.Duration.TotalMilliseconds)
-                };
+                    music = new(filePath)
+                    {
+                        Title = tagFile.Tag.Title,
+                        Performer = tagFile.Tag.FirstPerformer,
+                        Disc = tagFile.Tag.Disc,
+                        Track = tagFile.Tag.Track,
+                        Year = tagFile.Tag.Year,
+                        Duration = Convert.ToInt64(tagFile.Properties.Duration.TotalMilliseconds)
+                    };
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"Exception on creating File for {filePath}, {ex.Message}");
+                    tagFile?.Dispose();
+                    tagFile = null;
+                    continue;
+                }
 
                 if (!checkFolderStructureAndTags(music, tagFile.Tag))
                 {
-                    tagFile.Dispose();
+                    tagFile?.Dispose();
                     tagFile = null;
                     continue;
                 }
@@ -149,7 +160,7 @@ namespace ArkEcho.Server
 
                 library.MusicFiles.Add(music);
 
-                tagFile.Dispose();
+                tagFile?.Dispose();
                 tagFile = null;
             }
         }
@@ -176,8 +187,6 @@ namespace ArkEcho.Server
 
         private bool checkFolderStructureAndTags(MusicFile music, TagLib.Tag tag)
         {
-            long maxDuration = 20 * 60 * 1000; // Max 20min
-
             if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))
             {
                 logger.LogError($"Skipped! No Album/AlbumArtist {music.FullPath}");
@@ -186,11 +195,6 @@ namespace ArkEcho.Server
             else if (tag.Pictures.Length == 0)
             {
                 logger.LogError($"File has no Album Cover! {music.FullPath}");
-                return false;
-            }
-            else if (music.Duration > maxDuration) // TODO: Alle Musik längen, Timeout bei Rest, Kompression
-            {
-                logger.LogError($"Skipped! File Duration is longer than 20min max! {music.FullPath}");
                 return false;
             }
             else

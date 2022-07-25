@@ -64,6 +64,7 @@ namespace ArkEcho.Server
 
             return result;
         }
+
         // GET: api/Music/AlbumCover/[GUID]
         [HttpGet("AlbumCover/{guid}")]
         public async Task<ActionResult> GetAlbumCover(Guid guid)

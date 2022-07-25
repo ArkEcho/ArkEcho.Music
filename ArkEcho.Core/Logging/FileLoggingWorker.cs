@@ -33,7 +33,7 @@ namespace ArkEcho.Server
 
         private int maxFiles = 10;
         private long logFileSizeMax = 10485760; // 10mb
-        //private long logFileSizeMax = 54857; // 50kb
+        //private long logFileSizeMax = 548570; // 500kb
 
         private List<LogFile> logFiles = new List<LogFile>();
 
@@ -51,7 +51,7 @@ namespace ArkEcho.Server
                 if (!Directory.Exists(logFolder))
                     Directory.CreateDirectory(logFolder);
 
-                using (StreamWriter fs = new StreamWriter(new FileStream(file.GetFullFileName(logFolder), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Delete), Encoding.UTF8))
+                using (StreamWriter fs = new StreamWriter(new FileStream(file.GetFullFileName(logFolder), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read), Encoding.UTF8))
                 {
                     fs.BaseStream.Seek(0, SeekOrigin.End);
                     fs.WriteLine(log.ToLogString());

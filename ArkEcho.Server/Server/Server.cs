@@ -83,7 +83,7 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
-            //for (int i = 0; i < 50000; i++)
+            //for (int i = 0; i < 5000000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
             return Initialized;
@@ -114,6 +114,19 @@ namespace ArkEcho.Server
                 logger.LogError("### Error loading Music Library, stopping!");
                 Stop();
             }
+        }
+
+        public List<TransferFileBase> GetAllFiles()
+        {
+            if (library == null)
+                return null;
+
+            List<TransferFileBase> list = new();
+
+            list.AddRange(library.MusicFiles);
+            list.AddRange(library.Playlists);
+
+            return list;
         }
 
         public async Task<string> GetMusicLibraryString()
