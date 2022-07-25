@@ -16,7 +16,7 @@ namespace ArkEcho.Server
         public ArkEchoController(string controllerName) : base()
         {
             this.ControllerName = controllerName;
-            Logger = new Logger("Server", $"{controllerName}-REST", Server.Instance.LoggingWorker);
+            Logger = new Logger(Resources.ARKECHOSERVER, $"{controllerName}-REST", Server.Instance.LoggingWorker);
         }
 
         protected async Task<string> getStringFromHttpBody()

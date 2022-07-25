@@ -16,7 +16,7 @@ namespace ArkEcho.Server
 
         public MusicLibraryWorker(LoggingWorker lw) : base()
         {
-            logger = new Logger("Server", "MusicWorker", lw);
+            logger = new Logger(Resources.ARKECHOSERVER, "MusicWorker", lw);
             DoWork += MusicLibraryWorker_DoWork;
         }
 
