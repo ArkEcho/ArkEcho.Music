@@ -40,9 +40,6 @@ namespace ArkEcho.Core.Test
         public Uri UriSlash { get; set; }
 
         [JsonProperty]
-        public Uri UriBackSlash { get; set; }
-
-        [JsonProperty]
         public TestEnum Enum { get; set; }
 
         [JsonProperty]

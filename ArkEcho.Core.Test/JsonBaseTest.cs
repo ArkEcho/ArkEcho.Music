@@ -36,7 +36,6 @@ namespace ArkEcho.Core.Test
             Assert.IsTrue(testclass.Guid == Guid.Parse("936da01f-9abd-4d9d-80c7-02af85c822a8"));
             Assert.IsTrue(testclass.DateTime == DateTime.Parse("2030-12-12T12:23:45"));
             Assert.IsTrue(testclass.UriSlash == new Uri("C:/Test/Folder"));
-            Assert.IsTrue(testclass.UriBackSlash == new Uri("C:/Test/Folder"));
             Assert.IsTrue(testclass.Enum == TestClass.TestEnum.Autumn);
 
             Assert.IsTrue(testclass.ListInt.Count == 2);
