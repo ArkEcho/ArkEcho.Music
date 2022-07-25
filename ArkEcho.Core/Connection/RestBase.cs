@@ -144,8 +144,9 @@ namespace ArkEcho.Core
 
                 return stream;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Exception on GetFile: {ex.GetFullMessage()}");
                 stream?.Dispose();
                 return null;
             }

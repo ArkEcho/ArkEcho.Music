@@ -108,8 +108,8 @@ namespace ArkEcho.Core.Test
                 Assert.IsTrue(File.Exists(testFileOne));
                 Assert.IsTrue(File.Exists(testFileTwo));
 
-                string checkSumOne = TransferFileBase.GetFileHashAsBase64(testFileOne);
-                string checkSumTwo = TransferFileBase.GetFileHashAsBase64(testFileTwo);
+                string checkSumOne = TransferFileBase.GetCheckSum(testFileOne);
+                string checkSumTwo = TransferFileBase.GetCheckSum(testFileTwo);
 
                 // We cant use "TestCheckSum()" because we created a new file with another name
                 Assert.IsTrue(tfbOne.CheckSum == checkSumOne);

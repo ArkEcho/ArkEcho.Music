@@ -63,7 +63,7 @@ namespace ArkEcho.Core
 
         public bool TestCheckSum()
         {
-            return GetFileHashAsBase64(FullPath) == CheckSum;
+            return GetCheckSum(FullPath) == CheckSum;
         }
 
         public string FullPath
@@ -76,7 +76,7 @@ namespace ArkEcho.Core
 
         private void createCheckSumAndChunks()
         {
-            CheckSum = GetFileHashAsBase64(FullPath);
+            CheckSum = GetCheckSum(FullPath);
 
             Chunks = new List<FileChunk>();
 
@@ -96,14 +96,18 @@ namespace ArkEcho.Core
             while (sizeToChunk > 0);
         }
 
-        public static string GetFileHashAsBase64(string filePath)
+        public static string GetCheckSum(string filePath)
         {
-            using (FileStream stream = File.OpenRead(filePath))
+            using (SHA256 sha256Hash = SHA256.Create())
             {
-                MD5 md5 = MD5.Create();
-                return Encoding.Default.GetString(md5.ComputeHash(stream)).ToBase64();
+                byte[] data = sha256Hash.ComputeHash(File.ReadAllBytes(filePath));
+
+                StringBuilder sBuilder = new StringBuilder();
+                for (int i = 0; i < data.Length; i++)
+                    sBuilder.Append(data[i].ToString("x2"));
+
+                return sBuilder.ToString();
             }
         }
-
     }
 }

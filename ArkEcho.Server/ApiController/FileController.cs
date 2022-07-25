@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
+    // TODO: Alle Controller Abstrahieren für Unit Test -> Umkehr Basis Klasse als eigentliche Implementierung
     [Route("api/[controller]")]
     [ApiController]
     public class FileController : ArkEchoController
@@ -52,10 +53,11 @@ namespace ArkEcho.Server
             using (FileStream fs = new FileStream(tfb.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 fs.Position = fileChunk.Position;
-                fs.Read(data, 0, fileChunk.Size);
+                await fs.ReadAsync(data, 0, fileChunk.Size);
             }
 
-            return Ok(data);
+            FileContentResult result = new FileContentResult(data, "application/stream");
+            return result;
         }
     }
 }
