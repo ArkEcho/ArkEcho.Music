@@ -1,17 +1,19 @@
-﻿using ArkEcho.Player;
+﻿using ArkEcho.Core;
 using Microsoft.JSInterop;
 using System;
 
 namespace ArkEcho.WebPage
 {
-    public class ArkEchoJSPlayer : ArkEchoPlayer
+    public class JSPlayer : Player
     {
         private Logging.LoggingDelegate logDelegate = null;
+        private string serverAddress = string.Empty;
 
         public IJSRuntime JS { get; private set; } = null;
 
-        public ArkEchoJSPlayer() : base()
+        public JSPlayer(string serverAddress) : base()
         {
+            this.serverAddress = serverAddress;
         }
 
         public bool InitPlayer(IJSRuntime JS)
@@ -32,7 +34,7 @@ namespace ArkEcho.WebPage
             return Initialized;
         }
 
-        private bool logConsole(string text, ArkEcho.Logging.LogLevel level)
+        private bool logConsole(string text, Logging.LogLevel level)
         {
             Console.WriteLine(text);
             return true;
@@ -65,12 +67,8 @@ namespace ArkEcho.WebPage
 
         protected override void loadImpl(bool StartOnLoad)
         {
-            if (PlayingFile != null)
-            {
-                // TODO: Aus Config?
-                string source = $"https://192.168.178.20:5002/api/Music/{PlayingFile.GUID}";
-                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
-            }
+            string source = $"{serverAddress}/api/Music/{PlayingFile.GUID}";
+            JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeImpl()

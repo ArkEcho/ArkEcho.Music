@@ -2,13 +2,13 @@
 using LibVLCSharp.Shared;
 using System;
 
-namespace ArkEcho.Player
+namespace ArkEcho.App
 {
-    public class ArkEchoVLCPlayer : ArkEchoPlayer
+    public class VLCPlayer : Player
     {
         private LibVLC libvlc = null;
         private MediaPlayer mediaplayer = null;
-        public ArkEchoVLCPlayer() : base()
+        public VLCPlayer() : base()
         {
         }
 
@@ -42,7 +42,7 @@ namespace ArkEcho.Player
             {
                 MusicFile File = PlayingFile;
                 if (File != null)
-                    mediaplayer.Media = new Media(libvlc, File.GetFullPathAndroid());
+                    mediaplayer.Media = new Media(libvlc, File.FullPath);
 
                 if (StartOnLoad)
                     mediaplayer.Play();

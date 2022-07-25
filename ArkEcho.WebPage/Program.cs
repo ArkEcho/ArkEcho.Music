@@ -1,32 +1,28 @@
-using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
+using System;
 
 namespace ArkEcho.WebPage
 {
-    public class Program
-    {
-        /* TODO
+    /* TODO
 	 * Anzeige
 			-> Interpreten A-Z -> Doppel & dreifach Interpreten zusammenfassen
 			-> Album A-Z
 			-> Titel A-Z
 			-> Ordner	-> Baumstruktur, ganzen Ordner abspielen
 	*/
-        public static async Task Main(string[] args)
+    public class Program
+    {
+        public static void Main(string[] args)
         {
-            WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
-
-            // Local Storage
-            builder.Services.AddBlazoredLocalStorage();
-
-            builder.Services.AddScoped(sp => new AppModel());
-
-            builder.Services.AddScoped<Authentication>();
-
-            await builder.Build().RunAsync();
+            using (WebPageManager.Instance)
+            {
+                if (!WebPageManager.Instance.Init())
+                {
+                    Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
+                    return;
+                }
+                else
+                    WebPageManager.Instance.Start(); // Starts Event Cycle and API
+            }
         }
     }
 }

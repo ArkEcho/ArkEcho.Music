@@ -10,17 +10,17 @@ namespace ArkEcho.WebPage
         // TODO: private?
         public MusicLibrary Library { get; private set; } = null;
 
-        public ArkEchoRest Rest { get; private set; } = null;
+        public Rest Rest { get; private set; } = null;
 
-        public ArkEchoJSPlayer Player { get; set; } = null;
+        public JSPlayer Player { get; set; } = null;
 
         private bool initialized = false;
 
         public AppModel()
         {
             Library = new MusicLibrary();
-            Player = new ArkEchoJSPlayer();
-            Rest = new ArkEchoRest("https://192.168.178.20:5002", false);
+            Player = new JSPlayer(WebPageManager.Instance.Config.ServerAddress);
+            Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
         }
 
         public async Task<bool> Initialize(IJSRuntime jsRuntime)

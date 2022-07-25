@@ -3,10 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ArkEcho.Core.Test
 {
     [TestClass]
-    public class Base64Test
+    public class EM_StringTest
     {
         [TestMethod]
-        public void TestBase64()
+        public void ConvertBase64()
         {
             string testText = "Lorem Ipsum 1234 Test";
             string copyTestText = testText.ToBase64();

@@ -10,26 +10,34 @@ namespace ArkEcho.Server
         {
         }
 
-        // GET: api/Control/ReloadMusicLibrary
-        [HttpGet("LoadMusicLibrary")]
-        public void ControlLoadMusicLibrary()
+        [HttpGet()]
+        [HttpPost()]
+        [Route("")]
+        public ActionResult Standard()
         {
-            Server.LoadMusicLibrary();
+            return Ok();
         }
 
-        // GET: api/Control/StopServer
-        [HttpGet("StopServer")]
-        public void ControlStopServer()
-        {
-            Server.Stop();
-        }
+        //// GET: api/Control/ReloadMusicLibrary
+        //[HttpGet("LoadMusicLibrary")]
+        //public void ControlLoadMusicLibrary()
+        //{
+        //    Server.LoadMusicLibrary();
+        //}
 
-        // GET: api/Control/RestartServer
-        [HttpGet("RestartServer")]
-        public void ControlRestartServer()
-        {
-            Server.Restart();
-        }
+        //// GET: api/Control/StopServer
+        //[HttpGet("StopServer")]
+        //public void ControlStopServer()
+        //{
+        //    Server.Stop();
+        //}
+
+        //// GET: api/Control/RestartServer
+        //[HttpGet("RestartServer")]
+        //public void ControlRestartServer()
+        //{
+        //    Server.Restart();
+        //}
 
         // GET: api/Control/[ID]
         [HttpGet("{id}")]

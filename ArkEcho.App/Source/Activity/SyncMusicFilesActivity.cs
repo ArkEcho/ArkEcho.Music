@@ -5,7 +5,6 @@ using Android.Widget;
 using ArkEcho.Core;
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ArkEcho.App
@@ -16,6 +15,8 @@ namespace ArkEcho.App
         Button syncMusicFilesButton = null;
         private ArrayAdapter adapter = null;
         ListView logListView = null;
+
+        Logger logger = null;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -33,82 +34,56 @@ namespace ArkEcho.App
 
             setActionBarButtonMenuHidden(true);
             setActionBarTitleText(GetString(Resource.String.SyncMusicFilesActivityTitle));
+
+            logger = new Logger(ArkEcho.Resources.ARKECHOAPP, "SyncActivity", AppModel.Instance.RestLoggingWorker);
         }
 
         private async void onSyncMusicFilesButtonClicked(object sender, EventArgs e)
         {
-            AppModel.Instance.PreventLock();
+            void lockScreen()
+            {
+                AppModel.Instance.PreventLock();
+            }
+            async Task endLock()
+            {
+                await Task.Delay(1000);
+                AppModel.Instance.AllowLock();
+            }
 
-            logInListView("Loading MusicLibrary", Logging.LogLevel.Debug);
+            lockScreen();
 
-            bool loadlib = await AppModel.Instance.LoadLibraryFromServer(logInListView);
+            logger.LogStatic($"Starting Music Sync!");
+
+            await showProgress("Starting");
+
+            logger.LogImportant("Loading MusicLibrary");
+
+            bool loadlib = await AppModel.Instance.LoadLibraryFromServer();
             if (!loadlib)
             {
-                AppModel.Instance.AllowLock();
+                await endLock();
                 return;
             }
 
-            logInListView($"Checking Files", Logging.LogLevel.Debug);
-            await Task.Delay(200);
+            await showProgress("Done loading Library... Sync and CleanUp!");
 
-            List<MusicFile> exist = new List<MusicFile>();
-            List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await AppModel.Instance.CheckLibraryWithLocalFolder(logInListView, exist, missing);
-
-            if (!checkLib)
+            bool syncMusicFiles = await AppModel.Instance.SyncMusicFiles();
+            if (!syncMusicFiles)
             {
-                AppModel.Instance.AllowLock();
+                await endLock();
                 return;
             }
 
-            if (missing.Count > 0)
-            {
-                logInListView($"Loading {missing.Count} Files", Logging.LogLevel.Debug);
-                await Task.Delay(200);
+            await showProgress("Success");
 
-                try
-                {
-                    foreach (MusicFile file in missing)
-                    {
-                        logInListView($"Loading {file.FileName}", Logging.LogLevel.Debug);
-
-                        bool success = await AppModel.Instance.LoadFileFromServer(file, logInListView);
-                        if (!success)
-                        {
-                            logInListView($"Error loading {file.FileName} from Server!", Logging.LogLevel.Error);
-                            AppModel.Instance.AllowLock();
-                            return;
-                        }
-
-                        exist.Add(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logInListView($"Exception loading MusicFiles: {ex.Message}", Logging.LogLevel.Error);
-                    AppModel.Instance.AllowLock();
-                    return;
-                }
-            }
-
-            logInListView($"Cleaning Up", Logging.LogLevel.Debug);
-            await Task.Delay(200);
-
-            await AppModel.Instance.CleanUpFolder(AppModel.GetAndroidMediaAppSDFolderPath(), exist);
-
-            logInListView($"Success!", Logging.LogLevel.Important);
-            await Task.Delay(1000);
-
-            AppModel.Instance.AllowLock();
+            await endLock();
         }
 
-        private bool logInListView(string text, Logging.LogLevel level)
+        private async Task showProgress(string text)
         {
             adapter.Add($"{DateTime.Now:HH:mm:ss:fff}: {text}");
             adapter.NotifyDataSetChanged();
-
-            logListView.SmoothScrollToPositionFromTop(logListView.LastVisiblePosition, 0);
-            return true;
+            await Task.Delay(100);
         }
     }
 }

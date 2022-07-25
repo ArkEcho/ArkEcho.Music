@@ -6,17 +6,17 @@ namespace ArkEcho.Server
     {
         public static void Main(string[] args)
         {
-            using (ArkEchoServer.Instance)
+            using (Server.Instance)
             {
-                if (!ArkEchoServer.Instance.Init())
+                if (!Server.Instance.Init())
                 {
                     Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
                     return;
                 }
                 else
-                    ArkEchoServer.Instance.Start(); // Starts Event Cycle and API 
+                    Server.Instance.Start(); // Starts Event Cycle and API 
 
-                if (ArkEchoServer.Instance.RestartRequested)
+                if (Server.Instance.RestartRequested)
                     System.Diagnostics.Process.Start("ArkEcho.Server.exe");
             }
 

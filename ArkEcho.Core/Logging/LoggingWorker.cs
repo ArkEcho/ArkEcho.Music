@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Threading;
 
@@ -12,11 +13,14 @@ namespace ArkEcho.Core
 
         private Logging.LogLevel logLevel;
 
+        public Guid OriginGuid { get; private set; }
+
         public LoggingWorker(Logging.LogLevel logLevel) : base()
         {
             this.logLevel = logLevel;
             loggingQueue = new ConcurrentQueue<LogMessage>();
             DoWork += LoggingWorker_DoWork;
+            OriginGuid = Guid.NewGuid();
         }
 
         public void AddLogMessage(LogMessage log)

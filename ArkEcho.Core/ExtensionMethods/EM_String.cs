@@ -10,6 +10,15 @@ namespace ArkEcho
             return inputString.Replace("\r\n", "").Replace("\n", "");
         }
 
+        public static string EscapeString(this string inputString)
+        {
+            return inputString.Replace("\\", "\\\\");
+        }
+        public static string UnEscapeString(this string inputString)
+        {
+            return inputString.Replace("\\\\", "\\");
+        }
+
         public static string ToBase64(this string inputString)
         {
             return Convert.ToBase64String(Encoding.Default.GetBytes(inputString));

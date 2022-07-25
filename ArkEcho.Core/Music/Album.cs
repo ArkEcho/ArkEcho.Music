@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ArkEcho.Core
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Album : JsonBase
     {
         [JsonProperty]
@@ -29,5 +31,13 @@ namespace ArkEcho.Core
         public string Cover64 { get; set; } = null;
 
         public Album() : base() { }
+
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return $"{Name}";
+            }
+        }
     }
 }
