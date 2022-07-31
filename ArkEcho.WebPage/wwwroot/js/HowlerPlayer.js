@@ -1,5 +1,6 @@
 ﻿/*
  TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
+ TODO: Typescript
  */
 
 //console.log("HowlerPlayer.js loaded");

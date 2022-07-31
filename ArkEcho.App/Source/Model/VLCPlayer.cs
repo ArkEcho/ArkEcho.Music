@@ -12,7 +12,7 @@ namespace ArkEcho.App
         {
         }
 
-        protected override bool logImpl(string Text, Logging.LogLevel Level)
+        protected override bool log(string Text, Logging.LogLevel Level)
         {
             // TODO Logger
             return false;
@@ -31,12 +31,12 @@ namespace ArkEcho.App
             }
             catch (Exception ex)
             {
-                logImpl(ex.Message, Logging.LogLevel.Error);
+                log(ex.Message, Logging.LogLevel.Error);
                 return false;
             }
         }
 
-        protected override void loadImpl(bool StartOnLoad)
+        protected override void loadAudio(bool StartOnLoad)
         {
             try
             {
@@ -49,44 +49,44 @@ namespace ArkEcho.App
             }
             catch (Exception ex)
             {
-                logImpl(ex.Message, Logging.LogLevel.Error);
+                log(ex.Message, Logging.LogLevel.Error);
             }
         }
 
-        protected override void disposeImpl()
+        protected override void disposeAudio()
         {
             mediaplayer.Media?.Dispose();
         }
 
-        protected override void playImpl()
+        protected override void playAudio()
         {
             mediaplayer.Play();
         }
 
-        protected override void pauseImpl()
+        protected override void pauseAudio()
         {
             mediaplayer.Pause();
         }
 
-        protected override void stopImpl()
+        protected override void stopAudio()
         {
             mediaplayer.Stop();
         }
 
-        protected override void setMuteImpl()
+        protected override void setAudioMute()
         {
             mediaplayer.Mute = Mute;
         }
 
-        protected override void setVolumeImpl()
+        protected override void setAudioVolume()
         {
             mediaplayer.Volume = Volume;
         }
 
-        protected override void setPositionImpl(int NewPosition)
+        protected override void setAudioPosition(int newPositionInSeconds)
         {
             if (mediaplayer.Media != null)
-                mediaplayer.Position = NewPosition / mediaplayer.Media.Duration;
+                mediaplayer.Position = newPositionInSeconds / mediaplayer.Media.Duration;
         }
     }
 }

@@ -35,7 +35,7 @@ namespace ArkEcho.Core
             set
             {
                 volume = value;
-                setVolumeImpl();
+                setAudioVolume();
             }
         }
         private int volume = 50;
@@ -53,7 +53,7 @@ namespace ArkEcho.Core
             set
             {
                 muted = value;
-                setMuteImpl();
+                setAudioMute();
             }
         }
         private bool muted = false;
@@ -81,7 +81,7 @@ namespace ArkEcho.Core
         #region Position
 
         /// <summary>
-        /// Audio Position of Playback
+        /// Audio Position of Playback in Seconds
         /// </summary>
         public int Position
         {
@@ -134,7 +134,7 @@ namespace ArkEcho.Core
 
         public void Start(List<MusicFile> MusicFiles, int Index)
         {
-            logImpl($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
+            log($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
 
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             ListToPlay = MusicFiles;
@@ -147,7 +147,7 @@ namespace ArkEcho.Core
 
         private void loadNextPlayingFile(bool StartOnLoad)
         {
-            disposeImpl();
+            disposeAudio();
             Position = 0;
 
             PlayingFile = null;
@@ -159,19 +159,19 @@ namespace ArkEcho.Core
 
             if (PlayingFile != null)
             {
-                loadImpl(StartOnLoad);
+                loadAudio(StartOnLoad);
                 TitleChanged?.Invoke();
             }
         }
 
         public void Play()
         {
-            playImpl();
+            playAudio();
         }
 
         public void Pause()
         {
-            pauseImpl();
+            pauseAudio();
         }
 
         public void PlayPause()
@@ -184,7 +184,7 @@ namespace ArkEcho.Core
 
         public void Stop()
         {
-            stopImpl();
+            stopAudio();
             Position = 0;
         }
 
@@ -241,24 +241,24 @@ namespace ArkEcho.Core
             }
         }
 
-        public void SetPosition(int NewPosition)
+        public void SetPosition(int newPositionInSeconds)
         {
-            setPositionImpl(NewPosition);
+            setAudioPosition(newPositionInSeconds);
         }
 
-        public void AudioEnd()
+        protected void AudioEnd()
         {
             Forward();
         }
 
-        protected abstract bool logImpl(string Text, Logging.LogLevel Level);
-        protected abstract void loadImpl(bool StartOnLoad);
-        protected abstract void disposeImpl();
-        protected abstract void playImpl();
-        protected abstract void pauseImpl();
-        protected abstract void stopImpl();
-        protected abstract void setMuteImpl();
-        protected abstract void setVolumeImpl();
-        protected abstract void setPositionImpl(int NewPosition);
+        protected abstract bool log(string Text, Logging.LogLevel Level);
+        protected abstract void loadAudio(bool StartOnLoad);
+        protected abstract void disposeAudio();
+        protected abstract void playAudio();
+        protected abstract void pauseAudio();
+        protected abstract void stopAudio();
+        protected abstract void setAudioMute();
+        protected abstract void setAudioVolume();
+        protected abstract void setAudioPosition(int NewPosition);
     }
 }

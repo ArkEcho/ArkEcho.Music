@@ -47,8 +47,9 @@ namespace ArkEcho.Core
                     return "I";
                 case Logging.LogLevel.Debug:
                     return "D";
+                default:
+                    return "##ERROR##";
             }
-            return "__ERROR__";
         }
     }
 }

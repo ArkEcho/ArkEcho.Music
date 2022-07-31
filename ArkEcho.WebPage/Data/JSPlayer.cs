@@ -58,50 +58,50 @@ namespace ArkEcho.WebPage
             this.Playing = Playing;
         }
 
-        protected override bool logImpl(string Text, Logging.LogLevel Level)
+        protected override bool log(string Text, Logging.LogLevel Level)
         {
             if (logDelegate != null)
                 return logDelegate.Invoke(Text, Level);
             return false;
         }
 
-        protected override void loadImpl(bool StartOnLoad)
+        protected override void loadAudio(bool StartOnLoad)
         {
             string source = $"{serverAddress}/api/Music/{PlayingFile.GUID}";
             JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
-        protected override void disposeImpl()
+        protected override void disposeAudio()
         {
             JS.InvokeVoidAsync("Player.DisposeAudio", new object[] { });
         }
 
-        protected override void playImpl()
+        protected override void playAudio()
         {
             JS.InvokeVoidAsync("Player.PlayAudio", new object[] { });
         }
 
-        protected override void pauseImpl()
+        protected override void pauseAudio()
         {
             JS.InvokeVoidAsync("Player.PauseAudio", new object[] { });
         }
 
-        protected override void stopImpl()
+        protected override void stopAudio()
         {
             JS.InvokeVoidAsync("Player.StopAudio", new object[] { });
         }
 
-        protected override void setMuteImpl()
+        protected override void setAudioMute()
         {
             JS.InvokeVoidAsync("Player.SetAudioMute", new object[] { Mute });
         }
 
-        protected override void setVolumeImpl()
+        protected override void setAudioVolume()
         {
             JS.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
-        protected override void setPositionImpl(int NewPosition)
+        protected override void setAudioPosition(int NewPosition)
         {
             JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewPosition });
         }
