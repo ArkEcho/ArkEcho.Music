@@ -62,9 +62,10 @@ namespace ArkEcho.Core.Test
             {
             }
 
-            protected override void setAudioPosition(int NewPosition)
+            protected override void setAudioPosition()
             {
-                positionSeconds = NewPosition;
+                if (Position != positionSeconds)
+                    positionSeconds = Position;
             }
 
             protected override void setAudioVolume()

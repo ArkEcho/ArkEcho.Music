@@ -101,9 +101,9 @@ namespace ArkEcho.WebPage
             JS.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
-        protected override void setAudioPosition(int NewPosition)
+        protected override void setAudioPosition()
         {
-            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { NewPosition });
+            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { Position });
         }
     }
 }

@@ -86,12 +86,13 @@ namespace ArkEcho.Core
         public int Position
         {
             get { return position; }
-            protected set
+            set
             {
                 if (value != position)
                 {
                     position = value;
                     PositionChanged?.Invoke();
+                    setAudioPosition();
                 }
             }
         }
@@ -241,11 +242,6 @@ namespace ArkEcho.Core
             }
         }
 
-        public void SetPosition(int newPositionInSeconds)
-        {
-            setAudioPosition(newPositionInSeconds);
-        }
-
         protected void AudioEnd()
         {
             Forward();
@@ -259,6 +255,6 @@ namespace ArkEcho.Core
         protected abstract void stopAudio();
         protected abstract void setAudioMute();
         protected abstract void setAudioVolume();
-        protected abstract void setAudioPosition(int NewPosition);
+        protected abstract void setAudioPosition();
     }
 }
