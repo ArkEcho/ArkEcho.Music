@@ -69,7 +69,7 @@ class HowlerPlayer {
         if (this.stepCount >= 20) {
             this.stepCount = 0;                
             if (this.sound.playing()) {
-                this.NetObject.invokeMethodAsync('SetPositionJS', this.GetAudioPosition());
+                this.NetObject.invokeMethodAsync('AudioPositionChangedJS', this.GetAudioPosition());
             }
         }
         this.stepCount++;

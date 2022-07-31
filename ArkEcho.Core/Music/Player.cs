@@ -91,12 +91,17 @@ namespace ArkEcho.Core
                 if (value != position)
                 {
                     position = value;
-                    PositionChanged?.Invoke();
                     setAudioPosition();
                 }
             }
         }
         private int position = 0;
+
+        protected void audioPositionChanged(int newPosition)
+        {
+            position = newPosition;
+            PositionChanged?.Invoke();
+        }
 
         #endregion
 

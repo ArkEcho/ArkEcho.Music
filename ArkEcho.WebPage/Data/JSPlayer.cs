@@ -41,9 +41,9 @@ namespace ArkEcho.WebPage
         }
 
         [JSInvokable]
-        public void SetPositionJS(int Position)
+        public void AudioPositionChangedJS(int Position)
         {
-            base.Position = Position;
+            audioPositionChanged(Position);
         }
 
         [JSInvokable]
