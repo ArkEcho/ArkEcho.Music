@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 
 namespace ArkEcho
 {
     public static class EM_Exception
     {
-        public static string FullMessage(this Exception ex)
+        public static string GetFullMessage(this Exception ex)
         {
             string getExceptionTime()
             {
@@ -18,8 +16,15 @@ namespace ArkEcho
             }
 
             string result = string.Empty;
+            string assName = string.Empty; ;
 
-            result += $"Exception in Assembly {Assembly.GetEntryAssembly().GetName().FullName}\r\nat {getExceptionTime()}\r\n\r\n";
+            Assembly ass = Assembly.GetEntryAssembly();
+            if (ass != null)
+                assName = ass.GetName().FullName;
+            else
+                assName = "UNKNOWN";
+
+            result += $"Exception in Assembly {assName}\r\nat {getExceptionTime()}\r\n\r\n";
 
             Exception exLevel = ex;
             int level = 0;

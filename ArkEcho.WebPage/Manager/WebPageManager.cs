@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace ArkEcho.WebPage
 {
+    // TODO: Mehr Logging, besonders im Player
     public class WebPageManager : IDisposable
     {
         private const string webPageConfigFileName = "WebPageConfig.json";
@@ -50,15 +51,14 @@ namespace ArkEcho.WebPage
                 return false;
             }
 
-            LoggingWorker = new RestLoggingWorker(rest, (Logging.LogLevel)Config.LogLevel);
+            LoggingWorker = new RestLoggingWorker(rest, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
-            logger = new Logger("WebPage", "Manager", LoggingWorker);
+            logger = new Logger(Resources.ARKECHOWEBPAGE, "Manager", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.WebPage:");
             logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
 
-            // TODO: Singleton und Port per Config
             host = WebHost.CreateDefaultBuilder()
                                .UseUrls($"https://*:{Config.Port}")
                                .UseKestrel()

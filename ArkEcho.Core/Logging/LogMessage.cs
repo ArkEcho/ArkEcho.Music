@@ -6,6 +6,9 @@ namespace ArkEcho.Core
     public class LogMessage : JsonBase
     {
         [JsonProperty]
+        public Guid OriginGuid { get; set; }
+
+        [JsonProperty]
         public string Name { get; set; }
 
         [JsonProperty]

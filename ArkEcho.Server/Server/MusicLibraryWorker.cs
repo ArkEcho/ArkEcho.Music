@@ -16,7 +16,7 @@ namespace ArkEcho.Server
 
         public MusicLibraryWorker(LoggingWorker lw) : base()
         {
-            logger = new Logger("Server", "MusicWorker", lw);
+            logger = new Logger(Resources.ARKECHOSERVER, "MusicWorker", lw);
             DoWork += MusicLibraryWorker_DoWork;
         }
 
@@ -79,7 +79,7 @@ namespace ArkEcho.Server
             foreach (string entry in playlistEntries)
             {
                 FileInfo info = new(entry); // WPL saves the Paths with &ng212 statt '
-                MusicFile file = library.MusicFiles.Find(y => y.GetFullPathWindows().EndsWith(info.ToString().Substring(5), StringComparison.OrdinalIgnoreCase));
+                MusicFile file = library.MusicFiles.Find(y => y.FullPath.EndsWith(info.ToString().Substring(5), StringComparison.OrdinalIgnoreCase));
                 if (file != null)
                     playlist.MusicFiles.Add(file.GUID);
                 else
@@ -98,19 +98,30 @@ namespace ArkEcho.Server
                     continue;
                 }
 
-                MusicFile music = new(filePath)
+                MusicFile music = null;
+                try
                 {
-                    Title = tagFile.Tag.Title,
-                    Performer = tagFile.Tag.FirstPerformer,
-                    Disc = tagFile.Tag.Disc,
-                    Track = tagFile.Tag.Track,
-                    Year = tagFile.Tag.Year,
-                    Duration = Convert.ToInt64(tagFile.Properties.Duration.TotalMilliseconds)
-                };
+                    music = new(filePath)
+                    {
+                        Title = tagFile.Tag.Title,
+                        Performer = tagFile.Tag.FirstPerformer,
+                        Disc = tagFile.Tag.Disc,
+                        Track = tagFile.Tag.Track,
+                        Year = tagFile.Tag.Year,
+                        Duration = Convert.ToInt64(tagFile.Properties.Duration.TotalMilliseconds)
+                    };
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"Exception on creating File for {filePath}, {ex.Message}");
+                    tagFile?.Dispose();
+                    tagFile = null;
+                    continue;
+                }
 
                 if (!checkFolderStructureAndTags(music, tagFile.Tag))
                 {
-                    tagFile.Dispose();
+                    tagFile?.Dispose();
                     tagFile = null;
                     continue;
                 }
@@ -149,7 +160,7 @@ namespace ArkEcho.Server
 
                 library.MusicFiles.Add(music);
 
-                tagFile.Dispose();
+                tagFile?.Dispose();
                 tagFile = null;
             }
         }
@@ -176,35 +187,28 @@ namespace ArkEcho.Server
 
         private bool checkFolderStructureAndTags(MusicFile music, TagLib.Tag tag)
         {
-            long maxDuration = 20 * 60 * 1000; // Max 20min
-
             if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))
             {
-                logger.LogError($"Skipped! No Album/AlbumArtist {music.GetFullPathWindows()}");
+                logger.LogError($"Skipped! No Album/AlbumArtist {music.FullPath}");
                 return false;
             }
             else if (tag.Pictures.Length == 0)
             {
-                logger.LogError($"File has no Album Cover! {music.GetFullPathWindows()}");
-                return false;
-            }
-            else if (music.Duration > maxDuration) // TODO: Alle Musik längen, Timeout bei Rest, Kompression
-            {
-                logger.LogError($"Skipped! File Duration is longer than 20min max! {music.GetFullPathWindows()}");
+                logger.LogError($"File has no Album Cover! {music.FullPath}");
                 return false;
             }
             else
             {
-                List<string> parts = music.GetFullPathWindows().Split("\\").ToList();
+                List<string> parts = music.FullPath.Split("\\").ToList();
                 if (!parts[parts.Count - 3].Equals(tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase))
                 {
-                    logger.LogError($"Skipped! AlbumArtist != Foldername {music.GetFullPathWindows()}");
+                    logger.LogError($"Skipped! AlbumArtist != Foldername {music.FullPath}");
                     return false;
                 }
 
                 if (!parts[parts.Count - 2].Equals(tag.Album, StringComparison.OrdinalIgnoreCase))
                 {
-                    logger.LogError($"Skipped! Albumname != Foldername {music.GetFullPathWindows()}");
+                    logger.LogError($"Skipped! Albumname != Foldername {music.FullPath}");
                     return false;
                 }
             }

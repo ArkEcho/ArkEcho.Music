@@ -19,8 +19,8 @@ namespace ArkEcho.WebPage
         public AppModel()
         {
             Library = new MusicLibrary();
-            Player = new JSPlayer();
-            Rest = new Rest("https://192.168.178.20:5002", false);
+            Player = new JSPlayer(WebPageManager.Instance.Config.ServerAddress);
+            Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
         }
 
         public async Task<bool> Initialize(IJSRuntime jsRuntime)

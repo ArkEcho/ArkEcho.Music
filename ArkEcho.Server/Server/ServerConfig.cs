@@ -20,6 +20,6 @@ namespace ArkEcho.Server
         public int Port { get; private set; } = 5002;
 
         [JsonProperty]
-        public int LogLevel { get; set; } = 2;
+        public Logging.LogLevel LogLevel { get; set; } = Logging.LogLevel.Important;
     }
 }

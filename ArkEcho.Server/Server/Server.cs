@@ -28,7 +28,7 @@ namespace ArkEcho.Server
 
         public ServerConfig Config { get; private set; } = null;
 
-        public ServerLoggingWorker LoggingWorker { get; private set; } = null;
+        public FileLoggingWorker LoggingWorker { get; private set; } = null;
 
         private Server()
         {
@@ -41,8 +41,6 @@ namespace ArkEcho.Server
                 return Initialized;
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            // TODO: MusicFilePath in json with \\? C:\Users\steph\Music\ -> Exception
 
             Config = new ServerConfig(serverConfigFileName);
             if (!Config.LoadFromFile(executingLocation, true).Result)
@@ -62,10 +60,10 @@ namespace ArkEcho.Server
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new ServerLoggingWorker(Config.LoggingFolder.LocalPath, (Logging.LogLevel)Config.LogLevel);
+            LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
-            logger = new Logger("Server", "Main", LoggingWorker);
+            logger = new Logger(Resources.ARKECHOSERVER, "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
             logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
@@ -85,8 +83,7 @@ namespace ArkEcho.Server
 
             users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
 
-            //
-            //for (int i = 0; i < 10000; i++)
+            //for (int i = 0; i < 5000000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
             return Initialized;
@@ -117,6 +114,19 @@ namespace ArkEcho.Server
                 logger.LogError("### Error loading Music Library, stopping!");
                 Stop();
             }
+        }
+
+        public List<TransferFileBase> GetAllFiles()
+        {
+            if (library == null)
+                return null;
+
+            List<TransferFileBase> list = new();
+
+            list.AddRange(library.MusicFiles);
+            list.AddRange(library.Playlists);
+
+            return list;
         }
 
         public async Task<string> GetMusicLibraryString()

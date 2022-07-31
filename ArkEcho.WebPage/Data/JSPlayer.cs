@@ -7,11 +7,13 @@ namespace ArkEcho.WebPage
     public class JSPlayer : Player
     {
         private Logging.LoggingDelegate logDelegate = null;
+        private string serverAddress = string.Empty;
 
         public IJSRuntime JS { get; private set; } = null;
 
-        public JSPlayer() : base()
+        public JSPlayer(string serverAddress) : base()
         {
+            this.serverAddress = serverAddress;
         }
 
         public bool InitPlayer(IJSRuntime JS)
@@ -65,12 +67,8 @@ namespace ArkEcho.WebPage
 
         protected override void loadImpl(bool StartOnLoad)
         {
-            if (PlayingFile != null)
-            {
-                // TODO: Aus Config?
-                string source = $"https://192.168.178.20:5002/api/Music/{PlayingFile.GUID}";
-                JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
-            }
+            string source = $"{serverAddress}/api/Music/{PlayingFile.GUID}";
+            JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeImpl()
