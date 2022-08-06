@@ -27,8 +27,10 @@ namespace ArkEcho.Core
         [JsonProperty]
         public uint Year { get; set; } = 0;
 
+        /// <summary>
+        /// Duration of the Musicfile in Milliseconds
+        /// </summary>
         [JsonProperty]
-        // Duration of the Musicfile in Milliseconds
         public long Duration { get; set; } = 0;
 
         /// <summary>

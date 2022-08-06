@@ -7,6 +7,7 @@ namespace ArkEcho.Core
     // TODO: Unit Test
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     // TODO: Mehr Logging
+    // TODO: Position in 0-1 decimal?
     public abstract class Player
     {
         public event Action TitleChanged;
@@ -62,19 +63,17 @@ namespace ArkEcho.Core
 
         #region Playing
 
-        /// <summary>
-        /// Audio Muted
-        /// </summary>
         public bool Playing
         {
             get { return playing; }
-            protected set
-            {
-                playing = value;
-                PlayingChanged?.Invoke();
-            }
         }
         private bool playing = false;
+
+        protected void playingChanged(bool playing)
+        {
+            this.playing = playing;
+            PlayingChanged?.Invoke();
+        }
 
         #endregion
 
@@ -97,9 +96,9 @@ namespace ArkEcho.Core
         }
         private int position = 0;
 
-        protected void audioPositionChanged(int newPosition)
+        protected void audioPositionChanged(int position)
         {
-            position = newPosition;
+            this.position = position;
             PositionChanged?.Invoke();
         }
 

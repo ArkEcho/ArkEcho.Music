@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System;
+using System.Timers;
 
 namespace ArkEcho.Core.Test
 {
@@ -7,8 +8,8 @@ namespace ArkEcho.Core.Test
         public class TestPlayer : Player
         {
             private Timer timer = null;
-            private int positionSeconds = 0;
-            private long interval = 1000;
+            private int positionTenthSeconds = 0;
+            private long interval = 100;
 
             public TestPlayer()
             {
@@ -23,24 +24,37 @@ namespace ArkEcho.Core.Test
 
             private void Timer_Elapsed(object sender, ElapsedEventArgs e)
             {
-                positionSeconds++;
-                Position = positionSeconds;
+                positionTenthSeconds++;
+                audioPositionChanged(getPositionInSeconds());
 
-                if (positionSeconds >= PlayingFile?.Duration / 1000)
+                if (positionTenthSeconds >= PlayingFile?.Duration / 100)
+                {
+                    playingChanged(false);
                     AudioEnd();
+                }
                 else
                     timer.Start();
             }
 
+            private int getPositionInSeconds()
+            {
+                double tes = positionTenthSeconds / 10;
+                return Convert.ToInt32(Math.Round(tes));
+            }
+
             protected override void disposeAudio()
             {
+                playingChanged(false);
                 timer.Stop();
             }
 
             protected override void loadAudio(bool StartOnLoad)
             {
                 if (StartOnLoad)
+                {
                     timer.Start();
+                    playingChanged(true);
+                }
             }
 
             protected override bool log(string Text, Logging.LogLevel Level)
@@ -51,11 +65,13 @@ namespace ArkEcho.Core.Test
             protected override void pauseAudio()
             {
                 timer.Stop();
+                playingChanged(false);
             }
 
             protected override void playAudio()
             {
                 timer.Start();
+                playingChanged(true);
             }
 
             protected override void setAudioMute()
@@ -64,8 +80,7 @@ namespace ArkEcho.Core.Test
 
             protected override void setAudioPosition()
             {
-                if (Position != positionSeconds)
-                    positionSeconds = Position;
+                positionTenthSeconds = Position * 10;
             }
 
             protected override void setAudioVolume()
@@ -75,6 +90,7 @@ namespace ArkEcho.Core.Test
             protected override void stopAudio()
             {
                 timer.Stop();
+                playingChanged(false);
             }
         }
     }
