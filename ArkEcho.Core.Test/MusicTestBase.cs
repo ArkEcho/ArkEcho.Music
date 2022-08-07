@@ -9,7 +9,7 @@ namespace ArkEcho.Core.Test
         {
             MusicLibrary library = new MusicLibrary();
 
-            library.MusicFiles.Add(new MusicFile() { Track = 1, Duration = 2500 });
+            library.MusicFiles.Add(new MusicFile() { Track = 1, Duration = 20000 });
             library.MusicFiles.Add(new MusicFile() { Track = 2, Duration = 3000 });
             library.MusicFiles.Add(new MusicFile() { Track = 3, Duration = 3500 });
             library.MusicFiles.Add(new MusicFile() { Track = 4, Duration = 1000 });

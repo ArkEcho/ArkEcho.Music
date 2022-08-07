@@ -18,7 +18,7 @@ namespace ArkEcho.Core
 
         public bool Initialized { get; protected set; }
 
-        public List<MusicFile> ListToPlay { get; private set; } = null;
+        private List<MusicFile> listToPlay = null;
 
         public MusicFile PlayingFile { get; private set; } = null;
 
@@ -113,9 +113,9 @@ namespace ArkEcho.Core
             {
                 shuffle = value;
                 setShuffleList();
-                if (!shuffle && ListToPlay != null)
+                if (!shuffle && listToPlay != null)
                 {
-                    int indexPlaying = ListToPlay.IndexOf(PlayingFile);
+                    int indexPlaying = listToPlay.IndexOf(PlayingFile);
                     if (indexPlaying >= 0 && indexPlaying != songIndex)
                         songIndex = shuffledIndexList[songIndex];
                 }
@@ -127,9 +127,9 @@ namespace ArkEcho.Core
 
         private void setShuffleList()
         {
-            if (shuffle && ListToPlay != null)
+            if (shuffle && listToPlay != null)
             {
-                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, ListToPlay.Count - 1).ToList());
+                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count - 1).ToList());
                 if (songIndex == shuffledIndexList[songIndex] || songIndex == (shuffledIndexList[songIndex + 1]))
                     setShuffleList();
             }
@@ -137,17 +137,21 @@ namespace ArkEcho.Core
 
         #endregion
 
-        public void Start(List<MusicFile> MusicFiles, int Index)
+        public bool Start(List<MusicFile> MusicFiles, int Index)
         {
-            log($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
+            if (MusicFiles == null || Index < 0 || Index >= MusicFiles.Count)
+                return false;
 
             // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
-            ListToPlay = MusicFiles;
+            listToPlay = MusicFiles;
             songIndex = Index;
+
+            log($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
 
             setShuffleList();
 
             loadNextPlayingFile(true);
+            return Playing;
         }
 
         private void loadNextPlayingFile(bool StartOnLoad)
@@ -155,22 +159,20 @@ namespace ArkEcho.Core
             disposeAudio();
             Position = 0;
 
-            PlayingFile = null;
+            PlayingFile = Shuffle ? listToPlay[shuffledIndexList[songIndex]] : listToPlay[songIndex];
 
-            if (ListToPlay == null || songIndex >= ListToPlay.Count || songIndex < 0)
+            if (PlayingFile == null)
                 return;
 
-            PlayingFile = Shuffle ? ListToPlay[shuffledIndexList[songIndex]] : ListToPlay[songIndex];
-
-            if (PlayingFile != null)
-            {
-                loadAudio(StartOnLoad);
-                TitleChanged?.Invoke();
-            }
+            loadAudio(StartOnLoad);
+            TitleChanged?.Invoke();
         }
 
         public void Play()
         {
+            if (PlayingFile == null)
+                return;
+
             playAudio();
         }
 
@@ -195,54 +197,54 @@ namespace ArkEcho.Core
 
         public void Forward()
         {
-            if (ListToPlay != null)
+            if (listToPlay == null)
+                return;
+
+            if (songIndex + 1 == listToPlay.Count)
             {
-                if (songIndex + 1 == ListToPlay.Count)
+                songIndex = 0;
+                if (Shuffle) // Reset shuffle Order and start new Song
                 {
-                    songIndex = 0;
-                    if (Shuffle)
-                    {
-                        setShuffleList();
-                        loadNextPlayingFile(true);
-                    }
-                    else
-                        loadNextPlayingFile(false);
-                }
-                else
-                {
-                    songIndex++;
+                    setShuffleList();
                     loadNextPlayingFile(true);
                 }
+                else // Reached end of List, load first but dont start
+                    loadNextPlayingFile(false);
+            }
+            else
+            {
+                songIndex++;
+                loadNextPlayingFile(true);
             }
         }
 
         public void Backward()
         {
-            if (ListToPlay != null)
+            if (listToPlay == null)
+                return;
+
+            if (Position > 5)
             {
-                if (Position > 5)
+                Stop();
+                Play();
+            }
+            else if (songIndex == 0)
+            {
+                if (Shuffle)
+                {
+                    setShuffleList();
+                    loadNextPlayingFile(true);
+                }
+                else
                 {
                     Stop();
                     Play();
                 }
-                else if (songIndex == 0)
-                {
-                    if (Shuffle)
-                    {
-                        setShuffleList();
-                        loadNextPlayingFile(true);
-                    }
-                    else
-                    {
-                        Stop();
-                        Play();
-                    }
-                }
-                else
-                {
-                    songIndex--;
-                    loadNextPlayingFile(true);
-                }
+            }
+            else
+            {
+                songIndex--;
+                loadNextPlayingFile(true);
             }
         }
 

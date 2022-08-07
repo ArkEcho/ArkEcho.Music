@@ -6,9 +6,9 @@ namespace ArkEcho.Core.Test
     [TestClass]
     public class PlayerTest : MusicTestBase
     {
-        private TestPlayer getTestPlayer()
+        private TimerTestPlayer getTestPlayer()
         {
-            TestPlayer testPlayer = new();
+            TimerTestPlayer testPlayer = new();
             return testPlayer;
         }
 
@@ -24,8 +24,7 @@ namespace ArkEcho.Core.Test
         {
             Player testPlayer = getTestPlayer();
 
-            testPlayer.Play();
-            Assert.IsTrue(testPlayer.Playing);
+            Assert.IsTrue(testPlayer.Start(GetTestMusicLibrary().MusicFiles, 0));
 
             testPlayer.Pause();
             Assert.IsFalse(testPlayer.Playing);
@@ -42,7 +41,7 @@ namespace ArkEcho.Core.Test
         {
             Player testPlayer = getTestPlayer();
 
-            testPlayer.Play();
+            Assert.IsTrue(testPlayer.Start(GetTestMusicLibrary().MusicFiles, 0));
 
             Thread.Sleep(1100);
 
@@ -57,7 +56,7 @@ namespace ArkEcho.Core.Test
         {
             Player testPlayer = getTestPlayer();
 
-            testPlayer.Play();
+            Assert.IsTrue(testPlayer.Start(GetTestMusicLibrary().MusicFiles, 0));
 
             Thread.Sleep(2100);
 
