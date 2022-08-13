@@ -18,7 +18,7 @@ namespace ArkEcho.Core.Test
             long duration = playlist.GetDurationInMilliseconds(library);
 
             // Assert
-            Assert.AreEqual(38500, duration);
+            Assert.AreEqual(47500, duration);
         }
     }
 }

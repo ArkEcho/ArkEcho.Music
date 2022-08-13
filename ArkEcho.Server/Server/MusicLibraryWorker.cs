@@ -105,10 +105,10 @@ namespace ArkEcho.Server
                     {
                         Title = tagFile.Tag.Title,
                         Performer = tagFile.Tag.FirstPerformer,
-                        Disc = tagFile.Tag.Disc,
-                        Track = tagFile.Tag.Track,
-                        Year = tagFile.Tag.Year,
-                        Duration = Convert.ToInt64(tagFile.Properties.Duration.TotalMilliseconds)
+                        Disc = (int)tagFile.Tag.Disc,
+                        Track = (int)tagFile.Tag.Track,
+                        Year = (int)tagFile.Tag.Year,
+                        Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds)
                     };
                 }
                 catch (Exception ex)

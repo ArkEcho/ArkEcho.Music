@@ -19,19 +19,19 @@ namespace ArkEcho.Core
         public string Performer { get; set; } = string.Empty;
 
         [JsonProperty]
-        public uint Disc { get; set; } = 0;
+        public int Disc { get; set; } = 0;
 
         [JsonProperty]
-        public uint Track { get; set; } = 0;
+        public int Track { get; set; } = 0;
 
         [JsonProperty]
-        public uint Year { get; set; } = 0;
+        public int Year { get; set; } = 0;
 
         /// <summary>
-        /// Duration of the Musicfile in Milliseconds
+        /// Duration of the Musicfile in Milliseconds.
         /// </summary>
         [JsonProperty]
-        public long Duration { get; set; } = 0;
+        public int Duration { get; set; } = 0;
 
         /// <summary>
         /// For Serialization and Unit Tests

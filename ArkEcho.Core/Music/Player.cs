@@ -7,6 +7,7 @@ namespace ArkEcho.Core
     // TODO: Unit Test
     // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     // TODO: Mehr Logging
+    // TODO: Umstellung auf Interface von Implementierungen?
     // TODO: Position in 0-1 decimal?
     public abstract class Player
     {

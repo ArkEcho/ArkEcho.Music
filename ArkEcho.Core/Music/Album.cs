@@ -20,13 +20,13 @@ namespace ArkEcho.Core
         public string Name { get; set; } = string.Empty;
 
         [JsonProperty]
-        public uint TrackCount { get; set; } = 0;
+        public int TrackCount { get; set; } = 0;
 
         [JsonProperty]
-        public uint DiscCount { get; set; } = 0;
+        public int DiscCount { get; set; } = 0;
 
         [JsonProperty]
-        public uint Year { get; set; } = 0;
+        public int Year { get; set; } = 0;
 
         public string Cover64 { get; set; } = null;
 

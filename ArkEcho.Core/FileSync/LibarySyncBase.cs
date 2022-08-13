@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
+    // TODO: Nicht abstract
     public abstract class LibarySyncBase
     {
         public class ProgressEventArgs
@@ -19,7 +20,7 @@ namespace ArkEcho.Core
                 this.ProgressPercent = progressPercent;
             }
         }
-        public event EventHandler<ProgressEventArgs> Progress;
+        public event EventHandler<ProgressEventArgs> Progress; // TODO: Progress Event
 
         private Rest rest = null;
         protected Logger logger = null;
