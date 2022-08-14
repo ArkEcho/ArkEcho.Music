@@ -5,10 +5,12 @@ using System.Linq;
 namespace ArkEcho.Core
 {
     // TODO: Unit Test
-    // TODO: Aktivieren von Shuffle bei nur 1 Song = Exception
     // TODO: Mehr Logging
     // TODO: Umstellung auf Interface von Implementierungen?
     // TODO: Position in 0-1 decimal?
+    // TODO: Repeat Playlist Funktion
+    // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
+
     public abstract class Player
     {
         public event Action TitleChanged;
@@ -36,6 +38,9 @@ namespace ArkEcho.Core
             get { return volume; }
             set
             {
+                if (value < 0 || value > 100)
+                    return;
+
                 volume = value;
                 setAudioVolume();
             }
@@ -88,11 +93,11 @@ namespace ArkEcho.Core
             get { return position; }
             set
             {
-                if (value != position)
-                {
-                    position = value;
-                    setAudioPosition();
-                }
+                if (value == position || value < 0)
+                    return;
+
+                position = value;
+                setAudioPosition();
             }
         }
         private int position = 0;
@@ -114,12 +119,13 @@ namespace ArkEcho.Core
             {
                 shuffle = value;
                 setShuffleList();
-                if (!shuffle && listToPlay != null)
-                {
-                    int indexPlaying = listToPlay.IndexOf(PlayingFile);
-                    if (indexPlaying >= 0 && indexPlaying != songIndex)
-                        songIndex = shuffledIndexList[songIndex];
-                }
+
+                if (shuffle || listToPlay.IsNullOrEmpty() || PlayingFile == null)
+                    return;
+
+                int indexPlaying = listToPlay.IndexOf(PlayingFile);
+                if (indexPlaying != songIndex)
+                    songIndex = shuffledIndexList[songIndex];
             }
         }
         private bool shuffle = false;
@@ -128,12 +134,18 @@ namespace ArkEcho.Core
 
         private void setShuffleList()
         {
-            if (shuffle && listToPlay != null)
+            if (!shuffle || listToPlay.IsNullOrEmpty())
+                return;
+
+            if (listToPlay.Count == 1)
             {
-                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count - 1).ToList());
-                if (songIndex == shuffledIndexList[songIndex] || songIndex == (shuffledIndexList[songIndex + 1]))
-                    setShuffleList();
+                shuffledIndexList = new List<int>() { 0 };
+                return;
             }
+
+            shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count).ToList());
+            if (songIndex == shuffledIndexList[songIndex] || songIndex == (shuffledIndexList[songIndex + 1]))
+                setShuffleList();
         }
 
         #endregion
@@ -143,7 +155,6 @@ namespace ArkEcho.Core
             if (MusicFiles == null || Index < 0 || Index >= MusicFiles.Count)
                 return false;
 
-            // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
             listToPlay = MusicFiles;
             songIndex = Index;
 
@@ -179,6 +190,9 @@ namespace ArkEcho.Core
 
         public void Pause()
         {
+            if (PlayingFile == null)
+                return;
+
             pauseAudio();
         }
 
@@ -192,13 +206,16 @@ namespace ArkEcho.Core
 
         public void Stop()
         {
+            if (PlayingFile == null)
+                return;
+
             stopAudio();
             Position = 0;
         }
 
         public void Forward()
         {
-            if (listToPlay == null)
+            if (listToPlay.IsNullOrEmpty())
                 return;
 
             if (songIndex + 1 == listToPlay.Count)
@@ -221,7 +238,7 @@ namespace ArkEcho.Core
 
         public void Backward()
         {
-            if (listToPlay == null)
+            if (listToPlay.IsNullOrEmpty())
                 return;
 
             if (Position > 5)
