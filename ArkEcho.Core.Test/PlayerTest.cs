@@ -200,6 +200,26 @@ namespace ArkEcho.Core.Test
         }
 
         [TestMethod]
+        public void ShuffleTwoSongs()
+        {
+            Assert.IsTrue(false);
+        }
+
+        [TestMethod]
+        public void ShuffleStart()
+        {
+            CreatePlayer(out Player testPlayer);
+            testPlayer.Shuffle = true;
+
+            var files = GetTestMusicLibrary().MusicFiles;
+
+            bool started = testPlayer.Start(files, 5);
+
+            Assert.IsTrue(started);
+            Assert.IsTrue(files[5].Track == testPlayer.PlayingFile.Track);
+        }
+
+        [TestMethod]
         public void ShuffleEverySongOnlyOnceAndRestart()
         {
             StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
@@ -223,6 +243,54 @@ namespace ArkEcho.Core.Test
 
             Assert.IsTrue(playedTracks.Count == 0);
             Assert.IsTrue(testPlayer.Playing);
+        }
+
+        [TestMethod]
+        public void ShuffleNextSongIsDifferent()
+        {
+            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+
+            for (int i = 0; i <= 10000; i++)
+            {
+                testPlayer.Shuffle = true;
+
+                int track = testPlayer.PlayingFile.Track;
+                testPlayer.Forward();
+
+                Assert.IsFalse(track == testPlayer.PlayingFile.Track, $"Next Song on Shuffle is the Same!");
+            }
+        }
+
+        [TestMethod]
+        public void SwitchShuffleOffOnAndContinueRightOrder()
+        {
+            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+
+            bool flipOverOff = false;
+            bool justNextSongOff = false;
+
+            while (flipOverOff == false || justNextSongOff == false)
+            {
+                testPlayer.Shuffle = true;
+
+                testPlayer.Forward();
+                testPlayer.Forward();
+
+                int track = testPlayer.PlayingFile.Track;
+                testPlayer.Shuffle = false;
+                testPlayer.Forward();
+
+                if (fileList.Last().Track == track) // Last Track loaded, shuffle off and Forward = first Track
+                {
+                    Assert.IsTrue(testPlayer.PlayingFile.Track == 1);
+                    flipOverOff = true;
+                }
+                else
+                {
+                    Assert.IsTrue(track + 1 == testPlayer.PlayingFile.Track);
+                    justNextSongOff = true;
+                }
+            }
         }
     }
 }
