@@ -118,7 +118,7 @@ namespace ArkEcho.Core
             set
             {
                 shuffle = value;
-                setShuffleList(Guid.Empty);
+                setShuffleList(Guid.Empty, -1);
 
                 if (shuffle || listToPlay.IsNullOrEmpty() || PlayingFile == null)
                     return;
@@ -131,7 +131,7 @@ namespace ArkEcho.Core
 
         private List<int> shuffledIndexList = null;
 
-        private void setShuffleList(Guid lastGuid)
+        private void setShuffleList(Guid lastPlayingGuid, int startingIndex)
         {
             if (!shuffle || listToPlay.IsNullOrEmpty())
                 return;
@@ -144,12 +144,17 @@ namespace ArkEcho.Core
 
             shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count).ToList());
 
-            if (lastGuid != Guid.Empty) // Given by caller Forward/BackWard, last played Guid must not be next song
+            if (startingIndex >= 0) // Given by Start(), to begin the shuffled List with the given IndexToStart
             {
-                if (listToPlay[shuffledIndexList[songIndex]].GUID == lastGuid)
-                    setShuffleList(lastGuid);
+                shuffledIndexList.Remove(startingIndex);
+                shuffledIndexList.Insert(0, startingIndex);
             }
-            else
+            else if (lastPlayingGuid != Guid.Empty) // Given by caller Forward/BackWard, last played Guid must not be next song
+            {
+                if (listToPlay[shuffledIndexList[songIndex]].GUID == lastPlayingGuid)
+                    setShuffleList(lastPlayingGuid, -1);
+            }
+            else // Shuffle was turned off/on externally
             {
                 if (PlayingFile != null)
                 {
@@ -158,24 +163,26 @@ namespace ArkEcho.Core
 
                     if (listToPlay[shuffledIndexList[songIndex]].GUID == playingGuid ||
                         (songIndex + 1 < shuffledIndexList.Count && listToPlay[shuffledIndexList[songIndex + 1]].GUID == playingGuid))
-                        setShuffleList(Guid.Empty);
+                        setShuffleList(Guid.Empty, -1);
                 }
             }
         }
 
         #endregion
 
-        public bool Start(List<MusicFile> MusicFiles, int Index)
+        public bool Start(List<MusicFile> listToPlay, int index)
         {
-            if (MusicFiles == null || Index < 0 || Index >= MusicFiles.Count)
+            if (listToPlay == null || index < 0 || index >= listToPlay.Count)
                 return false;
 
-            listToPlay = MusicFiles;
-            songIndex = Index;
+            this.listToPlay = listToPlay;
 
-            log($"Starting {MusicFiles.Count} Files", Logging.LogLevel.Important);
+            log($"Starting {listToPlay.Count} Files", Logging.LogLevel.Important);
 
-            setShuffleList(Guid.Empty);
+            if (shuffle)
+                setShuffleList(Guid.Empty, index);
+            else
+                songIndex = index;
 
             loadNextPlayingFile(true);
             return Playing;
@@ -240,7 +247,7 @@ namespace ArkEcho.Core
 
                 if (Shuffle) // Reset shuffle Order and start new Song
                 {
-                    setShuffleList(lastGuid);
+                    setShuffleList(lastGuid, -1);
                     loadNextPlayingFile(true);
                 }
                 else // Reached end of List, load first but dont start
@@ -268,7 +275,7 @@ namespace ArkEcho.Core
                 Guid lastGuid = listToPlay[shuffledIndexList[songIndex]].GUID;
                 if (Shuffle)
                 {
-                    setShuffleList(lastGuid);
+                    setShuffleList(lastGuid, -1);
                     loadNextPlayingFile(true);
                 }
                 else

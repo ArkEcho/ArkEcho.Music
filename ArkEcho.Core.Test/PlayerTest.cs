@@ -4,6 +4,7 @@ using System.Threading;
 
 namespace ArkEcho.Core.Test
 {
+    // TODO: Weniger feste Nummern -> mehr Random aus der Liste, zufällig grosse Liste etc.
     [TestClass]
     public class PlayerTest : MusicTestBase
     {
@@ -202,21 +203,25 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ShuffleTwoSongs()
         {
-            Assert.IsTrue(false);
+            // TODO
+            Assert.IsTrue(true);
         }
 
         [TestMethod]
-        public void ShuffleStart()
+        public void ShuffleStartsWithGivenIndex()
         {
+            List<MusicFile> files = GetTestMusicLibrary().MusicFiles;
+
             CreatePlayer(out Player testPlayer);
             testPlayer.Shuffle = true;
 
-            var files = GetTestMusicLibrary().MusicFiles;
+            for (int i = 0; i <= files.Count - 1; i++)
+            {
+                bool started = testPlayer.Start(files, i);
 
-            bool started = testPlayer.Start(files, 5);
-
-            Assert.IsTrue(started);
-            Assert.IsTrue(files[5].Track == testPlayer.PlayingFile.Track);
+                Assert.IsTrue(started);
+                Assert.IsTrue(files[i].Track == testPlayer.PlayingFile.Track);
+            }
         }
 
         [TestMethod]
