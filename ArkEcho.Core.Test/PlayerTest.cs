@@ -186,25 +186,48 @@ namespace ArkEcho.Core.Test
             Assert.IsTrue(testPlayer.Playing);
 
             testPlayer.Forward();
-
             Assert.IsTrue(testPlayer.Playing);
 
             testPlayer.Position = 19;
             Thread.Sleep(1500);
-
             Assert.IsTrue(testPlayer.Playing);
 
             testPlayer.Position = 6;
             testPlayer.Backward();
-
             Assert.IsTrue(testPlayer.Playing);
         }
 
         [TestMethod]
         public void ShuffleTwoSongs()
         {
-            // TODO
-            Assert.IsTrue(true);
+            CreatePlayer(out Player testPlayer);
+            testPlayer.Shuffle = true;
+
+            // Start Test
+            bool started = testPlayer.Start(new List<MusicFile> { GetTestMusicLibrary().MusicFiles[0],
+                GetTestMusicLibrary().MusicFiles[1] }, 0);
+
+            Assert.IsTrue(started);
+            Assert.IsTrue(testPlayer.Playing);
+
+            // Let Forward start over
+            testPlayer.Forward();
+            testPlayer.Forward();
+
+            Assert.IsTrue(testPlayer.Playing);
+
+            // Turn Shuttle on
+            testPlayer.Shuffle = true;
+            Assert.IsTrue(testPlayer.Playing);
+
+            // Check, that both Songs get played alternating
+            int trackOnePlayed = 0;
+            for (int i = 0; i < 6; i++)
+            {
+                if (testPlayer.PlayingFile.Track == 1) trackOnePlayed++;
+                testPlayer.Forward();
+            }
+            Assert.IsTrue(trackOnePlayed == 3);
         }
 
         [TestMethod]

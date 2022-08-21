@@ -133,37 +133,47 @@ namespace ArkEcho.Core
 
         private void setShuffleList(Guid lastPlayingGuid, int startingIndex)
         {
+            void createShuffledIndexList()
+            {
+                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count).ToList());
+            }
+
             if (!shuffle || listToPlay.IsNullOrEmpty())
                 return;
 
             if (listToPlay.Count == 1)
-            {
                 shuffledIndexList = new List<int>() { 0 };
-                return;
-            }
-
-            shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count).ToList());
-
-            if (startingIndex >= 0) // Given by Start(), to begin the shuffled List with the given IndexToStart
+            else if (startingIndex >= 0) // Given by Start(), to begin the shuffled List with the given IndexToStart
             {
+                createShuffledIndexList();
                 shuffledIndexList.Remove(startingIndex);
                 shuffledIndexList.Insert(0, startingIndex);
             }
             else if (lastPlayingGuid != Guid.Empty) // Given by caller Forward/BackWard, last played Guid must not be next song
             {
-                if (listToPlay[shuffledIndexList[songIndex]].GUID == lastPlayingGuid)
-                    setShuffleList(lastPlayingGuid, -1);
+                do
+                    createShuffledIndexList();
+                while (listToPlay[shuffledIndexList[songIndex]].GUID == lastPlayingGuid);
             }
-            else // Shuffle was turned off/on externally
+            else // Shuffle was turned off/on externally while Started
             {
-                if (PlayingFile != null)
-                {
-                    // Create new, if this AND next Song is the same as playing
-                    Guid playingGuid = PlayingFile.GUID;
+                if (PlayingFile == null)
+                    return;
 
-                    if (listToPlay[shuffledIndexList[songIndex]].GUID == playingGuid ||
-                        (songIndex + 1 < shuffledIndexList.Count && listToPlay[shuffledIndexList[songIndex + 1]].GUID == playingGuid))
-                        setShuffleList(Guid.Empty, -1);
+                // Create new, if this AND next Song is the same as playing
+                Guid playingGuid = PlayingFile.GUID;
+                if (listToPlay.Count == 2)
+                {
+                    do
+                        createShuffledIndexList();
+                    while (listToPlay[shuffledIndexList[songIndex]].GUID != playingGuid); // Playing song must be actual Song
+                }
+                else
+                {
+                    do
+                        createShuffledIndexList();
+                    while (listToPlay[shuffledIndexList[songIndex]].GUID == playingGuid ||
+                    (songIndex + 1 < shuffledIndexList.Count && listToPlay[shuffledIndexList[songIndex + 1]].GUID == playingGuid));
                 }
             }
         }
