@@ -8,20 +8,18 @@ namespace ArkEcho.Core.Test
     [TestClass]
     public class PlayerTest : MusicTestBase
     {
-        private void CreatePlayer(out Player player)
+        private void getPlayer(out Player testPlayer)
         {
-            player = new TimerTestPlayer();
-            Assert.IsTrue(player.Initialized);
+            testPlayer = new TimerTestPlayer();
+            Assert.IsTrue(testPlayer.Initialized);
         }
 
-        private void StartPlayer(out Player testPlayer, out List<MusicFile> fileList)
+        private void getFileList(int count, out List<MusicFile> fileList)
         {
-            CreatePlayer(out testPlayer);
+            fileList = new List<MusicFile>();
 
-            fileList = GetTestMusicLibrary().MusicFiles;
-
-            bool started = testPlayer.Start(fileList, 0);
-            Assert.IsTrue(started);
+            for (int i = 0; i < count; i++)
+                fileList.Add(GetTestMusicLibrary().MusicFiles[i]);
         }
 
         [TestMethod]
@@ -63,7 +61,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void PlayPause()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             testPlayer.Pause();
             Assert.IsFalse(testPlayer.Playing);
@@ -81,7 +82,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void Stop()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             Thread.Sleep(200);
 
@@ -94,7 +98,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void Position()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             Thread.Sleep(1100);
 
@@ -111,7 +118,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void AutoLoadNextSong()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             Assert.IsTrue(testPlayer.PlayingFile.Track == 1);
 
@@ -125,7 +135,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ForwardBackward()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             testPlayer.Forward();
             testPlayer.Forward();
@@ -140,7 +153,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void BackwardRestartSongOverFive()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             for (int i = 0; i < 3; i++)
                 testPlayer.Forward();
@@ -159,28 +175,34 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void LoadFirstSongStoppedOnEndOfList()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
 
-            for (int i = 0; i < fileList.Count - 1; i++)
+            testPlayer.Start(files, 0);
+
+            for (int i = 0; i < files.Count - 1; i++)
                 testPlayer.Forward();
 
-            Assert.IsTrue(testPlayer.PlayingFile.Track == fileList.Last().Track);
+            Assert.IsTrue(testPlayer.PlayingFile.Track == files.Last().Track);
 
-            testPlayer.Position = (fileList.Last().Duration / 1000) - 1;
+            testPlayer.Position = (files.Last().Duration / 1000) - 1;
             Thread.Sleep(2000);
 
             Assert.IsFalse(testPlayer.Playing);
             Assert.IsTrue(testPlayer.Position == 0);
-            Assert.IsTrue(testPlayer.PlayingFile.GUID == fileList[0].GUID);
+            Assert.IsTrue(testPlayer.PlayingFile.GUID == files[0].GUID);
         }
 
         [TestMethod]
         public void ShuffleOneSong()
         {
-            CreatePlayer(out Player testPlayer);
+            getPlayer(out Player testPlayer);
+
+            getFileList(1, out List<MusicFile> files);
+
             testPlayer.Shuffle = true;
 
-            bool started = testPlayer.Start(new List<MusicFile> { GetTestMusicLibrary().MusicFiles[0] }, 0);
+            bool started = testPlayer.Start(files, 0);
 
             Assert.IsTrue(started);
             Assert.IsTrue(testPlayer.Playing);
@@ -200,12 +222,14 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ShuffleTwoSongs()
         {
-            CreatePlayer(out Player testPlayer);
+            getPlayer(out Player testPlayer);
+
+            getFileList(2, out List<MusicFile> files);
+
             testPlayer.Shuffle = true;
 
             // Start Test
-            bool started = testPlayer.Start(new List<MusicFile> { GetTestMusicLibrary().MusicFiles[0],
-                GetTestMusicLibrary().MusicFiles[1] }, 0);
+            bool started = testPlayer.Start(files, 0);
 
             Assert.IsTrue(started);
             Assert.IsTrue(testPlayer.Playing);
@@ -233,10 +257,11 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ShuffleStartsWithGivenIndex()
         {
-            List<MusicFile> files = GetTestMusicLibrary().MusicFiles;
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
 
-            CreatePlayer(out Player testPlayer);
             testPlayer.Shuffle = true;
+            testPlayer.Start(files, 0);
 
             for (int i = 0; i <= files.Count - 1; i++)
             {
@@ -250,20 +275,24 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ShuffleEverySongOnlyOnceAndRestart()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
 
             testPlayer.Shuffle = true;
+
+            testPlayer.Start(files, 0);
+
             testPlayer.Backward();
 
             List<int> playedTracks = new List<int>();
 
-            for (int i = 0; i <= fileList.Count - 1; i++)
+            for (int i = 0; i <= files.Count - 1; i++)
             {
                 playedTracks.Add(testPlayer.PlayingFile.Track);
                 testPlayer.Forward();
             }
 
-            for (int i = 0; i <= fileList.Count - 1; i++)
+            for (int i = 0; i <= files.Count - 1; i++)
             {
                 playedTracks.Remove(testPlayer.PlayingFile.Track);
                 testPlayer.Forward();
@@ -276,7 +305,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void ShuffleNextSongIsDifferent()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             for (int i = 0; i <= 10000; i++)
             {
@@ -292,7 +324,10 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public void SwitchShuffleOffOnAndContinueRightOrder()
         {
-            StartPlayer(out Player testPlayer, out List<MusicFile> fileList);
+            getPlayer(out Player testPlayer);
+            getFileList(7, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
 
             bool flipOverOff = false;
             bool justNextSongOff = false;
@@ -308,7 +343,7 @@ namespace ArkEcho.Core.Test
                 testPlayer.Shuffle = false;
                 testPlayer.Forward();
 
-                if (fileList.Last().Track == track) // Last Track loaded, shuffle off and Forward = first Track
+                if (files.Last().Track == track) // Last Track loaded, shuffle off and Forward = first Track
                 {
                     Assert.IsTrue(testPlayer.PlayingFile.Track == 1);
                     flipOverOff = true;

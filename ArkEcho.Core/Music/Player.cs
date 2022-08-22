@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace ArkEcho.Core
 {
-    // TODO: Unit Test
     // TODO: Mehr Logging
     // TODO: Umstellung auf Interface von Implementierungen?
     // TODO: Position in 0-1 decimal?
