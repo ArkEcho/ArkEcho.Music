@@ -53,15 +53,15 @@ namespace ArkEcho.WebPage
         }
 
         [JSInvokable]
-        public void AudioPlayingJS(bool Playing)
+        public void AudioPlayingJS(bool playing)
         {
-            this.Playing = Playing;
+            playingChanged(playing);
         }
 
-        protected override bool log(string Text, Logging.LogLevel Level)
+        protected override bool log(string text, Logging.LogLevel level)
         {
             if (logDelegate != null)
-                return logDelegate.Invoke(Text, Level);
+                return logDelegate.Invoke(text, level);
             return false;
         }
 

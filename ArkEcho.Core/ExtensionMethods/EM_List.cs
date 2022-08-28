@@ -4,7 +4,6 @@ namespace ArkEcho
 {
     public static class EM_List
     {
-        // TODO: Überall nutzen
         public static bool IsNullOrEmpty<T>(this List<T> list)
         {
             return list == null || list.Count == 0;

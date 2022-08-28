@@ -69,7 +69,7 @@ namespace ArkEcho.Server
             LogFile file = null;
             List<LogFile> files = logFiles.FindAll(x => x.Name == log.Name && x.OriginGuid == log.OriginGuid);
 
-            if (files.Count == 0) // First log File
+            if (files.IsNullOrEmpty()) // First log File
                 file = createNewLogFile(log, 0);
             else
             {
@@ -110,7 +110,7 @@ namespace ArkEcho.Server
 
         private void deleteFirstAndRotateFiles(List<LogFile> files)
         {
-            if (files.Count == 0)
+            if (files.IsNullOrEmpty())
                 return;
 
             checkAndDeleteFilesFromLists(files);

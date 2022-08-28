@@ -5,7 +5,6 @@ using System.Linq;
 namespace ArkEcho.Core
 {
     // TODO: Mehr Logging
-    // TODO: Umstellung auf Interface von Implementierungen?
     // TODO: Position in 0-1 decimal?
     // TODO: Repeat Playlist Funktion
     // TODO: Liste und Position während wiedergabe ändern? -> Playlist starten, dann anders ordnen und trotzdem den nächsten Abspielen
