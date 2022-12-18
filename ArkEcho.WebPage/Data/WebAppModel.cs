@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.WebPage
 {
-    public class AppModel
+    public class WebAppModel
     {
         // TODO: private?
         public MusicLibrary Library { get; private set; } = null;
@@ -17,7 +17,7 @@ namespace ArkEcho.WebPage
         private bool initialized = false;
         private Authentication authentication = null;
 
-        public AppModel(IJSRuntime jsRuntime, ILocalStorage localStorage)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage)
         {
             Library = new MusicLibrary();
             Player = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);

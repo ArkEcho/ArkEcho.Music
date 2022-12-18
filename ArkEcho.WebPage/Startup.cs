@@ -29,7 +29,7 @@ namespace ArkEcho.WebPage
             services.AddBlazoredLocalStorage();
 
             services.AddScoped<ILocalStorage, WebLocalStorage>();
-            services.AddScoped<AppModel>();
+            services.AddScoped<WebAppModel>();
             services.AddScoped<JSPlayer>();
         }
 
