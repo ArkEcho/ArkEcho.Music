@@ -26,7 +26,7 @@ namespace ArkEcho.WebPage
             if (initialized)
                 return true;
 
-            string lib = await Rest.GetMusicLibrary();
+            string lib = await rest.GetMusicLibrary();
             await Library.LoadFromJsonString(lib);
 
             if (Library.MusicFiles.Count > 0)
@@ -42,6 +42,11 @@ namespace ArkEcho.WebPage
 
             Console.WriteLine($"Error initializing AppModel");
             return false;
+        }
+
+        public override async Task<string> GetAlbumCover(Guid albumGuid)
+        {
+            return await rest.GetAlbumCover(albumGuid);
         }
     }
 }

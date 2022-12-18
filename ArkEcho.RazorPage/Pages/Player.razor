@@ -108,7 +108,7 @@
 
     private async Task setAlbumCoverFromServer()
     {        
-        string result = await Model.Rest.GetAlbumCover(Model.Player.PlayingFile.Album);
+        string result = await Model.GetAlbumCover(Model.Player.PlayingFile.Album);
         Image64 =  $"data:image/png;base64,{result}";
     }
 

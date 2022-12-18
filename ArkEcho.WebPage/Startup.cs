@@ -25,12 +25,11 @@ namespace ArkEcho.WebPage
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            //services.AddSingleton<WeatherForecastService>();
 
             services.AddBlazoredLocalStorage();
 
-            services.AddScoped<ILocalStorage, WebLocalStorage>();
-            services.AddScoped<IAppModel, WebAppModel>();
+            services.AddScoped<ILocalStorage, WebLocalStorage>(); // Needs Blazor Local Storage/Blazored
+            services.AddScoped<IAppModel, WebAppModel>(); // Needs WebLocalStorage
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

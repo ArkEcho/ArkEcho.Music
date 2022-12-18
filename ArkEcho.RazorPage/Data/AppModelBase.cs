@@ -9,14 +9,13 @@ namespace ArkEcho.RazorPage
 
         public abstract Player Player { get; }
 
-        public Rest Rest { get; private set; } = null;
-
+        protected Rest rest = null;
         private Authentication authentication = null;
 
         public AppModelBase(ILocalStorage localStorage, string serverAddress, bool compression)
         {
-            Rest = new Rest(serverAddress, compression);
-            authentication = new Authentication(localStorage, Rest);
+            rest = new Rest(serverAddress, compression);
+            authentication = new Authentication(localStorage, rest);
         }
 
         public async Task<bool> IsUserAuthenticated()
@@ -38,5 +37,6 @@ namespace ArkEcho.RazorPage
         }
 
         public abstract Task<bool> InitializeLibraryAndPlayer();
+        public abstract Task<string> GetAlbumCover(Guid albumGuid);
     }
 }

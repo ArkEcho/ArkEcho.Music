@@ -6,12 +6,12 @@ namespace ArkEcho.RazorPage
     {
         MusicLibrary Library { get; }
         Player Player { get; }
-        Rest Rest { get; }
 
         Task<bool> AuthenticateUser(string username, string password);
         Task<bool> IsUserAuthenticated();
         Task LogoutUser();
 
         Task<bool> InitializeLibraryAndPlayer();
+        Task<string> GetAlbumCover(Guid albumGuid); // TOOD: Only needed on Web?
     }
 }
