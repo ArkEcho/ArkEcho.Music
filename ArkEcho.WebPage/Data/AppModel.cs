@@ -15,12 +15,32 @@ namespace ArkEcho.WebPage
         public JSPlayer Player { get; set; } = null;
 
         private bool initialized = false;
+        private Authentication authentication = null;
 
-        public AppModel()
+        public AppModel(ILocalStorage localStorage)
         {
             Library = new MusicLibrary();
             Player = new JSPlayer(WebPageManager.Instance.Config.ServerAddress);
             Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
+            authentication = new Authentication(localStorage, Rest);
+        }
+
+        public async Task<bool> IsUserAuthenticated()
+        {
+            return await authentication.GetAuthenticationState();
+        }
+
+        public async Task<bool> AuthenticateUser(string username, string password)
+        {
+            return await authentication.AuthenticateUserForLogin(username, password);
+        }
+
+        public async Task LogoutUser()
+        {
+            if (Player.Playing)
+                Player.Stop();
+
+            await authentication.MarkUserAsLoggedOut();
         }
 
         public async Task<bool> Initialize(IJSRuntime jsRuntime)

@@ -1,3 +1,5 @@
+using ArkEcho.Core;
+using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,7 +28,7 @@ namespace ArkEcho.WebPage
 
             services.AddBlazoredLocalStorage();
 
-            services.AddScoped<Authentication>();
+            services.AddScoped<ILocalStorage, WebLocalStorage>();
             services.AddScoped<AppModel>();
             services.AddScoped<JSPlayer>();
         }

@@ -2,29 +2,25 @@
 
 @layout LoginLayout
 
-@inject AppModel Model
-@inject Authentication Authentication
+@inject AppModel model
 @inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService localStorageService
 
-<EditForm Model="@user" OnValidSubmit="@ValidateUser">
-    
     <div>
         <h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
     </div>
 
     <div >
-        <input @bind="user.UserName" placeholder="email address" />
+        <input @bind="username" placeholder="email address" />
     </div>
     <br />
 
     <div >
-        <input type="password" @bind="user.Password" placeholder="password" />
+        <input type="password" @bind="password" placeholder="password" />
     </div>
     <br />
 
     <div>
-        <input type="submit" value="Login" />
+    <button @onclick="validateUser">Login</button>
     </div>
     <br />
 
@@ -32,41 +28,31 @@
         <span>@LoginMesssage</span>
     </div>
 
-</EditForm>
-
-@code
+    @code
 {
-    private User user;
     public string LoginMesssage { get; set; }
+
+    private string username = string.Empty;
+    private string password = string.Empty;
 
     protected async override Task OnInitializedAsync()
     {
-        user = new User();
-
-        if (await Authentication.GetAuthenticationState())
+        if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Player");
     }
 
-    private async Task<bool> ValidateUser()
+    private async Task<bool> validateUser()
     {
-        if (!string.IsNullOrEmpty(user.UserName) && !string.IsNullOrEmpty(user.Password))
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            //Console.WriteLine($"Before LogIn, {user.AccessToken}");
-
-            User loggedInUser = await Authentication.AuthenticateUserForLogin(user);
-            if (loggedInUser != null)
-            {
-                //Console.WriteLine($"Logged In, {loggedInUser.AccessToken}");
-
-                await Authentication.MarkUserAsAuthenticated(loggedInUser);
-
-                NavigationManager.NavigateTo("/Player");
-            }
-            else
-                LoginMesssage = "Username or password wrong";
-        }
-        else
             LoginMesssage = "Empty username or password";
+            return await Task.FromResult(true);
+        }
+
+        if(await model.AuthenticateUser(username, password))
+            NavigationManager.NavigateTo("/Player");            
+        else
+            LoginMesssage = "Username or password wrong";
 
         return await Task.FromResult(true);
     }

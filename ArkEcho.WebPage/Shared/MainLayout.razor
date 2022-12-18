@@ -4,8 +4,6 @@
 @inject AppModel Model
 
 @inject NavigationManager NavigationManager
-@inject Blazored.LocalStorage.ILocalStorageService localStorageService
-@inject Authentication Authentication
 
 <div>
     <div>
@@ -40,7 +38,7 @@
     {
         Console.WriteLine("MainLayout OnInitializedAsync");
 
-        if (!await Authentication.GetAuthenticationState())
+        if (!await Model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
         Task.Factory.StartNew(() => Model.Initialize(JS));
@@ -54,7 +52,7 @@
 
     public async Task Logout()
     {
-        await Authentication.MarkUserAsLoggedOut();
+        await Model.LogoutUser();
         NavigationManager.NavigateTo("/");
     }
 }
