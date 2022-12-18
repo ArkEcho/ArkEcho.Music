@@ -1,4 +1,5 @@
 using ArkEcho.Core;
+using ArkEcho.RazorPage;
 using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
@@ -29,8 +30,7 @@ namespace ArkEcho.WebPage
             services.AddBlazoredLocalStorage();
 
             services.AddScoped<ILocalStorage, WebLocalStorage>();
-            services.AddScoped<WebAppModel>();
-            services.AddScoped<JSPlayer>();
+            services.AddScoped<IAppModel, WebAppModel>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

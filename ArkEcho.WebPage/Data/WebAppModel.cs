@@ -1,26 +1,29 @@
 ﻿using ArkEcho.Core;
+using ArkEcho.RazorPage;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
 namespace ArkEcho.WebPage
 {
-    public class WebAppModel
+    public class WebAppModel : IAppModel
     {
         // TODO: private?
         public MusicLibrary Library { get; private set; } = null;
 
-        public Rest Rest { get; private set; } = null;
+        public Rest Rest { get; } = null;
 
-        public JSPlayer Player { get; set; } = null;
+        public Player Player { get { return jsPlayer; } }
 
         private bool initialized = false;
         private Authentication authentication = null;
 
+        private JSPlayer jsPlayer = null;
+
         public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage)
         {
             Library = new MusicLibrary();
-            Player = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
+            jsPlayer = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
             Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
             authentication = new Authentication(localStorage, Rest);
         }
@@ -55,7 +58,7 @@ namespace ArkEcho.WebPage
             {
                 Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
 
-                if (Player.InitPlayer())
+                if (jsPlayer.InitPlayer())
                 {
                     initialized = true;
                     return true;
