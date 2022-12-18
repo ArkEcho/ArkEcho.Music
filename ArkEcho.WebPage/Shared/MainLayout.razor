@@ -7,22 +7,23 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorageService
 @inject Authentication Authentication
 
-<div class="page">
-    <div class="sidebar">
+<div>
+    <div>
         <NavMenu />
     </div>
 
-    <div class="main">
+    <div>
         <PlayerControl />
-        <div class="top-row px-4">
-            <button class="btn btn-secondary" @onclick="UserIconClick">User</button>
+        <div >
+            <button  @onclick="UserIconClick">User</button>
         </div>
 
-        <div class="sidebar py-4 px-4 float-right" style="background-color:lightgray; display: @showUserSidebarCss">
+        <div style="background-color:lightgray; display: @showUserSidebarCss">
             <h2>@LoggedInText</h2>
-            <button class="btn btn-primary" @onclick="Logout">Logout</button>
+            <button @onclick="Logout">Logout</button>
         </div>
-        <div class="content px-4">
+
+        <div >
             @Body
         </div>
     </div>

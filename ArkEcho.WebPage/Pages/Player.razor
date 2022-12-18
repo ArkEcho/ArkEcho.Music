@@ -8,30 +8,34 @@
 <p>MusicFileCount: @musicFileCounter</p>
 
 <input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
-<button class="btn btn-primary" @onclick="Search">Suche</button>
+<button @onclick="Search">Suche</button>
+<br />
 
+<button @onclick="Init">Init</button>
 <br />
-<button class="btn btn-primary" @onclick="Init">Init</button>
+<br />
 
-<br />
-<br />
 <label for="volume">Volume:</label>
 <input type="number" id="volume" @bind="Model.Player.Volume" min="0" max="100">
-
 <br />
+
 <label for="playing">Playing:</label>
 <input type="checkbox" id="playing" name="playing" checked="@Model.Player.Playing">
 <br />
+
 <label for="muted">Mute:</label>
 <input type="checkbox" id="muted" name="muted" checked="@Model.Player.Mute">
 <br />
+
 <label for="shuffle">Shuffle:</label>
 <input type="checkbox" id="shuffle" name="shuffle" checked="@Model.Player.Shuffle">
 <br />
+
 <p>@SongInfo</p>
 
 <p>@Model.Player.Position</p>
 <br />
+
 <img src=@Image64 width=100 height=100/>
 
     <!--

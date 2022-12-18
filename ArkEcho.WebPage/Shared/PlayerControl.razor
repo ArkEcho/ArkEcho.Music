@@ -2,15 +2,15 @@
 @inject IJSRuntime JS
 @inject AppModel Model
 
-<div style="background-color:lightgray">
-    <button class="btn btn-primary" @onclick="Play">Play</button>
-    <button class="btn btn-primary" @onclick="Pause">Pause</button>
-    <button class="btn btn-primary" @onclick="PlayPause">PlayPause</button>
-    <button class="btn btn-primary" @onclick="Stop">Stop</button>
-    <button class="btn btn-primary" @onclick="Mute">Mute</button>
-    <button class="btn btn-primary" @onclick="Shuffle">Shuffle</button>
-    <button class="btn btn-primary" @onclick="Backward">Backward</button>
-    <button class="btn btn-primary" @onclick="Forward">Forward</button>
+<div>
+    <button @onclick="Play">Play</button>
+    <button @onclick="Pause">Pause</button>
+    <button @onclick="PlayPause">PlayPause</button>
+    <button @onclick="Stop">Stop</button>
+    <button @onclick="Mute">Mute</button>
+    <button @onclick="Shuffle">Shuffle</button>
+    <button @onclick="Backward">Backward</button>
+    <button @onclick="Forward">Forward</button>
 </div>
 
 
