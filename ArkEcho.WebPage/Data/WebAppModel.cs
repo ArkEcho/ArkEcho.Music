@@ -6,47 +6,22 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.WebPage
 {
-    public class WebAppModel : IAppModel
+    public class WebAppModel : AppModelBase
     {
-        // TODO: private?
-        public MusicLibrary Library { get; private set; } = null;
+        public override MusicLibrary Library { get; } = null;
 
-        public Rest Rest { get; } = null;
-
-        public Player Player { get { return jsPlayer; } }
+        public override Player Player { get { return jsPlayer; } }
 
         private bool initialized = false;
-        private Authentication authentication = null;
-
         private JSPlayer jsPlayer = null;
 
-        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage) : base(localStorage, WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression)
         {
             Library = new MusicLibrary();
             jsPlayer = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
-            Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
-            authentication = new Authentication(localStorage, Rest);
         }
 
-        public async Task<bool> IsUserAuthenticated()
-        {
-            return await authentication.GetAuthenticationState();
-        }
-
-        public async Task<bool> AuthenticateUser(string username, string password)
-        {
-            return await authentication.AuthenticateUserForLogin(username, password);
-        }
-
-        public async Task LogoutUser()
-        {
-            if (Player.Playing)
-                Player.Stop();
-
-            await authentication.MarkUserAsLoggedOut();
-        }
-
-        public async Task<bool> InitializeLibraryAndPlayer()
+        public override async Task<bool> InitializeLibraryAndPlayer()
         {
             if (initialized)
                 return true;
