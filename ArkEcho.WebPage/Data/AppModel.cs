@@ -17,10 +17,10 @@ namespace ArkEcho.WebPage
         private bool initialized = false;
         private Authentication authentication = null;
 
-        public AppModel(ILocalStorage localStorage)
+        public AppModel(IJSRuntime jsRuntime, ILocalStorage localStorage)
         {
             Library = new MusicLibrary();
-            Player = new JSPlayer(WebPageManager.Instance.Config.ServerAddress);
+            Player = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
             Rest = new Rest(WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression);
             authentication = new Authentication(localStorage, Rest);
         }
@@ -43,11 +43,8 @@ namespace ArkEcho.WebPage
             await authentication.MarkUserAsLoggedOut();
         }
 
-        public async Task<bool> Initialize(IJSRuntime jsRuntime)
+        public async Task<bool> InitializeLibraryAndPlayer()
         {
-            if (jsRuntime == null)
-                return false;
-
             if (initialized)
                 return true;
 
@@ -58,7 +55,7 @@ namespace ArkEcho.WebPage
             {
                 Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
 
-                if (Player.InitPlayer(jsRuntime))
+                if (Player.InitPlayer())
                 {
                     initialized = true;
                     return true;

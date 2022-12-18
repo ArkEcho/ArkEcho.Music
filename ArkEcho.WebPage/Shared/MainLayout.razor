@@ -1,8 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-@inject IJSRuntime JS
 @inject AppModel Model
-
 @inject NavigationManager NavigationManager
 
 <div>
@@ -41,7 +39,7 @@
         if (!await Model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
-        Task.Factory.StartNew(() => Model.Initialize(JS));
+        Task.Factory.StartNew(() => Model.InitializeLibraryAndPlayer());
     }
 
     public async Task UserIconClick()

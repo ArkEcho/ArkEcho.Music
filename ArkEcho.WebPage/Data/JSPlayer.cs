@@ -9,26 +9,23 @@ namespace ArkEcho.WebPage
         private Logging.LoggingDelegate logDelegate = null;
         private string serverAddress = string.Empty;
 
-        public IJSRuntime JS { get; private set; } = null;
+        private IJSRuntime jsRuntime = null;
 
-        public JSPlayer(string serverAddress) : base()
+        public JSPlayer(IJSRuntime jsRuntime, string serverAddress) : base()
         {
+            this.jsRuntime = jsRuntime;
             this.serverAddress = serverAddress;
         }
 
-        public bool InitPlayer(IJSRuntime JS)
+        public bool InitPlayer()
         {
-            if (JS == null)
-                return false;
-
             if (Initialized)
                 return Initialized;
 
             logDelegate = logConsole;
-            this.JS = JS;
 
             var dotNetReference = DotNetObjectReference.Create(this);
-            JS.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
+            jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
 
             Initialized = true;
             return Initialized;
@@ -68,42 +65,42 @@ namespace ArkEcho.WebPage
         protected override void loadAudio(bool StartOnLoad)
         {
             string source = $"{serverAddress}/api/Music/{PlayingFile.GUID}";
-            JS.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
+            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeAudio()
         {
-            JS.InvokeVoidAsync("Player.DisposeAudio", new object[] { });
+            jsRuntime.InvokeVoidAsync("Player.DisposeAudio", new object[] { });
         }
 
         protected override void playAudio()
         {
-            JS.InvokeVoidAsync("Player.PlayAudio", new object[] { });
+            jsRuntime.InvokeVoidAsync("Player.PlayAudio", new object[] { });
         }
 
         protected override void pauseAudio()
         {
-            JS.InvokeVoidAsync("Player.PauseAudio", new object[] { });
+            jsRuntime.InvokeVoidAsync("Player.PauseAudio", new object[] { });
         }
 
         protected override void stopAudio()
         {
-            JS.InvokeVoidAsync("Player.StopAudio", new object[] { });
+            jsRuntime.InvokeVoidAsync("Player.StopAudio", new object[] { });
         }
 
         protected override void setAudioMute()
         {
-            JS.InvokeVoidAsync("Player.SetAudioMute", new object[] { Mute });
+            jsRuntime.InvokeVoidAsync("Player.SetAudioMute", new object[] { Mute });
         }
 
         protected override void setAudioVolume()
         {
-            JS.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
+            jsRuntime.InvokeVoidAsync("Player.SetAudioVolume", new object[] { Volume });
         }
 
         protected override void setAudioPosition()
         {
-            JS.InvokeVoidAsync("Player.SetAudioPosition", new object[] { Position });
+            jsRuntime.InvokeVoidAsync("Player.SetAudioPosition", new object[] { Position });
         }
     }
 }
