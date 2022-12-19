@@ -24,7 +24,7 @@ namespace ArkEcho.App
 
         private PowerManager powerManager = null;
         private PowerManager.WakeLock wakeLock = null;
-        private LibrarySyncAndroid librarySync = null;
+        private LibrarySync librarySync = null;
         private const string configFileName = "AppConfig.json";
         private const string libraryFileName = "MusicLibrary.json";
         public VLCPlayer Player { get; private set; } = null;
@@ -62,7 +62,7 @@ namespace ArkEcho.App
             Library = new MusicLibrary(libraryFileName);
             await Library.LoadFromFile(GetAndroidInternalPath());
 
-            librarySync = new LibrarySyncAndroid(rest);
+            librarySync = new LibrarySync(ArkEcho.Resources.ARKECHOAPP, rest, RestLoggingWorker);
 
             // Player
             Player = new VLCPlayer();

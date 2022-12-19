@@ -9,6 +9,7 @@ namespace ArkEcho.WebPage
     public class WebAppModel : AppModelBase
     {
         public override Player Player { get { return jsPlayer; } }
+        public override LibrarySync Sync { get; }
 
         private bool initialized = false;
         private JSPlayer jsPlayer = null;
@@ -45,6 +46,11 @@ namespace ArkEcho.WebPage
         public override async Task<string> GetAlbumCover(Guid albumGuid)
         {
             return await rest.GetAlbumCover(albumGuid);
+        }
+
+        public override Task SynchronizeMusic()
+        {
+            throw new NotImplementedException();
         }
     }
 }
