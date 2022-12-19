@@ -1,0 +1,52 @@
+﻿@page "/Sync"
+
+@layout MainLayout
+
+@inject IAppModel Model
+
+<h3>MusicSyncPage</h3>
+
+
+<button @onclick="synchronizeMusic">Init</button>
+<br />
+<br />
+
+Progress  @syncProgress / 100
+<br />
+<br />
+@syncMessage
+<br />
+<br />
+@status
+
+@code {
+    private string status = "Idle";
+
+    private string syncMessage = string.Empty;
+    private int syncProgress = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Sync.SyncProgress += OnProgressEvent;
+
+        await base.OnInitializedAsync();
+    }
+
+    private async void synchronizeMusic()
+    {
+        status = "Syncing";
+
+        await Model.SynchronizeMusic();
+
+        status = "Idle";
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnProgressEvent(object sender, LibrarySync.ProgressEventArgs args)
+    {
+        syncMessage = args.Message;
+        syncProgress = args.ProgressPercent;
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

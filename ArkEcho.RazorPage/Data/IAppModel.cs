@@ -6,6 +6,7 @@ namespace ArkEcho.RazorPage
     {
         MusicLibrary Library { get; }
         Player Player { get; }
+        LibrarySync Sync { get; }
 
         Task<bool> AuthenticateUser(string username, string password);
         Task<bool> IsUserAuthenticated();
@@ -13,5 +14,7 @@ namespace ArkEcho.RazorPage
 
         Task<bool> InitializeLibraryAndPlayer();
         Task<string> GetAlbumCover(Guid albumGuid); // TOOD: Only needed on Web?
+
+        Task SynchronizeMusic();
     }
 }

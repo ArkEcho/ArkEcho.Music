@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public class LibarySync
+    public class LibrarySync
     {
         public class ProgressEventArgs
         {
@@ -19,12 +19,13 @@ namespace ArkEcho.Core
                 this.ProgressPercent = progressPercent;
             }
         }
-        public event EventHandler<ProgressEventArgs> SyncProgress; // TODO: Progress Event
+
+        public EventHandler<ProgressEventArgs> SyncProgress;
 
         private Rest rest = null;
         protected Logger logger = null;
 
-        public LibarySync(Rest rest, RestLoggingWorker loggingWorker)
+        public LibrarySync(Rest rest, RestLoggingWorker loggingWorker)
         {
             this.rest = rest;
             logger = new Logger(ArkEcho.Resources.ARKECHODESKTOP, "MusicSync", loggingWorker);
@@ -72,6 +73,8 @@ namespace ArkEcho.Core
 
             logger.LogStatic($"Success!");
 
+            progressEvent("Success!", 100);
+
             return true;
         }
 
@@ -90,7 +93,8 @@ namespace ArkEcho.Core
                     count++;
                     logger.LogDebug($"Loading {file.FileName}");
 
-                    int progress = ((count / missing.Count) * 50) + 20;
+                    double test = ((double)count / missing.Count) * 50;
+                    int progress = Convert.ToInt32(test + 20);
                     progressEvent($"Loading {file.FileName}", progress);
 
                     bool success = await LoadFileFromServer(file);

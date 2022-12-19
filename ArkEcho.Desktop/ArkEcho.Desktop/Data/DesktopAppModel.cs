@@ -8,13 +8,15 @@ namespace ArkEcho.Desktop
     {
         public override Player Player { get { return player; } }
 
+        public override LibrarySync Sync { get; }
+
         private VLCPlayer player = null;
 
         public DesktopAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker)
             : base(Resources.ARKECHODESKTOP, localStorage, loggingWorker, "https://192.168.178.20:5002", false)
         {
             player = new VLCPlayer();
-            syncBase = new LibarySync(rest, loggingWorker);
+            Sync = new LibrarySync(rest, loggingWorker);
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
@@ -31,6 +33,12 @@ namespace ArkEcho.Desktop
                 return false;
 
             return true;
+        }
+
+        public override async Task SynchronizeMusic()
+        {
+            // TODO
+            await Sync.SyncMusicLibrary("D:\\_TEMP\\Music", Library);
         }
     }
 }

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "..\Ark
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6356B863-0280-4B0D-90E8-36C2C214DF2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.VLC", "..\ArkEcho.VLC\ArkEcho.VLC.csproj", "{82CE911D-4EDA-41EC-9A6C-EEFDCA0AC1A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.VLC", "..\ArkEcho.VLC\ArkEcho.VLC.csproj", "{82CE911D-4EDA-41EC-9A6C-EEFDCA0AC1A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

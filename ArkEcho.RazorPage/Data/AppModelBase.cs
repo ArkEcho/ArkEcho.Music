@@ -9,8 +9,9 @@ namespace ArkEcho.RazorPage
 
         public abstract Player Player { get; }
 
+        public abstract LibrarySync Sync { get; }
+
         protected Rest rest = null;
-        protected LibarySync syncBase = null;
         protected Logger logger = null;
 
         private string appName = string.Empty;
@@ -45,5 +46,6 @@ namespace ArkEcho.RazorPage
 
         public abstract Task<bool> InitializeLibraryAndPlayer();
         public abstract Task<string> GetAlbumCover(Guid albumGuid);
+        public abstract Task SynchronizeMusic();
     }
 }

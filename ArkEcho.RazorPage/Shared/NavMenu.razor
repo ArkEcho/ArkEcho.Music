@@ -1,4 +1,5 @@
-﻿
+﻿@inject IAppModel Model
+
 <div>
     <ul>
         <li>
@@ -6,5 +7,15 @@
                 <span aria-hidden="true"></span> Player
             </NavLink>
         </li>
+
+        @if (Model.Sync != null)
+        {
+            <li>
+                <NavLink href="Sync">
+                    <span aria-hidden="true"></span> Music Sync
+                </NavLink>
+            </li>
+        }
+
     </ul>
 </div>
