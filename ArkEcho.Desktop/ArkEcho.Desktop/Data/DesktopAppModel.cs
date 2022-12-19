@@ -14,7 +14,7 @@ namespace ArkEcho.Desktop
             : base(Resources.ARKECHODESKTOP, localStorage, loggingWorker, "https://192.168.178.20:5002", false)
         {
             player = new VLCPlayer();
-            syncBase = new DesktopLibrarySync(rest, loggingWorker);
+            syncBase = new LibarySync(rest, loggingWorker);
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)

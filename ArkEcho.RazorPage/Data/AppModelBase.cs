@@ -10,7 +10,7 @@ namespace ArkEcho.RazorPage
         public abstract Player Player { get; }
 
         protected Rest rest = null;
-        protected LibarySyncBase syncBase = null;
+        protected LibarySync syncBase = null;
         protected Logger logger = null;
 
         private string appName = string.Empty;
