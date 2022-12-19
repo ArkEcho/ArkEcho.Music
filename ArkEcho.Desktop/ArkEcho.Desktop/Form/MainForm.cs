@@ -85,7 +85,7 @@ namespace ArkEcho.Desktop
 
             blazorWebView.HostPage = "wwwroot\\index.html";
             blazorWebView.Services = services.BuildServiceProvider();
-            blazorWebView.RootComponents.Add<App>("#app");
+            blazorWebView.RootComponents.Add<BlazorApp>("#app");
 
             timerSplash = new System.Timers.Timer();
             timerSplash.Interval = 1000;
