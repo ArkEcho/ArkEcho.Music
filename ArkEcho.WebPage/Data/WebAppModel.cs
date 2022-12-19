@@ -8,8 +8,6 @@ namespace ArkEcho.WebPage
 {
     public class WebAppModel : AppModelBase
     {
-        public override MusicLibrary Library { get; } = null;
-
         public override Player Player { get { return jsPlayer; } }
 
         private bool initialized = false;
@@ -17,7 +15,6 @@ namespace ArkEcho.WebPage
 
         public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage) : base(localStorage, WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression)
         {
-            Library = new MusicLibrary();
             jsPlayer = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
         }
 
@@ -33,7 +30,7 @@ namespace ArkEcho.WebPage
             {
                 Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
 
-                if (jsPlayer.InitPlayer())
+                if (jsPlayer.InitPlayer()) // TODO entfernen
                 {
                     initialized = true;
                     return true;

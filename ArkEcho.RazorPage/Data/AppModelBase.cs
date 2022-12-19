@@ -5,7 +5,7 @@ namespace ArkEcho.RazorPage
 {
     public abstract class AppModelBase : IAppModel
     {
-        public abstract MusicLibrary Library { get; }
+        public MusicLibrary Library { get; protected set; }
 
         public abstract Player Player { get; }
 
@@ -14,6 +14,7 @@ namespace ArkEcho.RazorPage
 
         public AppModelBase(ILocalStorage localStorage, string serverAddress, bool compression)
         {
+            Library = new MusicLibrary();
             rest = new Rest(serverAddress, compression);
             authentication = new Authentication(localStorage, rest);
         }

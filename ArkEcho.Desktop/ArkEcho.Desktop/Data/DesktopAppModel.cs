@@ -1,17 +1,17 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage;
 
-namespace ArkEcho.Desktop.Data
+namespace ArkEcho.Desktop
 {
     public class DesktopAppModel : AppModelBase
     {
-        public override MusicLibrary Library => throw new NotImplementedException();
+        public override Player Player { get { return player; } }
 
-        public override Player Player => throw new NotImplementedException();
+        private VLCDesktopPlayer player = null;
 
         public DesktopAppModel(ILocalStorage localStorage) : base(localStorage, "https://192.168.178.20:5002", false)
         {
-
+            player = new VLCDesktopPlayer();
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
@@ -21,6 +21,9 @@ namespace ArkEcho.Desktop.Data
 
         public override async Task<bool> InitializeLibraryAndPlayer()
         {
+            string lib = await rest.GetMusicLibrary();
+            await Library.LoadFromJsonString(lib);
+
             return true;
         }
     }
