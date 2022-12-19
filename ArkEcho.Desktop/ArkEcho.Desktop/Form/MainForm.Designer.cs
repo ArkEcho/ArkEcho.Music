@@ -67,6 +67,7 @@
             this.Controls.Add(this.blazorWebView);
             this.Name = "MainForm";
             this.Text = "ArkEcho";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureSplash)).EndInit();
             this.ResumeLayout(false);

@@ -10,10 +10,16 @@ namespace ArkEcho.RazorPage
         public abstract Player Player { get; }
 
         protected Rest rest = null;
+        protected LibarySyncBase syncBase = null;
+        protected Logger logger = null;
+
+        private string appName = string.Empty;
         private Authentication authentication = null;
 
-        public AppModelBase(ILocalStorage localStorage, string serverAddress, bool compression)
+        public AppModelBase(string appName, ILocalStorage localStorage, RestLoggingWorker loggingWorker, string serverAddress, bool compression)
         {
+            this.appName = appName;
+            this.logger = new Logger(appName, "AppModel", loggingWorker);
             Library = new MusicLibrary();
             rest = new Rest(serverAddress, compression);
             authentication = new Authentication(localStorage, rest);

@@ -13,7 +13,8 @@ namespace ArkEcho.WebPage
         private bool initialized = false;
         private JSPlayer jsPlayer = null;
 
-        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage) : base(localStorage, WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, RestLoggingWorker loggingWorker)
+            : base(Resources.ARKECHOWEBPAGE, localStorage, loggingWorker, WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression)
         {
             jsPlayer = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
         }
