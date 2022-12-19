@@ -11,6 +11,9 @@ namespace ArkEcho.Desktop
 
         private SynchronizationContext context = null;
 
+        // TODO: Desktop Logging
+        // TODO: Desktop Config
+
         public MainForm()
         {
             InitializeComponent();

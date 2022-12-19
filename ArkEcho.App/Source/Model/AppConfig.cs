@@ -4,6 +4,7 @@ namespace ArkEcho.App
 {
     public class AppConfig : JsonBase
     {
+        // TODO: Entfernen durch RazorPages Klasse
         public AppConfig(string fileName) : base(fileName) { }
 
         [JsonProperty]

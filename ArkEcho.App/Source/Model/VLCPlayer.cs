@@ -4,6 +4,7 @@ using System;
 
 namespace ArkEcho.App
 {
+    // TODO: Entfernen durch RazorPages Klasse
     public class VLCPlayer : Player
     {
         private LibVLC libvlc = null;

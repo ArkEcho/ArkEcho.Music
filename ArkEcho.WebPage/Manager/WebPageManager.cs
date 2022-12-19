@@ -14,7 +14,6 @@ namespace ArkEcho.WebPage
 
         private IWebHost host = null;
         private Logger logger = null;
-        private MusicLibrary library = null;
         private Rest rest = null;
 
         public static WebPageManager Instance { get; private set; } = new WebPageManager();
@@ -27,7 +26,6 @@ namespace ArkEcho.WebPage
 
         private WebPageManager()
         {
-            library = new MusicLibrary();
         }
 
         public bool Init()
