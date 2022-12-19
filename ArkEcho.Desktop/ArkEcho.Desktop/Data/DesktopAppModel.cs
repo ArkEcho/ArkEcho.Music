@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage;
+using ArkEcho.VLC;
 
 namespace ArkEcho.Desktop
 {
@@ -7,11 +8,11 @@ namespace ArkEcho.Desktop
     {
         public override Player Player { get { return player; } }
 
-        private VLCDesktopPlayer player = null;
+        private VLCPlayer player = null;
 
         public DesktopAppModel(ILocalStorage localStorage) : base(localStorage, "https://192.168.178.20:5002", false)
         {
-            player = new VLCDesktopPlayer();
+            player = new VLCPlayer();
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
@@ -23,6 +24,9 @@ namespace ArkEcho.Desktop
         {
             string lib = await rest.GetMusicLibrary();
             await Library.LoadFromJsonString(lib);
+
+            if (!player.InitPlayer())
+                return false;
 
             return true;
         }
