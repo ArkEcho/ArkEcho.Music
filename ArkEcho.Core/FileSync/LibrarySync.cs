@@ -38,9 +38,9 @@ namespace ArkEcho.Core
                 logger.LogError("Given library is null!");
                 return false;
             }
-            else if (string.IsNullOrEmpty(musicFolder))
+            else if (string.IsNullOrEmpty(musicFolder) || !Directory.Exists(musicFolder))
             {
-                logger.LogError($"Empty MusicFolder String!");
+                logger.LogError($"Given MusicFolder doesn't exist");
                 return false;
             }
 
@@ -49,7 +49,7 @@ namespace ArkEcho.Core
 
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await checkLibraryWithLocalFolder(musicFolder, library, exist, missing);
+            bool checkLib = await CheckLibrary(musicFolder, library, exist, missing);
 
             if (!checkLib)
             {
@@ -57,10 +57,9 @@ namespace ArkEcho.Core
                 return false;
             }
 
-            progressEvent("Loading Missing Files", 20);
-
             if (missing.Count > 0)
             {
+                progressEvent("Loading Missing Files", 20);
                 logger.LogImportant($"Loading {missing.Count} Files");
                 bool success = await loadMissingFiles(missing, exist);
             }
@@ -122,6 +121,9 @@ namespace ArkEcho.Core
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
 
+                if (!Directory.Exists(file.Folder.LocalPath))
+                    Directory.CreateDirectory(file.Folder.LocalPath);
+
                 using (MemoryStream dataStream = await rest.GetFile(file))
                 {
                     if (dataStream.Length == 0)
@@ -167,7 +169,7 @@ namespace ArkEcho.Core
             }
         }
 
-        private async Task<bool> checkLibraryWithLocalFolder(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing)
+        public async Task<bool> CheckLibrary(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing)
         {
             bool success = false;
 
@@ -190,10 +192,7 @@ namespace ArkEcho.Core
                         file.Folder = new Uri(folder);
 
                         if (!Directory.Exists(file.Folder.LocalPath) || !File.Exists(file.FullPath))
-                        {
-                            Directory.CreateDirectory(file.Folder.LocalPath);
                             missing.Add(file);
-                        }
                         else
                             exist.Add(file);
                     }

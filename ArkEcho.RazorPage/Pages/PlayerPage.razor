@@ -91,7 +91,7 @@
             return;
 
         SongInfo = $"{file.Title} - {file.Performer}";
-        await setAlbumCoverFromServer();
+        await setAlbumCover();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -106,7 +106,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task setAlbumCoverFromServer()
+    private async Task setAlbumCover()
     {        
         string result = await Model.GetAlbumCover(Model.Player.PlayingFile.Album);
         Image64 =  $"data:image/png;base64,{result}";

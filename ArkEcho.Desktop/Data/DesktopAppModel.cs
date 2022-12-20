@@ -29,11 +29,14 @@ namespace ArkEcho.Desktop
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
         {
-            return string.Empty;
+            return await rest.GetAlbumCover(albumGuid);
         }
 
         public override async Task<bool> InitializeLibraryAndPlayer()
         {
+            if (!player.InitPlayer())
+                return false;
+
             if (!await Library.LoadFromFile(config.MusicFolder.LocalPath, false))
             {
                 if (!await LoadLibraryFromServer())
@@ -43,10 +46,10 @@ namespace ArkEcho.Desktop
                     return false;
             }
 
-            if (!player.InitPlayer())
-                return false;
+            List<MusicFile> missing = new();
+            bool success = await Sync.CheckLibrary(config.MusicFolder.LocalPath, Library, new List<MusicFile>(), missing);
 
-            return true;
+            return !success || missing.Count > 0;
         }
 
         public override async Task<bool> SynchronizeMusic()

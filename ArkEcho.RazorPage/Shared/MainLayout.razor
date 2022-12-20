@@ -34,12 +34,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("MainLayout OnInitializedAsync");
+        //Console.WriteLine("MainLayout OnInitializedAsync");
 
         if (!await Model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
-        Task.Factory.StartNew(() => Model.InitializeLibraryAndPlayer());
+        bool success = await Model.InitializeLibraryAndPlayer();
+
+        // TODO Give Error or Success!
     }
 
     public async Task UserIconClick()
