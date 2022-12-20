@@ -10,14 +10,16 @@ namespace ArkEcho.WebPage
     {
         public override Player Player { get { return jsPlayer; } }
         public override LibrarySync Sync { get; }
+        public override MusicLibrary Library { get; }
 
         private bool initialized = false;
         private JSPlayer jsPlayer = null;
 
-        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, RestLoggingWorker loggingWorker)
-            : base(Resources.ARKECHOWEBPAGE, localStorage, loggingWorker, WebPageManager.Instance.Config.ServerAddress, WebPageManager.Instance.Config.Compression)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, RestLoggingWorker loggingWorker, WebPageConfig config)
+            : base(Resources.ARKECHOWEBPAGE, localStorage, loggingWorker, config.ServerAddress, config.Compression)
         {
-            jsPlayer = new JSPlayer(jsRuntime, WebPageManager.Instance.Config.ServerAddress);
+            jsPlayer = new JSPlayer(jsRuntime, config.ServerAddress);
+            Library = new MusicLibrary();
         }
 
         public override async Task<bool> InitializeLibraryAndPlayer()

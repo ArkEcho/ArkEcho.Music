@@ -29,6 +29,8 @@ namespace ArkEcho.WebPage
             services.AddBlazoredLocalStorage();
 
             services.AddSingleton(WebPageManager.Instance.LoggingWorker);
+            services.AddSingleton(WebPageManager.Instance.Config);
+
             services.AddScoped<ILocalStorage, WebLocalStorage>(); // Needs Blazor Local Storage/Blazored
             services.AddScoped<IAppModel, WebAppModel>(); // Needs WebLocalStorage
         }
