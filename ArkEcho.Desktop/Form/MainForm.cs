@@ -16,7 +16,7 @@ namespace ArkEcho.Desktop
         private const string desktopConfigFileName = "ArkEchoDesktopConfig.json";
 
         public RestLoggingWorker LoggingWorker { get; private set; } = null;
-        public RazorConfig Config { get; private set; } = null;
+        public DesktopAppConfig Config { get; private set; } = null;
 
 
         public MainForm()
@@ -46,7 +46,7 @@ namespace ArkEcho.Desktop
         {
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Config = new RazorConfig(desktopConfigFileName);
+            Config = new DesktopAppConfig(desktopConfigFileName);
 
             bool success = await Config.LoadFromFile(executingLocation, true);
             if (!success)
@@ -80,6 +80,7 @@ namespace ArkEcho.Desktop
             services.AddWindowsFormsBlazorWebView();
 
             services.AddSingleton(LoggingWorker);
+            services.AddSingleton(Config);
             services.AddScoped<ILocalStorage, DesktopLocalStorage>();
             services.AddScoped<IAppModel, DesktopAppModel>();
 
