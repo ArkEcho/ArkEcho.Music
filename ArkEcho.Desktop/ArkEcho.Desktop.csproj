@@ -14,9 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ArkEcho.Core\ArkEcho.Core.csproj" />
-    <ProjectReference Include="..\..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
-    <ProjectReference Include="..\..\ArkEcho.VLC\ArkEcho.VLC.csproj" />
+    <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
+    <ProjectReference Include="..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
+    <ProjectReference Include="..\ArkEcho.VLC\ArkEcho.VLC.csproj" />
   </ItemGroup>
 
   <ItemGroup>

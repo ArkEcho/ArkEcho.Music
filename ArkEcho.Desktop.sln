@@ -5,13 +5,13 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Desktop", "ArkEcho.Desktop\ArkEcho.Desktop.csproj", "{5B166D23-2CC9-4041-9F36-8A8A58CE6970}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core", "..\ArkEcho.Core\ArkEcho.Core.csproj", "{29A24A54-4698-403E-9D37-DB7528B08C3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core", "ArkEcho.Core\ArkEcho.Core.csproj", "{29A24A54-4698-403E-9D37-DB7528B08C3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "..\ArkEcho.Core.Test\ArkEcho.Core.Test.csproj", "{F92A84FE-64CE-4E50-8164-F05D39336AEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "ArkEcho.Core.Test\ArkEcho.Core.Test.csproj", "{F92A84FE-64CE-4E50-8164-F05D39336AEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6356B863-0280-4B0D-90E8-36C2C214DF2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6356B863-0280-4B0D-90E8-36C2C214DF2B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.VLC", "..\ArkEcho.VLC\ArkEcho.VLC.csproj", "{82CE911D-4EDA-41EC-9A6C-EEFDCA0AC1A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.VLC", "ArkEcho.VLC\ArkEcho.VLC.csproj", "{82CE911D-4EDA-41EC-9A6C-EEFDCA0AC1A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
