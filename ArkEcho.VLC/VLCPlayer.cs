@@ -24,8 +24,12 @@ namespace ArkEcho.VLC
                 LibVLCSharp.Shared.Core.Initialize();
                 libvlc = new LibVLC(enableDebugLogs: true);
                 mediaplayer = new MediaPlayer(libvlc);
+
                 mediaplayer.PositionChanged += Mediaplayer_PositionChanged;
                 mediaplayer.EndReached += Mediaplayer_EndReached;
+                mediaplayer.Playing += Mediaplayer_Playing;
+                mediaplayer.Paused += Mediaplayer_Paused;
+                mediaplayer.Stopped += Mediaplayer_Stopped;
 
                 Initialized = true;
                 return Initialized;
@@ -37,6 +41,22 @@ namespace ArkEcho.VLC
             }
         }
 
+        private void Mediaplayer_Stopped(object? sender, EventArgs e)
+        {
+            playingChanged(false);
+            audioPositionChanged(0);
+        }
+
+        private void Mediaplayer_Paused(object? sender, EventArgs e)
+        {
+            playingChanged(false);
+        }
+
+        private void Mediaplayer_Playing(object? sender, EventArgs e)
+        {
+            playingChanged(true);
+        }
+
         private void Mediaplayer_EndReached(object sender, EventArgs e)
         {
             AudioEnd();
@@ -44,7 +64,8 @@ namespace ArkEcho.VLC
 
         private void Mediaplayer_PositionChanged(object sender, MediaPlayerPositionChangedEventArgs e)
         {
-            // TODO: Position in Sekunden berechnen
+            int position = Convert.ToInt32((double)PlayingFile.Duration / 1000 * e.Position);
+            audioPositionChanged(position);
         }
 
         protected override void loadAudio(bool StartOnLoad)
@@ -96,8 +117,8 @@ namespace ArkEcho.VLC
 
         protected override void setAudioPosition()
         {
-            if (mediaplayer.Media != null)
-                mediaplayer.Position = Position / mediaplayer.Media.Duration;
+            float position = (float)Position / ((float)PlayingFile.Duration / 1000);
+            mediaplayer.Position = position; // Doesn't work if not playing/stopped!
         }
     }
 }

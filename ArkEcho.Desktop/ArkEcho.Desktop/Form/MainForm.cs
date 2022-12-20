@@ -52,8 +52,8 @@ namespace ArkEcho.Desktop
             if (!success)
             {
                 Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Desktop");
-
-                context?.Send(o => this.Close(), null);
+                MessageBox.Show("No Config File found/Error Loading -> created new one, please configure!", "ArkEcho", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                this.Close();
                 return;
             }
 
@@ -61,6 +61,7 @@ namespace ArkEcho.Desktop
             if (!rest.CheckConnection())
             {
                 Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping Desktop");
+                MessageBox.Show("No Response from Server! Maybe its Offline!", "ArkEcho", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 this.Close();
                 return;
             }
@@ -71,7 +72,6 @@ namespace ArkEcho.Desktop
             logger = new Logger(Resources.ARKECHODESKTOP, "Form", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Desktop:");
-
             string config = await Config.SaveToJsonString();
             logger.LogStatic($"\r\n{config}");
 
