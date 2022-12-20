@@ -29,6 +29,7 @@ namespace ArkEcho.Desktop
             string lib = await rest.GetMusicLibrary();
             await Library.LoadFromJsonString(lib);
 
+            // TODO: Aus Datei laden -> wenn nicht vorhanden laden -> bei Sync auch aktualisieren!
             if (!player.InitPlayer())
                 return false;
 
@@ -37,7 +38,7 @@ namespace ArkEcho.Desktop
 
         public override async Task SynchronizeMusic()
         {
-            // TODO
+            // TODO Config
             await Sync.SyncMusicLibrary("D:\\_TEMP\\Music", Library);
         }
     }
