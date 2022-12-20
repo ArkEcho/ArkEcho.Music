@@ -5,7 +5,7 @@ namespace ArkEcho.RazorPage
 {
     public abstract class AppModelBase : IAppModel
     {
-        public MusicLibrary Library { get; protected set; }
+        public abstract MusicLibrary Library { get; }
 
         public abstract Player Player { get; }
 
@@ -21,7 +21,6 @@ namespace ArkEcho.RazorPage
         {
             this.appName = appName;
             this.logger = new Logger(appName, "AppModel", loggingWorker);
-            Library = new MusicLibrary();
             rest = new Rest(serverAddress, compression);
             authentication = new Authentication(localStorage, rest);
         }
@@ -42,6 +41,15 @@ namespace ArkEcho.RazorPage
                 Player.Stop();
 
             await authentication.MarkUserAsLoggedOut();
+        }
+
+        protected async Task<bool> LoadLibraryFromServer()
+        {
+            string lib = await rest.GetMusicLibrary();
+            if (string.IsNullOrEmpty(lib))
+                return false;
+
+            return await Library.LoadFromJsonString(lib);
         }
 
         public abstract Task<bool> InitializeLibraryAndPlayer();

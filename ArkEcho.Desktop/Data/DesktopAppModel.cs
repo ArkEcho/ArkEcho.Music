@@ -10,14 +10,20 @@ namespace ArkEcho.Desktop
 
         public override LibrarySync Sync { get; }
 
+        public override MusicLibrary Library { get; }
+
         private VLCPlayer player = null;
         private DesktopAppConfig config = null;
+
+        private const string musicLibraryName = "MusicLibrary.json";
 
         public DesktopAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, DesktopAppConfig config)
             : base(Resources.ARKECHODESKTOP, localStorage, loggingWorker, config.ServerAddress, config.Compression)
         {
             player = new VLCPlayer();
             Sync = new LibrarySync(Resources.ARKECHODESKTOP, rest, loggingWorker);
+            Library = new MusicLibrary(musicLibraryName);
+
             this.config = config;
         }
 
@@ -28,19 +34,30 @@ namespace ArkEcho.Desktop
 
         public override async Task<bool> InitializeLibraryAndPlayer()
         {
-            string lib = await rest.GetMusicLibrary();
-            await Library.LoadFromJsonString(lib);
+            if (!await Library.LoadFromFile(config.MusicFolder.LocalPath, false))
+            {
+                if (!await LoadLibraryFromServer())
+                    return false;
 
-            // TODO: Aus Datei laden -> wenn nicht vorhanden laden -> bei Sync auch aktualisieren!
+                if (!await Library.SaveToFile(config.MusicFolder.LocalPath))
+                    return false;
+            }
+
             if (!player.InitPlayer())
                 return false;
 
             return true;
         }
 
-        public override async Task SynchronizeMusic()
+        public override async Task<bool> SynchronizeMusic()
         {
-            await Sync.SyncMusicLibrary(config.MusicFolder.LocalPath, Library);
+            if (!await LoadLibraryFromServer())
+                return false;
+
+            if (!await Sync.SyncMusicLibrary(config.MusicFolder.LocalPath, Library))
+                return false;
+
+            return await Library.SaveToFile(config.MusicFolder.LocalPath);
         }
     }
 }

@@ -33,12 +33,14 @@ Progress  @syncProgress / 100
 
     private async void synchronizeMusic()
     {
+        // TODO: Stop Player
         status = "Syncing";
 
         await Model.SynchronizeMusic();
 
         status = "Idle";
 
+        // TODO: Reload MusicLibrary Display
         await InvokeAsync(StateHasChanged);
     }
 
