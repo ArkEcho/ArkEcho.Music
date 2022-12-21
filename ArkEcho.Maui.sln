@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Desktop", "ArkEcho.Desktop\ArkEcho.Desktop.csproj", "{5B166D23-2CC9-4041-9F36-8A8A58CE6970}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core", "ArkEcho.Core\ArkEcho.Core.csproj", "{29A24A54-4698-403E-9D37-DB7528B08C3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "ArkEcho.Core.Test\ArkEcho.Core.Test.csproj", "{F92A84FE-64CE-4E50-8164-F05D39336AEA}"
@@ -13,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "ArkEch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.VLC", "ArkEcho.VLC\ArkEcho.VLC.csproj", "{82CE911D-4EDA-41EC-9A6C-EEFDCA0AC1A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.Maui", "ArkEcho.Maui\ArkEcho.Maui.csproj", "{F341BF84-F10E-4AFF-96CE-DD9E8BC6EC4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Maui", "ArkEcho.Maui\ArkEcho.Maui.csproj", "{F341BF84-F10E-4AFF-96CE-DD9E8BC6EC4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5B166D23-2CC9-4041-9F36-8A8A58CE6970}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B166D23-2CC9-4041-9F36-8A8A58CE6970}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B166D23-2CC9-4041-9F36-8A8A58CE6970}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B166D23-2CC9-4041-9F36-8A8A58CE6970}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29A24A54-4698-403E-9D37-DB7528B08C3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{29A24A54-4698-403E-9D37-DB7528B08C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29A24A54-4698-403E-9D37-DB7528B08C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
