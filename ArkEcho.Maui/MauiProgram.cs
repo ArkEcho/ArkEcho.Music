@@ -10,6 +10,7 @@ namespace ArkEcho.Maui
     {
         public static MauiApp CreateMauiApp()
         {
+            // TODO: Nicht null return!
             MauiApp app = null;
 
             DesktopAppConfig Config = new DesktopAppConfig("ArkEchoDesktopConfig.json");

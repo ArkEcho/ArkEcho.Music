@@ -45,20 +45,15 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="LibVLCSharp" Version="3.6.7" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
         <PackageReference Include="VideoLAN.LibVLC.Android" Version="3.2.0.1" />
         <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pages\" />
-      <Folder Include="Shared\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
       <ProjectReference Include="..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
-      <ProjectReference Include="..\ArkEcho.VLC\ArkEcho.VLC.csproj" />
     </ItemGroup>
 
 </Project>
