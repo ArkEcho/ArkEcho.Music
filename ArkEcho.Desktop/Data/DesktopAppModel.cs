@@ -1,6 +1,7 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage;
 using ArkEcho.VLC;
+using System.Diagnostics;
 
 namespace ArkEcho.Desktop
 {
@@ -15,14 +16,12 @@ namespace ArkEcho.Desktop
         private VLCPlayer player = null;
         private DesktopAppConfig config = null;
 
-        private const string musicLibraryName = "MusicLibrary.json";
-
         public DesktopAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, DesktopAppConfig config)
             : base(Resources.ARKECHODESKTOP, localStorage, loggingWorker, config.ServerAddress, config.Compression)
         {
             player = new VLCPlayer();
             Sync = new LibrarySync(Resources.ARKECHODESKTOP, rest, loggingWorker);
-            Library = new MusicLibrary(musicLibraryName);
+            Library = new MusicLibrary();
 
             this.config = config;
         }
@@ -34,20 +33,20 @@ namespace ArkEcho.Desktop
 
         public override async Task<bool> InitializeLibraryAndPlayer()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             if (!player.InitPlayer())
                 return false;
 
-            if (!await Library.LoadFromFile(config.MusicFolder.LocalPath, false))
-            {
-                if (!await LoadLibraryFromServer())
-                    return false;
-
-                if (!await Library.SaveToFile(config.MusicFolder.LocalPath))
-                    return false;
-            }
+            if (!await LoadLibraryFromServer())
+                return false;
 
             List<MusicFile> missing = new();
             bool success = await Sync.CheckLibrary(config.MusicFolder.LocalPath, Library, new List<MusicFile>(), missing);
+
+            sw.Stop();
+            logger.LogDebug($"InitializeLibraryAndPlayer took {sw.ElapsedMilliseconds}ms");
 
             return !success || missing.Count > 0;
         }
@@ -57,10 +56,7 @@ namespace ArkEcho.Desktop
             if (!await LoadLibraryFromServer())
                 return false;
 
-            if (!await Sync.SyncMusicLibrary(config.MusicFolder.LocalPath, Library))
-                return false;
-
-            return await Library.SaveToFile(config.MusicFolder.LocalPath);
+            return await Sync.SyncMusicLibrary(config.MusicFolder.LocalPath, Library);
         }
     }
 }

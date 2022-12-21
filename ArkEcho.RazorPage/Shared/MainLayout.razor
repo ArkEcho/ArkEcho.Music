@@ -39,6 +39,7 @@
         if (!await Model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
+        // TODO: Move to Login
         bool success = await Model.InitializeLibraryAndPlayer();
 
         // TODO Give Error or Success!
