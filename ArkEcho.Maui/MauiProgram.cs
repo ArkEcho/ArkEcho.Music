@@ -1,48 +1,54 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.Desktop;
 using ArkEcho.RazorPage;
-using Microsoft.Extensions.Logging;
-using System.Reflection;
 
 namespace ArkEcho.Maui
 {
     public static class MauiProgram
     {
-        public static MauiApp CreateMauiApp()
+        public enum Platform
         {
-            // TODO: Nicht null return!
+            Unknown = 0,
+            Windows,
+            Android,
+        }
+
+        public static MauiApp CreateMauiApp(Platform executingPlatform, string rootPath, string musicFolder)
+        {
             MauiApp app = null;
 
-            DesktopAppConfig Config = new DesktopAppConfig("ArkEchoDesktopConfig.json");
-
-            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            DesktopAppConfig config = new DesktopAppConfig("ArkEchoMauiConfig.json");
 
             bool success = false;
 
-            Task.Factory.StartNew(() => success = Config.LoadFromFile(executingLocation, true).Result).Wait();
+            Task.Factory.StartNew(() => success = config.LoadFromFile(rootPath, true).Result).Wait();
+
+            if (!string.IsNullOrEmpty(musicFolder))
+                config.MusicFolder = new Uri(musicFolder);
 
             if (!success)
             {
-                Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Desktop");
+                Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping");
                 return null;
             }
 
-            Rest rest = new Rest(Config.ServerAddress, Config.Compression);
+            Rest rest = new Rest(config.ServerAddress, config.Compression);
             if (!rest.CheckConnection())
             {
-                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping Desktop");
+                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping");
                 return null;
             }
 
-            RestLoggingWorker LoggingWorker = new RestLoggingWorker(rest, Config.LogLevel);
-            LoggingWorker.RunWorkerAsync();
+            RestLoggingWorker LoggingWorker = new RestLoggingWorker(rest, config.LogLevel);
+            //LoggingWorker.RunWorkerAsync();
 
-            Logger logger = new Logger(Resources.ARKECHODESKTOP, "Form", LoggingWorker);
+            Logger logger = new Logger(Resources.ARKECHOMAUI, "MauiProgram", LoggingWorker);
 
-            logger.LogStatic("Configuration for ArkEcho.Desktop:");
+            logger.LogStatic($"Executing on {executingPlatform}, Root Path: {rootPath}");
+            logger.LogStatic("Configuration for ArkEcho.Maui:");
 
             string configString = string.Empty;
-            Task.Factory.StartNew(() => configString = Config.SaveToJsonString().Result).Wait();
+            Task.Factory.StartNew(() => configString = config.SaveToJsonString().Result).Wait();
 
             logger.LogStatic($"\r\n{configString}");
 
@@ -53,14 +59,14 @@ namespace ArkEcho.Maui
             builder.Services.AddMauiBlazorWebView();
 
             builder.Services.AddSingleton(LoggingWorker);
-            builder.Services.AddSingleton(Config);
+            builder.Services.AddSingleton(config);
             builder.Services.AddScoped<ILocalStorage, DesktopLocalStorage>();
             builder.Services.AddScoped<IAppModel, DesktopAppModel>();
 
-#if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
-            builder.Logging.AddDebug();
-#endif
+            //#if DEBUG
+            //            builder.Services.AddBlazorWebViewDeveloperTools();
+            //            builder.Logging.AddDebug();
+            //#endif
 
             app = builder.Build();
 

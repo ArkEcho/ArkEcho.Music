@@ -13,7 +13,7 @@ namespace ArkEcho
         public const string ARKECHOAPP = "ArkEcho.App";
         public const string ARKECHOSERVER = "ArkEcho.Server";
         public const string ARKECHOWEBPAGE = "ArkEcho.WebPage";
-        public const string ARKECHODESKTOP = "ArkEcho.Desktop";
+        public const string ARKECHOMAUI = "ArkEcho.Maui";
 
         public const int MaxFileSize = int.MaxValue; // ~2Gb
         public const int RestChunkSize = 15728640; // 15mb
@@ -41,6 +41,8 @@ namespace ArkEcho
             else if (osDescription.Contains("Android"))
                 return "/";
             else if (osDescription.Contains("Unix") && RuntimeInformation.FrameworkDescription.Contains("Mono", StringComparison.OrdinalIgnoreCase))
+                return "/";
+            else if (osDescription.Contains("Linux"))
                 return "/";
             else
                 throw new Exception($"Unknown OS! OSDescription: {osDescription}");

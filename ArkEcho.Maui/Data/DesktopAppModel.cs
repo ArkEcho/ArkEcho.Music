@@ -17,10 +17,10 @@ namespace ArkEcho.Desktop
         private DesktopAppConfig config = null;
 
         public DesktopAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, DesktopAppConfig config)
-            : base(Resources.ARKECHODESKTOP, localStorage, loggingWorker, config.ServerAddress, config.Compression)
+            : base(Resources.ARKECHOMAUI, localStorage, loggingWorker, config.ServerAddress, config.Compression)
         {
             player = new VLCPlayer();
-            Sync = new LibrarySync(Resources.ARKECHODESKTOP, rest, loggingWorker);
+            Sync = new LibrarySync(Resources.ARKECHOMAUI, rest, loggingWorker);
             Library = new MusicLibrary();
 
             this.config = config;

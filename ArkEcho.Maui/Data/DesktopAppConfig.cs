@@ -9,6 +9,6 @@ namespace ArkEcho.Desktop
         }
 
         [JsonProperty]
-        public Uri MusicFolder { get; private set; } = new Uri("about:blank");
+        public Uri MusicFolder { get; set; } = new Uri("about:blank");
     }
 }
