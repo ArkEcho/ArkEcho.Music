@@ -6,7 +6,7 @@ namespace ArkEcho.VLC
     public class VLCPlayer : Player
     {
         private LibVLC libvlc = null;
-        private MediaPlayer mediaplayer = null;
+        private LibVLCSharp.Shared.MediaPlayer mediaplayer = null;
         public VLCPlayer() : base()
         {
         }
@@ -23,7 +23,7 @@ namespace ArkEcho.VLC
             {
                 LibVLCSharp.Shared.Core.Initialize();
                 libvlc = new LibVLC(enableDebugLogs: true);
-                mediaplayer = new MediaPlayer(libvlc);
+                mediaplayer = new LibVLCSharp.Shared.MediaPlayer(libvlc);
 
                 mediaplayer.PositionChanged += Mediaplayer_PositionChanged;
                 mediaplayer.EndReached += Mediaplayer_EndReached;
