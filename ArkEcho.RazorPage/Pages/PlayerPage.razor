@@ -116,6 +116,9 @@
     {
         Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
+        if (file == null)
+            return;
+
         List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
         Model.Player.Start(Files, 0);
     }
