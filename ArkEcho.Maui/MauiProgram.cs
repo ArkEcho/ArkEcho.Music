@@ -40,7 +40,7 @@ namespace ArkEcho.Maui
             }
 
             RestLoggingWorker LoggingWorker = new RestLoggingWorker(rest, config.LogLevel);
-            //LoggingWorker.RunWorkerAsync();
+            LoggingWorker.RunWorkerAsync();
 
             Logger logger = new Logger(Resources.ARKECHOMAUI, "MauiProgram", LoggingWorker);
 

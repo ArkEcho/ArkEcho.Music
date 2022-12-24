@@ -26,14 +26,18 @@ namespace ArkEcho.Core
         public void AddLogMessage(LogMessage log)
         {
             loggingQueue.Enqueue(log);
-            if (!IsBusy && !stop)
-                RunWorkerAsync();
         }
 
         private void LoggingWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (!loggingQueue.IsEmpty)
+            while (!stop)
             {
+                if (loggingQueue.Count == 0)
+                {
+                    Thread.Sleep(500);
+                    continue;
+                }
+
                 if (loggingQueue.TryDequeue(out LogMessage log) && log.Level <= logLevel)
                     HandleLogMessage(log);
             }
