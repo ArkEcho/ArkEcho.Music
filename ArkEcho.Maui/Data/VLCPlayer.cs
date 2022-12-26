@@ -1,7 +1,7 @@
 ﻿using ArkEcho.Core;
 using LibVLCSharp.Shared;
 
-namespace ArkEcho.VLC
+namespace ArkEcho.Maui
 {
     public class VLCPlayer : Player
     {

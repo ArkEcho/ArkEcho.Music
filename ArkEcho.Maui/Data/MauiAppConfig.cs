@@ -1,10 +1,10 @@
 ﻿using ArkEcho.RazorPage;
 
-namespace ArkEcho.Desktop
+namespace ArkEcho.Maui
 {
-    public class DesktopAppConfig : RazorConfig
+    public class MauiAppConfig : RazorConfig
     {
-        public DesktopAppConfig(string fileName) : base(fileName)
+        public MauiAppConfig(string fileName) : base(fileName)
         {
         }
 

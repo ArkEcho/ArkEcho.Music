@@ -1,8 +1,8 @@
 ﻿using ArkEcho.Core;
 
-namespace ArkEcho.Desktop
+namespace ArkEcho.Maui
 {
-    public class DesktopLocalStorage : ILocalStorage
+    public class MauiLocalStorage : ILocalStorage
     {
         private Dictionary<string, object> storage = new Dictionary<string, object>();
 

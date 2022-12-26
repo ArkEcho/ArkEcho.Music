@@ -1,11 +1,10 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage;
-using ArkEcho.VLC;
 using System.Diagnostics;
 
-namespace ArkEcho.Desktop
+namespace ArkEcho.Maui
 {
-    public class DesktopAppModel : AppModelBase
+    public class MauiAppModel : AppModelBase
     {
         public override Player Player { get { return player; } }
 
@@ -14,9 +13,9 @@ namespace ArkEcho.Desktop
         public override MusicLibrary Library { get; }
 
         private VLCPlayer player = null;
-        private DesktopAppConfig config = null;
+        private MauiAppConfig config = null;
 
-        public DesktopAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, DesktopAppConfig config)
+        public MauiAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, MauiAppConfig config)
             : base(Resources.ARKECHOMAUI, localStorage, loggingWorker, config.ServerAddress, config.Compression)
         {
             player = new VLCPlayer();

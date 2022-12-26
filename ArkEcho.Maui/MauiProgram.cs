@@ -1,5 +1,4 @@
 ﻿using ArkEcho.Core;
-using ArkEcho.Desktop;
 using ArkEcho.RazorPage;
 
 namespace ArkEcho.Maui
@@ -17,7 +16,7 @@ namespace ArkEcho.Maui
         {
             MauiApp app = null;
 
-            DesktopAppConfig config = new DesktopAppConfig("ArkEchoMauiConfig.json");
+            MauiAppConfig config = new MauiAppConfig("ArkEchoMauiConfig.json");
 
             bool success = false;
 
@@ -60,8 +59,8 @@ namespace ArkEcho.Maui
 
             builder.Services.AddSingleton(LoggingWorker);
             builder.Services.AddSingleton(config);
-            builder.Services.AddScoped<ILocalStorage, DesktopLocalStorage>();
-            builder.Services.AddScoped<IAppModel, DesktopAppModel>();
+            builder.Services.AddScoped<ILocalStorage, MauiLocalStorage>();
+            builder.Services.AddScoped<IAppModel, MauiAppModel>();
 
             //#if DEBUG
             //            builder.Services.AddBlazorWebViewDeveloperTools();
