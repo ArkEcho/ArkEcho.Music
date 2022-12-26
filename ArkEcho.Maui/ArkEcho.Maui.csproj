@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0-android;net7.0-maccatalyst</TargetFrameworks>
+        <TargetFrameworks>net7.0-android</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <OutputType>Exe</OutputType>
         <RootNamespace>ArkEcho.Maui</RootNamespace>
@@ -14,7 +14,7 @@
         <ApplicationTitle>ArkEcho.Maui</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.arkecho.maui</ApplicationId>
+        <ApplicationId>de.arkecho.maui</ApplicationId>
         <ApplicationIdGuid>B35C5CCE-B759-44FD-B3EC-F798D91B026A</ApplicationIdGuid>
 
         <!-- Versions -->
@@ -47,15 +47,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<!-- App Icon -->
+		<MauiIcon Include="Resources\appicon.svg" BaseSize="128,128" />
 
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<!-- Splash Screen -->		
+		<MauiSplashScreen Include="..\ArkEcho.Core\Resources\logo\logo.svg" Color="white" BaseSize="128,128" Link="Resources\Splash\logo.svg" />
 
-        <!-- Images -->
+		<!-- Images -->
         <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
@@ -74,6 +73,12 @@
     <ItemGroup>
       <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
       <ProjectReference Include="..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources\AppIcon\" />
+      <Folder Include="Resources\Images\" />
+      <Folder Include="Resources\Splash\" />
     </ItemGroup>
 
 </Project>
