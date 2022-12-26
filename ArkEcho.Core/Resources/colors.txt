@@ -1,0 +1,16 @@
+
+DarkGrey:	#242828
+Grey:		#31363b
+MidGrey: 	#76797c
+LightGrey:	#eff0f1
+
+LightBlue:	#3daee9
+
+LightGreen:	#4caf50
+
+Red:		#ff1111
+
+Background:	#31363b
+Font:		Bauhaus 93, NOT Bold
+Size:		96
+Color:		#eff0f1

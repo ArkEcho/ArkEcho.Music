@@ -1,0 +1,16 @@
+<svg viewBox="0 0 130 200">
+	<g color="#3daee9">
+		<rect x="0" y="70" width="50" height="130" fill="currentcolor" />
+		<rect x="80" y="70" width="50" height="130" fill="currentcolor" />
+		<circle cx="65" cy="70" r="65" fill="currentcolor" />
+	</g>
+
+	<g>
+		<circle cx="65" cy="70" r="15" fill="currentcolor" />
+		<rect x="50" y="70" width="30" height="130" fill="currentcolor" />
+	</g>
+
+	<g color="#3daee9">
+		<rect x="49" y="100" width="22" height="50" fill="currentcolor" />
+	</g>
+</svg>

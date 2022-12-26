@@ -5,30 +5,26 @@
 @inject IAppModel model
 @inject NavigationManager NavigationManager
 
-    <div>
-        <h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
-    </div>
+<div >
+    <input @bind="username" placeholder="email address" />
+</div>
+<br />
 
-    <div >
-        <input @bind="username" placeholder="email address" />
-    </div>
-    <br />
+<div >
+    <input type="password" @bind="password" placeholder="password" />
+</div>
+<br />
 
-    <div >
-        <input type="password" @bind="password" placeholder="password" />
-    </div>
-    <br />
-
-    <div>
+<div>
     <button @onclick="validateUser">Login</button>
-    </div>
-    <br />
+</div>
+<br />
 
-    <div style="text-align:left; font-weight:bold">
-        <span>@LoginMesssage</span>
-    </div>
+<div style="text-align:left; font-weight:bold">
+    <span>@LoginMesssage</span>
+</div>
 
-    @code
+@code
 {
     public string LoginMesssage { get; set; }
 

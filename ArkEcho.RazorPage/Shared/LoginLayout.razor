@@ -7,10 +7,17 @@
 			<p>&nbsp;</p>
 		</div>
 		<div >
-			<div style="border-right:groove">
-				<img src="/img/arkecho_logo_small_blue.png" width="200px" height="200px" />
+			<div>
+				<svg width="200px" height="200px" color="white">
+                    @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
+                </svg>
 			</div>
+
 			<div style="border-left:thick">
+				<div>
+					<h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
+				</div>
+
 				@Body
 			</div>
 		</div>
