@@ -1,19 +1,19 @@
 ﻿using ArkEcho.Core;
 using Microsoft.JSInterop;
-using System;
 
 namespace ArkEcho.WebPage
 {
     public class JSPlayer : Player
     {
-        private Logging.LoggingDelegate logDelegate = null;
         private string serverAddress = string.Empty;
 
         private IJSRuntime jsRuntime = null;
+        private Logger logger = null;
 
-        public JSPlayer(IJSRuntime jsRuntime, string serverAddress) : base()
+        public JSPlayer(IJSRuntime jsRuntime, Logger logger, string serverAddress) : base()
         {
             this.jsRuntime = jsRuntime;
+            this.logger = logger;
             this.serverAddress = serverAddress;
         }
 
@@ -22,19 +22,11 @@ namespace ArkEcho.WebPage
             if (Initialized)
                 return Initialized;
 
-            logDelegate = logConsole;
-
             var dotNetReference = DotNetObjectReference.Create(this);
             jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
 
             Initialized = true;
             return Initialized;
-        }
-
-        private bool logConsole(string text, Logging.LogLevel level)
-        {
-            Console.WriteLine(text);
-            return true;
         }
 
         [JSInvokable]
@@ -57,8 +49,7 @@ namespace ArkEcho.WebPage
 
         protected override bool log(string text, Logging.LogLevel level)
         {
-            if (logDelegate != null)
-                return logDelegate.Invoke(text, level);
+            logger.Log(text, level);
             return false;
         }
 

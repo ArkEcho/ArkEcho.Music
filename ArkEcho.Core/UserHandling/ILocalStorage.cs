@@ -10,4 +10,11 @@ namespace ArkEcho.Core
 
         Task SetItemAsync<T>(string key, T data);
     }
+
+    public abstract class LocalStorageBase : ILocalStorage
+    {
+        public abstract Task<T> GetItemAsync<T>(string key);
+        public abstract Task RemoveItemAsync(string key);
+        public abstract Task SetItemAsync<T>(string key, T data);
+    }
 }

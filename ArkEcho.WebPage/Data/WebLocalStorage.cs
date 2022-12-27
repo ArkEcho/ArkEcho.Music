@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.WebPage.Data
 {
-    public class WebLocalStorage : ILocalStorage
+    public class WebLocalStorage : LocalStorageBase
     {
         private ILocalStorageService blazorLocalStorage = null;
 
@@ -13,17 +13,17 @@ namespace ArkEcho.WebPage.Data
             this.blazorLocalStorage = blazorLocalStorage;
         }
 
-        public async Task<T> GetItemAsync<T>(string key)
+        public override async Task<T> GetItemAsync<T>(string key)
         {
             return await blazorLocalStorage.GetItemAsync<T>(key);
         }
 
-        public async Task RemoveItemAsync(string key)
+        public override async Task RemoveItemAsync(string key)
         {
             await blazorLocalStorage.RemoveItemAsync(key);
         }
 
-        public async Task SetItemAsync<T>(string key, T data)
+        public override async Task SetItemAsync<T>(string key, T data)
         {
             await blazorLocalStorage.SetItemAsync(key, data);
         }

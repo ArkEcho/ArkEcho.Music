@@ -10,16 +10,14 @@ namespace ArkEcho.WebPage
     {
         public override Player Player { get { return jsPlayer; } }
         public override LibrarySync Sync { get; }
-        public override MusicLibrary Library { get; }
 
         private bool initialized = false;
         private JSPlayer jsPlayer = null;
 
-        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, RestLoggingWorker loggingWorker, WebPageConfig config)
-            : base(Resources.ARKECHOWEBPAGE, localStorage, loggingWorker, config.ServerAddress, config.Compression)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, RestLoggingWorker loggingWorker, RazorConfig config)
+            : base(Resources.ARKECHOWEBPAGE, localStorage, loggingWorker, config)
         {
-            jsPlayer = new JSPlayer(jsRuntime, config.ServerAddress);
-            Library = new MusicLibrary();
+            jsPlayer = new JSPlayer(jsRuntime, logger, config.ServerAddress);
         }
 
         public override async Task<bool> InitializeLibraryAndPlayer()
@@ -32,7 +30,7 @@ namespace ArkEcho.WebPage
 
             if (Library.MusicFiles.Count > 0)
             {
-                Console.WriteLine($"AppModel initialized, {Library.MusicFiles.Count}");
+                logger.LogStatic($"AppModel initialized, {Library.MusicFiles.Count}");
 
                 if (jsPlayer.InitPlayer()) // TODO entfernen
                 {
@@ -41,7 +39,7 @@ namespace ArkEcho.WebPage
                 }
             }
 
-            Console.WriteLine($"Error initializing AppModel");
+            logger.LogStatic($"Error initializing AppModel");
             return false;
         }
 

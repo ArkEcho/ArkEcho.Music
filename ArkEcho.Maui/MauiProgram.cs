@@ -3,7 +3,7 @@ using ArkEcho.RazorPage;
 
 namespace ArkEcho.Maui
 {
-    public static class MauiProgram
+    public class MauiProgram
     {
         public enum Platform
         {
@@ -14,9 +14,7 @@ namespace ArkEcho.Maui
 
         public static MauiApp CreateMauiApp(Platform executingPlatform, string rootPath, string musicFolder)
         {
-            MauiApp app = null;
-
-            MauiAppConfig config = new MauiAppConfig("ArkEchoMauiConfig.json");
+            RazorConfig config = new RazorConfig("ArkEchoMauiConfig.json");
 
             bool success = false;
 
@@ -38,10 +36,10 @@ namespace ArkEcho.Maui
                 return null;
             }
 
-            RestLoggingWorker LoggingWorker = new RestLoggingWorker(rest, config.LogLevel);
-            LoggingWorker.RunWorkerAsync();
+            RestLoggingWorker loggingWorker = new RestLoggingWorker(rest, config.LogLevel);
+            loggingWorker.RunWorkerAsync();
 
-            Logger logger = new Logger(Resources.ARKECHOMAUI, "MauiProgram", LoggingWorker);
+            Logger logger = new Logger(Resources.ARKECHOMAUI, "MauiProgram", loggingWorker);
 
             logger.LogStatic($"Executing on {executingPlatform}, Root Path: {rootPath}");
             logger.LogStatic("Configuration for ArkEcho.Maui:");
@@ -57,17 +55,14 @@ namespace ArkEcho.Maui
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddSingleton(LoggingWorker);
-            builder.Services.AddSingleton(config);
-            builder.Services.AddScoped<ILocalStorage, MauiLocalStorage>();
-            builder.Services.AddScoped<IAppModel, MauiAppModel>();
+            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(loggingWorker, config);
 
             //#if DEBUG
             //            builder.Services.AddBlazorWebViewDeveloperTools();
             //            builder.Logging.AddDebug();
             //#endif
 
-            app = builder.Build();
+            MauiApp app = builder.Build();
 
             return app;
         }

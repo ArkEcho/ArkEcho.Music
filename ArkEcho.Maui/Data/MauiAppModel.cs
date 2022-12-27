@@ -10,19 +10,13 @@ namespace ArkEcho.Maui
 
         public override LibrarySync Sync { get; }
 
-        public override MusicLibrary Library { get; }
-
         private VLCPlayer player = null;
-        private MauiAppConfig config = null;
 
-        public MauiAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, MauiAppConfig config)
-            : base(Resources.ARKECHOMAUI, localStorage, loggingWorker, config.ServerAddress, config.Compression)
+        public MauiAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, RazorConfig config)
+            : base(Resources.ARKECHOMAUI, localStorage, loggingWorker, config)
         {
             player = new VLCPlayer();
             Sync = new LibrarySync(Resources.ARKECHOMAUI, rest, loggingWorker);
-            Library = new MusicLibrary();
-
-            this.config = config;
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
@@ -42,7 +36,7 @@ namespace ArkEcho.Maui
                 return false;
 
             List<MusicFile> missing = new();
-            bool success = await Sync.CheckLibrary(config.MusicFolder.LocalPath, Library, new List<MusicFile>(), missing);
+            bool success = await Sync.CheckLibrary(Config.MusicFolder.LocalPath, Library, new List<MusicFile>(), missing);
 
             sw.Stop();
             logger.LogDebug($"InitializeLibraryAndPlayer took {sw.ElapsedMilliseconds}ms");
@@ -55,7 +49,7 @@ namespace ArkEcho.Maui
             if (!await LoadLibraryFromServer())
                 return false;
 
-            return await Sync.SyncMusicLibrary(config.MusicFolder.LocalPath, Library);
+            return await Sync.SyncMusicLibrary(Config.MusicFolder.LocalPath, Library);
         }
     }
 }

@@ -14,5 +14,8 @@ namespace ArkEcho.RazorPage
 
         [JsonProperty]
         public Logging.LogLevel LogLevel { get; set; } = Logging.LogLevel.Important;
+
+        [JsonProperty]
+        public Uri MusicFolder { get; set; } = new Uri("about:blank");
     }
 }

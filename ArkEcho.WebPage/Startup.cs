@@ -1,4 +1,3 @@
-using ArkEcho.Core;
 using ArkEcho.RazorPage;
 using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
@@ -26,13 +25,9 @@ namespace ArkEcho.WebPage
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
-            services.AddBlazoredLocalStorage();
+            services.AddBlazoredLocalStorage(); // For WebLocalStorage
 
-            services.AddSingleton(WebPageManager.Instance.LoggingWorker);
-            services.AddSingleton(WebPageManager.Instance.Config);
-
-            services.AddScoped<ILocalStorage, WebLocalStorage>(); // Needs Blazor Local Storage/Blazored
-            services.AddScoped<IAppModel, WebAppModel>(); // Needs WebLocalStorage
+            services.AddArkEchoServices<WebLocalStorage, WebAppModel>(WebPageManager.Instance.LoggingWorker, WebPageManager.Instance.Config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

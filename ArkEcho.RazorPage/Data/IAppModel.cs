@@ -7,6 +7,7 @@ namespace ArkEcho.RazorPage
         MusicLibrary Library { get; }
         Player Player { get; }
         LibrarySync Sync { get; }
+        RazorConfig Config { get; }
 
         Task<bool> AuthenticateUser(string username, string password);
         Task<bool> IsUserAuthenticated();

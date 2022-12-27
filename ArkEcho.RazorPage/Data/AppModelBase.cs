@@ -5,11 +5,13 @@ namespace ArkEcho.RazorPage
 {
     public abstract class AppModelBase : IAppModel
     {
-        public abstract MusicLibrary Library { get; }
+        public MusicLibrary Library { get; }
 
         public abstract Player Player { get; }
 
         public abstract LibrarySync Sync { get; }
+
+        public RazorConfig Config { get; }
 
         protected Rest rest = null;
         protected Logger logger = null;
@@ -17,12 +19,16 @@ namespace ArkEcho.RazorPage
         private string appName = string.Empty;
         private Authentication authentication = null;
 
-        public AppModelBase(string appName, ILocalStorage localStorage, RestLoggingWorker loggingWorker, string serverAddress, bool compression)
+        public AppModelBase(string appName, ILocalStorage localStorage, RestLoggingWorker loggingWorker, RazorConfig config)
         {
+            this.Config = config;
             this.appName = appName;
             this.logger = new Logger(appName, "AppModel", loggingWorker);
-            rest = new Rest(serverAddress, compression);
+
+            rest = new Rest(config.ServerAddress, config.Compression);
             authentication = new Authentication(localStorage, rest);
+
+            Library = new MusicLibrary();
         }
 
         public async Task<bool> IsUserAuthenticated()
