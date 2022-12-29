@@ -1,12 +1,13 @@
 <svg viewBox="0 0 128 128">
-	<g color="#3daee9">
+	<rect x="0" y="0" width="100%" height="100%" fill="#3daee9" />
+	<g color="white">
 		<rect x="31.5" y="48.75" width="25" height="65" fill="currentcolor" />
 		<rect x="71.5" y="48.75" width="25" height="65" fill="currentcolor" />
-		
-		<rect x="56" y="64" width="11" height="25" fill="currentcolor" />
 
-		<path 
-			d="M 44 50 C 44 21.5,84 21.5, 84 50" 
+		<rect x="54" y="64" width="13" height="25" fill="currentcolor" />
+
+		<path
+			d="M 44 50 C 44 21.5,84 21.5, 84 50"
 			stroke="currentcolor" stroke-width="25" fill="transparent"/>
-	</g>	
+	</g>
 </svg>

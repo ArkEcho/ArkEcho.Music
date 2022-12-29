@@ -4,6 +4,9 @@ Grey:		#31363b
 MidGrey: 	#76797c
 LightGrey:	#eff0f1
 
+?? #3d3d3d
+?? #393939
+
 LightBlue:	#3daee9
 
 LightGreen:	#4caf50
