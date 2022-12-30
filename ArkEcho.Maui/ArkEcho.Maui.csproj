@@ -48,10 +48,11 @@
 
     <ItemGroup>
 		<!-- App icon for Windows -->
-		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" Include="Resources\AppIcon\appicon.svg" BaseSize="256,256" />
+		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" 
+				  Include="Resources\AppIcon\appiconbackground.svg" ForegroundFile="Resources\AppIcon\appicon.svg" BaseSize="256,256" />
 
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" BaseSize="256,256" >
+		<MauiIcon Include="Resources\AppIcon\appiconbackground.svg" ForegroundFile="Resources\AppIcon\appicon.svg" BaseSize="256,256" ForegroundScale="0.5" />
 
 		<!-- Splash Screen -->		
 		<MauiSplashScreen Include="..\ArkEcho.Core\Resources\logo\logo.svg" Color="white" BaseSize="128,128" Link="Resources\Splash\logo.svg" />
