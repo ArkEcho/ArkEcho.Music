@@ -3,32 +3,28 @@
 @inject IAppModel Model
 @inject NavigationManager NavigationManager
 
-<div>
-    <div>
-        <NavMenu />
-    </div>
+<MudLayout>
 
-    <div>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        My Application
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="@showSidebar">
+        <h2>@LoggedInText</h2>
+        <MudButton @onclick="Logout">Logout</MudButton>
+    </MudDrawer>
+
+    <MudMainContent>
         <PlayerControl />
-        <div >
-            <button  @onclick="UserIconClick">User</button>
-        </div>
+        @Body
+    </MudMainContent>
 
-        <div style="background-color:lightgray; display: @showUserSidebarCss">
-            <h2>@LoggedInText</h2>
-            <button @onclick="Logout">Logout</button>
-        </div>
-
-        <div >
-            @Body
-        </div>
-    </div>
-</div>
+</MudLayout>
 
 @code
 {
-    private bool showUserSidebar = false;
-    private string showUserSidebarCss => showUserSidebar ? "block" : "none";
+    private bool showSidebar = false;
 
     public string LoggedInText { get; set; } = string.Empty;
 
@@ -45,9 +41,9 @@
         // TODO Give Error or Success!
     }
 
-    public async Task UserIconClick()
+    public async Task DrawerToggle()
     {
-        showUserSidebar = !showUserSidebar;
+        showSidebar = !showSidebar;
         await InvokeAsync(StateHasChanged);
     }
 

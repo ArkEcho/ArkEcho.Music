@@ -5,24 +5,22 @@
 @inject IAppModel model
 @inject NavigationManager NavigationManager
 
-<div >
-    <input @bind="username" placeholder="email address" />
-</div>
-<br />
+<MudItem >
+    <MudTextField Label="Username" Variant="Variant.Outlined" MaxLength="24" @bind-Value="@username">Username</MudTextField>
+</MudItem>
 
-<div >
-    <input type="password" @bind="password" placeholder="password" />
-</div>
-<br />
+<MudItem>
+    <MudTextField Label="Password" Variant="Variant.Outlined" MaxLength="24" @bind-Value="password" InputType="@PasswordInput" 
+    Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
+</MudItem> 
 
-<div>
-    <button @onclick="validateUser">Login</button>
-</div>
-<br />
+<MudItem>
+    <MudButton Variant="Variant.Filled" OnClick="validateUser">Login</MudButton>
+</MudItem>
 
-<div style="text-align:left; font-weight:bold">
-    <span>@LoginMesssage</span>
-</div>
+<MudItem>
+    @LoginMesssage
+</MudItem>
 
 @code
 {
@@ -30,6 +28,10 @@
 
     private string username = string.Empty;
     private string password = string.Empty;
+    
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
     protected async override Task OnInitializedAsync()
     {
@@ -37,12 +39,12 @@
             NavigationManager.NavigateTo("/Player");
     }
 
-    private async Task<bool> validateUser()
+    private async Task validateUser()
     {
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             LoginMesssage = "Empty username or password";
-            return await Task.FromResult(true);
+            return;
         }
 
         if(await model.AuthenticateUser(username, password))
@@ -50,6 +52,22 @@
         else
             LoginMesssage = "Username or password wrong";
 
-        return await Task.FromResult(true);
+        return;
+    }
+
+    void passwordAdornmentClick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
     }
 }

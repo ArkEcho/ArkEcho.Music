@@ -1,28 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-<div>
-	<br /><br />
-	<center>
-		<div >
-			<p>&nbsp;</p>
-		</div>
-		<div >
-			<div>
-				<svg width="200px" height="200px" color="white">
-                    @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
-                </svg>
-			</div>
+<MudLayout>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Small">
+            <MudStack>
+                <MudItem>
+                    <svg width="200px" height="200px" color="white">
+                        @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
+                    </svg>
+                </MudItem>
 
-			<div style="border-left:thick">
-				<div>
-					<h3 style="font-weight:bold; color:purple">ArkEcho Login</h3>
-				</div>
-
-				@Body
-			</div>
-		</div>
-		<div>
-			<p>&nbsp;</p>
-		</div>
-	</center>
-</div>
+		        @Body
+            </MudStack>
+        </MudContainer>
+	</MudMainContent>
+</MudLayout>
