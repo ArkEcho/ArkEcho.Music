@@ -7,14 +7,14 @@
 
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        ArkEcho Music Player
+        <MudText Typo="Typo.h5">ArkEcho Music</MudText>
         <MudSpacer />
-        <MudFab Color="Color.Primary" Label="T" />
+        <MudAvatar Size="Size.Medium" Color="Color.Tertiary">A</MudAvatar>
     </MudAppBar>
 
     <MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <h2>@LoggedInText</h2>
         <MudButton @onclick="Logout">Logout</MudButton>
+        <NavMenu />
     </MudDrawer>
 
     <MudMainContent>
@@ -27,8 +27,6 @@
 @code
 {
     private bool showSidebar = false;
-
-    public string LoggedInText { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {

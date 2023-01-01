@@ -48,17 +48,15 @@
 
     <ItemGroup>
 		<!-- App icon for Windows -->
-		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" 
-				  Include="Resources\AppIcon\appiconbackground.svg" ForegroundFile="Resources\AppIcon\appicon.svg" BaseSize="256,256" />
+		<MauiIcon Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" Include="Resources\AppIcon\appiconbackground.svg" ForegroundFile="Resources\AppIcon\appicon.svg" BaseSize="256,256" />
 
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appiconbackground.svg" ForegroundFile="Resources\AppIcon\appicon.svg" BaseSize="256,256" ForegroundScale="0.5" />
 
 		<!-- Splash Screen -->		
-		<MauiSplashScreen Include="..\ArkEcho.Core\Resources\logo\logo.svg" Color="white" BaseSize="128,128" Link="Resources\Splash\logo.svg" />
+		<MauiSplashScreen Include="..\ArkEcho.Core\Resources\logo\logo.svg" Color="white" BaseSize="128,128" Link="Resources\AppIcon\logo.svg" />
 
 		<!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
@@ -77,11 +75,6 @@
     <ItemGroup>
       <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
       <ProjectReference Include="..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resources\Images\" />
-      <Folder Include="Resources\Splash\" />
     </ItemGroup>
 
 </Project>

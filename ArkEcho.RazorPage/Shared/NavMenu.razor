@@ -1,21 +1,8 @@
 ﻿@inject IAppModel Model
 
-<div>
-    <ul>
-        <li>
-            <NavLink href="player" Match="NavLinkMatch.All">
-                <span aria-hidden="true"></span> Player
-            </NavLink>
-        </li>
-
-        @if (Model.Sync != null)
-        {
-            <li>
-                <NavLink href="Sync">
-                    <span aria-hidden="true"></span> Music Sync
-                </NavLink>
-            </li>
-        }
-
-    </ul>
-</div>
+<MudPaper Width="250px" Elevation="0">
+    <MudNavMenu Rounded="true" Margin="Margin.Normal" Color="Color.Tertiary" Class="pa-2">
+        <MudNavLink Match="NavLinkMatch.Prefix" Href="/Player" Icon="@Icons.Filled.Dashboard">Player</MudNavLink>
+        <MudNavLink Href="/Sync" Icon="@Icons.Filled.Science">Music Sync</MudNavLink>
+    </MudNavMenu>
+</MudPaper>

@@ -4,26 +4,20 @@
 
 @inject IAppModel Model
 
-<h3>MusicSyncPage</h3>
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudMainContent>
 
+        <MudButton Variant="Variant.Filled" OnClick="synchronizeMusic">Sync Music Library</MudButton>
 
-<button @onclick="synchronizeMusic">Sync Music Library</button>
-<br />
-<br />
+        <MudField Label="Music Library Path" Variant="Variant.Outlined">@Model.Config.MusicFolder.LocalPath</MudField>
 
-Path: @Model.Config.MusicFolder.LocalPath
-<br />
-<br />
+        <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="@syncProgress" />
 
-Progress  @syncProgress / 100
-<br />
-<br />
-
-@syncMessage
-<br />
-<br />
-
-@status
+        <MudText Typo="Typo.body1">@syncMessage</MudText>
+        <MudText Typo="Typo.body1">@status</MudText>
+        
+    </MudMainContent>
+</MudContainer>
 
 @code {
     private string status = "Idle";
@@ -39,7 +33,8 @@ Progress  @syncProgress / 100
 
     private async void synchronizeMusic()
     {
-        // TODO: Stop Player
+        Model.Player.Stop();
+
         status = "Syncing";
 
         await Model.SynchronizeMusic();
