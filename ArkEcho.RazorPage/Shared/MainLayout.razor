@@ -5,12 +5,14 @@
 
 <MudLayout>
 
-    <MudAppBar>
+    <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        My Application
+        ArkEcho Music Player
+        <MudSpacer />
+        <MudFab Color="Color.Primary" Label="T" />
     </MudAppBar>
 
-    <MudDrawer @bind-Open="@showSidebar">
+    <MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">
         <h2>@LoggedInText</h2>
         <MudButton @onclick="Logout">Logout</MudButton>
     </MudDrawer>

@@ -1,17 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
-<MudLayout>
+<MudContainer MaxWidth="MaxWidth.ExtraSmall">
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Small">
-            <MudStack>
-                <MudItem>
-                    <svg width="200px" height="200px" color="white">
-                        @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
-                    </svg>
-                </MudItem>
-
-		        @Body
-            </MudStack>
-        </MudContainer>
-	</MudMainContent>
-</MudLayout>
+		    @Body
+    </MudMainContent>
+</MudContainer>

@@ -5,26 +5,28 @@
 @inject IAppModel model
 @inject NavigationManager NavigationManager
 
-<MudItem >
-    <MudTextField Label="Username" Variant="Variant.Outlined" MaxLength="24" @bind-Value="@username">Username</MudTextField>
-</MudItem>
+<MudCard Width="100%" Outlined="true">
+    <MudCardContent>
+        <svg width="100%" height="200px" color="white">
+            @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
+        </svg>
 
-<MudItem>
-    <MudTextField Label="Password" Variant="Variant.Outlined" MaxLength="24" @bind-Value="password" InputType="@PasswordInput" 
-    Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
-</MudItem> 
+        <MudTextField Label="Username" Variant="Variant.Outlined" @bind-Value="@username">Username</MudTextField>
 
-<MudItem>
-    <MudButton Variant="Variant.Filled" OnClick="validateUser">Login</MudButton>
-</MudItem>
+        <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="password" InputType="@PasswordInput"
+                      Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Filled" OnClick="validateUser">Login</MudButton>
 
-<MudItem>
-    @LoginMesssage
-</MudItem>
+        @loginMesssage
+    </MudCardActions>
+</MudCard>
+
 
 @code
 {
-    public string LoginMesssage { get; set; }
+    private string loginMesssage = string.Empty;
 
     private string username = string.Empty;
     private string password = string.Empty;
@@ -43,14 +45,14 @@
     {
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            LoginMesssage = "Empty username or password";
+            loginMesssage = "Empty username or password";
             return;
         }
 
         if(await model.AuthenticateUser(username, password))
             NavigationManager.NavigateTo("/Player");            
         else
-            LoginMesssage = "Username or password wrong";
+            loginMesssage = "Username or password wrong";
 
         return;
     }
