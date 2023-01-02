@@ -1,15 +1,13 @@
 ﻿@inject IAppModel Model
 
-<div>
-    <button @onclick="Play">Play</button>
-    <button @onclick="Pause">Pause</button>
-    <button @onclick="PlayPause">PlayPause</button>
-    <button @onclick="Stop">Stop</button>
-    <button @onclick="Mute">Mute</button>
-    <button @onclick="Shuffle">Shuffle</button>
-    <button @onclick="Backward">Backward</button>
-    <button @onclick="Forward">Forward</button>
-</div>
+<MudButton OnClick="Play">Play</MudButton>
+<MudButton OnClick="Pause">Pause</MudButton>
+<MudButton OnClick="PlayPause">PlayPause</MudButton>
+<MudButton OnClick="Stop">Stop</MudButton>
+<MudButton OnClick="Mute">Mute</MudButton>
+<MudButton OnClick="Shuffle">Shuffle</MudButton>
+<MudButton OnClick="Backward">Backward</MudButton>
+<MudButton OnClick="Forward">Forward</MudButton>
 
 
 @code 
