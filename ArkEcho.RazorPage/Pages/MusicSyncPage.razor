@@ -5,18 +5,21 @@
 @inject IAppModel Model
 
 <MudContainer MaxWidth="MaxWidth.Small">
-    <MudMainContent>
+    <MudStack>
+
+        <MudStack Row="true">
+            <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.Config.MusicFolder.LocalPath</MudField>
+        </MudStack>
 
         <MudButton Variant="Variant.Filled" OnClick="synchronizeMusic">Sync Music Library</MudButton>
-
-        <MudField Label="Music Library Path" Variant="Variant.Outlined">@Model.Config.MusicFolder.LocalPath</MudField>
 
         <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="@syncProgress" />
 
         <MudText Typo="Typo.body1">@syncMessage</MudText>
         <MudText Typo="Typo.body1">@status</MudText>
+
+    </MudStack>
         
-    </MudMainContent>
 </MudContainer>
 
 @code {
@@ -37,11 +40,10 @@
 
         status = "Syncing";
 
-        await Model.SynchronizeMusic();
+        await Model.StartSynchronizeMusic();
 
         status = "Idle";
 
-        // TODO: Reload MusicLibrary Display
         await InvokeAsync(StateHasChanged);
     }
 

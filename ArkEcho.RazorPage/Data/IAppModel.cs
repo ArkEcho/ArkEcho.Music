@@ -14,8 +14,9 @@ namespace ArkEcho.RazorPage
         Task LogoutUser();
 
         Task<bool> InitializeLibraryAndPlayer();
-        Task<string> GetAlbumCover(Guid albumGuid); // TOOD: Only needed on Web?
+        Task<string> GetAlbumCover(Guid albumGuid);
 
-        Task SynchronizeMusic();
+        Task StartSynchronizeMusic();
+        Task StopSynchonizeMusic();
     }
 }

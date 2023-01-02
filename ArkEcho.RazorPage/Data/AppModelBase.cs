@@ -60,6 +60,8 @@ namespace ArkEcho.RazorPage
 
         public abstract Task<bool> InitializeLibraryAndPlayer();
         public abstract Task<string> GetAlbumCover(Guid albumGuid);
-        public abstract Task SynchronizeMusic();
+
+        public abstract Task StartSynchronizeMusic();
+        public abstract Task StopSynchonizeMusic();
     }
 }

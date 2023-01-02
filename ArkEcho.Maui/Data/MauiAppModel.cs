@@ -44,12 +44,18 @@ namespace ArkEcho.Maui
             return !success || missing.Count > 0;
         }
 
-        public override async Task<bool> SynchronizeMusic()
+        public override async Task<bool> StartSynchronizeMusic()
         {
             if (!await LoadLibraryFromServer())
                 return false;
 
-            return await Sync.SyncMusicLibrary(Config.MusicFolder.LocalPath, Library);
+            return await Sync.StartSyncMusicLibrary(Config.MusicFolder.LocalPath, Library);
+        }
+
+        public override Task StopSynchonizeMusic()
+        {
+            Sync.StopSyncMusicLibrary();
+            return Task.CompletedTask;
         }
     }
 }
