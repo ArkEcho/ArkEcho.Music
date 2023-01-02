@@ -1,54 +1,65 @@
 ﻿@inject IAppModel Model
 
-<MudButton OnClick="Play">Play</MudButton>
-<MudButton OnClick="Pause">Pause</MudButton>
-<MudButton OnClick="PlayPause">PlayPause</MudButton>
-<MudButton OnClick="Stop">Stop</MudButton>
-<MudButton OnClick="Mute">Mute</MudButton>
-<MudButton OnClick="Shuffle">Shuffle</MudButton>
-<MudButton OnClick="Backward">Backward</MudButton>
-<MudButton OnClick="Forward">Forward</MudButton>
+<MudSpacer />
 
+<MudIconButton OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudIconButton OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudIconButton OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudFab  OnClick="playPause" Icon="@PlayPauseIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudIconButton OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudIconButton OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudSpacer />
 
 @code 
-{    
-    private void Play()
-    {
-        Model.Player.Play();
-    }
+{
+    public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
+    public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
+    public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
 
-    private void Pause()
-    {
-        Model.Player.Pause();
-    }
-
-    private void PlayPause()
+    private void playPause()
     {
         Model.Player.PlayPause();
     }
 
-    private void Stop()
+    private void stop()
     {
         Model.Player.Stop();
     }
 
-    private void Shuffle()
+    private void shuffle()
     {
         Model.Player.Shuffle = !Model.Player.Shuffle;
     }
 
-    private void Mute()
+    private void mute()
     {
         Model.Player.Mute = !Model.Player.Mute;
     }
 
-    private void Backward()
+    private void backward()
     {
         Model.Player.Backward();
     }
 
-    private void Forward()
+    private void forward()
     {
         Model.Player.Forward();
+    }
+
+    private async Task playingChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Model.Player.PlayingChanged += () => playingChanged();
+        return base.OnInitializedAsync();
     }
 }
