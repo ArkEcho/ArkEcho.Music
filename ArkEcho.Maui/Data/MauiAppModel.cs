@@ -51,11 +51,5 @@ namespace ArkEcho.Maui
 
             return await Sync.StartSyncMusicLibrary(Config.MusicFolder.LocalPath, Library);
         }
-
-        public override Task StopSynchonizeMusic()
-        {
-            Sync.StopSyncMusicLibrary();
-            return Task.CompletedTask;
-        }
     }
 }

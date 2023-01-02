@@ -31,7 +31,7 @@ namespace ArkEcho.Core
             logger = new Logger(appName, "MusicSync", loggingWorker);
         }
 
-        public async Task<bool> SyncMusicLibrary(string musicFolder, MusicLibrary library)
+        public async Task<bool> StartSyncMusicLibrary(string musicFolder, MusicLibrary library)
         {
             if (library == null)
             {

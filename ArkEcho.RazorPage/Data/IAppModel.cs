@@ -17,6 +17,5 @@ namespace ArkEcho.RazorPage
         Task<string> GetAlbumCover(Guid albumGuid);
 
         Task StartSynchronizeMusic();
-        Task StopSynchonizeMusic();
     }
 }
