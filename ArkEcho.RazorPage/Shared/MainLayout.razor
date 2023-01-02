@@ -6,14 +6,20 @@
 <MudLayout>
 
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
         <MudText Typo="Typo.h5">ArkEcho Music</MudText>
         <MudSpacer />
-        <MudAvatar Size="Size.Medium" Color="Color.Tertiary">A</MudAvatar>
+        <MudItem>
+            <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
+            <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
+                <MudText Typo="Typo.body2" Class="px-4 py-1">Benutzername</MudText>
+                <MudDivider Class="ma-2"/>
+                <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
+            </MudPopover>
+        </MudItem>
     </MudAppBar>
 
     <MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <MudButton @onclick="Logout">Logout</MudButton>
         <NavMenu />
     </MudDrawer>
 
@@ -27,6 +33,7 @@
 @code
 {
     private bool showSidebar = false;
+    private bool userPopoverOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,10 +48,14 @@
         // TODO Give Error or Success!
     }
 
-    public async Task DrawerToggle()
+    private void userPopoverToggle()
+    {
+        userPopoverOpen = !userPopoverOpen;
+    }
+
+    public void drawerToggle()
     {
         showSidebar = !showSidebar;
-        await InvokeAsync(StateHasChanged);
     }
 
     public async Task Logout()
