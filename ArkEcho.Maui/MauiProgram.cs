@@ -16,18 +16,10 @@ namespace ArkEcho.Maui
         {
             RazorConfig config = new RazorConfig("ArkEchoMauiConfig.json");
 
-            bool success = false;
-
-            Task.Factory.StartNew(() => success = config.LoadFromFile(rootPath, true).Result).Wait();
+            Task.Factory.StartNew(() => config.LoadFromFile(rootPath, true).Result).Wait();
 
             if (!string.IsNullOrEmpty(musicFolder))
                 config.MusicFolder = new Uri(musicFolder);
-
-            if (!success)
-            {
-                Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping");
-                return null;
-            }
 
             Rest rest = new Rest(config.ServerAddress, config.Compression);
             if (!rest.CheckConnection())
