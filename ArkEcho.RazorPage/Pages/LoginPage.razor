@@ -11,7 +11,7 @@
             @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
-        <MudTextField Label="Username" Variant="Variant.Outlined" @bind-Value="@username">Username</MudTextField>
+        <MudTextField Label="Username" Variant="Variant.Outlined" @bind-Value="username">Username</MudTextField>
 
         <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="password" InputType="@PasswordInput"
                       Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
