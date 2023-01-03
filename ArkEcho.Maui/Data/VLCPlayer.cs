@@ -31,6 +31,8 @@ namespace ArkEcho.Maui
                 mediaplayer.Paused += Mediaplayer_Paused;
                 mediaplayer.Stopped += Mediaplayer_Stopped;
 
+                setAudioVolume();
+
                 Initialized = true;
                 return Initialized;
             }

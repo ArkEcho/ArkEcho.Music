@@ -2,38 +2,47 @@
 
 <MudAppBar Bottom="true" Fixed="true" Color="Color.Secondary" Elevation="1" Dense="true">
     <MudSpacer />
+        
+    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+        <MudIconButton Class="mx-1" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
 
-    <MudIconButton Class="mx-1" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+        <MudIconButton Class="mx-1" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+    </MudHidden>
 
-    <MudIconButton Class="mx-1" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+    <PlayForBack />
 
-    <MudIconButton Class="mx-1" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-
-    <MudFab Class="mx-1" OnClick="playPause" Icon="@PlayPauseIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-
-    <MudIconButton Class="mx-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-
-    <MudIconButton Class="mx-1" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-
-    <MudPaper Class="mx-1 pt-2 mud-theme-secondary" Elevation="0" Width="100px">
-        <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
-    </MudPaper>
+    <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+        <MudIconButton Class="mx-1" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />        
+        <MudPaper Class="mx-1 pt-2 mud-theme-secondary" Elevation="0" Width="100px">
+            <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
+        </MudPaper>
+    </MudHidden>
 
     <MudSpacer />
 </MudAppBar>
+
+@*<MudHidden Breakpoint="Breakpoint.MdAndUp">
+    <MudContainer MaxWidth="MaxWidth.ExtraSmall">
+        <MudPaper Class="mud-theme-secondary" Elevation="1">
+            <MudSpacer />
+
+            <MudToolBar Dense="true">
+                <PlayForBack />
+            </MudToolBar>
+
+            <MudSpacer />
+        </MudPaper>
+    </MudContainer>
+    
+</MudHidden>*@
+
 
 
 @code 
 {
     public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
     public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
-    public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
-
-    private void playPause()
-    {
-        Model.Player.PlayPause();
-    }
-
+    
     private void stop()
     {
         Model.Player.Stop();
@@ -47,26 +56,5 @@
     private void mute()
     {
         Model.Player.Mute = !Model.Player.Mute;
-    }
-
-    private void backward()
-    {
-        Model.Player.Backward();
-    }
-
-    private void forward()
-    {
-        Model.Player.Forward();
-    }
-
-    private async Task playingChanged()
-    {
-        await InvokeAsync(StateHasChanged);
-    }
-
-    protected override Task OnInitializedAsync()
-    {
-        Model.Player.PlayingChanged += () => playingChanged();
-        return base.OnInitializedAsync();
     }
 }

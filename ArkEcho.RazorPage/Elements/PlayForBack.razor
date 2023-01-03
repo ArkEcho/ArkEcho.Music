@@ -1,0 +1,37 @@
+﻿@inject IAppModel Model
+
+<MudIconButton Class="mx-1" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+<MudFab Class="mx-1" OnClick="playPause" Icon="@PlayPauseIcon" Color="Color.Primary" Size="Size.Small" />
+
+<MudIconButton Class="mx-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
+@code {
+    public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
+
+    private void playPause()
+    {
+        Model.Player.PlayPause();
+    }
+
+    private void backward()
+    {
+        Model.Player.Backward();
+    }
+
+    private void forward()
+    {
+        Model.Player.Forward();
+    }
+
+    private async Task playingChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Model.Player.PlayingChanged += () => playingChanged();
+        return base.OnInitializedAsync();
+    }
+}
