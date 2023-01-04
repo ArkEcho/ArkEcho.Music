@@ -1,20 +1,19 @@
 ﻿@inject IAppModel Model
 
-<MudAppBar Bottom="true" Fixed="true" Color="Color.Secondary" Elevation="1" Dense="true">
+<MudAppBar Bottom="true" Fixed="true" Color="Color.Secondary" Elevation="1">
 
-    <MudPaper MaxHeight="100%" MaxWidth="45px" Class="d-flex mud-theme-secondary">
+    <MudPaper MaxHeight="100%" MaxWidth="50px" Class="d-flex mud-theme-secondary">
         <MudImage Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
     </MudPaper>
 
-    <MudText Typo="Typo.body2">@SongInfo</MudText>
+    <MudText Class="ml-4" Inline="true" Typo="Typo.body1">@SongTitle<br />@SongPerformer</MudText>
 
     <MudSpacer />
 
-    <MudText Typo="Typo.body2">@Position</MudText>
+    <MudText Class="mr-4" Typo="Typo.body1">@Position</MudText>
 
     <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
         <MudIconButton Class="mx-1" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-
         <MudIconButton Class="mx-1" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
     </MudHidden>
 
@@ -43,9 +42,15 @@
             return time.ToString(@"mm\:ss");
         } 
     }
+    public string SongTitle { get { return playingTitle != null ? playingTitle.Title : string.Empty; } }
+    public string SongPerformer { get { return playingTitle != null ? playingTitle.Performer : string.Empty; } }
+    public string AlbumName { get { return playingTitle != null ? playingAlbum.Name : string.Empty; } }
+    public string AlbumArtistName { get { return playingTitle != null ? playingAlbumArtist.Name : string.Empty; } }
 
     private string Image64 = string.Empty;
-    private string SongInfo = string.Empty;
+    private MusicFile playingTitle = null;
+    private Album playingAlbum = null;
+    private AlbumArtist playingAlbumArtist = null;
 
     private void stop()
     {
@@ -73,6 +78,27 @@
         await base.OnInitializedAsync();
     }
 
+    private async Task titleChanged()
+    {
+        playingTitle = Model.Player.PlayingFile;
+
+        if (playingTitle != null && (playingAlbum == null || playingAlbum.GUID != playingTitle.GUID))
+        {
+            playingAlbum = Model.Library.Album.Find(x => x.GUID == playingTitle.Album);
+            playingAlbumArtist = Model.Library.AlbumArtists.Find(x => x.GUID == playingAlbum.GUID);
+
+            string result = await Model.GetAlbumCover(playingAlbum.GUID);
+            Image64 = $"data:image/png;base64,{result}";
+        }
+        else
+        {
+            playingAlbum = null;
+            Image64 = string.Empty;            
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
     private async Task positionChanged()
     {
         await InvokeAsync(StateHasChanged);
@@ -82,23 +108,4 @@
     {
         await InvokeAsync(StateHasChanged);
     }
-
-    private async Task titleChanged()
-    {
-        MusicFile file = Model.Player.PlayingFile;
-        if (file == null)
-            return;
-
-        SongInfo = $"{file.Title}\r\n{file.Performer}";
-        await setAlbumCover();
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task setAlbumCover()
-    {
-        string result = await Model.GetAlbumCover(Model.Player.PlayingFile.Album);
-        Image64 = $"data:image/png;base64,{result}";
-    }
-
 }
