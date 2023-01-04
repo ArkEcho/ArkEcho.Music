@@ -48,7 +48,7 @@ namespace ArkEcho.WebPage
             return await rest.GetAlbumCover(albumGuid);
         }
 
-        public override Task SynchronizeMusic()
+        public override Task StartSynchronizeMusic()
         {
             throw new NotImplementedException();
         }

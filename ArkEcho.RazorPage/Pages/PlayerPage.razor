@@ -4,8 +4,6 @@
 
 @inject IAppModel Model
 
-<p>MusicFileCount: @musicFileCounter</p>
-
 <input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
 <button @onclick="Search">Suche</button>
 <br />
@@ -14,74 +12,18 @@
 <br />
 <br />
 
-<label for="playing">Playing:</label>
-<input type="checkbox" id="playing" name="playing" checked="@Model.Player.Playing">
-<br />
-
-<p>@SongInfo</p>
-
-<p>@Model.Player.Position</p>
-<br />
-
-<img src=@Image64 width=100 height=100/>
-
 <PlayerControl />
 
 @code
 {
-    private string Image64 = string.Empty;
-    private string SongInfo = string.Empty;
-
-    private int musicFileCounter = 0;
     private string searchMusicValue = string.Empty;
 
     private List<string> Logs = new List<string>();
-
-    protected override async Task OnInitializedAsync()
-    {
-        Model.Player.TitleChanged += () => titleChanged();
-        Model.Player.PositionChanged += () => positionChanged();
-        Model.Player.PlayingChanged += () => playingChanged();
-
-        musicFileCounter = Model.Library.MusicFiles.Count;
-
-        await InvokeAsync(StateHasChanged);
-
-        await base.OnInitializedAsync();
-    }
 
     private bool logOnPage(string Text, Logging.LogLevel Level)
     {
         Logs.Add($"{Level}\t-\t{Text}");
         return true;
-    }
-
-    private async Task titleChanged()
-    {
-        MusicFile file = Model.Player.PlayingFile;
-        if (file == null)
-            return;
-
-        SongInfo = $"{file.Title} - {file.Performer}";
-        await setAlbumCover();
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task positionChanged()
-    {
-        await InvokeAsync(StateHasChanged);     
-    }
-
-    private async Task playingChanged()
-    {        
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task setAlbumCover()
-    {        
-        string result = await Model.GetAlbumCover(Model.Player.PlayingFile.Album);
-        Image64 =  $"data:image/png;base64,{result}";
     }
 
     private void Search()

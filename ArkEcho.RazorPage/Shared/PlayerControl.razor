@@ -1,15 +1,24 @@
 ﻿@inject IAppModel Model
 
 <MudAppBar Bottom="true" Fixed="true" Color="Color.Secondary" Elevation="1" Dense="true">
+
+    <MudPaper MaxHeight="100%" MaxWidth="45px" Class="d-flex mud-theme-secondary">
+        <MudImage Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
+    </MudPaper>
+
+    <MudText Typo="Typo.body2">@SongInfo</MudText>
+
     <MudSpacer />
-        
+
+    <MudText Typo="Typo.body2">@Position</MudText>
+
     <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
         <MudIconButton Class="mx-1" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
 
         <MudIconButton Class="mx-1" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
     </MudHidden>
 
-    <PlayForBack />
+    <PlayForBack />  @* TODO: Wieder raus *@
 
     <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
         <MudIconButton Class="mx-1" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />        
@@ -19,30 +28,25 @@
     </MudHidden>
 
     <MudSpacer />
+
 </MudAppBar>
-
-@*<MudHidden Breakpoint="Breakpoint.MdAndUp">
-    <MudContainer MaxWidth="MaxWidth.ExtraSmall">
-        <MudPaper Class="mud-theme-secondary" Elevation="1">
-            <MudSpacer />
-
-            <MudToolBar Dense="true">
-                <PlayForBack />
-            </MudToolBar>
-
-            <MudSpacer />
-        </MudPaper>
-    </MudContainer>
-    
-</MudHidden>*@
-
-
 
 @code 
 {
     public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
     public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
-    
+    public string Position 
+    { 
+        get
+        {
+            TimeSpan time = TimeSpan.FromSeconds(Model.Player.Position);
+            return time.ToString(@"mm\:ss");
+        } 
+    }
+
+    private string Image64 = string.Empty;
+    private string SongInfo = string.Empty;
+
     private void stop()
     {
         Model.Player.Stop();
@@ -57,4 +61,44 @@
     {
         Model.Player.Mute = !Model.Player.Mute;
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Player.TitleChanged += () => titleChanged();
+        Model.Player.PositionChanged += () => positionChanged();
+        Model.Player.PlayingChanged += () => playingChanged();
+
+        await InvokeAsync(StateHasChanged);
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task positionChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task playingChanged()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task titleChanged()
+    {
+        MusicFile file = Model.Player.PlayingFile;
+        if (file == null)
+            return;
+
+        SongInfo = $"{file.Title}\r\n{file.Performer}";
+        await setAlbumCover();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task setAlbumCover()
+    {
+        string result = await Model.GetAlbumCover(Model.Player.PlayingFile.Album);
+        Image64 = $"data:image/png;base64,{result}";
+    }
+
 }

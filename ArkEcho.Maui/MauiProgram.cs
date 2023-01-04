@@ -49,10 +49,9 @@ namespace ArkEcho.Maui
 
             builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(loggingWorker, config);
 
-            //#if DEBUG
-            //            builder.Services.AddBlazorWebViewDeveloperTools();
-            //            builder.Logging.AddDebug();
-            //#endif
+#if DEBUG
+            builder.Services.AddBlazorWebViewDeveloperTools();
+#endif
 
             MauiApp app = builder.Build();
 
