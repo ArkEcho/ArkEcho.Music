@@ -27,7 +27,7 @@
         <MudIconButton Class="mx-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
 
         <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-        <MudPaper Class="mx-1 pt-2 mud-theme-secondary d-none d-md-flex" Elevation="0" Width="100px">
+        <MudPaper Class="mx-1 pt-3 mud-theme-secondary d-none d-sm-flex" Elevation="0" Width="100px">
             <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
         </MudPaper>
 
