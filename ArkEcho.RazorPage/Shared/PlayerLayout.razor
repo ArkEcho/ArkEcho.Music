@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+
+@layout MainLayout
+
+@inject NavigationManager NavigationManager
+
+<MudPaper>
+    <MudPaper Class="overflow-hidden" Width="100%" Elevation="0">
+
+        @Body
+
+        <MudPaper Style="bottom: 0" Width="100%" Height="75px" /> @*Spacer at Bottom to make scrolling above Player Control possible*@
+    </MudPaper>
+
+    <MudPaper Class="fixed mud-theme-tertiary" Style="bottom: 0" Width="100%" Height="75px">
+        <PlayerControl />
+    </MudPaper>
+</MudPaper>
+
+@code {
+
+}
