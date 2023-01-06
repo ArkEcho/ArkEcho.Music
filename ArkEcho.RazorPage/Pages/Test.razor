@@ -1,0 +1,22 @@
+﻿@page "/Test"
+
+
+<MudPaper>
+    <MudPaper Class="overflow-hidden" Width="100%">
+        @for(int i = 0; i < 100; i++)
+        {
+            <MudButton Variant="Variant.Filled">Test Top</MudButton> @i
+            <br />
+            <br />
+        }
+        <MudPaper Style="bottom: 0" Width="100%" Height="75px" />
+    </MudPaper>
+
+    <MudPaper Class="fixed mud-theme-tertiary" Style="bottom: 0" Width="100%" Height="75px">
+        <PlayerControl />
+    </MudPaper>
+</MudPaper>
+
+@code {
+
+}

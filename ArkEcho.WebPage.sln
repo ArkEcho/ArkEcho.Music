@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.Core.Test", "ArkEch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.WebPage", "ArkEcho.WebPage\ArkEcho.WebPage.csproj", "{B58E8E36-C349-4337-A583-0962A18AD305}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.RazorPage", "ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6EA5D374-7442-43FD-951C-7B9092BAC5EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6EA5D374-7442-43FD-951C-7B9092BAC5EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
