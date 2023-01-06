@@ -43,7 +43,7 @@
         if (Model.Library.MusicFiles.Count == 0) // TODO: Give Error
             return;
 
-        Model.Library.Album[0].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+        Model.Library.Album[8].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
         Model.Player.Start(Files, 0);
     }
