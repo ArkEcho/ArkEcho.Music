@@ -12,13 +12,12 @@
             return time.ToString(@"mm\:ss");
         }
     }
-    public string SongTitle { get { return playingTitle != null ? playingTitle.Title : string.Empty; } }
-    public string SongPerformer { get { return playingTitle != null ? playingTitle.Performer : string.Empty; } }
-    public string AlbumName { get { return playingTitle != null ? playingAlbum.Name : string.Empty; } }
-    public string AlbumArtistName { get { return playingTitle != null ? playingAlbumArtist.Name : string.Empty; } }
+    public string SongTitle { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title : string.Empty; } }
+    public string SongPerformer { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Performer : string.Empty; } }
+    public string AlbumName { get { return Model.Player.PlayingFile != null ? playingAlbum.Name : string.Empty; } }
+    public string AlbumArtistName { get { return Model.Player.PlayingFile != null ? playingAlbumArtist.Name : string.Empty; } }
 
     protected string Image64 = string.Empty;
-    protected MusicFile playingTitle = null;
     protected Album playingAlbum = null;
     protected AlbumArtist playingAlbumArtist = null;
 
@@ -58,16 +57,21 @@
         Model.Player.PositionChanged += () => positionChanged();
         Model.Player.PlayingChanged += () => playingChanged();
 
+        await loadSongInfo();
+
         await base.OnInitializedAsync();
     }
 
     protected async Task titleChanged()
     {
-        playingTitle = Model.Player.PlayingFile;
+        await loadSongInfo();
+    }
 
-        if (playingTitle != null && (playingAlbum == null || playingAlbum.GUID != playingTitle.GUID))
+    private async Task loadSongInfo()
+    {
+        if (Model.Player.PlayingFile != null && (playingAlbum == null || playingAlbum.GUID != Model.Player.PlayingFile.GUID))
         {
-            playingAlbum = Model.Library.Album.Find(x => x.GUID == playingTitle.Album);
+            playingAlbum = Model.Library.Album.Find(x => x.GUID == Model.Player.PlayingFile.Album);
             playingAlbumArtist = Model.Library.AlbumArtists.Find(x => x.GUID == playingAlbum.GUID);
 
             string result = await Model.GetAlbumCover(playingAlbum.GUID);
@@ -76,6 +80,7 @@
         else
         {
             playingAlbum = null;
+            playingAlbumArtist = null;
             Image64 = string.Empty;
         }
 
