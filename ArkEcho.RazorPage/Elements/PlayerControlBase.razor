@@ -12,6 +12,16 @@
             return time.ToString(@"mm\:ss");
         }
     }
+    public string Duration 
+    { 
+        get 
+        { 
+            return Model.Player.PlayingFile != null 
+            ? TimeSpan.FromMilliseconds(Model.Player.PlayingFile.Duration).ToString(@"mm\:ss") 
+            : TimeSpan.FromSeconds(0).ToString(@"mm\:ss"); 
+        } 
+    }
+
     public string SongTitle { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title : string.Empty; } }
     public string SongPerformer { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Performer : string.Empty; } }
     public string AlbumName { get { return Model.Player.PlayingFile != null ? playingAlbum.Name : string.Empty; } }
