@@ -1,5 +1,7 @@
 ﻿@inject IAppModel Model
 
+@inherits PlayerControlBase
+
 <MudStack>
 
     <MudPaper Class="mx-6 d-none d-md-flex" Height="10px" Elevation="0">
@@ -46,96 +48,5 @@
 
 @code
 {
-    public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
-    public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
-    public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
-    public string Position 
-    { 
-        get
-        {
-            TimeSpan time = TimeSpan.FromSeconds(Model.Player.Position);
-            return time.ToString(@"mm\:ss");
-        } 
-    }
-    public string SongTitle { get { return playingTitle != null ? playingTitle.Title : string.Empty; } }
-    public string SongPerformer { get { return playingTitle != null ? playingTitle.Performer : string.Empty; } }
-    public string AlbumName { get { return playingTitle != null ? playingAlbum.Name : string.Empty; } }
-    public string AlbumArtistName { get { return playingTitle != null ? playingAlbumArtist.Name : string.Empty; } }
-
-    private string Image64 = string.Empty;
-    private MusicFile playingTitle = null;
-    private Album playingAlbum = null;
-    private AlbumArtist playingAlbumArtist = null;
-
-    private void playPause()
-    {
-        Model.Player.PlayPause();
-    }
-
-    private void backward()
-    {
-        Model.Player.Backward();
-    }
-
-    private void forward()
-    {
-        Model.Player.Forward();
-    }
-
-    private void stop()
-    {
-        Model.Player.Stop();
-    }
-
-    private void shuffle()
-    {
-        Model.Player.Shuffle = !Model.Player.Shuffle;
-    }
-
-    private void mute()
-    {
-        Model.Player.Mute = !Model.Player.Mute;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        Model.Player.TitleChanged += () => titleChanged();
-        Model.Player.PositionChanged += () => positionChanged();
-        Model.Player.PlayingChanged += () => playingChanged();
-
-        await InvokeAsync(StateHasChanged);
-
-        await base.OnInitializedAsync();
-    }
-
-    private async Task titleChanged()
-    {
-        playingTitle = Model.Player.PlayingFile;
-
-        if (playingTitle != null && (playingAlbum == null || playingAlbum.GUID != playingTitle.GUID))
-        {
-            playingAlbum = Model.Library.Album.Find(x => x.GUID == playingTitle.Album);
-            playingAlbumArtist = Model.Library.AlbumArtists.Find(x => x.GUID == playingAlbum.GUID);
-
-            string result = await Model.GetAlbumCover(playingAlbum.GUID);
-            Image64 = $"data:image/png;base64,{result}";
-        }
-        else
-        {
-            playingAlbum = null;
-            Image64 = string.Empty;            
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task positionChanged()
-    {
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task playingChanged()
-    {
-        await InvokeAsync(StateHasChanged);
-    }
+    
 }

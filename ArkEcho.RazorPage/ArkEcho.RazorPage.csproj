@@ -20,8 +20,4 @@
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Elements\" />
-  </ItemGroup>
-
 </Project>
