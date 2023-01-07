@@ -208,6 +208,9 @@ namespace ArkEcho.Core
 
             loadAudio(StartOnLoad);
             TitleChanged?.Invoke();
+
+            if (!StartOnLoad)
+                playingChanged(false);
         }
 
         public void Play()

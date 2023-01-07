@@ -173,7 +173,7 @@ namespace ArkEcho.Core.Test
         }
 
         [TestMethod]
-        public void LoadFirstSongStoppedOnEndOfList()
+        public void LoadFirstSongStoppedOnEndOfListWhilePlaying()
         {
             getPlayer(out Player testPlayer);
             getFileList(7, out List<MusicFile> files);
@@ -188,7 +188,22 @@ namespace ArkEcho.Core.Test
             testPlayer.Position = (files.Last().Duration / 1000) - 1;
             Thread.Sleep(2000);
 
-            Assert.IsFalse(testPlayer.Playing);
+            Assert.IsTrue(!testPlayer.Playing);
+            Assert.IsTrue(testPlayer.Position == 0);
+            Assert.IsTrue(testPlayer.PlayingFile.GUID == files[0].GUID);
+        }
+
+        [TestMethod]
+        public void LoadSongStoppedOnEndOfListWithForward()
+        {
+            getPlayer(out Player testPlayer);
+            getFileList(1, out List<MusicFile> files);
+
+            testPlayer.Start(files, 0);
+
+            testPlayer.Forward();
+
+            Assert.IsTrue(!testPlayer.Playing);
             Assert.IsTrue(testPlayer.Position == 0);
             Assert.IsTrue(testPlayer.PlayingFile.GUID == files[0].GUID);
         }
