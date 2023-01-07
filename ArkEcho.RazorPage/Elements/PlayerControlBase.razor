@@ -4,7 +4,7 @@
     public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
     public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
     public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
-    public string Position
+    public string PositionTime
     {
         get
         {
@@ -12,7 +12,7 @@
             return time.ToString(@"mm\:ss");
         }
     }
-    public string Duration 
+    public string DurationTime
     { 
         get 
         { 
@@ -20,6 +20,16 @@
             ? TimeSpan.FromMilliseconds(Model.Player.PlayingFile.Duration).ToString(@"mm\:ss") 
             : TimeSpan.FromSeconds(0).ToString(@"mm\:ss"); 
         } 
+    }
+
+    public int DurationSeconds
+    {
+        get
+        {
+            return Model.Player.PlayingFile != null
+            ? Convert.ToInt32(TimeSpan.FromMilliseconds(Model.Player.PlayingFile.Duration).TotalSeconds)
+            : Convert.ToInt32(TimeSpan.FromSeconds(0).TotalSeconds);
+        }
     }
 
     public string SongTitle { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title : string.Empty; } }
@@ -97,13 +107,37 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    protected async Task positionChanged()
+    protected async Task playingChanged()
     {
         await InvokeAsync(StateHasChanged);
     }
 
-    protected async Task playingChanged()
+    protected async Task positionChanged()
     {
+        if (positionSliderChange)
+            return;
+
         await InvokeAsync(StateHasChanged);
+    }
+
+    private bool positionSliderChange = false;
+    public async Task sliderVolumeChanged(int value)
+    {
+        positionSliderChange = true;
+
+        Model.Player.Position = value;
+        await InvokeAsync(StateHasChanged);
+
+        positionSliderChange = false;
+    }
+
+    public void sliderMouseDown(MouseEventArgs e)
+    {
+        positionSliderChange = true;
+    }
+
+    public void sliderMouseUp(MouseEventArgs e)
+    {
+        Task.Run(() => { Thread.Sleep(500); positionSliderChange = false; });
     }
 }

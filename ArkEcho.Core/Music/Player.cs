@@ -88,14 +88,25 @@ namespace ArkEcho.Core
         /// </summary>
         public int Position
         {
-            get { return position; }
+            get
+            {
+                return position;
+            }
             set
             {
                 if (value == position || value < 0)
                     return;
 
+                // Pause and give Player time to react
+                bool playing = Playing;
+                if (playing)
+                    Pause();
+
                 position = value;
                 setAudioPosition();
+
+                if (playing)
+                    Play();
             }
         }
         private int position = 0;
@@ -199,7 +210,7 @@ namespace ArkEcho.Core
         private void loadNextPlayingFile(bool StartOnLoad)
         {
             disposeAudio();
-            Position = 0;
+            position = 0;
 
             PlayingFile = Shuffle ? listToPlay[shuffledIndexList[songIndex]] : listToPlay[songIndex];
 
@@ -243,7 +254,7 @@ namespace ArkEcho.Core
                 return;
 
             stopAudio();
-            Position = 0;
+            position = 0;
         }
 
         public void Forward()
@@ -276,7 +287,7 @@ namespace ArkEcho.Core
             if (listToPlay.IsNullOrEmpty())
                 return;
 
-            if (Position > 5)
+            if (position > 5)
             {
                 Stop();
                 Play();
