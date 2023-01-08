@@ -12,15 +12,33 @@
     <MudPaper Class="d-flex" Style="bottom: 0; width: 100%; height: 50px" Elevation="0">
 
         <MudPaper Class="d-flex flex-none justify-start" Elevation="0" Width="250px">
-
             <MudPaper Class="pa-1 d-flex" MaxHeight="100%" MaxWidth="50px" Elevation="0">
                 <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
             </MudPaper>
 
-            <MudStack Class="ml-1 mt-1" Spacing="0">
-                <MudText Inline="true" Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
-                <MudText Inline="true" Typo="Typo.body2">@getSongPerformer(maxSongInfoLength)</MudText>
-            </MudStack>
+            <MudTooltip Arrow="true" Placement="Placement.Top" Delayed="0.5">
+                <ChildContent>
+                    <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
+                        <MudText Inline="true" Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
+                        <MudText Inline="true" Typo="Typo.body2">@getSongPerformer(maxSongInfoLength)</MudText>
+                    </MudStack>
+                </ChildContent>
+
+                <TooltipContent>
+                    <MudStack Spacing="0">
+                        <MudContainer MaxWidth="MaxWidth.Small">
+                            <MudImage Class="rounded-lg" Width="100" Height="100" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
+                        </MudContainer>
+                        <MudDivider />
+                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@getSongTitle(100)</MudText>
+                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@getSongPerformer(100)</MudText>
+                        <MudDivider />
+                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@AlbumName</MudText>
+                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@AlbumArtistName</MudText>
+                    </MudStack>
+                </TooltipContent>
+            </MudTooltip>
+
         </MudPaper>
 
         <MudPaper Class="pa-2 d-flex flex-grow-1 justify-center" Elevation="0">
