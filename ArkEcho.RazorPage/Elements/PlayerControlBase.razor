@@ -32,14 +32,22 @@
         }
     }
 
-    public string SongTitle { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title : string.Empty; } }
-    public string SongPerformer { get { return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Performer : string.Empty; } }
     public string AlbumName { get { return Model.Player.PlayingFile != null ? playingAlbum.Name : string.Empty; } }
     public string AlbumArtistName { get { return Model.Player.PlayingFile != null ? playingAlbumArtist.Name : string.Empty; } }
 
     protected string Image64 = string.Empty;
     protected Album playingAlbum = null;
     protected AlbumArtist playingAlbumArtist = null;
+
+    protected string getSongTitle(int maxLength)
+    {
+        return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title.Truncate(maxLength) : string.Empty;
+    }
+    
+    protected string getSongPerformer(int maxLength)
+    {
+        return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Performer.Truncate(maxLength) : string.Empty;
+    }
 
     protected void playPause()
     {

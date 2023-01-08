@@ -33,5 +33,11 @@ namespace ArkEcho
         {
             return Encoding.Default.GetBytes(inputString);
         }
+        public static string? Truncate(this string value, int maxLength, string truncationSuffix = "…")
+        {
+            return value?.Length > maxLength
+                ? value.Substring(0, maxLength - truncationSuffix.Length - 2) + truncationSuffix
+                : value;
+        }
     }
 }
