@@ -94,14 +94,14 @@
             playingAlbum = Model.Library.Album.Find(x => x.GUID == Model.Player.PlayingFile.Album);
             playingAlbumArtist = Model.Library.AlbumArtists.Find(x => x.GUID == playingAlbum.GUID);
 
-            string result = await Model.GetAlbumCover(playingAlbum.GUID);
-            Image64 = $"data:image/png;base64,{result}";
+            if (string.IsNullOrEmpty(playingAlbum.Cover64))
+                playingAlbum.Cover64 = await Model.GetAlbumCover(playingAlbum.GUID);
+            Image64 = $"data:image/png;base64,{playingAlbum.Cover64}";
         }
         else
         {
             playingAlbum = null;
             playingAlbumArtist = null;
-            Image64 = string.Empty;
         }
 
         await InvokeAsync(StateHasChanged);
@@ -109,6 +109,9 @@
 
     protected async Task playingChanged()
     {
+        if (positionSliderChange)
+            return;
+
         await InvokeAsync(StateHasChanged);
     }
 
