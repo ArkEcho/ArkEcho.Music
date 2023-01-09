@@ -294,9 +294,9 @@ namespace ArkEcho.Core
             }
             else if (songIndex == 0)
             {
-                Guid lastGuid = listToPlay[shuffledIndexList[songIndex]].GUID;
                 if (Shuffle)
                 {
+                    Guid lastGuid = listToPlay[shuffledIndexList[songIndex]].GUID;
                     setShuffleList(lastGuid, -1);
                     loadNextPlayingFile(true);
                 }

@@ -11,7 +11,7 @@
 
     <MudPaper Class="d-flex" Style="bottom: 0; width: 100%; height: 50px" Elevation="0">
 
-        <MudPaper Class="d-flex flex-none justify-start" Elevation="0" Width="250px">
+        <MudPaper Class="d-flex flex-none justify-start" Elevation="0" Width="230px">
             <MudPaper Class="pa-1 d-flex" MaxHeight="100%" MaxWidth="50px" Elevation="0">
                 <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
             </MudPaper>
@@ -20,7 +20,7 @@
                 <ChildContent>
                     <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
                         <MudText Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
-                        <MudText Typo="Typo.body2">@getSongPerformer(maxSongInfoLength)</MudText>
+                        <MudText Typo="Typo.caption">@getSongPerformer(maxSongInfoLength)</MudText>
                     </MudStack>
                 </ChildContent>
 
@@ -52,13 +52,12 @@
 
         </MudPaper>
 
-        <MudPaper Class="pa-2 d-flex flex-grow-1 justify-center" Elevation="0">
+        <MudPaper Class="pt-2 pb-2 d-flex flex-grow-1 justify-center" Elevation="0">
         
-            <MudPaper Class="pt-2 mr-4 d-none d-md-flex" Elevation="0">
+            <MudPaper Class="pt-2 mr-2 d-none d-md-flex" Elevation="0">
                 <MudText Typo="Typo.body2">@PositionTime / @DurationTime</MudText>
             </MudPaper>
 
-            <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
             <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
 
             <MudIconButton Class="mx-1" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
@@ -67,19 +66,23 @@
 
             <MudIconButton Class="mx-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
 
+            <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+
             <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-            <MudPaper Class="mx-1 pt-2 d-none d-md-flex" Width="100px" Elevation="0">
+            <MudPaper Class="mx-1 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
                 <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
             </MudPaper>
 
         </MudPaper>
 
-        <MudPaper Class="d-none d-md-flex flex-grow-1" MaxWidth="200px" Elevation="0"/>
+        <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="200px" Elevation="0">
+            <MudIconButton Class="mx-1" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Medium" />
+        </MudPaper>
     
     </MudPaper>
 </MudStack>
 
 @code
 {
-    private int maxSongInfoLength = 28;
+    private int maxSongInfoLength = 24;
 }
