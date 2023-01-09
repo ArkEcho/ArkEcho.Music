@@ -19,8 +19,8 @@
             <MudTooltip Arrow="true" Placement="Placement.Top" Delayed="0.5">
                 <ChildContent>
                     <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                        <MudText Inline="true" Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
-                        <MudText Inline="true" Typo="Typo.body2">@getSongPerformer(maxSongInfoLength)</MudText>
+                        <MudText Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
+                        <MudText Typo="Typo.body2">@getSongPerformer(maxSongInfoLength)</MudText>
                     </MudStack>
                 </ChildContent>
 
@@ -29,12 +29,23 @@
                         <MudContainer MaxWidth="MaxWidth.Small">
                             <MudImage Class="rounded-lg" Width="100" Height="100" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
                         </MudContainer>
+
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongTitle(100)</MudText>
                         <MudDivider />
-                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@getSongTitle(100)</MudText>
-                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@getSongPerformer(100)</MudText>
+                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Titel</MudText>
+
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongPerformer(100)</MudText>
                         <MudDivider />
-                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@AlbumName</MudText>
-                        <MudText Inline="true" Align="Align.Center" Typo="Typo.body2">@AlbumArtistName</MudText>
+                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Performer</MudText>
+
+
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@AlbumName</MudText>
+                        <MudDivider />
+                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Album Name</MudText>
+
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@AlbumArtistName</MudText>
+                        <MudDivider />
+                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Album Interpret</MudText>
                     </MudStack>
                 </TooltipContent>
             </MudTooltip>
