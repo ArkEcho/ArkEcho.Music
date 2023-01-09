@@ -58,25 +58,29 @@
                 <MudText Typo="Typo.body2">@PositionTime / @DurationTime</MudText>
             </MudPaper>
 
-            <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="shuffle" Icon="@ShuffleIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+            <MudPaper Class="d-flex border border-solid mud-border-primary" Elevation="0">
+                <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="shuffle" Icon="@ShuffleIcon" Color="Color.Primary" Size="Size.Medium" />
+            
+                <MudIconButton Class="mr-1 d-none d-md-flex" Icon="@Icons.Material.Rounded.Repeat" Color="Color.Primary" Size="Size.Medium" />
 
-            <MudIconButton Class="mx-1" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+                <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Color="Color.Primary" Size="Size.Medium" />
 
-            <MudFab Class="mx-1 mt-n1" OnClick="playPause" Icon="@PlayPauseIcon" Color="Color.Primary" Size="Size.Small" />
+                <MudIconButton Class="mr-1" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Color="Color.Primary" Size="Size.Medium" />
 
-            <MudIconButton Class="mx-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+                <MudFab Class="mr-1 mt-n1" OnClick="playPause" Icon="@PlayPauseIcon" Color="Color.Primary" Size="Size.Small" />
 
-            <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
+                <MudIconButton Class="mr-md-1" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Color="Color.Primary" Size="Size.Medium" />
 
-            <MudIconButton Class="mx-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" />
-            <MudPaper Class="mx-1 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
-                <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
+                <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Color="Color.Primary" Size="Size.Medium" />
+                <MudPaper Class="mr-1 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
+                    <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
+                </MudPaper>
             </MudPaper>
 
         </MudPaper>
 
         <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="200px" Elevation="0">
-            <MudIconButton Class="mx-1" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Medium" />
+            <MudIconButton Class="mr-1 ml-n1" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Medium" />
         </MudPaper>
     
     </MudPaper>
