@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace ArkEcho.Core
 {
-    // TODO: Checksum um auch geändertes Album Cover etc. zu erkennen und neu zu laden
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class MusicFile : TransferFileBase
     {

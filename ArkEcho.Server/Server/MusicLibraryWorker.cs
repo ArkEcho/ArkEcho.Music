@@ -22,8 +22,6 @@ namespace ArkEcho.Server
 
         private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            // TODO: Library laden aus Datei
-            // TODO: Diff Funktionen aus App überführen -> nur neue Laden, Library bereinigen, Playlists prüfen
             logger.LogStatic($"Start loading MusicLibrary...");
 
             Stopwatch sw = new();

@@ -45,16 +45,25 @@ namespace ArkEcho.Core
             }
 
             logger.LogImportant($"Checking Files");
-            progressEvent("Checking Library", 10);
+            progressEvent("Checking Library", 5);
 
             List<MusicFile> exist = new List<MusicFile>();
             List<MusicFile> missing = new List<MusicFile>();
-            bool checkLib = await CheckLibrary(musicFolder, library, exist, missing);
+            List<MusicFile> wrong = new List<MusicFile>();
+            bool checkLib = await CheckLibrary(musicFolder, library, exist, missing, wrong);
 
             if (!checkLib)
             {
                 logger.LogError("Error checking the Library with the local Folder");
                 return false;
+            }
+
+            if (wrong != null && wrong.Count > 0)
+            {
+                progressEvent($"Deleting {wrong.Count} wrong Files!", 10);
+                logger.LogImportant($"Deleting {wrong.Count} wrong Files!");
+                wrong.ForEach(musicFile => File.Delete(musicFile.FullPath));
+                missing.AddRange(wrong);
             }
 
             if (missing.Count > 0)
@@ -96,7 +105,7 @@ namespace ArkEcho.Core
                     int progress = Convert.ToInt32(test + 20);
                     progressEvent($"Loading {file.FileName}", progress);
 
-                    bool success = await LoadFileFromServer(file);
+                    bool success = await loadFileFromServer(file);
                     if (!success)
                         logger.LogError($"Error loading {file.FileName} from Server!");
 
@@ -111,7 +120,7 @@ namespace ArkEcho.Core
             return true;
         }
 
-        private async Task<bool> LoadFileFromServer(MusicFile file)
+        private async Task<bool> loadFileFromServer(MusicFile file)
         {
             if (file == null)
                 return false;
@@ -169,7 +178,7 @@ namespace ArkEcho.Core
             }
         }
 
-        public async Task<bool> CheckLibrary(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing)
+        public async Task<bool> CheckLibrary(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing, List<MusicFile> wrong = null)
         {
             bool success = false;
 
@@ -193,6 +202,8 @@ namespace ArkEcho.Core
 
                         if (!Directory.Exists(file.Folder.LocalPath) || !File.Exists(file.FullPath))
                             missing.Add(file);
+                        else if (wrong != null && !file.TestCheckSum()) // Test Checksum -> Album Cover changed etc.
+                            wrong.Add(file);
                         else
                             exist.Add(file);
                     }

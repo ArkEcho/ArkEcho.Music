@@ -32,7 +32,6 @@ namespace ArkEcho.WebPage
             }
             catch (Exception ex)
             {
-                // TODO: On first render Exception because js cant work?!
             }
             return false;
         }
