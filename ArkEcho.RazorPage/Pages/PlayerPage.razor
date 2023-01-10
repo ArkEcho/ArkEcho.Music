@@ -4,24 +4,53 @@
 
 @inject IAppModel Model
 
-<input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
-<button @onclick="Search">Suche</button>
-<br />
+<MudStack>
 
-<button @onclick="Init">Init</button>
-<br />
-<br />
+    <MudPaper Class="d-flex" Style="top: 0; width: 100%" Elevation="1">
+
+        <MudSelect @bind-Value=selectedDisplayMode T="DisplayMode" Margin="Margin.Dense" Variant="Variant.Filled">
+            @foreach(DisplayMode mode in DisplayMode.displayModes)
+            {
+                <MudSelectItem Value="@(mode)" />
+            }
+        </MudSelect>
+        <MudSpacer />
+
+        <MudSelect @bind-Value=selectedSortingMode T="SortingMode" Margin="Margin.Dense" Variant="Variant.Filled">
+            @foreach(SortingMode mode in SortingMode.sortModes)
+            {
+                <MudSelectItem Value="@mode" />
+            }
+        </MudSelect>
+        <MudTextField @bind-Value="searchMusicValue" Label="Search" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
+    </MudPaper>
+
+    <MudPaper Class="d-flex" Elevation="0">
+        <input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
+        <button @onclick="Search">Suche</button>
+        <br />
+
+        <button @onclick="Init">Init</button>
+        <br />
+        <br />
+    </MudPaper>
+
+</MudStack>
+
 
 @code
 {
+    
+    
+
+    private DisplayMode selectedDisplayMode = DisplayMode.displayModes.FirstOrDefault();
+    private SortingMode selectedSortingMode = SortingMode.sortModes.FirstOrDefault();
+
     private string searchMusicValue = string.Empty;
 
-    private List<string> Logs = new List<string>();
-
-    private bool logOnPage(string Text, Logging.LogLevel Level)
+    protected override async Task OnInitializedAsync()
     {
-        Logs.Add($"{Level}\t-\t{Text}");
-        return true;
+        await base.OnInitializedAsync();
     }
 
     private void Search()

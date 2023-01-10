@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
-namespace ArkEcho.RazorPage
+namespace ArkEcho.RazorPage.Data
 {
     public static class ServiceCollectionExtension
     {

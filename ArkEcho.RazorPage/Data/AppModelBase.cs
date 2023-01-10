@@ -1,7 +1,7 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.WebPage;
 
-namespace ArkEcho.RazorPage
+namespace ArkEcho.RazorPage.Data
 {
     public abstract class AppModelBase : IAppModel
     {

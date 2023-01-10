@@ -1,4 +1,4 @@
-﻿using ArkEcho.RazorPage;
+﻿using ArkEcho.RazorPage.Data;
 
 namespace ArkEcho.WebPage
 {

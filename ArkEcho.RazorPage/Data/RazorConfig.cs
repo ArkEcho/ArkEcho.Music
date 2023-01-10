@@ -1,6 +1,6 @@
 ﻿using ArkEcho.Core;
 
-namespace ArkEcho.RazorPage
+namespace ArkEcho.RazorPage.Data
 {
     public class RazorConfig : JsonBase
     {

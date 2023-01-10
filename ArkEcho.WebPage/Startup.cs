@@ -1,4 +1,4 @@
-using ArkEcho.RazorPage;
+using ArkEcho.RazorPage.Data;
 using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
