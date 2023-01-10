@@ -47,10 +47,9 @@ namespace ArkEcho.WebPage
             playingChanged(playing);
         }
 
-        protected override bool log(string text, Logging.LogLevel level)
+        protected override void log(string text, Logging.LogLevel level)
         {
             logger.Log(text, level);
-            return false;
         }
 
         protected override void loadAudio(bool StartOnLoad)

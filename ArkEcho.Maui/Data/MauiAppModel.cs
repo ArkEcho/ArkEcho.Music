@@ -15,7 +15,7 @@ namespace ArkEcho.Maui
         public MauiAppModel(ILocalStorage localStorage, RestLoggingWorker loggingWorker, RazorConfig config)
             : base(Resources.ARKECHOMAUI, localStorage, loggingWorker, config)
         {
-            player = new VLCPlayer();
+            player = new VLCPlayer(logger);
             Sync = new LibrarySync(Resources.ARKECHOMAUI, rest, loggingWorker);
         }
 

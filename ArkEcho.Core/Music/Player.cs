@@ -318,7 +318,7 @@ namespace ArkEcho.Core
             Forward();
         }
 
-        protected abstract bool log(string Text, Logging.LogLevel Level);
+        protected abstract void log(string Text, Logging.LogLevel Level);
         protected abstract void loadAudio(bool StartOnLoad);
         protected abstract void disposeAudio();
         protected abstract void playAudio();

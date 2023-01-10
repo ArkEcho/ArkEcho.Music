@@ -75,7 +75,7 @@
                 <MudIconButton Class="d-md-none d-flex" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Color="Color.Primary" Size="Size.Small" />
 
                 <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Color="Color.Primary" Size="Size.Medium" />
-                <MudPaper Class="mr-1 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
+                <MudPaper Class="mr-1 pt-2 d-none d-md-flex" Width="100px" Elevation="0">
                     <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
                 </MudPaper>
             </MudPaper>
@@ -83,7 +83,7 @@
         </MudPaper>
 
         <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="200px" Elevation="0">
-            <MudIconButton Class="mr-1 ml-n1 d-none d-md-flex" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Medium" />
+            <MudIconButton Class="mr-1 d-none d-md-flex" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Medium" />
             <MudIconButton Class="mr-1 d-md-none d-flex" Icon="@Icons.Material.Rounded.QueueMusic" Color="Color.Primary" Size="Size.Small" />
         </MudPaper>
     

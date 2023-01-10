@@ -7,14 +7,16 @@ namespace ArkEcho.Maui
     {
         private LibVLC libvlc = null;
         private LibVLCSharp.Shared.MediaPlayer mediaplayer = null;
-        public VLCPlayer() : base()
+        private Logger logger = null;
+
+        public VLCPlayer(Logger logger) : base()
         {
+            this.logger = logger;
         }
 
-        protected override bool log(string Text, Logging.LogLevel Level)
+        protected override void log(string Text, Logging.LogLevel Level)
         {
-            // TODO Logger
-            return false;
+            logger.Log(Text, Level);
         }
 
         public bool InitPlayer()

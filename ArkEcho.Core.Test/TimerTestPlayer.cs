@@ -56,9 +56,8 @@ namespace ArkEcho.Core.Test
             }
         }
 
-        protected override bool log(string Text, Logging.LogLevel Level)
+        protected override void log(string Text, Logging.LogLevel Level)
         {
-            return true;
         }
 
         protected override void pauseAudio()
