@@ -25,22 +25,23 @@ namespace ArkEcho.WebPage
             if (initialized)
                 return true;
 
-            string lib = await rest.GetMusicLibrary();
-            await Library.LoadFromJsonString(lib);
+            if (!jsPlayer.InitPlayer())
+                return false;
+
+            if (!await LoadLibraryFromServer())
+                return false;
 
             if (Library.MusicFiles.Count > 0)
             {
                 logger.LogStatic($"AppModel initialized, {Library.MusicFiles.Count}");
-
-                if (jsPlayer.InitPlayer()) // TODO entfernen
-                {
-                    initialized = true;
-                    return true;
-                }
+                initialized = true;
+                return true;
             }
-
-            logger.LogStatic($"Error initializing AppModel");
-            return false;
+            else
+            {
+                logger.LogStatic($"Error initializing AppModel");
+                return false;
+            }
         }
 
         public override async Task<string> GetAlbumCover(Guid albumGuid)
