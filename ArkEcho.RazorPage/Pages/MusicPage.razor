@@ -6,8 +6,8 @@
 
     <MudPaper Class="d-flex" MaxHeight="50px" Style="top: 0; width: 100%" Elevation="1">
 
-        <MudPaper Class="d-flex ml-2" MaxWidth="200px" Elevation="0">
-            <MudSelect @bind-Value=selectedDisplayMode T="DisplayMode" Dense="true" Margin="Margin.Dense">
+        <MudPaper Class="d-flex ml-2" MaxWidth="220px" Elevation="0">
+            <MudSelect @bind-Value=selectedDisplayMode T="DisplayMode" AnchorOrigin="Origin.BottomCenter" Dense="true" Margin="Margin.Dense">
                 @foreach (DisplayMode mode in DisplayMode.displayModes)
                 {
                     <MudSelectItem Value="@(mode)" />
@@ -19,7 +19,7 @@
         <MudSpacer />
 
         <MudPaper Class="d-flex" Elevation="0">
-            <MudSelect Class="mr-2 d-none d-md-flex" @bind-Value=selectedSortingMode T="SortingMode" Margin="Margin.Dense">
+            <MudSelect Class="mr-2 d-none d-md-flex" @bind-Value=selectedSortingMode T="SortingMode" AnchorOrigin="Origin.BottomCenter" Dense="true" Margin="Margin.Dense">
                 @foreach(SortingMode mode in SortingMode.sortModes)
                 {
                     <MudSelectItem Value="@mode" />

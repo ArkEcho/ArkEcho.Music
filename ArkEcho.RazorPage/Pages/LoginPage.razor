@@ -11,9 +11,9 @@
             @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
-        <MudTextField Label="Username" Variant="Variant.Outlined" @bind-Value="username">Username</MudTextField>
+        <MudTextField Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
 
-        <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="password" InputType="@PasswordInput"
+        <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
                       Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
     </MudCardContent>
     <MudCardActions>
@@ -30,16 +30,22 @@
 
     private string username = string.Empty;
     private string password = string.Empty;
-    
+
     bool isShow;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    private async Task inputKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+            await validateUser();
+    }
 
     protected async override Task OnInitializedAsync()
     {
         if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Music");
-             
+
         // TODO Give Error or Success!       
         bool success = await model.InitializeLibraryAndPlayer();
     }
