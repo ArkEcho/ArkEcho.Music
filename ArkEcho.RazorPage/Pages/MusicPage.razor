@@ -1,0 +1,84 @@
+﻿@page "/Music"
+
+@layout PlayerLayout
+
+@inject IAppModel Model
+
+<MudStack>
+
+    <MudPaper Class="d-flex" MaxHeight="50px" Style="top: 0; width: 100%" Elevation="1">
+
+        <MudPaper Class="d-flex ml-2" MaxWidth="200px" Elevation="0">
+            <MudSelect @bind-Value=selectedDisplayMode T="DisplayMode" Dense="true" Margin="Margin.Dense">
+                @foreach (DisplayMode mode in DisplayMode.displayModes)
+                {
+                    <MudSelectItem Value="@(mode)" />
+                }
+            </MudSelect>
+        </MudPaper>
+        <MudSpacer />
+
+        <MudPaper Class="d-flex" Elevation="0">
+            <MudSelect Class="mr-2" @bind-Value=selectedSortingMode T="SortingMode" Margin="Margin.Dense">
+                @foreach(SortingMode mode in SortingMode.sortModes)
+                {
+                    <MudSelectItem Value="@mode" />
+                }
+            </MudSelect>
+            <MudTextField Class="mr-2" @bind-Value="searchMusicValue" Margin="Margin.Dense" Label="Search" Variant="Variant.Text"
+                          Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
+        </MudPaper>
+    </MudPaper>
+
+    <MudPaper Class="d-flex" Elevation="0">
+        <input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
+        <button @onclick="Search">Suche</button>
+        <br />
+
+        <button @onclick="Init">Init</button>
+        <br />
+        <br />
+    </MudPaper>
+
+</MudStack>
+
+
+@code
+{
+    
+    
+
+    private DisplayMode selectedDisplayMode = DisplayMode.displayModes.FirstOrDefault();
+    private SortingMode selectedSortingMode = SortingMode.sortModes.FirstOrDefault();
+
+    private string searchMusicValue = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    private void Search()
+    {
+        Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+
+        if (file == null)
+            return;
+
+        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+        Model.Player.Start(Files, 0);
+    }
+
+    private void Init()
+    {
+        List<Core.MusicFile> all = Model.Library.MusicFiles;
+        List<Core.MusicFile> Files = new List<Core.MusicFile>();
+
+        if (Model.Library.MusicFiles.Count == 0) // TODO: Give Error
+            return;
+
+        Model.Library.Album[8].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+
+        Model.Player.Start(Files, 0);
+    }
+}

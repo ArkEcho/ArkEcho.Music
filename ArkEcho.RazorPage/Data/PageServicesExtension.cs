@@ -15,8 +15,8 @@ namespace ArkEcho.RazorPage.Data
             serviceCollection.AddSingleton(logging);
             serviceCollection.AddSingleton(config);
 
-            serviceCollection.AddScoped<ILocalStorage, T1>();
-            serviceCollection.AddScoped<IAppModel, T2>();
+            serviceCollection.AddSingleton<ILocalStorage, T1>();
+            serviceCollection.AddSingleton<IAppModel, T2>();
         }
     }
 }

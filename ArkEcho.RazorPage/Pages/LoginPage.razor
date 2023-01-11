@@ -38,7 +38,7 @@
     protected async override Task OnInitializedAsync()
     {
         if (await model.IsUserAuthenticated())
-            NavigationManager.NavigateTo("/Player");
+            NavigationManager.NavigateTo("/Music");
     }
 
     private async Task validateUser()
@@ -50,7 +50,7 @@
         }
 
         if(await model.AuthenticateUser(username, password))
-            NavigationManager.NavigateTo("/Player");            
+            NavigationManager.NavigateTo("/Music");            
         else
             loginMesssage = "Username or password wrong";
 
