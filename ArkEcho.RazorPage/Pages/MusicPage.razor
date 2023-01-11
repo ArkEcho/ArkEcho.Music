@@ -13,28 +13,30 @@
                     <MudSelectItem Value="@(mode)" />
                 }
             </MudSelect>
+            <MudIconButton Class="ml-2 my-2" Icon="@Icons.Material.Rounded.List" Color="Color.Tertiary" Variant="@(listButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
+            <MudIconButton Class="ml-1 my-2" Icon="@Icons.Material.Rounded.GridView" Color="Color.Tertiary" Variant="@(gridButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
         </MudPaper>
         <MudSpacer />
 
         <MudPaper Class="d-flex" Elevation="0">
-            <MudSelect Class="mr-2" @bind-Value=selectedSortingMode T="SortingMode" Margin="Margin.Dense">
+            <MudSelect Class="mr-2 d-none d-md-flex" @bind-Value=selectedSortingMode T="SortingMode" Margin="Margin.Dense">
                 @foreach(SortingMode mode in SortingMode.sortModes)
                 {
                     <MudSelectItem Value="@mode" />
                 }
             </MudSelect>
-            <MudTextField Class="mr-2" @bind-Value="searchMusicValue" Margin="Margin.Dense" Label="Search" Variant="Variant.Text"
+            <MudTextField Class="mr-2 d-none d-md-flex" @bind-Value="searchMusicValue" Margin="Margin.Dense" Label="Search" Variant="Variant.Text"
                           Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
         </MudPaper>
     </MudPaper>
 
     <MudPaper Class="d-flex" Elevation="0">
 
-        @if(selectedDisplayMode.Mode == DisplayMode.DisplayModes.Titel)
+        @if(listButtonActive)
         {
             <MusicListView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
         }
-        else
+        else if(gridButtonActive)
         {
             <MusicGridView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
         }
@@ -51,9 +53,18 @@
 
     private string searchMusicValue = string.Empty;
 
+    private bool listButtonActive = true;
+    private bool gridButtonActive = false;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+    private void listGridButtonClicked()
+    {
+        listButtonActive = !listButtonActive;
+        gridButtonActive = !gridButtonActive;
     }
 
     //private void Search()

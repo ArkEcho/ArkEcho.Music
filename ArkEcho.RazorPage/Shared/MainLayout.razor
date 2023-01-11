@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-@inject IAppModel Model
+@inject IAppModel model
 @inject NavigationManager NavigationManager
 
 <MudLayout>
@@ -36,15 +36,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //Console.WriteLine("MainLayout OnInitializedAsync");
-
-        if (!await Model.IsUserAuthenticated())
+        if (!await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
-
-        // TODO: Move to Login
-        bool success = await Model.InitializeLibraryAndPlayer();
-
-        // TODO Give Error or Success!
     }
 
     private void userPopoverToggle()
@@ -59,7 +52,7 @@
 
     public async Task Logout()
     {
-        await Model.LogoutUser();
+        await model.LogoutUser();
         NavigationManager.NavigateTo("/");
     }
 }

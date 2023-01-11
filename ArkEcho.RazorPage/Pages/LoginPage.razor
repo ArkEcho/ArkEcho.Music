@@ -39,6 +39,9 @@
     {
         if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Music");
+             
+        // TODO Give Error or Success!       
+        bool success = await model.InitializeLibraryAndPlayer();
     }
 
     private async Task validateUser()
