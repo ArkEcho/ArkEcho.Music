@@ -2,8 +2,6 @@
 
 @layout PlayerLayout
 
-@inject IAppModel Model
-
 <MudStack>
 
     <MudPaper Class="d-flex" MaxHeight="50px" Style="top: 0; width: 100%" Elevation="1">
@@ -31,13 +29,16 @@
     </MudPaper>
 
     <MudPaper Class="d-flex" Elevation="0">
-        <input type="text" id="searchMusic" name="searchMusic" @bind=@searchMusicValue>
-        <button @onclick="Search">Suche</button>
-        <br />
 
-        <button @onclick="Init">Init</button>
-        <br />
-        <br />
+        @if(selectedDisplayMode.Mode == DisplayMode.DisplayModes.Titel)
+        {
+            <MusicListView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
+        }
+        else
+        {
+            <MusicGridView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
+        }
+
     </MudPaper>
 
 </MudStack>
@@ -45,9 +46,6 @@
 
 @code
 {
-    
-    
-
     private DisplayMode selectedDisplayMode = DisplayMode.displayModes.FirstOrDefault();
     private SortingMode selectedSortingMode = SortingMode.sortModes.FirstOrDefault();
 
@@ -58,27 +56,27 @@
         await base.OnInitializedAsync();
     }
 
-    private void Search()
-    {
-        Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
+    //private void Search()
+    //{
+    //    Core.MusicFile file = Model.Library.MusicFiles.Find(x => x.Title.StartsWith(searchMusicValue, StringComparison.OrdinalIgnoreCase));
 
-        if (file == null)
-            return;
+    //    if (file == null)
+    //        return;
 
-        List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
-        Model.Player.Start(Files, 0);
-    }
+    //    List<Core.MusicFile> Files = new List<Core.MusicFile>() { file };
+    //    Model.Player.Start(Files, 0);
+    //}
 
-    private void Init()
-    {
-        List<Core.MusicFile> all = Model.Library.MusicFiles;
-        List<Core.MusicFile> Files = new List<Core.MusicFile>();
+    //private void Init()
+    //{
+    //    List<Core.MusicFile> all = Model.Library.MusicFiles;
+    //    List<Core.MusicFile> Files = new List<Core.MusicFile>();
 
-        if (Model.Library.MusicFiles.Count == 0) // TODO: Give Error
-            return;
+    //    if (Model.Library.MusicFiles.Count == 0) // TODO: Give Error
+    //        return;
 
-        Model.Library.Album[8].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
+    //    Model.Library.Album[8].MusicFiles.ForEach(x => Files.Add(all.Find(y => y.GUID == x)));
 
-        Model.Player.Start(Files, 0);
-    }
+    //    Model.Player.Start(Files, 0);
+    //}
 }
