@@ -1,4 +1,5 @@
 ﻿@inject IAppModel Model
+@inject HTMLHelper helper
 
 @code {
     public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
@@ -99,12 +100,12 @@
     {
         if (Model.Player.PlayingFile != null && (playingAlbum == null || playingAlbum.GUID != Model.Player.PlayingFile.GUID))
         {
-            playingAlbum = Model.Library.Album.Find(x => x.GUID == Model.Player.PlayingFile.Album);
-            playingAlbumArtist = Model.Library.AlbumArtists.Find(x => x.GUID == Model.Player.PlayingFile.AlbumArtist);
+            playingAlbum = Model.Library.GetAlbum(Model.Player.PlayingFile.Album);
+            playingAlbumArtist = Model.Library.GetAlbumArtist(Model.Player.PlayingFile.AlbumArtist);
 
             if (string.IsNullOrEmpty(playingAlbum.Cover64))
                 playingAlbum.Cover64 = await Model.GetAlbumCover(playingAlbum.GUID);
-            Image64 = $"data:image/png;base64,{playingAlbum.Cover64}";
+            Image64 = helper.GetBase64PngImg(playingAlbum.Cover64);
         }
         else
         {

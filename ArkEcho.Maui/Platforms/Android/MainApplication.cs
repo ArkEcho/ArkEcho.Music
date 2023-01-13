@@ -13,7 +13,7 @@ namespace ArkEcho.Maui
 
         protected override MauiApp CreateMauiApp()
         {
-            return MauiProgram.CreateMauiApp(MauiProgram.Platform.Android, Android.App.Application.Context.FilesDir.Path, getAndroidMediaAppSDFolderPath());
+            return MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Android, Android.App.Application.Context.FilesDir.Path, getAndroidMediaAppSDFolderPath());
         }
 
         private string getAndroidMediaAppSDFolderPath()

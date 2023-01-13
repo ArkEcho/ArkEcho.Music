@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 @inject IAppModel model
+@inject AppEnvironment environment
 @inject NavigationManager NavigationManager
 
 <MudLayout>
@@ -8,6 +9,16 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
         <MudText Typo="Typo.h5">ArkEcho Music</MudText>
+        @if (environment.Development)
+        {
+            <MudText Class="mx-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">xs</MudText>
+            <MudText Class="mx-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">sm</MudText>
+            <MudText Class="mx-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">md</MudText>
+            <MudText Class="mx-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">lg</MudText>
+            <MudText Class="mx-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">xl</MudText>
+            <MudText Class="mx-2 d-none d-xxl-flex" Typo="Typo.h5">xxl</MudText>
+        }
+
         <MudSpacer />
         <MudItem>
             <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>

@@ -5,6 +5,7 @@ using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace ArkEcho.WebPage
@@ -42,15 +43,11 @@ namespace ArkEcho.WebPage
 
             rest = new Rest(Config.ServerAddress, false, Config.Compression);
 
-            Console.WriteLine($"BEFORE!");
-
             if (!await rest.CheckConnection())
             {
                 Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping WebPage");
                 return false;
             }
-
-            Console.WriteLine($"AFTER!");
 
             LoggingWorker = new RestLoggingWorker(rest, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
@@ -60,13 +57,15 @@ namespace ArkEcho.WebPage
             logger.LogStatic("Configuration for ArkEcho.WebPage:");
             logger.LogStatic($"\r\n{await Config.SaveToJsonString()}");
 
+            AppEnvironment environment = new AppEnvironment(Debugger.IsAttached, Resources.Platform.Web);
+
             builder = WebAssemblyHostBuilder.CreateDefault();
 
             builder.RootComponents.Add<ArkEchoApp>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddBlazoredLocalStorageAsSingleton(); // For WebLocalStorage
-            builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel>(rest, LoggingWorker, Config);
+            builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel>(environment, rest, LoggingWorker, Config);
 
             Initialized = true;
             return Initialized;

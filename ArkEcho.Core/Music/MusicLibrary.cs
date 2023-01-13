@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ArkEcho.Core
 {
@@ -19,5 +20,15 @@ namespace ArkEcho.Core
 
         [JsonProperty]
         public List<Playlist> Playlists { get; set; } = new List<Playlist>();
+
+        public AlbumArtist GetAlbumArtist(Guid artist)
+        {
+            return AlbumArtists.Find(x => x.GUID == artist);
+        }
+
+        public Album GetAlbum(Guid album)
+        {
+            return Album.Find(x => x.GUID == album);
+        }
     }
 }

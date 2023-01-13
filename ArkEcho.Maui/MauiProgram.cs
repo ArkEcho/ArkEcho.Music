@@ -1,18 +1,12 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage.Data;
+using System.Diagnostics;
 
 namespace ArkEcho.Maui
 {
     public class MauiProgram
     {
-        public enum Platform
-        {
-            Unknown = 0,
-            Windows,
-            Android,
-        }
-
-        public static MauiApp CreateMauiApp(Platform executingPlatform, string rootPath, string musicFolder)
+        public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, string rootPath, string musicFolder)
         {
             RazorConfig config = new RazorConfig("ArkEchoMauiConfig.json");
 
@@ -43,13 +37,15 @@ namespace ArkEcho.Maui
 
             logger.LogStatic($"\r\n{configString}");
 
+            AppEnvironment environment = new AppEnvironment(Debugger.IsAttached, executingPlatform);
+
             var builder = MauiApp.CreateBuilder();
 
             builder.UseMauiApp<App>().ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(rest, loggingWorker, config);
+            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment, rest, loggingWorker, config);
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

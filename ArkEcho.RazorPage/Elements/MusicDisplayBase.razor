@@ -1,8 +1,27 @@
-﻿
+﻿@inject IAppModel model
+@inject HTMLHelper helper
+
 @code {
     [Parameter]
     public DisplayMode Display { get; set; }
 
     [Parameter]
     public SortingMode Sorting { get; set; }
+
+    protected string getAlbumCover(Album album)
+    {
+        return helper.GetBase64PngImg(album.Cover64);
+    }
+
+    protected void startMusicAlbum(Album album)
+    {        
+        List<MusicFile> files = new List<MusicFile>();
+
+        files = model.Library.MusicFiles.Where(x => album.MusicFiles.Any(y => x.GUID == y)).ToList();
+
+        if (files.Count == 0)
+            return; // TODO: Give Error
+
+        model.Player.Start(files, 0);
+    }
 }

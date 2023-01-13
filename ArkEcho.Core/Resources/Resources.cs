@@ -18,6 +18,14 @@ namespace ArkEcho
         public const int MaxFileSize = int.MaxValue; // ~2Gb
         public const int RestChunkSize = 15728640; // 15mb
 
+        public enum Platform
+        {
+            None,
+            Windows,
+            Android,
+            Web
+        }
+
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()
         {
             "mp3",

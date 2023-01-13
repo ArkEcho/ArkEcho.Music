@@ -21,7 +21,7 @@ namespace ArkEcho.Maui.WinUI
 
         protected override MauiApp CreateMauiApp()
         {
-            var app = MauiProgram.CreateMauiApp(MauiProgram.Platform.Windows, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), null);
+            var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), null);
             if (app == null)
                 Exit();
             return app;
