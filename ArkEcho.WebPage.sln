@@ -12,6 +12,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArkEcho.RazorPage", "ArkEcho.RazorPage\ArkEcho.RazorPage.csproj", "{6EA5D374-7442-43FD-951C-7B9092BAC5EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkEcho.WA", "ArkEcho.WA\ArkEcho.WA.csproj", "{5A49A975-B35F-4DF5-A2E5-D23156B6A318}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3AC5C6D8-A50A-4753-94BA-A62374BBC8F7} = {3AC5C6D8-A50A-4753-94BA-A62374BBC8F7}
+		{6EA5D374-7442-43FD-951C-7B9092BAC5EA} = {6EA5D374-7442-43FD-951C-7B9092BAC5EA}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

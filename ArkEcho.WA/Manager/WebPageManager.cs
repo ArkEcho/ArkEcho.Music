@@ -1,18 +1,21 @@
 ﻿using ArkEcho.Core;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using System;
-using System.IO;
+using ArkEcho.RazorPage;
+using ArkEcho.RazorPage.Data;
+using ArkEcho.WebPage.Data;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Reflection;
 
 namespace ArkEcho.WebPage
 {
     // TODO: Mehr Logging, besonders im Player
+    // TODO: Alle Manager und Init nach AppModel führen!
     public class WebPageManager : IDisposable
     {
         private const string webPageConfigFileName = "WebPageConfig.json";
 
-        private IWebHost host = null;
+        private WebAssemblyHostBuilder builder = null;
         private Logger logger = null;
         private Rest rest = null;
 
@@ -28,26 +31,26 @@ namespace ArkEcho.WebPage
         {
         }
 
-        public bool Init()
+        public async Task<bool> Init()
         {
             if (Initialized)
                 return Initialized;
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Config = new WebPageConfig(webPageConfigFileName);
-            if (!Config.LoadFromFile(executingLocation, true).Result)
+            WebPageConfig Config = new WebPageConfig(webPageConfigFileName);
+
+            rest = new Rest(Config.ServerAddress, false, Config.Compression);
+
+            Console.WriteLine($"BEFORE!");
+
+            if (!await rest.CheckConnection())
             {
-                Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping WebPage");
+                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping WebPage");
                 return false;
             }
 
-            rest = new Rest(Config.ServerAddress, false, Config.Compression);
-            //if (!await rest.CheckConnection())
-            //{
-            //    Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping WebPage");
-            //    return false;
-            //}
+            Console.WriteLine($"AFTER!");
 
             LoggingWorker = new RestLoggingWorker(rest, Config.LogLevel);
             LoggingWorker.RunWorkerAsync();
@@ -55,21 +58,23 @@ namespace ArkEcho.WebPage
             logger = new Logger(Resources.ARKECHOWEBPAGE, "Manager", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.WebPage:");
-            logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
+            logger.LogStatic($"\r\n{await Config.SaveToJsonString()}");
 
-            host = WebHost.CreateDefaultBuilder()
-                               .UseUrls($"https://*:{Config.Port}")
-                               .UseKestrel()
-                               .UseStartup<Startup>()
-                               .Build();
+            builder = WebAssemblyHostBuilder.CreateDefault();
+
+            builder.RootComponents.Add<ArkEchoApp>("#app");
+            builder.RootComponents.Add<HeadOutlet>("head::after");
+
+            builder.Services.AddBlazoredLocalStorageAsSingleton(); // For WebLocalStorage
+            builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel>(rest, LoggingWorker, Config);
 
             Initialized = true;
             return Initialized;
         }
 
-        public void Start()
+        public async Task Start()
         {
-            host.Run();
+            await builder.Build().RunAsync();
         }
 
         #region Dispose
