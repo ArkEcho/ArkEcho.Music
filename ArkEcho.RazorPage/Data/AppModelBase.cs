@@ -19,13 +19,13 @@ namespace ArkEcho.RazorPage.Data
         private string appName = string.Empty;
         private Authentication authentication = null;
 
-        public AppModelBase(string appName, ILocalStorage localStorage, RestLoggingWorker loggingWorker, RazorConfig config)
+        public AppModelBase(string appName, ILocalStorage localStorage, Rest rest, RestLoggingWorker loggingWorker, RazorConfig config)
         {
             this.Config = config;
             this.appName = appName;
             this.logger = new Logger(appName, "AppModel", loggingWorker);
 
-            rest = new Rest(config.ServerAddress, config.Compression);
+            this.rest = rest;
             authentication = new Authentication(localStorage, rest);
 
             Library = new MusicLibrary();

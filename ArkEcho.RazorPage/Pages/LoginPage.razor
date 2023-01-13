@@ -48,6 +48,9 @@
 
         // TODO Give Error or Success!       
         bool success = await model.InitializeLibraryAndPlayer();
+
+        foreach(Album album in model.Library.Album)
+            album.Cover64 = await model.GetAlbumCover(album.GUID);
     }
 
     private async Task validateUser()
