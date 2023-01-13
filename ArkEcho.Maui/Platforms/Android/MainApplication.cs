@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Android.Runtime;
-using Android.Widget;
 
 namespace ArkEcho.Maui
 {
@@ -14,14 +13,7 @@ namespace ArkEcho.Maui
 
         protected override MauiApp CreateMauiApp()
         {
-            var app = MauiProgram.CreateMauiApp(MauiProgram.Platform.Android, Android.App.Application.Context.FilesDir.Path, getAndroidMediaAppSDFolderPath());
-            if (app == null)
-            {
-                Toast mrToast = Toast.MakeText(this, "ArkEcho Maui Error on Startup!", ToastLength.Short);
-                mrToast.Show();
-                StopService(null);
-            }
-            return app;
+            return MauiProgram.CreateMauiApp(MauiProgram.Platform.Android, Android.App.Application.Context.FilesDir.Path, getAndroidMediaAppSDFolderPath());
         }
 
         private string getAndroidMediaAppSDFolderPath()

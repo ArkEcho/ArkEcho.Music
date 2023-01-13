@@ -21,8 +21,10 @@ namespace ArkEcho.Maui
             if (!string.IsNullOrEmpty(musicFolder))
                 config.MusicFolder = new Uri(musicFolder);
 
-            Rest rest = new Rest(config.ServerAddress, config.Compression);
-            if (!rest.CheckConnection())
+            Rest rest = new Rest(config.ServerAddress, true, config.Compression);
+            bool testConnection = false;
+            Task.Factory.StartNew(() => testConnection = rest.CheckConnection().Result).Wait();
+            if (!testConnection)
             {
                 Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping");
                 return null;
@@ -47,7 +49,7 @@ namespace ArkEcho.Maui
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(loggingWorker, config);
+            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(rest, loggingWorker, config);
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
