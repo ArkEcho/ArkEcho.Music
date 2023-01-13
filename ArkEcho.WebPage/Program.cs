@@ -1,6 +1,6 @@
-using System;
+using ArkEcho.WebPage;
 
-namespace ArkEcho.WebPage
+namespace ArkEcho.WA
 {
     /* TODO
 	 * Anzeige
@@ -11,17 +11,17 @@ namespace ArkEcho.WebPage
 	*/
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             using (WebPageManager.Instance)
             {
-                if (!WebPageManager.Instance.Init())
+                if (!await WebPageManager.Instance.Init())
                 {
                     Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
                     return;
                 }
                 else
-                    WebPageManager.Instance.Start(); // Starts Event Cycle and API
+                    await WebPageManager.Instance.Start(); // Starts Event Cycle and API
             }
         }
     }
