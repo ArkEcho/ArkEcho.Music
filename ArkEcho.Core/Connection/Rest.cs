@@ -36,16 +36,20 @@ namespace ArkEcho.Core
             }
         }
 
-        public Rest(string connectionUrl, bool compression) : base(compression)
+        public Rest(string connectionUrl, bool userHttpClientHandler, bool compression) : base(compression)
         {
-            // Disable on Release Build?
-            HttpClientHandler handler = new HttpClientHandler();
-            handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
-
-            client = new HttpClient(handler) { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 30) };
+            if (userHttpClientHandler)
+            {
+                // TODO: Disable on Release Build?
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
+                client = new HttpClient(handler) { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 10) };
+            }
+            else
+                client = new HttpClient() { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 10) };
         }
 
-        protected override HttpResponseBase makeRequest(HttpMethods method, string path, string httpContent)
+        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
         {
             HttpMethod httpMethod = null;
             switch (method)
@@ -65,19 +69,16 @@ namespace ArkEcho.Core
                 request.Content = new StringContent(httpContent);
 
             HttpResponse response = null;
-            Task.Factory.StartNew(() =>
+
+            try
             {
-                try
-                {
-                    HttpResponseMessage responseNet = client.SendAsync(request).Result;
-                    response = new HttpResponse(responseNet);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Exception making Rest call: {ex.Message}");
-                }
+                HttpResponseMessage responseNet = await client.SendAsync(request);
+                response = new HttpResponse(responseNet);
             }
-            ).Wait(Timeout);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception making Rest call: {ex.Message}");
+            }
 
             return response;
         }

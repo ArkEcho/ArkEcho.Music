@@ -45,22 +45,22 @@ namespace ArkEcho.Core
             this.compression = compression;
         }
 
-        public bool CheckConnection()
+        public async Task<bool> CheckConnection()
         {
-            using (HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Control", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Control", string.Empty))
                 return response != null;
         }
 
         public async Task<User> AuthenticateUserForLogin(User userToAuthenticate)
         {
             string bodyContent = await userToAuthenticate.SaveToJsonString();
-            using (HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
+            using (HttpResponseBase restResponse = await makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
                 return await checkAndReturnAuthenticateResult(restResponse);
         }
 
         public async Task<User> CheckUserToken(Guid guid)
         {
-            using (HttpResponseBase restResponse = makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
+            using (HttpResponseBase restResponse = await makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
                 return await checkAndReturnAuthenticateResult(restResponse);
         }
 
@@ -85,7 +85,7 @@ namespace ArkEcho.Core
 
         public async Task<string> GetMusicLibrary()
         {
-            using (HttpResponseBase response = makeRequest(HttpMethods.Get, "/api/Music", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music", string.Empty))
             {
                 if (response == null || !response.Success)
                     return string.Empty;
@@ -101,7 +101,7 @@ namespace ArkEcho.Core
 
         public async Task<string> GetAlbumCover(Guid guid)
         {
-            using (HttpResponseBase response = makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover/{guid}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover/{guid}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return string.Empty;
@@ -114,7 +114,7 @@ namespace ArkEcho.Core
         {
             string bodyContent = await logMessage.SaveToJsonString();
 
-            using (HttpResponseBase response = makeRequest(HttpMethods.Post, "/api/Logging", bodyContent.ToBase64()))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Logging", bodyContent.ToBase64()))
                 return response != null && response.Success;
         }
 
@@ -127,7 +127,7 @@ namespace ArkEcho.Core
 
                 foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
                 {
-                    using (HttpResponseBase response = makeRequest(HttpMethods.Get,
+                    using (HttpResponseBase response = await makeRequest(HttpMethods.Get,
                         $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty))
                     {
                         if (response == null || !response.Success)
@@ -152,6 +152,6 @@ namespace ArkEcho.Core
             }
         }
 
-        protected abstract HttpResponseBase makeRequest(HttpMethods method, string path, string httpContent);
+        protected abstract Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent);
     }
 }

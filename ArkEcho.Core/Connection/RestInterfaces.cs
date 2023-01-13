@@ -8,7 +8,7 @@ namespace ArkEcho.Core
     {
         int Timeout { get; set; }
 
-        bool CheckConnection();
+        Task<bool> CheckConnection();
     }
 
     public interface IRestLogging : IRest

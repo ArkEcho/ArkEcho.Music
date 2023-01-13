@@ -35,20 +35,20 @@ namespace ArkEcho.Core.Test
             this.files = files;
         }
 
-        protected override HttpResponseBase makeRequest(HttpMethods method, string path, string httpContent)
+        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
         {
             if (method != HttpMethods.Get)
                 return null;
 
             if (path.StartsWith("/api/File/ChunkTransfer?"))
             {
-                return ChunkTransfer(path);
+                return await ChunkTransfer(path);
             }
             else
                 return null;
         }
 
-        private HttpResponseBase ChunkTransfer(string path)
+        private async Task<HttpResponseBase> ChunkTransfer(string path)
         {
             int guidLength = Guid.NewGuid().ToString().Length;
             Guid fileGuid = Guid.Parse(path.Substring(path.IndexOf("&chunk") - guidLength, guidLength));
