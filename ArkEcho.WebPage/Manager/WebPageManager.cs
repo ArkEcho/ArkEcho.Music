@@ -5,7 +5,6 @@ using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace ArkEcho.WebPage
@@ -57,9 +56,9 @@ namespace ArkEcho.WebPage
             logger.LogStatic("Configuration for ArkEcho.WebPage:");
             logger.LogStatic($"\r\n{await Config.SaveToJsonString()}");
 
-            AppEnvironment environment = new AppEnvironment(Debugger.IsAttached, Resources.Platform.Web);
-
             builder = WebAssemblyHostBuilder.CreateDefault();
+
+            AppEnvironment environment = new AppEnvironment(builder.HostEnvironment.IsDevelopment(), Resources.Platform.Web);
 
             builder.RootComponents.Add<ArkEchoApp>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
