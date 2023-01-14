@@ -11,5 +11,7 @@ namespace ArkEcho.Server.Database
         void DisconnectFromDatabase();
 
         Task<List<User>> GetUsersAsync();
+
+        Task<bool> UpdateUserAsync(User user);
     }
 }

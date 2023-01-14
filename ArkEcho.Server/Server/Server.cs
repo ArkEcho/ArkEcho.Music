@@ -66,8 +66,13 @@ namespace ArkEcho.Server
             try
             {
                 dbAccess.ConnectToDatabase($"C:\\users\\steph\\Dropbox\\ArkEchoDb.sqlite");
-                //dbAccess.ConnectToDatabase($"ArkEchoDb.sqlite");
+
                 var test = dbAccess.GetUsersAsync().Result;
+
+                test[0].UserName = "BLUB";
+                bool up = dbAccess.UpdateUserAsync(test[0]).Result;
+                test = dbAccess.GetUsersAsync().Result;
+
                 dbAccess.DisconnectFromDatabase();
             }
             catch (Exception ex)

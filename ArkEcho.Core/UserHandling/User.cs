@@ -4,6 +4,8 @@ namespace ArkEcho.Core
 {
     public class User : JsonBase
     {
+        public const string UserTableName = "users";
+
         public enum UserTable
         {
             ID,

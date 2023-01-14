@@ -33,12 +33,12 @@ namespace ArkEcho.Server.Database
 
         private async Task createDB(string dbFilePath)
         {
-            string sql = "create table users (id INTEGER PRIMARY KEY AUTOINCREMENT, username varchar(30), password varchar(30))";
+            string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30))";
 
             SQLiteCommand command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
 
-            sql = $"insert into users (username, password) values ('test', '{Encryption.Encrypt("test")}')";
+            sql = $"insert into {User.UserTableName} (username, password) values ('test', '{Encryption.Encrypt("test")}')";
 
             command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
@@ -53,7 +53,7 @@ namespace ArkEcho.Server.Database
 
         public async Task<List<User>> GetUsersAsync()
         {
-            string sql = "select * from users";
+            string sql = $"select * from {User.UserTableName}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             using DbDataReader reader = await command.ExecuteReaderAsync();
@@ -70,6 +70,16 @@ namespace ArkEcho.Server.Database
                 users.Add(user);
             }
             return users;
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}' where id = {user.ID}";
+
+            using SQLiteCommand command = new SQLiteCommand(sql, connection);
+            int result = await command.ExecuteNonQueryAsync();
+
+            return result != 1;
         }
 
         private Dictionary<string, int> getFieldValueMap<T>(DbDataReader reader)
