@@ -19,7 +19,6 @@ namespace ArkEcho.Server
         private IWebHost host = null;
         private MusicLibrary library = null;
         private MusicLibraryWorker musicWorker = null;
-        private List<User> users = new List<User>();
         private Logger logger = null;
 
         private IDatabaseAccess dbAccess = null;
@@ -39,7 +38,7 @@ namespace ArkEcho.Server
             dbAccess = new SqliteDatabaseAccess();
         }
 
-        public bool Init()
+        public async Task<bool> Init()
         {
             if (Initialized)
                 return Initialized;
@@ -65,15 +64,16 @@ namespace ArkEcho.Server
 
             try
             {
-                dbAccess.ConnectToDatabase($"C:\\users\\steph\\Dropbox\\ArkEchoDb.sqlite");
+                await dbAccess.ConnectToDatabase($"C:\\users\\steph\\Dropbox\\ArkEchoDb.sqlite");
 
                 var test = dbAccess.GetUsersAsync().Result;
 
-                test[0].UserName = "BLUB";
-                bool up = dbAccess.UpdateUserAsync(test[0]).Result;
-                test = dbAccess.GetUsersAsync().Result;
+                if (test.Count == 0)
+                    await dbAccess.InsertUserAsync(new User() { UserName = "test", Password = Encryption.EncryptSHA256("test"), AccessToken = Guid.NewGuid() });
 
-                dbAccess.DisconnectFromDatabase();
+                //test[0].UserName = "BLUB";
+                //bool up = await dbAccess.UpdateUserAsync(test[0]);
+                //test = await dbAccess.GetUsersAsync();
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace ArkEcho.Server
             musicWorker = new MusicLibraryWorker(LoggingWorker);
             musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
 
-            LoadMusicLibrary();
+            loadMusicLibrary();
 
             host = WebHost.CreateDefaultBuilder()
                             .UseUrls($"https://*:{Config.Port}")
@@ -102,25 +102,25 @@ namespace ArkEcho.Server
 
             Initialized = true;
 
-            users.Add(new User() { UserName = "test", Password = Encryption.Encrypt("test"), AccessToken = Guid.NewGuid() });
-
             //for (int i = 0; i < 5000000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
             return Initialized;
         }
 
-        public User AuthenticateUserForLogin(User user)
+        public async Task<User> AuthenticateUserForLoginAsync(User user)
         {
-            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(Encryption.Encrypt(user.Password), StringComparison.OrdinalIgnoreCase));
+            List<User> users = await dbAccess.GetUsersAsync();
+            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(user.Password, StringComparison.OrdinalIgnoreCase));
         }
 
-        public User CheckUserToken(Guid token)
+        public async Task<User> CheckUserTokenAsync(Guid token)
         {
+            List<User> users = await dbAccess.GetUsersAsync();
             return users.Find(x => x.AccessToken.Equals(token));
         }
 
-        public void LoadMusicLibrary()
+        private void loadMusicLibrary()
         {
             library = null;
             musicWorker.RunWorkerAsync(Config.MusicFolder.LocalPath);
@@ -195,6 +195,8 @@ namespace ArkEcho.Server
             {
                 if (disposing)
                 {
+                    dbAccess?.DisconnectFromDatabase();
+
                     musicWorker?.Dispose();
                     musicWorker = null;
                 }

@@ -28,7 +28,7 @@ namespace ArkEcho.Server
             User user = new();
             await user.LoadFromJsonString(userRequestString);
 
-            User checkedUser = Server.AuthenticateUserForLogin(user);
+            User checkedUser = await Server.AuthenticateUserForLoginAsync(user);
 
             return await checkUserMakeAnswer(checkedUser);
         }
@@ -46,7 +46,7 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            User checkedUser = Server.CheckUserToken(guid);
+            User checkedUser = await Server.CheckUserTokenAsync(guid);
 
             return await checkUserMakeAnswer(checkedUser);
         }

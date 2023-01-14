@@ -23,7 +23,15 @@ namespace ArkEcho.Server.Database
             if (!dbExists)
                 SQLiteConnection.CreateFile(dbFilePath);
 
-            await connection.OpenAsync();
+            try
+            {
+                await connection.OpenAsync();
+            }
+            catch (Exception ex)
+            {
+                DisconnectFromDatabase();
+                return false;
+            }
 
             if (!dbExists)
                 await createDB(dbFilePath);
@@ -33,26 +41,27 @@ namespace ArkEcho.Server.Database
 
         private async Task createDB(string dbFilePath)
         {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
+
             string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30))";
 
             SQLiteCommand command = new SQLiteCommand(sql, connection);
-            await command.ExecuteNonQueryAsync();
-
-            sql = $"insert into {User.UserTableName} (username, password) values ('test', '{Encryption.Encrypt("test")}')";
-
-            command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
         }
 
         public void DisconnectFromDatabase()
         {
-            connection.Close();
-            connection.Dispose();
+            connection?.Close();
+            connection?.Dispose();
             connection = null;
         }
 
         public async Task<List<User>> GetUsersAsync()
         {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
+
             string sql = $"select * from {User.UserTableName}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
@@ -74,12 +83,23 @@ namespace ArkEcho.Server.Database
 
         public async Task<bool> UpdateUserAsync(User user)
         {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
+
             string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}' where id = {user.ID}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
-            int result = await command.ExecuteNonQueryAsync();
+            return await command.ExecuteNonQueryAsync() != 1;
+        }
+        public async Task<bool> InsertUserAsync(User user)
+        {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
 
-            return result != 1;
+            string sql = $"insert into {User.UserTableName} (username, password) values ('{user.UserName}', '{user.Password}')";
+
+            using SQLiteCommand command = new SQLiteCommand(sql, connection);
+            return await command.ExecuteNonQueryAsync() != 1;
         }
 
         private Dictionary<string, int> getFieldValueMap<T>(DbDataReader reader)

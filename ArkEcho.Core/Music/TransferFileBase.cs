@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace ArkEcho.Core
 {
@@ -98,16 +96,8 @@ namespace ArkEcho.Core
 
         public static string GetCheckSum(string filePath)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] data = sha256Hash.ComputeHash(File.ReadAllBytes(filePath));
-
-                StringBuilder sBuilder = new StringBuilder();
-                for (int i = 0; i < data.Length; i++)
-                    sBuilder.Append(data[i].ToString("x2"));
-
-                return sBuilder.ToString();
-            }
+            byte[] bytes = File.ReadAllBytes(filePath);
+            return Encryption.EncryptSHA256(bytes);
         }
     }
 }

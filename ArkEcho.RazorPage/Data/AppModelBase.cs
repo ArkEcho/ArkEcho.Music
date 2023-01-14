@@ -38,7 +38,7 @@ namespace ArkEcho.RazorPage.Data
 
         public async Task<bool> AuthenticateUser(string username, string password)
         {
-            return await authentication.AuthenticateUserForLogin(username, password);
+            return await authentication.AuthenticateUserForLogin(username, Encryption.EncryptSHA256(password));
         }
 
         public async Task LogoutUser()

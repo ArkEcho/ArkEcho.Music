@@ -13,5 +13,7 @@ namespace ArkEcho.Server.Database
         Task<List<User>> GetUsersAsync();
 
         Task<bool> UpdateUserAsync(User user);
+
+        Task<bool> InsertUserAsync(User user);
     }
 }

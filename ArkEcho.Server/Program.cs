@@ -1,14 +1,15 @@
 using System;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             using (Server.Instance)
             {
-                if (!Server.Instance.Init())
+                if (!await Server.Instance.Init())
                 {
                     Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
                     return;
