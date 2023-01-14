@@ -34,11 +34,11 @@
 
         @if(listButtonActive)
         {
-            <MusicListView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
+            <MusicListView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" SearchContent="@searchMusicValue" />
         }
         else if(gridButtonActive)
         {
-            <MusicGridView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" />
+            <MusicGridView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" SearchContent="@searchMusicValue" />
         }
 
     </MudPaper>

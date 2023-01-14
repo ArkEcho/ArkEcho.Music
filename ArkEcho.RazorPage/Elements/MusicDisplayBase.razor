@@ -1,5 +1,4 @@
 ﻿@inject IAppModel model
-@inject HTMLHelper helper
 
 @code {
     [Parameter]
@@ -8,10 +7,8 @@
     [Parameter]
     public SortingMode Sorting { get; set; }
 
-    protected string getAlbumCover(Album album)
-    {
-        return helper.GetBase64PngImg(album.Cover64);
-    }
+    [Parameter]
+    public string SearchContent { get; set; }   
 
     protected void startMusicAlbum(Album album)
     {        
@@ -23,5 +20,20 @@
             return; // TODO: Give Error
 
         model.Player.Start(files, 0);
+    }
+
+    protected string getAlbumArtistNameTruncated(Album album)
+    {
+        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(20);
+    }
+
+    protected List<Album> getFilteredAlbum()
+    {
+        if (string.IsNullOrEmpty(SearchContent))
+            return model.Library.Album;
+
+        List<string> searchTerms = SearchContent.Split(" ").ToList();
+        return model.Library.Album.FindAll(x => searchTerms.All(s => x.Name.Contains(s, StringComparison.OrdinalIgnoreCase))
+                                                    || searchTerms.All(s => model.Library.GetAlbumArtist(x.AlbumArtist).Name.Contains(s, StringComparison.OrdinalIgnoreCase)));
     }
 }
