@@ -33,7 +33,7 @@ namespace ArkEcho.Server.Database
 
         private async Task createDB(string dbFilePath)
         {
-            string sql = "create table users (username varchar(30), password varchar(30))";
+            string sql = "create table users (id INTEGER PRIMARY KEY AUTOINCREMENT, username varchar(30), password varchar(30))";
 
             SQLiteCommand command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
@@ -64,6 +64,7 @@ namespace ArkEcho.Server.Database
             while (await reader.ReadAsync())
             {
                 User user = new();
+                user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
                 user.UserName = reader.GetString(keyValues[User.UserTable.USERNAME.ToString()]);
                 user.Password = reader.GetString(keyValues[User.UserTable.PASSWORD.ToString()]);
                 users.Add(user);

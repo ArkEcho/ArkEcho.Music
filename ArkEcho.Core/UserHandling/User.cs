@@ -6,9 +6,13 @@ namespace ArkEcho.Core
     {
         public enum UserTable
         {
+            ID,
             USERNAME,
             PASSWORD
         }
+
+        [JsonProperty]
+        public int ID { get; set; }
 
         [JsonProperty]
         public string UserName { get; set; }
