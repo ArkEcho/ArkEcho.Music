@@ -14,24 +14,23 @@ namespace ArkEcho.Server
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Server.Instance);
             services.AddControllers();
 
+            // TODO: Disable on Release Build?
             // For Wasm Page
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
-                builder.WithOrigins("https://localhost:5001")
+                builder.WithOrigins()
                        .AllowAnyMethod()
                        .AllowAnyOrigin()
                        .AllowAnyHeader());
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseHttpsRedirection();
