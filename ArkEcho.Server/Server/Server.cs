@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using ArkEcho.Server.Database;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -21,6 +22,8 @@ namespace ArkEcho.Server
         private List<User> users = new List<User>();
         private Logger logger = null;
 
+        private IDatabaseAccess dbAccess = null;
+
         /// <summary>   
         /// SingleTon
         /// </summary>
@@ -33,6 +36,7 @@ namespace ArkEcho.Server
         private Server()
         {
             library = new MusicLibrary();
+            dbAccess = new SqliteDatabaseAccess();
         }
 
         public bool Init()
@@ -57,6 +61,18 @@ namespace ArkEcho.Server
             {
                 Console.WriteLine("### Given Music Directory is empty!");
                 return false;
+            }
+
+            try
+            {
+                dbAccess.ConnectToDatabase($"C:\\users\\steph\\Dropbox\\ArkEchoDb.sqlite");
+                //dbAccess.ConnectToDatabase($"ArkEchoDb.sqlite");
+                var test = dbAccess.GetUsersAsync().Result;
+                dbAccess.DisconnectFromDatabase();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
             // We have the config -> initialize logging

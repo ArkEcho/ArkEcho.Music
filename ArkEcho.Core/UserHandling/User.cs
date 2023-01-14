@@ -4,6 +4,12 @@ namespace ArkEcho.Core
 {
     public class User : JsonBase
     {
+        public enum UserTable
+        {
+            USERNAME,
+            PASSWORD
+        }
+
         [JsonProperty]
         public string UserName { get; set; }
 
