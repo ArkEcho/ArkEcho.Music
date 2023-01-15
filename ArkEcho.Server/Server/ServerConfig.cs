@@ -14,6 +14,9 @@ namespace ArkEcho.Server
         public Uri LoggingFolder { get; private set; } = new Uri("about:blank");
 
         [JsonProperty]
+        public Uri DatabasePath { get; private set; } = new Uri("about:blank");
+
+        [JsonProperty]
         public bool Compression { get; private set; } = false;
 
         [JsonProperty]

@@ -91,6 +91,7 @@ namespace ArkEcho.Server.Database
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() != 1;
         }
+
         public async Task<bool> InsertUserAsync(User user)
         {
             if (connection == null)

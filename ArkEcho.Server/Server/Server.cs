@@ -64,7 +64,7 @@ namespace ArkEcho.Server
 
             try
             {
-                await dbAccess.ConnectToDatabase($"C:\\users\\steph\\Dropbox\\ArkEchoDb.sqlite");
+                await dbAccess.ConnectToDatabase(Config.DatabasePath.LocalPath);
 
                 var test = dbAccess.GetUsersAsync().Result;
 
