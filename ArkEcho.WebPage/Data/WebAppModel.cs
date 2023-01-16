@@ -42,11 +42,6 @@ namespace ArkEcho.WebPage
             }
         }
 
-        public override async Task<string> GetAlbumCover(Guid albumGuid)
-        {
-            return await rest.GetAlbumCover(albumGuid);
-        }
-
         public override Task StartSynchronizeMusic()
         {
             throw new NotImplementedException();

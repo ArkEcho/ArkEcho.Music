@@ -19,11 +19,6 @@ namespace ArkEcho.Maui
             Sync = new LibrarySync(Resources.ARKECHOMAUI, rest, loggingWorker);
         }
 
-        public override async Task<string> GetAlbumCover(Guid albumGuid)
-        {
-            return await rest.GetAlbumCover(albumGuid);
-        }
-
         public override async Task<bool> InitializeLibraryAndPlayer()
         {
             Stopwatch sw = new Stopwatch();

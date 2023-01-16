@@ -54,12 +54,31 @@ namespace ArkEcho.RazorPage.Data
             string lib = await rest.GetMusicLibrary();
             if (string.IsNullOrEmpty(lib))
                 return false;
+            else if (Library != null)
+            {
+                string existing = await Library.SaveToJsonString();
+                if (existing.Equals(lib, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
 
-            return await Library.LoadFromJsonString(lib);
+            if (!await Library.LoadFromJsonString(lib))
+                return false;
+
+            foreach (Album album in Library.Album)
+            {
+                if (string.IsNullOrEmpty(album.Cover64))
+                    album.Cover64 = await GetAlbumCover(album.GUID);
+            }
+
+            return true;
+        }
+
+        public async Task<string> GetAlbumCover(Guid albumGuid)
+        {
+            return await rest.GetAlbumCover(albumGuid);
         }
 
         public abstract Task<bool> InitializeLibraryAndPlayer();
-        public abstract Task<string> GetAlbumCover(Guid albumGuid);
 
         public abstract Task StartSynchronizeMusic();
     }
