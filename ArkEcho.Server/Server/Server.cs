@@ -22,6 +22,7 @@ namespace ArkEcho.Server
         private Logger logger = null;
 
         private IDatabaseAccess dbAccess = null;
+        private List<User> loggedInUsers = new List<User>();
 
         /// <summary>   
         /// SingleTon
@@ -69,7 +70,7 @@ namespace ArkEcho.Server
                 var test = dbAccess.GetUsersAsync().Result;
 
                 if (test.Count == 0)
-                    await dbAccess.InsertUserAsync(new User() { UserName = "test", Password = Encryption.EncryptSHA256("test"), AccessToken = Guid.NewGuid() });
+                    await dbAccess.InsertUserAsync(new User() { UserName = "test", Password = Encryption.EncryptSHA256("test") });
 
                 //test[0].UserName = "BLUB";
                 //bool up = await dbAccess.UpdateUserAsync(test[0]);
@@ -111,13 +112,19 @@ namespace ArkEcho.Server
         public async Task<User> AuthenticateUserForLoginAsync(User user)
         {
             List<User> users = await dbAccess.GetUsersAsync();
-            return users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(user.Password, StringComparison.OrdinalIgnoreCase));
+            User toLogin = users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(user.Password, StringComparison.OrdinalIgnoreCase));
+            if (toLogin == null)
+                return null;
+
+            user.AccessToken = Guid.NewGuid();
+            loggedInUsers.Add(user);
+
+            return user;
         }
 
-        public async Task<User> CheckUserTokenAsync(Guid token)
+        public User CheckUserToken(Guid token)
         {
-            List<User> users = await dbAccess.GetUsersAsync();
-            return users.Find(x => x.AccessToken.Equals(token));
+            return loggedInUsers.Find(x => x.AccessToken.Equals(token));
         }
 
         private void loadMusicLibrary()

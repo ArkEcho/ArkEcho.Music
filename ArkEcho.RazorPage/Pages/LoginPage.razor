@@ -8,7 +8,7 @@
 <MudCard Width="100%" Outlined="true">
     <MudCardContent>
         <svg width="100%" height="200px" color="white">
-            @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
+            <img src="img/logo.svg" />
         </svg>
 
         <MudTextField Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
@@ -50,7 +50,10 @@
         bool success = await model.InitializeLibraryAndPlayer();
 
         foreach(Album album in model.Library.Album)
-            album.Cover64 = await model.GetAlbumCover(album.GUID);
+        {
+            if(string.IsNullOrEmpty(album.Cover64))
+                album.Cover64 = await model.GetAlbumCover(album.GUID);
+        }
     }
 
     private async Task validateUser()

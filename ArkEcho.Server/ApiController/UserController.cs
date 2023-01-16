@@ -46,7 +46,7 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            User checkedUser = await Server.CheckUserTokenAsync(guid);
+            User checkedUser = Server.CheckUserToken(guid);
 
             return await checkUserMakeAnswer(checkedUser);
         }
