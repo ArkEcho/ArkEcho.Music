@@ -8,7 +8,7 @@
 <MudCard Width="100%" Outlined="true">
     <MudCardContent>
         <svg width="100%" height="200px" color="white">
-            <img src="img/logo.svg" />
+            @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
         <MudTextField Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
