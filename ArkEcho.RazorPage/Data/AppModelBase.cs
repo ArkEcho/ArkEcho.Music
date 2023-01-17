@@ -11,21 +11,25 @@ namespace ArkEcho.RazorPage.Data
 
         public abstract LibrarySync Sync { get; }
 
-        public RazorConfig Config { get; }
+        public abstract string MusicFolder { get; }
 
         protected Rest rest = null;
         protected Logger logger = null;
-
-        private string appName = string.Empty;
+        protected RestLoggingWorker loggingWorker = null;
+        protected AppEnvironment environment = null;
         private Authentication authentication = null;
 
-        public AppModelBase(string appName, ILocalStorage localStorage, Rest rest, RestLoggingWorker loggingWorker, RazorConfig config)
+        public AppModelBase(AppEnvironment environment, ILocalStorage localStorage)
         {
-            this.Config = config;
-            this.appName = appName;
-            this.logger = new Logger(appName, "AppModel", loggingWorker);
+            this.environment = environment;
 
-            this.rest = rest;
+            rest = new Rest($"https://192.168.178.20:5002", true, false);
+
+            loggingWorker = new RestLoggingWorker(rest, Logging.LogLevel.Important);
+            loggingWorker.RunWorkerAsync();
+
+            logger = new Logger(environment.AppName, "AppModel", loggingWorker);
+
             authentication = new Authentication(localStorage, rest);
 
             Library = new MusicLibrary();
@@ -39,6 +43,11 @@ namespace ArkEcho.RazorPage.Data
         public async Task<bool> AuthenticateUser(string username, string password)
         {
             return await authentication.AuthenticateUserForLogin(username, Encryption.EncryptSHA256(password));
+        }
+
+        public User GetLoggedInUser()
+        {
+            return authentication.AuthenticatedUser;
         }
 
         public async Task LogoutUser()
@@ -78,7 +87,8 @@ namespace ArkEcho.RazorPage.Data
             return await rest.GetAlbumCover(albumGuid);
         }
 
-        public abstract Task<bool> InitializeLibraryAndPlayer();
+        public abstract Task<bool> InitializeOnLoad();
+        public abstract Task<bool> InitializeOnLogin();
 
         public abstract Task StartSynchronizeMusic();
     }

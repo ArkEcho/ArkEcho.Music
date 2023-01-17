@@ -8,7 +8,7 @@
     <MudStack>
 
         <MudStack Row="true">
-            <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.Config.MusicFolder.LocalPath</MudField>
+            <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.MusicFolder</MudField>
         </MudStack>
 
         <MudButton Variant="Variant.Filled" OnClick="synchronizeMusic">Sync Music Library</MudButton>

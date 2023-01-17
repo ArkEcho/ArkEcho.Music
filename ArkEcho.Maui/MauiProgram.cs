@@ -1,5 +1,4 @@
-﻿using ArkEcho.Core;
-using ArkEcho.RazorPage.Data;
+﻿using ArkEcho.RazorPage.Data;
 using System.Diagnostics;
 
 namespace ArkEcho.Maui
@@ -8,44 +7,18 @@ namespace ArkEcho.Maui
     {
         public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, string rootPath, string musicFolder)
         {
-            RazorConfig config = new RazorConfig("ArkEchoMauiConfig.json");
-
-            Task.Factory.StartNew(() => config.LoadFromFile(rootPath, true).Result).Wait();
+            AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform);
 
             if (!string.IsNullOrEmpty(musicFolder))
-                config.MusicFolder = new Uri(musicFolder);
+                environment.MusicPathAndroid = musicFolder;
 
-            Rest rest = new Rest(config.ServerAddress, true, config.Compression);
-            bool testConnection = false;
-            Task.Factory.StartNew(() => testConnection = rest.CheckConnection().Result).Wait();
-            if (!testConnection)
-            {
-                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping");
-                return null;
-            }
-
-            RestLoggingWorker loggingWorker = new RestLoggingWorker(rest, config.LogLevel);
-            loggingWorker.RunWorkerAsync();
-
-            Logger logger = new Logger(Resources.ARKECHOMAUI, "MauiProgram", loggingWorker);
-
-            logger.LogStatic($"Executing on {executingPlatform}, Root Path: {rootPath}");
-            logger.LogStatic("Configuration for ArkEcho.Maui:");
-
-            string configString = string.Empty;
-            Task.Factory.StartNew(() => configString = config.SaveToJsonString().Result).Wait();
-
-            logger.LogStatic($"\r\n{configString}");
-
-            AppEnvironment environment = new AppEnvironment(Debugger.IsAttached, executingPlatform);
-
-            var builder = MauiApp.CreateBuilder();
+            MauiAppBuilder builder = MauiApp.CreateBuilder();
 
             builder.UseMauiApp<App>().ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
             builder.Services.AddMauiBlazorWebView();
 
-            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment, rest, loggingWorker, config);
+            builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

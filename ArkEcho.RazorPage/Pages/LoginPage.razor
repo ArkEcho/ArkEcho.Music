@@ -4,6 +4,7 @@
 
 @inject IAppModel model
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <MudCard Width="100%" Outlined="true">
     <MudCardContent>
@@ -18,15 +19,14 @@
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Filled" OnClick="validateUser">Login</MudButton>
-
-        @loginMesssage
     </MudCardActions>
 </MudCard>
 
+<MudOverlay @bind-Visible="overlayVisible" DarkBackground="true" ZIndex="9999" />
 
 @code
 {
-    private string loginMesssage = string.Empty;
+    private bool overlayVisible = false;
 
     private string username = string.Empty;
     private string password = string.Empty;
@@ -46,27 +46,43 @@
         if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Music");
 
-        // TODO Give Error or Success!       
-        bool success = await model.InitializeLibraryAndPlayer();
+        if (!await model.InitializeOnLoad())
+            showSnackbarError("No Server Connection!");
     }
 
     private async Task validateUser()
     {
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            loginMesssage = "Empty username or password";
+            showSnackbarError($"Empty username or password!");
             return;
         }
 
         if(await model.AuthenticateUser(username, password))
+        {
+            showOverlay();
+            await model.InitializeOnLogin();
+            overlayVisible = false;
             NavigationManager.NavigateTo("/Music");            
+        }
         else
-            loginMesssage = "Username or password wrong";
+            showSnackbarError($"Username or Password wrong!");
 
         return;
     }
 
-    void passwordAdornmentClick()
+    private void showOverlay()
+    {
+        overlayVisible = true;
+        StateHasChanged();
+    }
+
+    private void showSnackbarError(string message)
+    {
+        Snackbar.Add(message, Severity.Error, config => { config.ShowCloseIcon = true; });
+    }
+
+    private void passwordAdornmentClick()
     {
         @if (isShow)
         {

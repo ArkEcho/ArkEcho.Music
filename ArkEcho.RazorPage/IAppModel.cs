@@ -1,5 +1,4 @@
 ﻿using ArkEcho.Core;
-using ArkEcho.RazorPage.Data;
 
 namespace ArkEcho.RazorPage
 {
@@ -8,13 +7,15 @@ namespace ArkEcho.RazorPage
         MusicLibrary Library { get; }
         Player Player { get; }
         LibrarySync Sync { get; }
-        RazorConfig Config { get; }
+        string MusicFolder { get; }
 
         Task<bool> AuthenticateUser(string username, string password);
         Task<bool> IsUserAuthenticated();
         Task LogoutUser();
+        User GetLoggedInUser();
 
-        Task<bool> InitializeLibraryAndPlayer();
+        Task<bool> InitializeOnLoad();
+        Task<bool> InitializeOnLogin();
         Task<string> GetAlbumCover(Guid albumGuid);
 
         Task StartSynchronizeMusic();

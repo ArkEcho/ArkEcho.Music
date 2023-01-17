@@ -6,8 +6,13 @@
 
         public Resources.Platform Platform { get; set; } = Resources.Platform.None;
 
-        public AppEnvironment(bool development, Resources.Platform platform)
+        public string AppName { get; set; } = string.Empty;
+
+        public string MusicPathAndroid { get; set; } = string.Empty;
+
+        public AppEnvironment(string appName, bool development, Resources.Platform platform)
         {
+            AppName = appName;
             Development = development;
             Platform = platform;
         }
