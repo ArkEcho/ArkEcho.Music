@@ -6,11 +6,10 @@ namespace ArkEcho.WebPage
 {
     public class Authentication
     {
-        public ILocalStorage localStorage { get; } = null;
-
-        public Rest rest { get; } = null;
-
         public User AuthenticatedUser { get; private set; } = null;
+
+        private Rest rest = null;
+        private ILocalStorage localStorage = null;
 
         public Authentication(ILocalStorage localStorage, Rest rest)
         {
