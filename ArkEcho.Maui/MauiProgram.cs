@@ -7,7 +7,7 @@ namespace ArkEcho.Maui
     {
         public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, string rootPath, string musicFolder)
         {
-            AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform);
+            AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform, true);
 
             if (!string.IsNullOrEmpty(musicFolder))
                 environment.MusicPathAndroid = musicFolder;

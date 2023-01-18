@@ -24,7 +24,7 @@ namespace ArkEcho.Server
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
-                builder.WithOrigins()
+                builder.WithOrigins("https://localhost:7223/", "https://localhost:5002", "https://localhost:5001/")
                        .AllowAnyMethod()
                        .AllowAnyOrigin()
                        .AllowAnyHeader());

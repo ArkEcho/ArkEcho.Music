@@ -23,7 +23,7 @@ namespace ArkEcho.RazorPage.Data
         {
             this.environment = environment;
 
-            rest = new Rest($"https://192.168.178.20:5002", true, false);
+            rest = new Rest($"https://192.168.178.20:5002", environment.UserHttpClientHandler, false);
 
             loggingWorker = new RestLoggingWorker(rest, Logging.LogLevel.Important);
             loggingWorker.RunWorkerAsync();
@@ -79,7 +79,16 @@ namespace ArkEcho.RazorPage.Data
                     album.Cover64 = await GetAlbumCover(album.GUID);
             }
 
-            return true;
+            if (Library.MusicFiles.Count > 0)
+            {
+                logger.LogStatic($"Library initialized, {Library.MusicFiles.Count}");
+                return true;
+            }
+            else
+            {
+                logger.LogStatic($"Error initializing Library/Music Count is Zero!");
+                return false;
+            }
         }
 
         public async Task<string> GetAlbumCover(Guid albumGuid)

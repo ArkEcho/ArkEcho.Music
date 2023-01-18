@@ -10,11 +10,15 @@
 
         public string MusicPathAndroid { get; set; } = string.Empty;
 
-        public AppEnvironment(string appName, bool development, Resources.Platform platform)
+        // TODO: Better Name here and in Rest
+        public bool UserHttpClientHandler { get; set; } = false;
+
+        public AppEnvironment(string appName, bool development, Resources.Platform platform, bool userHttpClientHandler)
         {
             AppName = appName;
             Development = development;
             Platform = platform;
+            UserHttpClientHandler = userHttpClientHandler;
         }
     }
 }
