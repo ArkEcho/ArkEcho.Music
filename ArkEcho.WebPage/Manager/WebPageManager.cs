@@ -1,11 +1,9 @@
-﻿using ArkEcho.Core;
-using ArkEcho.RazorPage;
+﻿using ArkEcho.RazorPage;
 using ArkEcho.RazorPage.Data;
 using ArkEcho.WebPage.Data;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using System.Reflection;
 
 namespace ArkEcho.WebPage
 {
@@ -13,17 +11,9 @@ namespace ArkEcho.WebPage
     // TODO: Alle Manager und Init nach AppModel führen!
     public class WebPageManager : IDisposable
     {
-        private const string webPageConfigFileName = "WebPageConfig.json";
-
         private WebAssemblyHostBuilder builder = null;
-        private Logger logger = null;
-        private Rest rest = null;
 
         public static WebPageManager Instance { get; private set; } = new WebPageManager();
-
-        public RestLoggingWorker LoggingWorker { get; private set; } = null;
-
-        public WebPageConfig Config { get; private set; }
 
         public bool Initialized { get; private set; } = false;
 
@@ -36,35 +26,15 @@ namespace ArkEcho.WebPage
             if (Initialized)
                 return Initialized;
 
-            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            WebPageConfig Config = new WebPageConfig(webPageConfigFileName);
-
-            rest = new Rest(Config.ServerAddress, false, Config.Compression);
-
-            if (!await rest.CheckConnection())
-            {
-                Console.WriteLine("### No Response from Server! Maybe its Offline! Stopping WebPage");
-                return false;
-            }
-
-            LoggingWorker = new RestLoggingWorker(rest, Config.LogLevel);
-            LoggingWorker.RunWorkerAsync();
-
-            logger = new Logger(Resources.ARKECHOWEBPAGE, "Manager", LoggingWorker);
-
-            logger.LogStatic("Configuration for ArkEcho.WebPage:");
-            logger.LogStatic($"\r\n{await Config.SaveToJsonString()}");
-
             builder = WebAssemblyHostBuilder.CreateDefault();
 
-            AppEnvironment environment = new AppEnvironment(builder.HostEnvironment.IsDevelopment(), Resources.Platform.Web);
+            AppEnvironment environment = new AppEnvironment(Resources.ARKECHOWEBPAGE, builder.HostEnvironment.IsDevelopment(), Resources.Platform.Web, false);
 
             builder.RootComponents.Add<ArkEchoApp>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddBlazoredLocalStorageAsSingleton(); // For WebLocalStorage
-            builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel>(environment, rest, LoggingWorker, Config);
+            builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel>(environment);
 
             Initialized = true;
             return Initialized;

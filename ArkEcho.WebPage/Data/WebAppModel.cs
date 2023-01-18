@@ -9,37 +9,32 @@ namespace ArkEcho.WebPage
         public override Player Player { get { return jsPlayer; } }
         public override LibrarySync Sync { get; }
 
-        private bool initialized = false;
+        public override string MusicFolder { get { return string.Empty; } }
+
         private JSPlayer jsPlayer = null;
 
-        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, Rest rest, RestLoggingWorker loggingWorker, RazorConfig config)
-            : base(Resources.ARKECHOWEBPAGE, localStorage, rest, loggingWorker, config)
+        public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, AppEnvironment environment)
+            : base(environment, localStorage)
         {
-            jsPlayer = new JSPlayer(jsRuntime, logger, config.ServerAddress);
+            jsPlayer = new JSPlayer(jsRuntime, logger, $"https://192.168.178.20:5002");
         }
 
-        public override async Task<bool> InitializeLibraryAndPlayer()
+        public async override Task<bool> InitializeOnLoad()
         {
-            if (initialized)
-                return true;
+            if (!await rest.CheckConnection())
+                return false;
+
+            //logger.LogStatic($"Executing on {environment.Platform}");
 
             if (!jsPlayer.InitPlayer())
                 return false;
 
-            if (!await LoadLibraryFromServer())
-                return false;
+            return await LoadLibraryFromServer();
+        }
 
-            if (Library.MusicFiles.Count > 0)
-            {
-                logger.LogStatic($"AppModel initialized, {Library.MusicFiles.Count}");
-                initialized = true;
-                return true;
-            }
-            else
-            {
-                logger.LogStatic($"Error initializing AppModel");
-                return false;
-            }
+        public override async Task<bool> InitializeOnLogin()
+        {
+            return true;
         }
 
         public override Task StartSynchronizeMusic()
