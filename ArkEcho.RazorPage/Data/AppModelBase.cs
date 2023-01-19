@@ -5,7 +5,7 @@ namespace ArkEcho.RazorPage.Data
 {
     public abstract class AppModelBase : IAppModel
     {
-        public MusicLibrary Library { get; }
+        public MusicLibrary Library { get; private set; }
 
         public abstract Player Player { get; }
 
@@ -26,13 +26,11 @@ namespace ArkEcho.RazorPage.Data
             rest = new Rest($"https://192.168.178.20:5002", environment.UserHttpClientHandler, false);
 
             loggingWorker = new RestLoggingWorker(rest, Logging.LogLevel.Important);
-            loggingWorker.RunWorkerAsync();
+            Task.Run(() => loggingWorker.Start());
 
             logger = new Logger(environment.AppName, "AppModel", loggingWorker);
 
             authentication = new Authentication(localStorage, rest);
-
-            Library = new MusicLibrary();
         }
 
         public async Task<bool> IsUserAuthenticated()
@@ -65,11 +63,11 @@ namespace ArkEcho.RazorPage.Data
                 return false;
             else if (Library != null)
             {
-                string existing = await Library.SaveToJsonString();
-                if (existing.Equals(lib, StringComparison.OrdinalIgnoreCase))
-                    return true;
+                // TODO: Check local Library with Server (by Guid?)
+                return true;
             }
 
+            Library = new MusicLibrary();
             if (!await Library.LoadFromJsonString(lib))
                 return false;
 

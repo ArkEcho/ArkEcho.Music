@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public abstract class LoggingWorker : BackgroundWorker
+    public abstract class LoggingWorker : IDisposable
     {
         private bool stop = false;
 
@@ -19,7 +18,6 @@ namespace ArkEcho.Core
         {
             this.logLevel = logLevel;
             loggingQueue = new ConcurrentQueue<LogMessage>();
-            DoWork += LoggingWorker_DoWork;
             OriginGuid = Guid.NewGuid();
         }
 
@@ -28,13 +26,13 @@ namespace ArkEcho.Core
             loggingQueue.Enqueue(log);
         }
 
-        private void LoggingWorker_DoWork(object sender, DoWorkEventArgs e)
+        public async Task Start()
         {
             while (!stop)
             {
                 if (loggingQueue.Count == 0)
                 {
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     continue;
                 }
 
@@ -45,21 +43,24 @@ namespace ArkEcho.Core
 
         protected abstract void HandleLogMessage(LogMessage log);
 
-        private bool disposed = false;
+        private bool disposedValue;
 
-        protected override void Dispose(bool Disposing)
+        protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!disposedValue)
             {
-                if (Disposing)
+                if (disposing)
                 {
                     stop = true;
-
-                    Thread.Sleep(1000);
                 }
-            }
 
-            base.Dispose(Disposing);
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
         }
     }
 }

@@ -83,7 +83,7 @@ namespace ArkEcho.Server
 
             // We have the config -> initialize logging
             LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
-            LoggingWorker.RunWorkerAsync();
+            Task.Run(() => LoggingWorker.Start());
 
             logger = new Logger(Resources.ARKECHOSERVER, "Main", LoggingWorker);
 
@@ -203,6 +203,9 @@ namespace ArkEcho.Server
                 if (disposing)
                 {
                     dbAccess?.DisconnectFromDatabase();
+
+                    LoggingWorker.Dispose();
+                    LoggingWorker = null;
 
                     musicWorker?.Dispose();
                     musicWorker = null;
