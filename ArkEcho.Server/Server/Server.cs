@@ -4,6 +4,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace ArkEcho.Server
 
         public FileLoggingWorker LoggingWorker { get; private set; } = null;
 
+        public AppEnvironment Environment { get; private set; } = null;
         private Server()
         {
             library = new MusicLibrary();
@@ -43,6 +45,8 @@ namespace ArkEcho.Server
         {
             if (Initialized)
                 return Initialized;
+
+            Environment = new AppEnvironment(Resources.ARKECHOSERVER, Debugger.IsAttached, Resources.Platform.Server, true);
 
             string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -83,14 +87,14 @@ namespace ArkEcho.Server
 
             // We have the config -> initialize logging
             LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
-            Task.Run(() => LoggingWorker.Start());
+            LoggingWorker.RunWorkerAsync();
 
-            logger = new Logger(Resources.ARKECHOSERVER, "Main", LoggingWorker);
+            logger = new FileLogger(Environment, "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
             logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
 
-            musicWorker = new MusicLibraryWorker(LoggingWorker);
+            musicWorker = new MusicLibraryWorker(new FileLogger(Environment, "MusicWorker", LoggingWorker));
             musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
 
             loadMusicLibrary();

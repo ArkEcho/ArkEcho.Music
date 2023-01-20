@@ -25,10 +25,10 @@ namespace ArkEcho.Core
         private Rest rest = null;
         protected Logger logger = null;
 
-        public LibrarySync(string appName, Rest rest, RestLoggingWorker loggingWorker)
+        public LibrarySync(AppEnvironment environment, Rest rest, Logger logger)
         {
             this.rest = rest;
-            logger = new Logger(appName, "MusicSync", loggingWorker);
+            this.logger = logger;
         }
 
         public async Task<bool> StartSyncMusicLibrary(string musicFolder, MusicLibrary library)

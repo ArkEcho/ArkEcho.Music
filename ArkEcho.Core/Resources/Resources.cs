@@ -22,7 +22,8 @@ namespace ArkEcho
             None,
             Windows,
             Android,
-            Web
+            Web,
+            Server
         }
 
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()

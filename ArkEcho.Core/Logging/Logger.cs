@@ -1,20 +1,18 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public class Logger
+    public abstract class Logger
     {
-        public readonly string Name = string.Empty;
+        protected AppEnvironment environment = null;
 
-        public readonly string Context = string.Empty;
+        protected string context = string.Empty;
 
-        private LoggingWorker worker = null;
-
-        public Logger(string name, string context, LoggingWorker worker)
+        public Logger(AppEnvironment environment, string context)
         {
-            Name = name.ToUpper();
-            Context = context.ToUpper();
-            this.worker = worker;
+            this.environment = environment;
+            this.context = context.ToUpper();
         }
 
         public void LogStatic(string message)
@@ -41,15 +39,17 @@ namespace ArkEcho.Core
         {
             LogMessage msg = new LogMessage()
             {
-                OriginGuid = worker.OriginGuid,
-                Name = Name,
-                Context = Context,
+                OriginGuid = environment.AppGuid,
+                Name = environment.AppName,
+                Context = context,
                 Level = level,
                 Message = message,
                 TimeStamp = DateTime.Now
             };
 
-            worker?.AddLogMessage(msg);
+            logMessage(msg);
         }
+
+        protected abstract Task<bool> logMessage(LogMessage msg);
     }
 }

@@ -17,7 +17,7 @@ namespace ArkEcho.Maui
             : base(environment, localStorage)
         {
             player = new VLCPlayer(logger);
-            Sync = new LibrarySync(Resources.ARKECHOMAUI, rest, loggingWorker);
+            Sync = new LibrarySync(environment, rest, new RestLogger(environment, "LibrarySync", rest));
         }
 
         public override async Task<bool> InitializeOnLoad()

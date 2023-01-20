@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <Compile Update="Logging\FileLoggingWorker.cs" />
-    <Compile Update="Logging\LoggingWorker.cs" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

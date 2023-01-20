@@ -15,7 +15,6 @@ namespace ArkEcho.RazorPage.Data
 
         protected Rest rest = null;
         protected Logger logger = null;
-        protected RestLoggingWorker loggingWorker = null;
         protected AppEnvironment environment = null;
         private Authentication authentication = null;
 
@@ -25,10 +24,7 @@ namespace ArkEcho.RazorPage.Data
 
             rest = new Rest($"https://192.168.178.20:5002", environment.UserHttpClientHandler, false);
 
-            loggingWorker = new RestLoggingWorker(rest, Logging.LogLevel.Important);
-            Task.Run(() => loggingWorker.Start());
-
-            logger = new Logger(environment.AppName, "AppModel", loggingWorker);
+            logger = new RestLogger(environment, "AppModel", rest);
 
             authentication = new Authentication(localStorage, rest);
         }

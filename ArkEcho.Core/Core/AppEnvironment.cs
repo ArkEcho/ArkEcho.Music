@@ -1,7 +1,11 @@
-﻿namespace ArkEcho.RazorPage.Data
+﻿using System;
+
+namespace ArkEcho.Core
 {
     public class AppEnvironment
     {
+        public Guid AppGuid { get; set; } = Guid.NewGuid();
+
         public bool Development { get; set; } = false;
 
         public Resources.Platform Platform { get; set; } = Resources.Platform.None;

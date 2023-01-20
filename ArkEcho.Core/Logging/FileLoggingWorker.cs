@@ -1,12 +1,15 @@
 ﻿using ArkEcho.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace ArkEcho.Server
 {
-    public class FileLoggingWorker : LoggingWorker
+    public class FileLoggingWorker : BackgroundWorker
     {
         private class LogFile
         {
@@ -28,6 +31,14 @@ namespace ArkEcho.Server
             }
         }
 
+        private bool stop = false;
+
+        private ConcurrentQueue<LogMessage> loggingQueue = null;
+
+        private Logging.LogLevel logLevel;
+
+        public Guid OriginGuid { get; private set; }
+
         private const string logFileExtension = ".log";
         private string logFolder = string.Empty;
 
@@ -37,12 +48,37 @@ namespace ArkEcho.Server
 
         private List<LogFile> logFiles = new List<LogFile>();
 
-        public FileLoggingWorker(string logFolder, Logging.LogLevel logLevel) : base(logLevel)
+        public FileLoggingWorker(string logFolder, Logging.LogLevel logLevel) : base()
         {
+            this.logLevel = logLevel;
+            loggingQueue = new ConcurrentQueue<LogMessage>();
+            DoWork += LoggingWorker_DoWork;
+            OriginGuid = Guid.NewGuid();
             this.logFolder = logFolder;
         }
 
-        protected override void HandleLogMessage(LogMessage log)
+        public void AddLogMessage(LogMessage log)
+        {
+            loggingQueue.Enqueue(log);
+        }
+
+        private void LoggingWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (!stop)
+            {
+                if (loggingQueue.Count == 0)
+                {
+                    // TODO: Ohne Sleep
+                    Thread.Sleep(500);
+                    continue;
+                }
+
+                if (loggingQueue.TryDequeue(out LogMessage log) && log.Level <= logLevel)
+                    HandleLogMessage(log);
+            }
+        }
+
+        protected void HandleLogMessage(LogMessage log)
         {
             LogFile file = getLogFile(log);
 
@@ -153,6 +189,10 @@ namespace ArkEcho.Server
             {
                 if (Disposing)
                 {
+                    stop = true;
+
+                    // TODO: Ohne Sleep
+                    Thread.Sleep(500);
                 }
             }
 

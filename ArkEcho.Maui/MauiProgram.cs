@@ -1,4 +1,5 @@
-﻿using ArkEcho.RazorPage.Data;
+﻿using ArkEcho.Core;
+using ArkEcho.RazorPage.Data;
 using System.Diagnostics;
 
 namespace ArkEcho.Maui
