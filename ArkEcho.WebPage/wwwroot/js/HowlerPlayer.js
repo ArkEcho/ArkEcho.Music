@@ -1,10 +1,4 @@
-﻿/*
- TODO: Beschreibung mit Howler.js, der Datei hier, dem Knopf zur Event kommunikation etc.
- TODO: Typescript
- */
-
-//console.log("HowlerPlayer.js loaded");
-
+﻿
 class HowlerPlayer {
     constructor() {
         this.stepCount = 0;
@@ -124,7 +118,7 @@ class HowlerPlayer {
     }
 
     LogPlayer(Text) {
-        //console.log('[' + this.GetCurrentDateTime() + '] ' + Text);
+        console.log('[' + this.GetCurrentDateTime() + '] ' + Text);
     }
 
     GetCurrentDateTime() {
