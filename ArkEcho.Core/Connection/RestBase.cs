@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -84,15 +85,56 @@ namespace ArkEcho.Core
                 return null;
         }
 
-        public async Task<byte[]> GetMusicLibrary()
+        public async Task<MusicLibrary> GetMusicLibrary()
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music", string.Empty))
+            MusicLibrary library = new MusicLibrary();
+
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Albums", string.Empty))
             {
                 if (response == null || !response.Success)
                     return null;
 
-                return await response.GetResultContentAsByteArrayAsync();
+                library.Album = await Serializer.Deserialize<List<Album>>(await response.GetResultContentAsByteArrayAsync());
             }
+
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/AlbumArtists", string.Empty))
+            {
+                if (response == null || !response.Success)
+                    return null;
+
+                library.AlbumArtists = await Serializer.Deserialize<List<AlbumArtist>>(await response.GetResultContentAsByteArrayAsync());
+            }
+
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Playlists", string.Empty))
+            {
+                if (response == null || !response.Success)
+                    return null;
+
+                library.Playlists = await Serializer.Deserialize<List<Playlist>>(await response.GetResultContentAsByteArrayAsync());
+            }
+
+            int count = 0;
+            do
+            {
+                List<MusicFile> files = null;
+
+                using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/MusicFiles/{count}", string.Empty))
+                {
+                    if (response == null || !response.Success)
+                        break;
+
+                    files = await Serializer.Deserialize<List<MusicFile>>(await response.GetResultContentAsByteArrayAsync());
+                }
+                count++;
+
+                library.MusicFiles.AddRange(files);
+
+                if (files.Count < Resources.RestMusicFileCount)
+                    break;
+
+            } while (true);
+
+            return library;
         }
 
         public async Task<string> GetAlbumCover(Guid guid)

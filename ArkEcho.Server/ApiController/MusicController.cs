@@ -83,5 +83,62 @@ namespace ArkEcho.Server
 
             return Ok(cover);
         }
+
+        // GET: api/Music/MusicFiles/CountIndex
+        [HttpGet("MusicFiles/{countIndex}")]
+        public async Task<ActionResult> GetMusicLibrary(int countIndex)
+        {
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            int start = countIndex * Resources.RestMusicFileCount;
+            int count = Resources.RestMusicFileCount;
+
+            if (start >= library.MusicFiles.Count)
+                return BadRequest();
+            else if (start + Resources.RestMusicFileCount > library.MusicFiles.Count)
+                count = library.MusicFiles.Count - start;
+
+            return await GetByteResult(library.MusicFiles.GetRange(start, count));
+        }
+
+        // GET: api/Music/Albums
+        [HttpGet("Albums")]
+        public async Task<ActionResult> GetAlbumList(int countIndex)
+        {
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            return await GetByteResult(library.Album);
+        }
+
+        // GET: api/Music/AlbumArtists
+        [HttpGet("AlbumArtists")]
+        public async Task<ActionResult> GetAlbumArtistsList(int countIndex)
+        {
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            return await GetByteResult(library.AlbumArtists);
+        }
+
+        // GET: api/Music/Playlists
+        [HttpGet("Playlists")]
+        public async Task<ActionResult> GetPlaylistsList(int countIndex)
+        {
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            return await GetByteResult(library.Playlists);
+        }
+
+        private async Task<ActionResult> GetByteResult(object toSerialize)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+
+            byte[] data = await Serializer.Serialize(toSerialize);
+
+            sw.Stop();
+            Logger.LogImportant($"{Request.Path} took {sw.ElapsedMilliseconds}ms");
+
+            FileContentResult result = new FileContentResult(data, "application/octet-stream");
+
+            return result;
+        }
     }
 }

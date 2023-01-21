@@ -143,16 +143,6 @@ namespace ArkEcho.Server
             {
                 Console.WriteLine($"Library loaded!");
                 library = (MusicLibrary)e.Result;
-
-                Task.Run(async () =>
-                {
-                    byte[] lib = await Serializer.Serialize(library);
-                    byte[] files = await Serializer.Serialize(library.MusicFiles);
-                    byte[] album = await Serializer.Serialize(library.Album);
-                    byte[] artist = await Serializer.Serialize(library.AlbumArtists);
-                    byte[] lists = await Serializer.Serialize(library.Playlists);
-                    //MusicLibrary lib = await Serializer.Deserialize<MusicLibrary>(test);
-                });
             }
             else
             {
@@ -172,6 +162,11 @@ namespace ArkEcho.Server
             list.AddRange(library.Playlists);
 
             return list;
+        }
+
+        public MusicLibrary GetMusicLibrary()
+        {
+            return library;
         }
 
         public async Task<byte[]> GetMusicLibraryBytes()

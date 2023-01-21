@@ -63,19 +63,9 @@ namespace ArkEcho.RazorPage.Data
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            byte[] lib = await rest.GetMusicLibrary();
+            Library = await rest.GetMusicLibrary();
 
-            Console.WriteLine($"Loading {sw.ElapsedMilliseconds} ms");
-            sw.Restart();
-
-            if (lib.Length == 0)
-                return false;
-
-            Library = await Serializer.Deserialize<MusicLibrary>(lib);
-            if (Library == null)
-                return false;
-
-            Console.WriteLine($"Creating {sw.ElapsedMilliseconds} ms");
+            Console.WriteLine($"Loading Library {sw.ElapsedMilliseconds} ms");
             sw.Restart();
 
             foreach (Album album in Library.Album)

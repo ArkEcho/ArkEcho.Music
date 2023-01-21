@@ -25,7 +25,7 @@ namespace ArkEcho.Core
 
     public interface IRestMusic : IRest
     {
-        Task<byte[]> GetMusicLibrary();
+        Task<MusicLibrary> GetMusicLibrary();
 
         Task<string> GetAlbumCover(Guid guid);
     }
