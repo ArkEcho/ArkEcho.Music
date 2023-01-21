@@ -8,12 +8,12 @@
 class HowlerPlayer {
     constructor() {
         this.stepCount = 0;
-        this.LogPlayer('Created new HowlerPlayer!');
+        //this.LogPlayer('Created new HowlerPlayer!');
     }
 
     Init(NETObject) {
         this.NetObject = NETObject;
-        this.LogPlayer('HowlerPlayer initialized!');
+        //this.LogPlayer('HowlerPlayer initialized!');
     }
 
     InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
@@ -31,7 +31,7 @@ class HowlerPlayer {
             onend: function () {
                 self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
                 self.NetObject.invokeMethodAsync('AudioEndedJS');
-                self.LogPlayer('Sound Ended!');
+                //self.LogPlayer('Sound Ended!');
             },
             onplay: function () {
                 self.stop = false;
@@ -58,7 +58,7 @@ class HowlerPlayer {
             }
         });
 
-        this.LogPlayer('Init Audio Succeed');
+        //this.LogPlayer('Init Audio Succeed');
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
@@ -79,7 +79,7 @@ class HowlerPlayer {
     DisposeAudio() {
         this.stop = true;
         this.sound.unload();
-        this.LogPlayer('Disposed Audio');
+        //this.LogPlayer('Disposed Audio');
     }
 
     PlayAudio() {
@@ -88,28 +88,28 @@ class HowlerPlayer {
         if (!this.sound.playing())
             id = this.sound.play();
 
-        this.LogPlayer('Sound Play ID ' + id);
+        //this.LogPlayer('Sound Play ID ' + id);
     }
 
     PauseAudio() {
         this.sound.pause();
-        this.LogPlayer('Sound Paused');
+        //this.LogPlayer('Sound Paused');
     }
 
     StopAudio() {
         this.stop = true;
         this.sound.stop();
-        this.LogPlayer('Sound Stop is ' + (this.sound.seek() == 0 && !this.sound.playing()));
+        //this.LogPlayer('Sound Stop is ' + (this.sound.seek() == 0 && !this.sound.playing()));
     }
 
     SetAudioMute(Mute) {
         this.sound.mute(Mute);
-        this.LogPlayer('Sound Mute is ' + Mute);
+        //this.LogPlayer('Sound Mute is ' + Mute);
     }
 
     SetAudioVolume(NewVolume) {
         this.sound.volume(NewVolume / 100);
-        this.LogPlayer('Sound Volume is ' + this.sound.volume());
+        //this.LogPlayer('Sound Volume is ' + this.sound.volume());
     }
 
     SetAudioPosition(NewTime) {
@@ -124,7 +124,7 @@ class HowlerPlayer {
     }
 
     LogPlayer(Text) {
-        console.log('[' + this.GetCurrentDateTime() + '] ' + Text);
+        //console.log('[' + this.GetCurrentDateTime() + '] ' + Text);
     }
 
     GetCurrentDateTime() {
