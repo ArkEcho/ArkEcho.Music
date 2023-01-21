@@ -29,6 +29,11 @@ namespace ArkEcho.Core
                 return responseMessage.Content.ReadAsStringAsync();
             }
 
+            public override Task<byte[]> GetResultContentAsByteArrayAsync()
+            {
+                return responseMessage.Content.ReadAsByteArrayAsync();
+            }
+
             protected override void Dispose(bool disposing)
             {
                 responseMessage?.Dispose();

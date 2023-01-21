@@ -4,36 +4,27 @@ using System.IO;
 
 namespace ArkEcho.Core
 {
-    public class TransferFileBase : JsonBase
+    public class TransferFileBase
     {
-        public class FileChunk : JsonBase
+        public class FileChunk
         {
-            [JsonProperty]
             public Guid GUID { get; set; } = Guid.NewGuid();
 
-            [JsonProperty]
             public int Size { get; set; } = 0;
 
-            [JsonProperty]
             public int Position { get; set; } = 0;
         }
 
-        [JsonProperty]
         public Guid GUID { get; set; } = Guid.NewGuid();
 
-        [JsonProperty]
         public string FileName { get; set; }
 
-        [JsonProperty]
         public string FileFormat { get; set; }
 
-        [JsonProperty]
         public long FileSize { get; set; }
 
-        [JsonProperty]
         public string CheckSum { get; set; }
 
-        [JsonProperty]
         public List<FileChunk> Chunks { get; set; }
 
         public Uri Folder { get; set; }

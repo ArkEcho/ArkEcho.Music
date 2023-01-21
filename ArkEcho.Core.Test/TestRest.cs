@@ -24,6 +24,11 @@ namespace ArkEcho.Core.Test
                 return stream.WriteAsync(data, 0, data.Length);
             }
 
+            public override Task<byte[]> GetResultContentAsByteArrayAsync()
+            {
+                throw new NotImplementedException();
+            }
+
             public override Task<string> GetResultContentAsStringAsync()
             {
                 throw new NotImplementedException();

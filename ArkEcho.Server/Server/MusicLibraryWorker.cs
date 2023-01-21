@@ -44,7 +44,7 @@ namespace ArkEcho.Server
         {
             foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedPlaylistFileFormats))
             {
-                Playlist playlist = new(filePath);
+                Playlist playlist = new();
 
                 if (loadPlaylist(library, filePath, playlist))
                     library.Playlists.Add(playlist);

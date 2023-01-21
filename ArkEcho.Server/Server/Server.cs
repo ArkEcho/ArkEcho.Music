@@ -140,7 +140,16 @@ namespace ArkEcho.Server
         private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (e.Result != null)
+            {
+                Console.WriteLine($"Library loaded!");
                 library = (MusicLibrary)e.Result;
+
+                //Task.Run(async () =>
+                //{
+                //    byte[] test = await Serializer.Serialize(library);
+                //    MusicLibrary lib = await Serializer.Deserialize<MusicLibrary>(test);
+                //});
+            }
             else
             {
                 logger.LogError("### Error loading Music Library, stopping!");
@@ -161,9 +170,9 @@ namespace ArkEcho.Server
             return list;
         }
 
-        public async Task<string> GetMusicLibraryString()
+        public async Task<byte[]> GetMusicLibraryBytes()
         {
-            return library != null ? await library.SaveToJsonString() : string.Empty;
+            return library != null ? await Serializer.Serialize(library) : new byte[0];
         }
 
         public MusicFile GetMusicFile(Guid guid)

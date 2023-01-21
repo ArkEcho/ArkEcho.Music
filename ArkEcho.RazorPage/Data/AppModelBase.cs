@@ -55,31 +55,36 @@ namespace ArkEcho.RazorPage.Data
 
         protected async Task<bool> LoadLibraryFromServer()
         {
-            Stopwatch sw = Stopwatch.StartNew();
-
-            string lib = await rest.GetMusicLibrary();
-
-            Console.WriteLine($"Loading {sw.ElapsedMilliseconds} ms");
-            sw.Restart();
-            if (string.IsNullOrEmpty(lib))
-                return false;
-            else if (Library != null)
+            if (Library != null)
             {
                 // TODO: Check local Library with Server (by Guid?)
                 return true;
             }
 
-            Library = new MusicLibrary();
-            if (!await Library.LoadFromJsonString(lib))
+            Stopwatch sw = Stopwatch.StartNew();
+
+            byte[] lib = await rest.GetMusicLibrary();
+
+            Console.WriteLine($"Loading {sw.ElapsedMilliseconds} ms");
+            sw.Restart();
+
+            if (lib.Length == 0)
                 return false;
+
+            Library = await Serializer.Deserialize<MusicLibrary>(lib);
+            if (Library == null)
+                return false;
+
             Console.WriteLine($"Creating {sw.ElapsedMilliseconds} ms");
             sw.Restart();
+
             foreach (Album album in Library.Album)
             {
                 if (string.IsNullOrEmpty(album.Cover64))
                     album.Cover64 = await GetAlbumCover(album.GUID);
             }
             Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
+
             if (Library.MusicFiles.Count > 0)
             {
                 logger.LogStatic($"Library initialized, {Library.MusicFiles.Count}");

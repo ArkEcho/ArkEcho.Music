@@ -8,18 +8,11 @@ namespace ArkEcho.Core
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Playlist : TransferFileBase
     {
-        [JsonProperty]
         public string Title { get; set; } = string.Empty;
 
-        [JsonProperty]
         public List<Guid> MusicFiles { get; set; } = new List<Guid>();
 
-        /// <summary>
-        /// For Serialization and Unit Tests
-        /// </summary>
-        public Playlist() : base() { }
-
-        public Playlist(string filePath) : base(filePath)
+        public Playlist()
         {
         }
 

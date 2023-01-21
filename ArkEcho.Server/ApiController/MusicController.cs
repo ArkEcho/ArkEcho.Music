@@ -21,17 +21,15 @@ namespace ArkEcho.Server
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            string lib = await Server.GetMusicLibraryString();
 
-            if (Server.Config.Compression)
-                lib = await ZipCompression.ZipToBase64(lib);
-            else
-                lib = lib.ToBase64();
+            byte[] data = await Server.Instance.GetMusicLibraryBytes();
 
             sw.Stop();
             Logger.LogImportant($"{Request.Path} took {sw.ElapsedMilliseconds}ms");
 
-            return Ok(lib);
+            FileContentResult result = new FileContentResult(data, "application/octet-stream");
+
+            return result;
         }
 
         // GET: api/Music/[GUID]

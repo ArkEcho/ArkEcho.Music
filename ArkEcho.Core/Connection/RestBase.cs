@@ -19,6 +19,7 @@ namespace ArkEcho.Core
             public bool Success { get; set; } = false;
 
             public abstract Task<string> GetResultContentAsStringAsync();
+            public abstract Task<byte[]> GetResultContentAsByteArrayAsync();
             public abstract Task CopyContentToStreamAsync(Stream stream);
 
             protected virtual void Dispose(bool disposing)
@@ -83,19 +84,14 @@ namespace ArkEcho.Core
                 return null;
         }
 
-        public async Task<string> GetMusicLibrary()
+        public async Task<byte[]> GetMusicLibrary()
         {
             using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music", string.Empty))
             {
                 if (response == null || !response.Success)
-                    return string.Empty;
+                    return null;
 
-                string content = await response.GetResultContentAsStringAsync();
-
-                if (compression)
-                    return await ZipCompression.UnzipBase64(content);
-                else
-                    return content.FromBase64();
+                return await response.GetResultContentAsByteArrayAsync();
             }
         }
 
