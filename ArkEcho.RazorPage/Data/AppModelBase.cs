@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.WebPage;
+using System.Diagnostics;
 
 namespace ArkEcho.RazorPage.Data
 {
@@ -54,7 +55,12 @@ namespace ArkEcho.RazorPage.Data
 
         protected async Task<bool> LoadLibraryFromServer()
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             string lib = await rest.GetMusicLibrary();
+
+            Console.WriteLine($"Loading {sw.ElapsedMilliseconds} ms");
+            sw.Restart();
             if (string.IsNullOrEmpty(lib))
                 return false;
             else if (Library != null)
@@ -66,13 +72,14 @@ namespace ArkEcho.RazorPage.Data
             Library = new MusicLibrary();
             if (!await Library.LoadFromJsonString(lib))
                 return false;
-
+            Console.WriteLine($"Creating {sw.ElapsedMilliseconds} ms");
+            sw.Restart();
             foreach (Album album in Library.Album)
             {
                 if (string.IsNullOrEmpty(album.Cover64))
                     album.Cover64 = await GetAlbumCover(album.GUID);
             }
-
+            Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
             if (Library.MusicFiles.Count > 0)
             {
                 logger.LogStatic($"Library initialized, {Library.MusicFiles.Count}");
