@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace ArkEcho.Core
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Playlist : TransferFileBase
     {
+        [JsonInclude]
         public string Title { get; set; } = string.Empty;
 
+        [JsonInclude]
         public List<Guid> MusicFiles { get; set; } = new List<Guid>();
 
         public Playlist()
