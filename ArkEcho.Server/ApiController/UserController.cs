@@ -22,15 +22,27 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            string userRequestString = await getStringFromHttpBody();
-            userRequestString = userRequestString.FromBase64();
-
-            User user = new();
-            await user.LoadFromJsonString(userRequestString);
+            User user = await getUserFromHttpRequest();
 
             User checkedUser = await Server.AuthenticateUserForLoginAsync(user);
 
             return await checkUserMakeAnswer(checkedUser);
+        }
+
+        [HttpPost("Logout")]
+        public async Task<ActionResult> LogoutUser()
+        {
+            if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+                return BadRequest();
+            }
+
+            User user = await getUserFromHttpRequest();
+
+            bool success = Server.LogoutUser(user);
+
+            return success ? Ok() : BadRequest();
         }
 
         [HttpPost("Token")]
@@ -49,6 +61,32 @@ namespace ArkEcho.Server
             User checkedUser = Server.CheckUserToken(guid);
 
             return await checkUserMakeAnswer(checkedUser);
+        }
+
+        [HttpPost("Update")]
+        public async Task<ActionResult> UpdateUser()
+        {
+            if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+                return BadRequest();
+            }
+
+            User user = await getUserFromHttpRequest();
+
+            bool success = await Server.UpdateUserAsync(user);
+
+            return success ? Ok() : BadRequest();
+        }
+
+        private async Task<User> getUserFromHttpRequest()
+        {
+            string userRequestString = await getStringFromHttpBody();
+            userRequestString = userRequestString.FromBase64();
+
+            User user = new User();
+            await user.LoadFromJsonString(userRequestString);
+            return user;
         }
 
         private async Task<ActionResult> checkUserMakeAnswer(User user)

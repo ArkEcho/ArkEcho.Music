@@ -132,9 +132,22 @@ namespace ArkEcho.Server
             return user;
         }
 
+        public bool LogoutUser(User user)
+        {
+            return loggedInUsers.Remove(user);
+        }
+
         public User CheckUserToken(Guid token)
         {
             return loggedInUsers.Find(x => x.AccessToken.Equals(token));
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            if (user == null)
+                return false;
+
+            return await dbAccess.UpdateUserAsync(user);
         }
 
         private void loadMusicLibrary()
