@@ -56,14 +56,26 @@ namespace ArkEcho.Core
         public async Task<User> AuthenticateUserForLogin(User userToAuthenticate)
         {
             string bodyContent = await userToAuthenticate.SaveToJsonString();
-            using (HttpResponseBase restResponse = await makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
-                return await checkAndReturnAuthenticateResult(restResponse);
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
+                return await checkAndReturnAuthenticateResult(response);
+        }
+        public async Task<bool> LogoutUser(Guid guid)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Logout", guid.ToString()))
+                return response != null && response.Success;
         }
 
         public async Task<User> CheckUserToken(Guid guid)
         {
-            using (HttpResponseBase restResponse = await makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
-                return await checkAndReturnAuthenticateResult(restResponse);
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
+                return await checkAndReturnAuthenticateResult(response);
+        }
+
+        public async Task<bool> UpdateUser(User userToUpdate)
+        {
+            string bodyContent = await userToUpdate.SaveToJsonString();
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Update", bodyContent.ToBase64()))
+                return response != null && response.Success;
         }
 
         private async Task<User> checkAndReturnAuthenticateResult(HttpResponseBase response)
@@ -191,5 +203,6 @@ namespace ArkEcho.Core
         }
 
         protected abstract Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent);
+
     }
 }

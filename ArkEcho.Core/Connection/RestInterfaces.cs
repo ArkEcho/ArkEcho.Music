@@ -20,7 +20,12 @@ namespace ArkEcho.Core
     {
         Task<User> AuthenticateUserForLogin(User userToAuthenticate);
 
+        Task<bool> LogoutUser(Guid guid);
+
         Task<User> CheckUserToken(Guid guid);
+
+        Task<bool> UpdateUser(User userToUpdate);
+
     }
 
     public interface IRestMusic : IRest

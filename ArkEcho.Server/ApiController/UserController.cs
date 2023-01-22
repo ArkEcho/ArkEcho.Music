@@ -38,9 +38,11 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            User user = await getUserFromHttpRequest();
+            string guidString = await getStringFromHttpBody();
 
-            bool success = Server.LogoutUser(user);
+            Guid guid = new Guid(guidString);
+
+            bool success = Server.LogoutUser(guid);
 
             return success ? Ok() : BadRequest();
         }

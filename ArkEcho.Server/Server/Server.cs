@@ -132,9 +132,9 @@ namespace ArkEcho.Server
             return user;
         }
 
-        public bool LogoutUser(User user)
+        public bool LogoutUser(Guid token)
         {
-            return loggedInUsers.Remove(user);
+            return loggedInUsers.RemoveAll(x => x.AccessToken == token) > 0;
         }
 
         public User CheckUserToken(Guid token)
