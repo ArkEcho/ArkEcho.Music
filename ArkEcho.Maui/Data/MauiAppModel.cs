@@ -12,11 +12,13 @@ namespace ArkEcho.Maui
         public override string MusicFolder { get { return getMusicSyncPath(); } }
 
         private VLCPlayer player = null;
+        private IMauiHelper mauiHelper = null;
 
-        public MauiAppModel(ILocalStorage localStorage, AppEnvironment environment)
+        public MauiAppModel(ILocalStorage localStorage, AppEnvironment environment, IMauiHelper mauiHelper)
             : base(environment, localStorage)
         {
             player = new VLCPlayer(logger);
+            this.mauiHelper = mauiHelper;
             Sync = new LibrarySync(environment, rest, new RestLogger(environment, "LibrarySync", rest));
         }
 
@@ -51,12 +53,7 @@ namespace ArkEcho.Maui
 
         private string getMusicSyncPath()
         {
-            if (environment.Platform == Resources.Platform.Windows)
-                return GetLoggedInUser().MusicPathWindows;
-            else if (environment.Platform == Resources.Platform.Android)
-                return environment.MusicPathAndroid;
-            else
-                return string.Empty;
+            return mauiHelper.GetPlatformSpecificMusicFolder(GetLoggedInUser());
         }
     }
 }

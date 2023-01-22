@@ -18,7 +18,11 @@ namespace ArkEcho.Core
 
             [JsonProperty]
             public Uri Path { get; set; } = new Uri("about:blank");
+        }
 
+        public UserPath GetLocalUserSettings()
+        {
+            return MusicPathList.Find(x => x.MachineName.Equals(System.Environment.MachineName, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

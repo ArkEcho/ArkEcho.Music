@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace ArkEcho.Maui
+namespace ArkEcho.Maui.AndroidMaui
 {
     [Application]
     public class MainApplication : MauiApplication
@@ -13,32 +13,7 @@ namespace ArkEcho.Maui
 
         protected override MauiApp CreateMauiApp()
         {
-            return MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Android, Android.App.Application.Context.FilesDir.Path, getAndroidMediaAppSDFolderPath());
-        }
-
-        private string getAndroidMediaAppSDFolderPath()
-        {
-            string baseFolderPath = string.Empty;
-            try
-            {
-                foreach (Java.IO.File folder in Android.App.Application.Context.GetExternalMediaDirs())
-                {
-                    bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
-                    bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
-
-                    if (IsRemovable && !IsEmulated)
-                    {
-                        baseFolderPath = folder.Path;
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("GetBaseFolderPath caused the following exception: {0}", ex);
-            }
-
-            return baseFolderPath;
+            return MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Android);
         }
     }
 }

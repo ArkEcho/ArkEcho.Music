@@ -1,8 +1,6 @@
 ﻿// To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-using System.Reflection;
-
 namespace ArkEcho.Maui.WinUI
 {
     /// <summary>
@@ -21,7 +19,7 @@ namespace ArkEcho.Maui.WinUI
 
         protected override MauiApp CreateMauiApp()
         {
-            var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), null);
+            var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows);
             if (app == null)
                 Exit();
             return app;

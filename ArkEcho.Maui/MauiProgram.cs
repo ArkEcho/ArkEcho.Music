@@ -6,18 +6,21 @@ namespace ArkEcho.Maui
 {
     public class MauiProgram
     {
-        public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, string rootPath, string musicFolder)
+        public static MauiApp CreateMauiApp(Resources.Platform executingPlatform)
         {
             AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform, true);
-
-            if (!string.IsNullOrEmpty(musicFolder))
-                environment.MusicPathAndroid = musicFolder;
 
             MauiAppBuilder builder = MauiApp.CreateBuilder();
 
             builder.UseMauiApp<App>().ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
             builder.Services.AddMauiBlazorWebView();
+
+#if ANDROID
+            builder.Services.AddSingleton<IMauiHelper, AndroidMaui.AndroidMauiHelper>();
+#elif WINDOWS
+            builder.Services.AddSingleton<IMauiHelper, WinUI.WindowsMauiHelper>();
+#endif
 
             builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
 
