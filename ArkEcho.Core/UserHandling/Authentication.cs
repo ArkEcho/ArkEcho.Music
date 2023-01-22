@@ -45,15 +45,20 @@ namespace ArkEcho.WebPage
             return AuthenticatedUser != null;
         }
 
-        public async Task MarkUserAsLoggedOut()
+        public async Task<bool> MarkUserAsLoggedOut()
         {
             try
             {
+                if (!await rest.LogoutUser(AuthenticatedUser.AccessToken))
+                    return false;
+
                 await localStorage.RemoveItemAsync("accessToken");
                 AuthenticatedUser = null;
+                return true;
             }
             catch (Exception)
             {
+                return false;
             }
         }
     }
