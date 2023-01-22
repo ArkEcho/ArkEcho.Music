@@ -12,8 +12,6 @@ namespace ArkEcho.Core
 
         public string AppName { get; set; } = string.Empty;
 
-        public string MusicPathAndroid { get; set; } = string.Empty;
-
         // TODO: Better Name here and in Rest
         public bool UserHttpClientHandler { get; set; } = false;
 

@@ -74,11 +74,17 @@ namespace ArkEcho.Server
                 var test = dbAccess.GetUsersAsync().Result;
 
                 if (test.Count == 0)
-                    await dbAccess.InsertUserAsync(new User() { UserName = "test", Password = Encryption.EncryptSHA256("test") });
+                {
+                    User user = new User()
+                    {
+                        UserName = "test",
+                        Password = Encryption.EncryptSHA256("test")
+                    };
+                    user.Settings.MusicPathList.Add(new UserSettings.UserPath() { MachineName = System.Environment.MachineName, Path = new Uri(@"D:\_TEMP\Music") });
+                    await dbAccess.InsertUserAsync(user);
+                }
 
-                //test[0].UserName = "BLUB";
-                //bool up = await dbAccess.UpdateUserAsync(test[0]);
-                //test = await dbAccess.GetUsersAsync();
+                test = await dbAccess.GetUsersAsync();
             }
             catch (Exception ex)
             {
@@ -100,10 +106,10 @@ namespace ArkEcho.Server
             loadMusicLibrary();
 
             host = WebHost.CreateDefaultBuilder()
-                            .UseUrls($"https://*:{Config.Port}")
-                            .UseKestrel()
-                            .UseStartup<Startup>()
-                            .Build();
+                                    .UseUrls($"https://*:{Config.Port}")
+                                    .UseKestrel()
+                                    .UseStartup<Startup>()
+                                    .Build();
 
             Initialized = true;
 

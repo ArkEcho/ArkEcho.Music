@@ -44,7 +44,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30))";
+            string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30), settings blob)";
 
             SQLiteCommand command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
@@ -72,10 +72,13 @@ namespace ArkEcho.Server.Database
             List<User> users = new List<User>();
             while (await reader.ReadAsync())
             {
-                User user = new();
+                User user = new User();
+
                 user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
                 user.UserName = reader.GetString(keyValues[User.UserTable.USERNAME.ToString()]);
                 user.Password = reader.GetString(keyValues[User.UserTable.PASSWORD.ToString()]);
+                await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
+
                 users.Add(user);
             }
             return users;
@@ -86,7 +89,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}' where id = {user.ID}";
+            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', settings = {await user.Settings.SaveToJsonString()} where id = {user.ID}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() != 1;
@@ -97,7 +100,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"insert into {User.UserTableName} (username, password) values ('{user.UserName}', '{user.Password}')";
+            string sql = $"insert into {User.UserTableName} (username, password, settings) values ('{user.UserName}', '{user.Password}', '{await user.Settings.SaveToJsonString()}')";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() != 1;

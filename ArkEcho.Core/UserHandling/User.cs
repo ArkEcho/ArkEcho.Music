@@ -10,7 +10,8 @@ namespace ArkEcho.Core
         {
             ID,
             USERNAME,
-            PASSWORD
+            PASSWORD,
+            SETTINGS
         }
 
         [JsonProperty]
@@ -23,13 +24,10 @@ namespace ArkEcho.Core
         public string Password { get; set; } = string.Empty;
 
         [JsonProperty]
-        public bool DarkMode { get; set; } = true;
-
-        [JsonProperty]
-        public string MusicPathWindows { get; set; } = string.Empty;
-
-        [JsonProperty]
         public Guid AccessToken { get; set; } = Guid.Empty;
+
+        [JsonProperty]
+        public UserSettings Settings { get; set; } = new UserSettings();
     }
 
 }
