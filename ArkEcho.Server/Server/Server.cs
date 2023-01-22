@@ -126,10 +126,10 @@ namespace ArkEcho.Server
             if (toLogin == null)
                 return null;
 
-            user.AccessToken = Guid.NewGuid();
-            loggedInUsers.Add(user);
+            toLogin.AccessToken = Guid.NewGuid();
+            loggedInUsers.Add(toLogin);
 
-            return user;
+            return toLogin;
         }
 
         public bool LogoutUser(Guid token)

@@ -15,7 +15,7 @@ namespace ArkEcho
         public const string ARKECHOMAUI = "ArkEcho.Maui";
 
         public const int MaxFileSize = int.MaxValue; // ~2Gb
-        public const int RestChunkSize = 15728640; // 15mb
+        public const int RestChunkSize = 1048576;// 1mb //15728640; // 15mb
         public const int RestMusicFileCount = 500; // Only 500 Objects are transmitted at once
 
         public enum Platform
