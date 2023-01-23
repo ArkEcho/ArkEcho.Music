@@ -18,6 +18,13 @@ namespace ArkEcho
         public const int RestChunkSize = 1048576;// 1mb //15728640; // 15mb
         public const int RestMusicFileCount = 500; // Only 500 Objects are transmitted at once
 
+        public enum Status
+        {
+            None,
+            Idle,
+            Busy
+        }
+
         public enum Platform
         {
             None,

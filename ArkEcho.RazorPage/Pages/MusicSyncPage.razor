@@ -6,29 +6,36 @@
 @inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.Small">
-    <MudStack>
-
-        <MudStack Row="true">
-            <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.MusicFolder</MudField>
-            @if (showChangeFolderButton())
-            {
-                <MudIconButton Icon="@Icons.Material.Rounded.FolderOpen" Size="Size.Medium" OnClick="changeMusicFolder">Sync Music Library</MudIconButton>
-            }
-        </MudStack>
-
-        <MudButton Variant="Variant.Filled" OnClick="synchronizeMusic">Sync Music Library</MudButton>
-
-        <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="@syncProgress" />
-
-        <MudText Typo="Typo.body1">@syncMessage</MudText>
-        <MudText Typo="Typo.body1">@status</MudText>
-
-    </MudStack>
+    <MudPaper Class="my-4 pa-2" Outlined="true">
+        <MudStack>
+            <MudStack Class="my-1" Row="true">
+                <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.MusicFolder</MudField>
+                @if (showChangeFolderButton())
+                {
+                    <MudIconButton Class="mt-3" Icon="@Icons.Material.Rounded.FolderOpen" Disabled="@(status == Resources.Status.Busy)" 
+                        Color="Color.Secondary" Size="Size.Medium" OnClick="changeMusicFolder">Sync Music Library</MudIconButton>
+                }
+            </MudStack>
         
+            <MudPaper Class=" my-1 d-flex justify-center" Elevation="0">
+                <MudButton Variant="Variant.Filled" Disabled="@(status == Resources.Status.Busy)" Color="Color.Tertiary" OnClick="synchronizeMusic">Sync Music Library</MudButton>
+            </MudPaper>
+
+            <MudPaper Class=" my-1 d-flex justify-center" Elevation="0">
+                <MudStack Spacing="1">
+                    <MudText Align="Align.Center" Typo="Typo.body1">@(status == Resources.Status.Idle ? "Idle" : "Syncing")</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.body2">@syncMessage</MudText>
+                </MudStack>
+            </MudPaper>
+
+            <MudProgressLinear Class="my-1" Color="Color.Success" Rounded="true" Size="Size.Large" Value="@syncProgress" />
+
+        </MudStack>
+    </MudPaper>
 </MudContainer>
 
 @code {
-    private string status = "Idle";
+    private Resources.Status status = Resources.Status.Idle;
 
     private string syncMessage = string.Empty;
     private int syncProgress = 0;
@@ -58,11 +65,11 @@
     {
         Model.Player.Stop();
 
-        status = "Syncing";
+        status = Resources.Status.Busy;
 
         await Model.StartSynchronizeMusic();
 
-        status = "Idle";
+        status = Resources.Status.Idle;
 
         await InvokeAsync(StateHasChanged);
     }

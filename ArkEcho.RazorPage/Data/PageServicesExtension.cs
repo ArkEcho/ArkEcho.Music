@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor;
 using MudBlazor.Services;
 
 namespace ArkEcho.RazorPage.Data
@@ -10,7 +11,18 @@ namespace ArkEcho.RazorPage.Data
             where T1 : LocalStorageBase
             where T2 : AppModelBase
         {
-            serviceCollection.AddMudServices();
+            serviceCollection.AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+
+                config.SnackbarConfiguration.PreventDuplicates = false;
+                config.SnackbarConfiguration.NewestOnTop = false;
+                config.SnackbarConfiguration.ShowCloseIcon = true;
+                config.SnackbarConfiguration.VisibleStateDuration = 10000;
+                config.SnackbarConfiguration.HideTransitionDuration = 500;
+                config.SnackbarConfiguration.ShowTransitionDuration = 500;
+                config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+            });
 
             serviceCollection.AddSingleton(environment);
 

@@ -12,9 +12,9 @@
             @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
-        <MudTextField Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
+        <MudTextField Class="mt-3" Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
 
-        <MudTextField Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
+        <MudTextField Class="mt-3" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
                       Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
     </MudCardContent>
     <MudCardActions>
