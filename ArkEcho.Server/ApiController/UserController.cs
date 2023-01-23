@@ -42,9 +42,9 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            bool success = Server.LogoutUser(guid);
+            Server.LogoutUser(guid);
 
-            return success ? Ok() : BadRequest();
+            return Ok();
         }
 
         [HttpPost("Token")]

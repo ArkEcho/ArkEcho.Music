@@ -3,12 +3,17 @@
 @layout MainLayout
 
 @inject IAppModel Model
+@inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudStack>
 
         <MudStack Row="true">
             <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.MusicFolder</MudField>
+            @if (showChangeFolderButton())
+            {
+                <MudIconButton Icon="@Icons.Material.Rounded.FolderOpen" Size="Size.Medium" OnClick="changeMusicFolder">Sync Music Library</MudIconButton>
+            }
         </MudStack>
 
         <MudButton Variant="Variant.Filled" OnClick="synchronizeMusic">Sync Music Library</MudButton>
@@ -32,6 +37,21 @@
         Model.Sync.SyncProgress += OnProgressEvent;
 
         await base.OnInitializedAsync();
+    }
+
+    private bool showChangeFolderButton()
+    {
+        return Model.Environment.Platform == Resources.Platform.Windows; 
+    }
+
+    private async void changeMusicFolder()
+    {
+        bool result = await Model.ChangeMusicFolder();
+
+        if(result)
+            Snackbar.Add("Music Folder changed successfully!", Severity.Success, config => { config.ShowCloseIcon = true; });
+        else
+            Snackbar.Add("Changing Music Folder failed!", Severity.Error, config => { config.ShowCloseIcon = true; });
     }
 
     private async void synchronizeMusic()

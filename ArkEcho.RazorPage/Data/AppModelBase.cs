@@ -14,35 +14,34 @@ namespace ArkEcho.RazorPage.Data
 
         public abstract string MusicFolder { get; }
 
+        public AppEnvironment Environment { get; }
+        public User AuthenticatedUser { get; private set; } = null;
+
         protected Rest rest = null;
         protected Logger logger = null;
-        protected AppEnvironment environment = null;
         private Authentication authentication = null;
 
         public AppModelBase(AppEnvironment environment, ILocalStorage localStorage)
         {
-            this.environment = environment;
+            Environment = environment;
 
-            rest = new Rest($"https://192.168.178.20:5002", environment.UserHttpClientHandler, false);
+            rest = new Rest($"https://192.168.178.20:5002", Environment.UserHttpClientHandler, false);
 
-            logger = new RestLogger(environment, "AppModel", rest);
+            logger = new RestLogger(Environment, "AppModel", rest);
 
             authentication = new Authentication(localStorage, rest);
         }
 
         public async Task<bool> IsUserAuthenticated()
         {
-            return await authentication.GetAuthenticationState();
+            AuthenticatedUser = await authentication.GetAuthenticationState();
+            return AuthenticatedUser != null;
         }
 
         public async Task<bool> AuthenticateUser(string username, string password)
         {
-            return await authentication.AuthenticateUserForLogin(username, Encryption.EncryptSHA256(password));
-        }
-
-        public User GetLoggedInUser()
-        {
-            return authentication.AuthenticatedUser;
+            AuthenticatedUser = await authentication.AuthenticateUserForLogin(username, Encryption.EncryptSHA256(password));
+            return AuthenticatedUser != null;
         }
 
         public async Task LogoutUser()
@@ -50,7 +49,8 @@ namespace ArkEcho.RazorPage.Data
             if (Player.Playing)
                 Player.Stop();
 
-            await authentication.MarkUserAsLoggedOut();
+            await authentication.MarkUserAsLoggedOut(AuthenticatedUser.AccessToken);
+            AuthenticatedUser = null;
         }
 
         protected async Task<bool> LoadLibraryFromServer()
@@ -96,5 +96,6 @@ namespace ArkEcho.RazorPage.Data
         public abstract Task<bool> InitializeOnLogin();
 
         public abstract Task StartSynchronizeMusic();
+        public abstract Task<bool> ChangeMusicFolder();
     }
 }

@@ -28,5 +28,10 @@ namespace ArkEcho.Maui.AndroidMaui
 
             return baseFolderPath;
         }
+
+        public Task<string> PickFolder()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -8,16 +8,18 @@ namespace ArkEcho.RazorPage
         Player Player { get; }
         LibrarySync Sync { get; }
         string MusicFolder { get; }
+        AppEnvironment Environment { get; }
+        User AuthenticatedUser { get; }
 
         Task<bool> AuthenticateUser(string username, string password);
         Task<bool> IsUserAuthenticated();
         Task LogoutUser();
-        User GetLoggedInUser();
 
         Task<bool> InitializeOnLoad();
         Task<bool> InitializeOnLogin();
         Task<string> GetAlbumCover(Guid albumGuid);
 
         Task StartSynchronizeMusic();
+        Task<bool> ChangeMusicFolder();
     }
 }

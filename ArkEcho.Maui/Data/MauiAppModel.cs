@@ -27,7 +27,7 @@ namespace ArkEcho.Maui
             if (!await rest.CheckConnection())
                 return false;
 
-            logger.LogStatic($"Executing on {environment.Platform}");
+            logger.LogStatic($"Executing on {Environment.Platform}");
 
             if (!player.InitPlayer())
                 return false;
@@ -53,7 +53,26 @@ namespace ArkEcho.Maui
 
         private string getMusicSyncPath()
         {
-            return mauiHelper.GetPlatformSpecificMusicFolder(GetLoggedInUser());
+            return mauiHelper.GetPlatformSpecificMusicFolder(AuthenticatedUser);
+        }
+
+        public override async Task<bool> ChangeMusicFolder()
+        {
+            string newFolder = await mauiHelper.PickFolder();
+
+            if (string.IsNullOrEmpty(newFolder) || !Directory.Exists(newFolder))
+                return false;
+
+            UserSettings.UserPath path = AuthenticatedUser.Settings.GetLocalUserSettings();
+            if (path == null)
+            {
+                path = new UserSettings.UserPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
+                AuthenticatedUser.Settings.MusicPathList.Add(path);
+            }
+            else
+                path.Path = new Uri(newFolder);
+
+            return await rest.UpdateUser(AuthenticatedUser);
         }
     }
 }

@@ -89,10 +89,10 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', settings = {await user.Settings.SaveToJsonString()} where id = {user.ID}";
+            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', settings = '{await user.Settings.SaveToJsonString()}' where id = {user.ID}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
-            return await command.ExecuteNonQueryAsync() != 1;
+            return await command.ExecuteNonQueryAsync() == 1;
         }
 
         public async Task<bool> InsertUserAsync(User user)
@@ -103,7 +103,7 @@ namespace ArkEcho.Server.Database
             string sql = $"insert into {User.UserTableName} (username, password, settings) values ('{user.UserName}', '{user.Password}', '{await user.Settings.SaveToJsonString()}')";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
-            return await command.ExecuteNonQueryAsync() != 1;
+            return await command.ExecuteNonQueryAsync() == 1;
         }
 
         private Dictionary<string, int> getFieldValueMap<T>(DbDataReader reader)
