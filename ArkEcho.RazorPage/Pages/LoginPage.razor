@@ -1,26 +1,25 @@
 ﻿@page "/"
 
-@layout LoginLayout
+@layout CenteredCardLayout
 
 @inject IAppModel model
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-<MudCard Width="100%" Outlined="true">
-    <MudCardContent>
+<MudPaper Class="pa-2" Outlined="true">
+    <MudStack>
         <svg width="100%" height="200px" color="white">
             @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
-        <MudTextField Class="mt-3" Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
+        <MudTextField Class="mt-2" Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
 
-        <MudTextField Class="mt-3" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
-                      Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
-    </MudCardContent>
-    <MudCardActions>
-        <MudButton Variant="Variant.Filled" OnClick="validateUser">Login</MudButton>
-    </MudCardActions>
-</MudCard>
+        <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
+                        Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
+
+        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser">Login</MudButton>
+    </MudStack>
+</MudPaper>
 
 <MudOverlay @bind-Visible="overlayVisible" DarkBackground="true" ZIndex="9999" />
 
