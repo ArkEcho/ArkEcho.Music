@@ -188,11 +188,6 @@ namespace ArkEcho.Server
             return library;
         }
 
-        public async Task<byte[]> GetMusicLibraryBytes()
-        {
-            return library != null ? await Serializer.Serialize(library) : new byte[0];
-        }
-
         public MusicFile GetMusicFile(Guid guid)
         {
             return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;

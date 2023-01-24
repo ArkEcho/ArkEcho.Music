@@ -65,6 +65,12 @@ namespace ArkEcho.RazorPage.Data
 
             Library = await rest.GetMusicLibrary();
 
+            if (Library == null)
+            {
+                logger.LogError($"Error loading Library from Server");
+                return false;
+            }
+
             Console.WriteLine($"Loading Library {sw.ElapsedMilliseconds} ms");
             sw.Restart();
 

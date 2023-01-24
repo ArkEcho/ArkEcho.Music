@@ -15,23 +15,6 @@ namespace ArkEcho.Server
         {
         }
 
-        // GET: api/Music
-        [HttpGet]
-        public async Task<ActionResult> GetMusicLibrary()
-        {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            byte[] data = await Server.Instance.GetMusicLibraryBytes();
-
-            sw.Stop();
-            Logger.LogImportant($"{Request.Path} took {sw.ElapsedMilliseconds}ms");
-
-            FileContentResult result = new FileContentResult(data, "application/octet-stream");
-
-            return result;
-        }
-
         // GET: api/Music/[GUID]
         [HttpGet("{guid}")]
         public async Task<ActionResult> GetMusicFile(Guid guid)
@@ -89,6 +72,9 @@ namespace ArkEcho.Server
         public async Task<ActionResult> GetMusicLibrary(int countIndex)
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
             int start = countIndex * Resources.RestMusicFileCount;
             int count = Resources.RestMusicFileCount;
 
@@ -105,6 +91,9 @@ namespace ArkEcho.Server
         public async Task<ActionResult> GetAlbumList(int countIndex)
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
             return await GetByteResult(library.Album);
         }
 
@@ -113,6 +102,9 @@ namespace ArkEcho.Server
         public async Task<ActionResult> GetAlbumArtistsList(int countIndex)
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
             return await GetByteResult(library.AlbumArtists);
         }
 
@@ -121,6 +113,9 @@ namespace ArkEcho.Server
         public async Task<ActionResult> GetPlaylistsList(int countIndex)
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
             return await GetByteResult(library.Playlists);
         }
 
@@ -130,6 +125,8 @@ namespace ArkEcho.Server
             sw.Start();
 
             MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
 
             byte[] data = await Serializer.Serialize(toSerialize);
 
