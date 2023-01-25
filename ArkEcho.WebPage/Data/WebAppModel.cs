@@ -41,5 +41,10 @@ namespace ArkEcho.WebPage
         {
             throw new NotImplementedException();
         }
+
+        public override Task<bool> ChangeMusicFolder()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
