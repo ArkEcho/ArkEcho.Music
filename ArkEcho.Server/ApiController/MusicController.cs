@@ -46,6 +46,17 @@ namespace ArkEcho.Server
             return result;
         }
 
+        // GET: api/Music/Library
+        [HttpGet("Library")]
+        public async Task<ActionResult> GetLibraryGuid()
+        {
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
+            return Ok(library.GUID.ToString());
+        }
+
         // GET: api/Music/AlbumCover/[GUID]
         [HttpGet("AlbumCover/{guid}")]
         public async Task<ActionResult> GetAlbumCover(Guid guid)

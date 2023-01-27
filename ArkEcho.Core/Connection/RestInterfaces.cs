@@ -8,16 +8,13 @@ namespace ArkEcho.Core
     {
         int Timeout { get; set; }
 
+        // Control
         Task<bool> CheckConnection();
-    }
 
-    public interface IRestLogging : IRest
-    {
+        // Logging
         Task<bool> PostLogging(LogMessage logMessage);
-    }
 
-    public interface IRestUser : IRest
-    {
+        // User
         Task<User> AuthenticateUserForLogin(User userToAuthenticate);
 
         Task<bool> LogoutUser(Guid guid);
@@ -26,17 +23,14 @@ namespace ArkEcho.Core
 
         Task<bool> UpdateUser(User userToUpdate);
 
-    }
+        // Music
+        Task<Guid> GetMusicLibraryGuid();
 
-    public interface IRestMusic : IRest
-    {
         Task<MusicLibrary> GetMusicLibrary();
 
         Task<string> GetAlbumCover(Guid guid);
-    }
 
-    public interface IRestFiles : IRest
-    {
+        // File
         Task<MemoryStream> GetFile(TransferFileBase tfb);
     }
 }

@@ -9,6 +9,9 @@ namespace ArkEcho.Core
         public MusicLibrary() { }
 
         [JsonInclude]
+        public Guid GUID { get; set; } = Guid.NewGuid();
+
+        [JsonInclude]
         public List<AlbumArtist> AlbumArtists { get; set; } = new List<AlbumArtist>();
 
         [JsonInclude]

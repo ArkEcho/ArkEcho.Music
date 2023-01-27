@@ -22,17 +22,9 @@ namespace ArkEcho.Maui
             Sync = new LibrarySync(environment, rest, new RestLogger(environment, "LibrarySync", rest));
         }
 
-        public override async Task<bool> InitializeOnLoad()
+        protected override async Task<bool> initializePlayer()
         {
-            if (!await rest.CheckConnection())
-                return false;
-
-            logger.LogStatic($"Executing on {Environment.Platform}");
-
-            if (!player.InitPlayer())
-                return false;
-
-            return await LoadLibraryFromServer();
+            return player.InitPlayer();
         }
 
         public override async Task<bool> InitializeOnLogin()

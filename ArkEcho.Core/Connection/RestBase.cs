@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
-    public abstract class RestBase : IRestLogging, IRestUser, IRestMusic, IRestFiles
+    public abstract class RestBase : IRest
     {
         public enum HttpMethods
         {
@@ -97,9 +97,34 @@ namespace ArkEcho.Core
                 return null;
         }
 
+        public async Task<Guid> GetMusicLibraryGuid()
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library", string.Empty))
+            {
+                if (response == null || !response.Success)
+                    return Guid.Empty;
+
+                if (!Guid.TryParse(await response.GetResultContentAsStringAsync(), out Guid result))
+                    return Guid.Empty;
+                else
+                    return result;
+            }
+        }
+
         public async Task<MusicLibrary> GetMusicLibrary()
         {
             MusicLibrary library = new MusicLibrary();
+
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library", string.Empty))
+            {
+                if (response == null || !response.Success)
+                    return null;
+
+                if (!Guid.TryParse(await response.GetResultContentAsStringAsync(), out Guid result))
+                    return null;
+
+                library.GUID = result;
+            }
 
             using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Albums", string.Empty))
             {

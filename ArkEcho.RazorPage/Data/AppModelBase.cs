@@ -53,12 +53,26 @@ namespace ArkEcho.RazorPage.Data
             AuthenticatedUser = null;
         }
 
+        public async Task<bool> InitializeOnLoad()
+        {
+            if (!await rest.CheckConnection())
+                return false;
+
+            logger.LogStatic($"Executing on {Environment.Platform}");
+
+            if (!await initializePlayer())
+                return false;
+
+            return await LoadLibraryFromServer();
+        }
+
         protected async Task<bool> LoadLibraryFromServer()
         {
             if (Library != null)
             {
-                // TODO: Check local Library with Server (by Guid?)
-                return true;
+                Guid serverLibraryGuid = await rest.GetMusicLibraryGuid();
+                if (serverLibraryGuid == Library.GUID)
+                    return true;
             }
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -98,7 +112,7 @@ namespace ArkEcho.RazorPage.Data
             return await rest.GetAlbumCover(albumGuid);
         }
 
-        public abstract Task<bool> InitializeOnLoad();
+        protected abstract Task<bool> initializePlayer();
         public abstract Task<bool> InitializeOnLogin();
 
         public abstract Task StartSynchronizeMusic();
