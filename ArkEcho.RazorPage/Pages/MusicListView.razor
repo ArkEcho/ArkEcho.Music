@@ -6,7 +6,7 @@
 
 @*<h3>MusicListView @Display.DisplayName, @Sorting.DisplayName</h3>*@
 
-<MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="800px" FixedHeader="true"
+<MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="600px" FixedHeader="true"
             Items="@getFilteredMusicFileList()" Virtualize="true" GroupBy="@groupDefinition"
             GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
             GroupFooterClass="mb-4" Dense="true" MultiSelection="false">
@@ -15,27 +15,32 @@
         <MudTh>#</MudTh>
         <MudTh>Titel</MudTh>
         <MudTh>Performer</MudTh>
-        <MudTh>Album</MudTh>
-        <MudTh>Interpret</MudTh>
-        <MudTh>Jahr</MudTh>
+        <MudTh>Dauer</MudTh>
     </HeaderContent>
 
     <ColGroup>
-        <col /><col /> <col /> <col /> <col /><col />
+        <col /><col /> <col /> <col />
     </ColGroup>
     <GroupHeaderTemplate>
-            <MudImage Class="rounded-lg z-10" Src="@(helper.GetBase64PngImg(((Album)context.Key).Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />
-        <MudTh Class="mud-table-cell-custom-group" colspan="6">@($"{((Album)context.Key).Name}") 
-            </MudTh>
+        <MudTh Class="mud-table-cell-custom-group" colspan="1">
+            <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(((Album)context.Key).Cover64))" Width="80" Height="80" ObjectFit="ObjectFit.Fill" />
+        </MudTh>
+        <MudTh Class="mud-table-cell-custom-group" colspan="2">            
+            <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
+                <MudText Typo="Typo.body2">@(((Album)context.Key).Name)</MudText>
+                <MudText Typo="Typo.caption">@(model.Library.GetAlbumArtist(((Album)context.Key).AlbumArtist).Name)</MudText>
+            </MudStack>
+        </MudTh>
+        <MudTh Class="mud-table-cell-custom-group" colspan="1">
+            <MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>
+        </MudTh>
     </GroupHeaderTemplate>
 
     <RowTemplate>
         <MudTd DataLabel="Track">@context.Track</MudTd>
         <MudTd DataLabel="Sign">@context.Title</MudTd>
         <MudTd DataLabel="Performer">@context.Performer</MudTd>
-        <MudTd DataLabel="Album">@model.Library.GetAlbum(context.Album).Name</MudTd>
-        <MudTd DataLabel="Album">@model.Library.GetAlbumArtist(context.AlbumArtist).Name</MudTd>
-        <MudTd Style="text-align: right" DataLabel="Year">@context.Year"</MudTd>
+        <MudTd DataLabel="Duration">@context.Duration.ConvertTimeMilliseconds()</MudTd>
     </RowTemplate>
 
     @*<GroupFooterTemplate>

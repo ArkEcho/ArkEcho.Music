@@ -9,17 +9,16 @@
     {
         get
         {
-            TimeSpan time = TimeSpan.FromSeconds(Model.Player.Position);
-            return time.ToString(@"mm\:ss");
+            return Model.Player.Position.ConvertTimeSeconds();
         }
     }
     public string DurationTime
     { 
         get 
-        { 
-            return Model.Player.PlayingFile != null 
-            ? TimeSpan.FromMilliseconds(Model.Player.PlayingFile.Duration).ToString(@"mm\:ss") 
-            : TimeSpan.FromSeconds(0).ToString(@"mm\:ss"); 
+        {
+            return Model.Player.PlayingFile != null
+            ? Model.Player.PlayingFile.Duration.ConvertTimeMilliseconds()
+            : 0.ConvertTimeMilliseconds();
         } 
     }
 
