@@ -1,5 +1,8 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage.Data;
+using Microsoft.Maui.LifecycleEvents;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using System.Diagnostics;
 
 namespace ArkEcho.Maui
@@ -20,6 +23,28 @@ namespace ArkEcho.Maui
             builder.Services.AddSingleton<IMauiHelper, AndroidMaui.AndroidMauiHelper>();
 #elif WINDOWS
             builder.Services.AddSingleton<IMauiHelper, WinUI.WindowsMauiHelper>();
+
+            // FullScreen
+            builder.ConfigureLifecycleEvents(events =>
+            {
+                events.AddWindows(windowsLifecycleBuilder =>
+                {
+                    windowsLifecycleBuilder.OnWindowCreated(window =>
+                    {
+                        window.ExtendsContentIntoTitleBar = false;
+                        var handle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                        var id = Win32Interop.GetWindowIdFromWindow(handle);
+                        var appWindow = AppWindow.GetFromWindowId(id);
+                        switch (appWindow.Presenter)
+                        {
+                            case OverlappedPresenter overlappedPresenter:
+                                //overlappedPresenter.SetBorderAndTitleBar(false, false); // Without Task and Window Bar!
+                                overlappedPresenter.Maximize();
+                                break;
+                        }
+                    });
+                });
+            });
 #endif
 
             builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
