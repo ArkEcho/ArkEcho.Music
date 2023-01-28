@@ -13,7 +13,7 @@
         {
             new DisplayMode(){Mode = DisplayMode.DisplayModes.Album, DisplayName ="Album" },
             new DisplayMode(){Mode = DisplayMode.DisplayModes.AlbumInterpret, DisplayName ="AlbumInterpret" },
-            new DisplayMode(){Mode = DisplayMode.DisplayModes.Titel, DisplayName ="Titel" },
+            //new DisplayMode(){Mode = DisplayMode.DisplayModes.Titel, DisplayName ="Titel" },
         };
 
         public DisplayModes Mode { get; set; }
