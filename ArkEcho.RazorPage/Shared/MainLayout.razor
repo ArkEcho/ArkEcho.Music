@@ -20,10 +20,11 @@
         }
 
         <MudSpacer />
+
         <MudItem>
             <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
             <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
-                <MudText Typo="Typo.body2" Class="px-4 py-1">Benutzername</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser.UserName</MudText>
                 <MudDivider Class="ma-2"/>
                 <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
             </MudPopover>

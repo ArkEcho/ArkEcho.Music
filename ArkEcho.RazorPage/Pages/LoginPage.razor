@@ -25,6 +25,7 @@
 
 @code
 {
+    // TODO: Connection status und Knop unter Login anzeigen
     private bool overlayVisible = false;
 
     private string username = string.Empty;
@@ -42,6 +43,7 @@
 
     protected async override Task OnInitializedAsync()
     {
+        // TODO: Only navigate if Library loaded
         if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Music");
 
