@@ -6,25 +6,24 @@
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
 
 <MudGrid Spacing="2" Justify="Justify.Center">
+    <Virtualize Items="getFilteredAlbum()" Context="album">
 
-@foreach (Album album in getFilteredAlbum())
-{
-    <MudItem xs="6" sm="4" md="3" lg="2" xl="1">
-        <MudCard>
-            <MudCardHeader>
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
-                    <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album))|@(album.MusicFiles.Count)</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
-                <MudIconButton Icon="@Icons.Material.Rounded.List" Color="Color.Default" />
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-}
+        <MudItem xs="6" sm="4" md="3" lg="2" xl="1">
+            <MudCard>
+                <MudCardHeader>
+                    <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
+                        <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album))|@(album.MusicFiles.Count)</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
+                    <MudIconButton Icon="@Icons.Material.Rounded.List" Color="Color.Default" />
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </Virtualize>
 
 </MudGrid>
 

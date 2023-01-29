@@ -18,7 +18,8 @@
     </HeaderContent>
 
     <ColGroup>
-        <col /><col />
+        <col span="1" style="width: 15%;" />
+        <col span="1" style="width: 85%;" />
     </ColGroup>
 
     <GroupHeaderTemplate>
@@ -44,6 +45,12 @@
             <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
                 <thead>                    
                 </thead>
+                <colgroup>
+                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 40%;">
+                    <col span="1" style="width: 40%;">
+                    <col span="1" style="width: 10%;">
+                </colgroup>
                 <tbody>
                 
                     @foreach (MusicFile file in model.Library.GetMusicFiles(context))
