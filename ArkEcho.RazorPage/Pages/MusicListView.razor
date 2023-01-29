@@ -4,50 +4,61 @@
 @inject IAppModel model
 @inject HTMLHelper helper
 
-@*<h3>MusicListView @Display.DisplayName, @Sorting.DisplayName</h3>*@
-
 <MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="600px" FixedHeader="true"
-            Items="@getFilteredMusicFileList()" Virtualize="true" GroupBy="@groupDefinition"
+            Items="@getFilteredAlbum()" Virtualize="true" GroupBy="@groupDefinition"
             GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
             GroupFooterClass="mb-4" Dense="true" MultiSelection="false">
 
     <HeaderContent>
-        <MudTh>Album</MudTh>
+        @*<MudTh>Album</MudTh>
         <MudTh>#</MudTh>
         <MudTh>Titel</MudTh>
         <MudTh>Performer</MudTh>
-        <MudTh>Dauer</MudTh>
+        <MudTh>Dauer</MudTh>*@
     </HeaderContent>
 
     <ColGroup>
-        <col /><col /> <col /> <col /> <col />
+        <col /><col />
     </ColGroup>
 
     <GroupHeaderTemplate>
-        <MudTh Class="mud-table-cell-custom-group" colspan="5">
+        <MudTh Class="mud-table-cell-custom-group" colspan="2">
             <MudText Typo="Typo.caption">@getTableGroupName(context)</MudText>
         </MudTh>
-        @*<MudTh Class="mud-table-cell-custom-group" colspan="2">            
-            <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                <MudText Typo="Typo.body2">@(((Album)context.Key).Name)</MudText>
-            </MudStack>
-        </MudTh>
-        <MudTh Class="mud-table-cell-custom-group" colspan="1">
-            <MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>
-        </MudTh>*@
     </GroupHeaderTemplate>
 
     <RowTemplate>
-        <MudTd DataLabel="Album">
-            @if (model.Library.GetAlbum(context.Album).MusicFiles.IndexOf(context.GUID) == 0)
-            {
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(model.Library.GetAlbum(context.Album).Cover64))" Width="80" Height="80" ObjectFit="ObjectFit.Fill" />                
-            }
+    @{
+        AlbumArtist artist = model.Library.GetAlbumArtist(context.AlbumArtist);
+
+        <MudTd DataLabel="Album">            
+            <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
+                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="80" Height="80" ObjectFit="ObjectFit.Fill" />  
+                <MudText Typo="Typo.body2">@(context.Name )</MudText>
+                <MudText Typo="Typo.body2">@(artist.Name )</MudText>
+                @*<MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>*@
+            </MudStack>                
         </MudTd>
-        <MudTd DataLabel="Track">@context.Track</MudTd>
-        <MudTd DataLabel="Sign">@context.Title</MudTd>
-        <MudTd DataLabel="Performer">@context.Performer</MudTd>
-        <MudTd DataLabel="Duration">@context.Duration.ConvertTimeMilliseconds()</MudTd>
+
+        <MudTd DataLabel="Titel">
+            <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
+                <thead>                    
+                </thead>
+                <tbody>
+                
+                    @foreach (MusicFile file in model.Library.GetMusicFiles(context))
+                    {
+                        <tr>
+                            <td>@file.Track</td>
+                            <td>@file.Title</td>
+                            <td>@file.Performer</td>
+                            <td>@file.Duration.ConvertTimeMilliseconds()</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudTd>
+    }
     </RowTemplate>
 
     @*<GroupFooterTemplate>
@@ -56,9 +67,9 @@
 </MudTable>
 
 @code {
-    private TableGroupDefinition<MusicFile> groupDefinition = null;
+    private TableGroupDefinition<Album> groupDefinition = null;
 
-    protected string getTableGroupName(TableGroupData<object, MusicFile> context)
+    protected string getTableGroupName(TableGroupData<object, Album> context)
     {
         switch (Display.Mode)
         {
@@ -73,7 +84,7 @@
 
     protected override Task OnInitializedAsync()
     {
-        groupDefinition = new TableGroupDefinition<MusicFile>()
+        groupDefinition = new TableGroupDefinition<Album>()
         {
             GroupName = string.Empty,
             Indentation = false,
@@ -83,7 +94,7 @@
                 switch (Display.Mode)
                 {
                     case DisplayMode.DisplayModes.Album:
-                        return model.Library.GetAlbum(e.Album);
+                        return e;
                     case DisplayMode.DisplayModes.AlbumInterpret:
                     default:
                         return model.Library.GetAlbumArtist(e.AlbumArtist);

@@ -95,6 +95,10 @@ namespace ArkEcho.RazorPage.Data
             }
             Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
 
+            sw.Restart();
+            await Library.CreateAlbumFileMap();
+            Console.WriteLine($"Map took {sw.ElapsedMilliseconds} ms");
+
             if (Library.MusicFiles.Count > 0)
             {
                 logger.LogStatic($"Library initialized, {Library.MusicFiles.Count}");

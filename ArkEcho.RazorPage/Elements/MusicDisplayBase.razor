@@ -10,21 +10,11 @@
     [Parameter]
     public string SearchContent { get; set; }   
 
-    protected List<MusicFile> getFilteredMusicFileList()
-    {
-        if (string.IsNullOrEmpty(SearchContent))
-            return model.Library.MusicFiles;
-
-        List<string> searchTerms = SearchContent.Split(" ").ToList();
-        return model.Library.MusicFiles.FindAll(x => searchTerms.All(s => x.Title.Contains(s, StringComparison.OrdinalIgnoreCase)));
-        //|| searchTerms.All(s => model.Library.GetAlbumArtist(x.AlbumArtist).Name.Contains(s, StringComparison.OrdinalIgnoreCase)));
-    }
-
     protected void startMusicAlbum(Album album)
     {        
         List<MusicFile> files = new List<MusicFile>();
 
-        files = model.Library.MusicFiles.Where(x => album.MusicFiles.Any(y => x.GUID == y)).ToList();
+        files = model.Library.GetMusicFiles(album);
 
         if (files.Count == 0)
             return; // TODO: Give Error
