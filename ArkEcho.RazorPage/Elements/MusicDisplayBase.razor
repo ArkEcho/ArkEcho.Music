@@ -8,18 +8,28 @@
     public SortingMode Sorting { get; set; }
 
     [Parameter]
-    public string SearchContent { get; set; }   
+    public string SearchContent { get; set; }
+
+    private List<Album> displayedData = null;
 
     protected void startMusicAlbum(Album album)
     {        
-        List<MusicFile> files = new List<MusicFile>();
-
-        files = model.Library.GetMusicFiles(album);
+        List<MusicFile> files = model.Library.GetMusicFiles(album);
 
         if (files.Count == 0)
             return; // TODO: Give Error
 
         model.Player.Start(files, 0);
+    }
+
+    protected void startMusicFile(MusicFile file)
+    {
+        List<MusicFile> files = new List<MusicFile>();
+        displayedData.ForEach(x =>files.AddRange(model.Library.GetMusicFiles(x)));
+        if (files.Count == 0)
+            return; // TODO: Give Error
+
+        model.Player.Start(files, files.IndexOf(file));
     }
 
     protected string getAlbumArtistNameTruncated(Album album)
@@ -29,11 +39,14 @@
 
     protected List<Album> getFilteredAlbum()
     {
-        if (string.IsNullOrEmpty(SearchContent))
-            return model.Library.Album;
-
-        List<string> searchTerms = SearchContent.Split(" ").ToList();
-        return model.Library.Album.FindAll(x => searchTerms.All(s => x.Name.Contains(s, StringComparison.OrdinalIgnoreCase))
-                                                    || searchTerms.All(s => model.Library.GetAlbumArtist(x.AlbumArtist).Name.Contains(s, StringComparison.OrdinalIgnoreCase)));
+        if (string.IsNullOrEmpty(SearchContent))        
+            displayedData = model.Library.Album;        
+        else
+        {
+            List<string> searchTerms = SearchContent.Split(" ").ToList();
+            displayedData = model.Library.Album.FindAll(x => searchTerms.All(s => x.Name.Contains(s, StringComparison.OrdinalIgnoreCase))
+                                                        || searchTerms.All(s => model.Library.GetAlbumArtist(x.AlbumArtist).Name.Contains(s, StringComparison.OrdinalIgnoreCase)));
+        }
+        return displayedData;
     }
 }

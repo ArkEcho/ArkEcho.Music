@@ -54,7 +54,7 @@
                 <tbody>                
                     @foreach (MusicFile file in model.Library.GetMusicFiles(context))
                     {
-                        <tr>
+                        <tr @ondblclick="() => startMusicFile(file)" >
                             <td>@file.Track</td>
                             <td>@file.Title</td>
                             <td>@file.Performer</td>
