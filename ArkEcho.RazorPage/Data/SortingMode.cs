@@ -1,4 +1,4 @@
-﻿namespace ArkEcho.RazorPage.Elements
+﻿namespace ArkEcho.RazorPage.Data
 {
     public class SortingMode
     {

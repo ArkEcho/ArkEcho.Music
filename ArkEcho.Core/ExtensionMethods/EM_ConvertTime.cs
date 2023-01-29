@@ -11,7 +11,7 @@ namespace ArkEcho.Core
 
         public static string ConvertTimeMilliseconds(this long value)
         {
-            string format = value > 3600 ? @"hh\:mm\:ss" : @"mm\:ss";
+            string format = value > 3600000 ? @"hh\:mm\:ss" : @"mm\:ss";
             return TimeSpan.FromMilliseconds(value).ToString(format);
         }
 
