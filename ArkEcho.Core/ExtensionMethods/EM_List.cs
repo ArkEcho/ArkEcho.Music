@@ -18,6 +18,5 @@ namespace ArkEcho
                 return default(T);
             return list[list.Count - 1];
         }
-
     }
 }

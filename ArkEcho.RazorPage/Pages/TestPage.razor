@@ -1,22 +1,31 @@
 ﻿@page "/Test"
 
 
-@*<MudPaper>
-    <MudPaper Class="overflow-hidden" Width="100%">
-        @for(int i = 0; i < 100; i++)
-        {
-            <MudButton Variant="Variant.Filled">Test Top</MudButton> @i
-            <br />
-            <br />
-        }
-        <MudPaper Style="bottom: 0" Width="100%" Height="75px" />
-    </MudPaper>
-
-    <MudPaper Class="fixed mud-theme-tertiary" Style="bottom: 0" Width="100%" Height="75px">
-        <PlayerControl />
-    </MudPaper>
-</MudPaper>*@
+<MudPaper Height="70vh" Class="overflow-auto">
+    <Virtualize Items="elements">
+        <MudGrid Spacing="2" Justify="Justify.Center">   
+            @foreach(int i in context.Ints)
+            {
+            <MudItem xs="6" sm="4" md="3" lg="2" xl="1">
+                <MudButton Variant="Variant.Filled">Test Top</MudButton> @(i + i)
+            </MudItem>
+            }
+        </MudGrid>
+    </Virtualize>
+</MudPaper>
 
 @code {
+    public class TestTest
+    {
+        public List<int> Ints { get; set; } = new List<int>();
+    }
 
+    List<TestTest> elements = new List<TestTest>();
+
+    protected override Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 1000; i++)
+            elements.Add(new TestTest() { Ints = Enumerable.Repeat(i,12).ToList() });
+        return base.OnInitializedAsync();
+    }
 }
