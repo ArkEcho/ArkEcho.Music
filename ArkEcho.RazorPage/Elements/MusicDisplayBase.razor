@@ -34,7 +34,7 @@
 
     protected string getAlbumArtistNameTruncated(Album album)
     {
-        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(20);
+        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(25);
     }
 
     protected List<Album> getFilteredAlbum()
