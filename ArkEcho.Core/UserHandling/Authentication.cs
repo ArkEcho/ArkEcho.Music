@@ -8,6 +8,7 @@ namespace ArkEcho.WebPage
     {
         private Rest rest = null;
         private ILocalStorage localStorage = null;
+        private const string ACCESSTOKEN = "AE_ACCESS_TOKEN";
 
         public Authentication(ILocalStorage localStorage, Rest rest)
         {
@@ -21,7 +22,7 @@ namespace ArkEcho.WebPage
 
             try
             {
-                accessToken = await localStorage.GetItemAsync<Guid>("accessToken");
+                accessToken = await localStorage.GetItemAsync<Guid>(ACCESSTOKEN);
 
                 User authenticated = await rest.CheckUserToken(accessToken);
 
@@ -38,7 +39,7 @@ namespace ArkEcho.WebPage
             User authenticated = await rest.AuthenticateUserForLogin(new User() { UserName = username, Password = password });
 
             if (authenticated != null)
-                await localStorage.SetItemAsync("accessToken", authenticated.AccessToken);
+                await localStorage.SetItemAsync(ACCESSTOKEN, authenticated.AccessToken);
 
             return authenticated;
         }
@@ -48,7 +49,7 @@ namespace ArkEcho.WebPage
             try
             {
                 await rest.LogoutUser(accessToken);
-                await localStorage.RemoveItemAsync("accessToken");
+                await localStorage.RemoveItemAsync(ACCESSTOKEN);
                 return true;
             }
             catch (Exception)
