@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ListShuffle;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,7 +145,8 @@ namespace ArkEcho.Core
         {
             void createShuffledIndexList()
             {
-                shuffledIndexList = RandomShuffle.GetShuffledList(Enumerable.Range(0, listToPlay.Count).ToList());
+                shuffledIndexList = Enumerable.Range(0, listToPlay.Count).ToList();
+                shuffledIndexList.Shuffle();
             }
 
             if (!shuffle || listToPlay.IsNullOrEmpty())
