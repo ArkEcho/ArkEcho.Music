@@ -17,9 +17,13 @@ namespace ArkEcho.RazorPage.Data
         public AppEnvironment Environment { get; }
         public User AuthenticatedUser { get; private set; } = null;
 
+        public IAppModel.Status AppStatus { get; private set; }
+
         protected Rest rest = null;
         protected Logger logger = null;
         private Authentication authentication = null;
+
+        public event Action StatusChanged;
 
         public AppModelBase(AppEnvironment environment, ILocalStorage localStorage)
         {
@@ -53,10 +57,23 @@ namespace ArkEcho.RazorPage.Data
             AuthenticatedUser = null;
         }
 
+        protected void SetStatus(IAppModel.Status status)
+        {
+            AppStatus = status;
+            StatusChanged?.Invoke();
+        }
+
         public async Task<bool> InitializeOnLoad()
         {
+            SetStatus(IAppModel.Status.Connecting);
+
             if (!await rest.CheckConnection())
+            {
+                SetStatus(IAppModel.Status.NotConnected);
                 return false;
+            }
+
+            SetStatus(IAppModel.Status.Connected);
 
             logger.LogStatic($"Executing on {Environment.Platform}");
 
@@ -68,6 +85,8 @@ namespace ArkEcho.RazorPage.Data
 
         protected async Task<bool> LoadLibraryFromServer()
         {
+            SetStatus(IAppModel.Status.LoadingLibrary);
+
             if (Library != null)
             {
                 Guid serverLibraryGuid = await rest.GetMusicLibraryGuid();
@@ -84,8 +103,12 @@ namespace ArkEcho.RazorPage.Data
                 logger.LogError($"Error loading Library from Server");
                 return false;
             }
+            await Library.CreateAlbumFileMap();
 
             Console.WriteLine($"Loading Library {sw.ElapsedMilliseconds} ms");
+
+            SetStatus(IAppModel.Status.LoadingAlbumCover);
+
             sw.Restart();
 
             foreach (Album album in Library.Album)
@@ -95,9 +118,7 @@ namespace ArkEcho.RazorPage.Data
             }
             Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
 
-            sw.Restart();
-            await Library.CreateAlbumFileMap();
-            Console.WriteLine($"Map took {sw.ElapsedMilliseconds} ms");
+            SetStatus(IAppModel.Status.Initialized);
 
             if (Library.MusicFiles.Count > 0)
             {
