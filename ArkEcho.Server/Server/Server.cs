@@ -160,8 +160,11 @@ namespace ArkEcho.Server
         {
             if (e.Result != null)
             {
-                Console.WriteLine($"Library loaded!");
                 library = (MusicLibrary)e.Result;
+
+                Console.WriteLine($"#####################################################################");
+                Console.WriteLine($"    Library loaded! {library.MusicFiles.Count} Music Files");
+                Console.WriteLine($"#####################################################################");
             }
             else
             {
