@@ -41,6 +41,7 @@ namespace ArkEcho.Server
 
         private const string logFileExtension = ".log";
         private string logFolder = string.Empty;
+        // TODO: Files älter sieben Tage löschen
 
         private int maxFiles = 10;
         private long logFileSizeMax = 10485760; // 10mb

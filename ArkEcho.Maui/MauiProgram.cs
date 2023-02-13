@@ -1,9 +1,12 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.RazorPage.Data;
+using System.Diagnostics;
+
+#if WINDOWS
 using Microsoft.Maui.LifecycleEvents;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
-using System.Diagnostics;
+#endif
 
 namespace ArkEcho.Maui
 {

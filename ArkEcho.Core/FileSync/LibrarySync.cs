@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Core
 {
+    // TODO: Progress mit Nummer/Gesamt
     public class LibrarySync
     {
         public class ProgressEventArgs

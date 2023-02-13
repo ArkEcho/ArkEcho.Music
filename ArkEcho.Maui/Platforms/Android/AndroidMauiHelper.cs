@@ -11,10 +11,7 @@ namespace ArkEcho.Maui.AndroidMaui
             {
                 foreach (Java.IO.File folder in Android.App.Application.Context.GetExternalMediaDirs())
                 {
-                    bool IsRemovable = Android.OS.Environment.InvokeIsExternalStorageRemovable(folder);
-                    bool IsEmulated = Android.OS.Environment.InvokeIsExternalStorageEmulated(folder);
-
-                    if (IsRemovable && !IsEmulated)
+                    if (folder.AbsolutePath.Contains("de.arkecho.maui"))
                     {
                         baseFolderPath = folder.Path;
                         break;
