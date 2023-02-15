@@ -3,30 +3,30 @@
 
 <MudPaper Class="d-flex" Elevation="0">
     <MudPaper Class="d-flex flex-grow-1 justify-start" Elevation="0">
-
         <MudText Typo="Typo.button">@model.AppStatus</MudText>
     </MudPaper>
     <MudPaper Class="d-flex flex-grow-0 justify-end" Elevation="0">
-
-        @if (showLoading)
+        @if (model.AppStatus == IAppModel.Status.NotConnected)
         {
-            <MudProgressCircular Color="Color.Tertiary" Size="Size.Small" Indeterminate="true" />
+            <MudIconButton OnClick="reconnect" Icon="@Icons.Material.Rounded.Replay" Color="Color.Tertiary" Size="Size.Small" />
         }
-        else if(showConnect)
+        else if (model.AppStatus == IAppModel.Status.Initialized)
         {
-            <MudIconButton Class="" OnClick="reconnect" Icon="@Icons.Material.Rounded.Replay" Color="Color.Tertiary" Size="Size.Small" />
+            <MudIcon Icon="@Icons.Material.Rounded.Check" Color="Color.Tertiary" Size="Size.Small" />
         }
-        else if(showSuccess)
+        else
         {
-            <MudIcon Class="" OnClick="reconnect" Icon="@Icons.Material.Rounded.Check" Color="Color.Tertiary" Size="Size.Small" />
+            <MudProgressCircular Color="Color.Tertiary" Size="Size.Small" Indeterminate="true" />            
         }
     </MudPaper>
 </MudPaper>
 
 @code {
     private bool showLoading = false;
-    private bool showConnect = false;
     private bool showSuccess = false;
+
+    [Parameter]
+    public EventCallback ReconnectClicked { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -34,32 +34,13 @@
         model.StatusChanged += () => onAppStatusChanged();
     }
 
-    private async Task<bool> reconnect()
+    private async Task reconnect()
     {
-        return await model.InitializeOnLoad();
+        await ReconnectClicked.InvokeAsync();
     }
 
-    private async Task onAppStatusChanged()
+    private void onAppStatusChanged()
     {
-        if (model.AppStatus == IAppModel.Status.NotConnected)
-        {
-            showLoading = false;
-            showConnect = true;
-            showSuccess = false;
-        }
-        else if(model.AppStatus == IAppModel.Status.Initialized)
-        {
-            showLoading = false;
-            showConnect = false;
-            showSuccess = true;
-        }
-        else
-        {
-            showLoading = true;
-            showConnect = false;
-            showSuccess = false;
-        }
         StateHasChanged();
     }
-
 }

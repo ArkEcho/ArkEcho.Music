@@ -18,7 +18,7 @@
                         Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
         
         <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != IAppModel.Status.Initialized)">Login</MudButton>
-        <AppStatus />
+        <AppStatus ReconnectClicked="reconnectClicked" />
     </MudStack>
 </MudPaper>
 
@@ -42,6 +42,11 @@
     {
         if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == IAppModel.Status.Initialized)
             await validateUser();
+    }
+
+    private async Task reconnectClicked()
+    {
+        await model.InitializeOnLoad();
     }
 
     protected async override Task OnInitializedAsync()
