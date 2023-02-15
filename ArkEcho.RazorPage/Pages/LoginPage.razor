@@ -16,13 +16,15 @@
 
         <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
                         Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
-
-        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser">Login</MudButton>
+        
+        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != IAppModel.Status.Initialized)">Login</MudButton>
         <AppStatus />
     </MudStack>
 </MudPaper>
 
-<MudOverlay @bind-Visible="overlayVisible" DarkBackground="true" ZIndex="9999" />
+<MudOverlay @bind-Visible="overlayVisible" DarkBackground="true" ZIndex="9999">
+    <MudProgressCircular Color="Color.Tertiary" Size="Size.Large" Indeterminate="true" />
+</MudOverlay>
 
 @code
 {
@@ -38,18 +40,26 @@
 
     private async Task inputKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == IAppModel.Status.Initialized)
             await validateUser();
     }
 
     protected async override Task OnInitializedAsync()
     {
+        model.StatusChanged += () => onAppStatusChanged();
+
         // TODO: Only navigate if Library loaded
         if (await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/Music");
 
         if (!await model.InitializeOnLoad())
             showSnackbarError("No Server Connection!");
+    }
+
+    private async Task onAppStatusChanged()
+    {
+        if (model.AppStatus == IAppModel.Status.Initialized)
+            StateHasChanged();
     }
 
     private async Task validateUser()

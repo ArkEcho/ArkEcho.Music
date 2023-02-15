@@ -6,7 +6,9 @@ namespace ArkEcho.RazorPage.Data
     {
         enum Status
         {
-            Connecting = 0,
+            Started = 0,
+
+            Connecting,
             Connected,
             NotConnected,
 

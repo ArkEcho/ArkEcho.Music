@@ -17,7 +17,7 @@ namespace ArkEcho.RazorPage.Data
         public AppEnvironment Environment { get; }
         public User AuthenticatedUser { get; private set; } = null;
 
-        public IAppModel.Status AppStatus { get; private set; }
+        public IAppModel.Status AppStatus { get; private set; } = IAppModel.Status.Started;
 
         protected Rest rest = null;
         protected Logger logger = null;
@@ -52,6 +52,8 @@ namespace ArkEcho.RazorPage.Data
         {
             if (Player.Playing)
                 Player.Stop();
+
+            SetStatus(IAppModel.Status.Started);
 
             await authentication.MarkUserAsLoggedOut(AuthenticatedUser.AccessToken);
             AuthenticatedUser = null;
