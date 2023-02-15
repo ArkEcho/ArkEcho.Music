@@ -48,12 +48,18 @@
     {
         model.StatusChanged += () => onAppStatusChanged();
 
-        // TODO: Only navigate if Library loaded
         if (await model.IsUserAuthenticated())
-            NavigationManager.NavigateTo("/Music");
+        {
+            showOverlay(true);
+            await model.InitializeOnLoad();
+            await model.InitializeOnLogin();
+            showOverlay(false);
 
-        if (!await model.InitializeOnLoad())
-            showSnackbarError("No Server Connection!");
+            NavigationManager.NavigateTo("/Music");
+            return;
+        }
+
+        await model.InitializeOnLoad();
     }
 
     private async Task onAppStatusChanged()
@@ -72,9 +78,9 @@
 
         if(await model.AuthenticateUser(username, password))
         {
-            showOverlay();
+            showOverlay(true);
             await model.InitializeOnLogin();
-            overlayVisible = false;
+            showOverlay(false);
             NavigationManager.NavigateTo("/Music");            
         }
         else
@@ -83,9 +89,9 @@
         return;
     }
 
-    private void showOverlay()
+    private void showOverlay(bool show)
     {
-        overlayVisible = true;
+        overlayVisible = show;
         StateHasChanged();
     }
 

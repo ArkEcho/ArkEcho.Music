@@ -77,8 +77,6 @@ namespace ArkEcho.RazorPage.Data
 
             SetStatus(IAppModel.Status.Connected);
 
-            logger.LogStatic($"Executing on {Environment.Platform}");
-
             if (!await initializePlayer())
                 return false;
 
@@ -93,7 +91,11 @@ namespace ArkEcho.RazorPage.Data
             {
                 Guid serverLibraryGuid = await rest.GetMusicLibraryGuid();
                 if (serverLibraryGuid == Library.GUID)
+                {
+                    logger.LogDebug($"Library already loaded and synced with Server");
+                    SetStatus(IAppModel.Status.Initialized);
                     return true;
+                }
             }
 
             Stopwatch sw = Stopwatch.StartNew();
