@@ -34,6 +34,17 @@ namespace ArkEcho
             Server
         }
 
+        // WindowsApiCodePack Shell Properties Rating Values
+        public enum Rating : byte
+        {
+            None = 0,
+            One = 1,
+            Two = 2,
+            Three = 3,
+            Four = 4,
+            Five = 5,
+        }
+
         public static readonly List<string> SupportedMusicFileFormats = new List<string>()
         {
             "mp3",

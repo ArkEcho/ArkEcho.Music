@@ -7,6 +7,7 @@ namespace ArkEcho.Server
     {
         public static async Task Main(string[] args)
         {
+            test();
             using (Server.Instance)
             {
                 if (!await Server.Instance.Init())
@@ -22,6 +23,10 @@ namespace ArkEcho.Server
             }
 
             Environment.Exit(0);
+        }
+
+        private static void test()
+        {
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using ArkEcho.Core;
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using PlaylistsNET.Content;
 using PlaylistsNET.Models;
 using System;
@@ -31,7 +33,9 @@ namespace ArkEcho.Server
             MusicLibrary library = new();
             List<string> errors = new();
 
-            loadMusicFiles(musicDirectoryPath, library);
+            foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedMusicFileFormats))
+                loadMusicFile(filePath, library);
+
             loadPlaylistFiles(musicDirectoryPath, library);
 
             sw.Stop();
@@ -85,18 +89,18 @@ namespace ArkEcho.Server
             }
         }
 
-        private void loadMusicFiles(string musicDirectoryPath, MusicLibrary library)
+        private void loadMusicFile(string filePath, MusicLibrary library)
         {
-            foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedMusicFileFormats))
+            using (TagLib.File tagFile = TagLib.File.Create(filePath))
             {
-                TagLib.File tagFile = TagLib.File.Create(filePath);
                 if (tagFile == null)
                 {
                     logger.LogError($"Couldn't load Tags for {filePath}");
-                    continue;
+                    return;
                 }
 
                 MusicFile music = null;
+
                 try
                 {
                     music = new(filePath)
@@ -106,23 +110,19 @@ namespace ArkEcho.Server
                         Disc = (int)tagFile.Tag.Disc,
                         Track = (int)tagFile.Tag.Track,
                         Year = (int)tagFile.Tag.Year,
-                        Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds)
+                        Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds),
+                        Rating = getRating(filePath, tagFile),
+                        Bitrate = tagFile.Properties.AudioBitrate,
                     };
                 }
                 catch (Exception ex)
                 {
                     logger.LogError($"Exception on creating File for {filePath}, {ex.Message}");
-                    tagFile?.Dispose();
-                    tagFile = null;
-                    continue;
+                    return;
                 }
 
                 if (!checkFolderStructureAndTags(music, tagFile.Tag))
-                {
-                    tagFile?.Dispose();
-                    tagFile = null;
-                    continue;
-                }
+                    return;
 
                 AlbumArtist albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
                 if (albumArtist == null)
@@ -157,10 +157,34 @@ namespace ArkEcho.Server
                 albumArtist.MusicFileIDs.Add(music.GUID);
 
                 library.MusicFiles.Add(music);
-
-                tagFile?.Dispose();
-                tagFile = null;
             }
+        }
+
+        private Resources.Rating getRating(string filePath, TagLib.File tagFile)
+        {
+            //TagLib.Tag tagV2 = tagFile.GetTag(TagLib.TagTypes.Id3v2);
+            //TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get((TagLib.Id3v2.Tag)tagV2, "Windows Media Player 9 Series", false);
+            //if (tagInfo == null)
+            //    return Resources.Rating.None;
+            //rating = tagInfo.Rating;
+            int ratingInt = 0;
+            using (ShellFile file = ShellFile.FromFilePath(filePath))
+            {
+                List<IShellProperty> bla = file.Properties.DefaultPropertyCollection.ToList()
+                    .FindAll(x => !string.IsNullOrEmpty(x.CanonicalName) && x.CanonicalName.Contains("RatingText", StringComparison.OrdinalIgnoreCase));
+                if (bla.Count > 0)
+                {
+                    if (!int.TryParse(((string)bla[0].ValueAsObject).Substring(0, 1), out ratingInt))
+                        ratingInt = 0;
+                }
+            }
+
+            if (ratingInt >= (byte)Resources.Rating.Five) return Resources.Rating.Five;
+            else if (ratingInt >= (byte)Resources.Rating.Four) return Resources.Rating.Four;
+            else if (ratingInt >= (byte)Resources.Rating.Three) return Resources.Rating.Three;
+            else if (ratingInt >= (byte)Resources.Rating.Two) return Resources.Rating.Two;
+            else if (ratingInt >= (byte)Resources.Rating.One) return Resources.Rating.One;
+            else return Resources.Rating.None;
         }
 
         private List<string> getAllFilesSubSearch(string directoryPath, List<string> fileExtensionFilter)
