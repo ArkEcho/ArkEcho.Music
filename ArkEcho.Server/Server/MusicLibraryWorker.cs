@@ -1,6 +1,4 @@
 ﻿using ArkEcho.Core;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using PlaylistsNET.Content;
 using PlaylistsNET.Models;
 using System;
@@ -111,9 +109,26 @@ namespace ArkEcho.Server
                         Track = (int)tagFile.Tag.Track,
                         Year = (int)tagFile.Tag.Year,
                         Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds),
-                        Rating = getRating(filePath, tagFile),
+                        Rating = ShellFileAccess.GetRating(filePath),
                         Bitrate = tagFile.Properties.AudioBitrate,
                     };
+
+                    //if (filePath.Contains("Kryptonite"))
+                    //{
+                    //    // TODO: Move to Unit Tests
+                    //    ShellFileAccess.SetRating(filePath, 5);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 4);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 3);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 2);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 1);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 0);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -157,28 +172,6 @@ namespace ArkEcho.Server
                 albumArtist.MusicFileIDs.Add(music.GUID);
 
                 library.MusicFiles.Add(music);
-            }
-        }
-
-        private int getRating(string filePath, TagLib.File tagFile)
-        {
-            //TagLib.Tag tagV2 = tagFile.GetTag(TagLib.TagTypes.Id3v2);
-            //TagLib.Id3v2.PopularimeterFrame tagInfo = TagLib.Id3v2.PopularimeterFrame.Get((TagLib.Id3v2.Tag)tagV2, "Windows Media Player 9 Series", false);
-            //if (tagInfo == null)
-            //    return Resources.Rating.None;
-            //rating = tagInfo.Rating;
-
-            int rating = 0;
-            using (ShellFile file = ShellFile.FromFilePath(filePath))
-            {
-                List<IShellProperty> bla = file.Properties.DefaultPropertyCollection.ToList()
-                    .FindAll(x => !string.IsNullOrEmpty(x.CanonicalName) && x.CanonicalName.Contains("RatingText", StringComparison.OrdinalIgnoreCase));
-                if (bla.Count > 0)
-                {
-                    if (!int.TryParse(((string)bla[0].ValueAsObject).Substring(0, 1), out rating))
-                        rating = 0;
-                }
-                return rating;
             }
         }
 
