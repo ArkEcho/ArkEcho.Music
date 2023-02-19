@@ -37,6 +37,11 @@
         return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(25);
     }
 
+    protected void ratingValueChanged(int newValue, MusicFile selectedFile)
+    {
+        selectedFile.Rating = newValue;
+    }
+
     protected List<Album> getFilteredAlbum()
     {
         if (string.IsNullOrEmpty(SearchContent))        

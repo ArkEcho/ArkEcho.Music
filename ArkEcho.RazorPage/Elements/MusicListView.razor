@@ -34,22 +34,24 @@
 
         <MudTd DataLabel="Album">            
             <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="80" Height="80" ObjectFit="ObjectFit.Fill" />  
+                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />  
                 <MudText Typo="Typo.body2">@(context.Name )</MudText>
                 <MudText Typo="Typo.body2">@(artist.Name )</MudText>
                 @*<MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>*@
             </MudStack>                
         </MudTd>
+    }
 
         <MudTd DataLabel="Titel">
             <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
                 <thead>                    
                 </thead>
                 <colgroup>
-                    <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 5%;">
                     <col span="1" style="width: 40%;">
                     <col span="1" style="width: 40%;">
                     <col span="1" style="width: 10%;">
+                    <col span="1" style="width: 5%;">
                 </colgroup>
                 <tbody>                
                     @foreach (MusicFile file in model.Library.GetMusicFiles(context))
@@ -59,12 +61,17 @@
                             <td>@file.Title</td>
                             <td>@file.Performer</td>
                             <td>@file.Duration.ConvertTimeMilliseconds()</td>
+                            <td>
+                                @{
+                                    int value = file.Rating;                                
+                                    <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
             </MudSimpleTable>
         </MudTd>
-    }
     </RowTemplate>
 
     @*<GroupFooterTemplate>
