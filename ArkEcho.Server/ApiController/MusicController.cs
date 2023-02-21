@@ -121,7 +121,7 @@ namespace ArkEcho.Server
 
         // GET: api/Music/Playlists
         [HttpGet("Playlists")]
-        public async Task<ActionResult> GetPlaylistsList(int countIndex)
+        public async Task<ActionResult> GetPlaylistsList()
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
             if (library == null)
@@ -149,7 +149,7 @@ namespace ArkEcho.Server
             return result;
         }
 
-        [HttpPost("Rating")]
+        [HttpPost("Rating/{guid},{rating}")]
         public async Task<ActionResult> UpdateMusicRating(Guid guid, int rating)
         {
             if (guid == Guid.Empty)
@@ -157,6 +157,18 @@ namespace ArkEcho.Server
                 Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
                 return BadRequest();
             }
+            else if (rating < 0 || rating > 5)
+                return BadRequest();
+
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
+            MusicFile musicFile = library.MusicFiles.Find(x => x.GUID == guid);
+            if (musicFile == null)
+                return BadRequest();
+
+            ShellFileAccess.SetRating(musicFile.FullPath, rating);
 
             return Ok();
         }

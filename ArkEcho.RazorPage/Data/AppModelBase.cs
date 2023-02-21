@@ -141,6 +141,11 @@ namespace ArkEcho.RazorPage.Data
             return await rest.GetAlbumCover(albumGuid);
         }
 
+        public async Task<bool> UpdateMusicRating(Guid musicFileGuid, int rating)
+        {
+            return await rest.UpdateMusicRating(musicFileGuid, rating);
+        }
+
         protected abstract Task<bool> initializePlayer();
         public abstract Task<bool> InitializeOnLogin();
 

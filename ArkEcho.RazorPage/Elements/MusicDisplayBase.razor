@@ -37,9 +37,16 @@
         return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(25);
     }
 
-    protected void ratingValueChanged(int newValue, MusicFile selectedFile)
+    protected async Task ratingValueChanged(int newValue, MusicFile selectedFile)
     {
+        if (newValue == selectedFile.Rating) // On Display the Event is called...
+            return;
+
         selectedFile.Rating = newValue;
+        if(!await model.UpdateMusicRating(selectedFile.GUID, selectedFile.Rating))
+        {
+            // TODO: Give Error
+        }
     }
 
     protected List<Album> getFilteredAlbum()

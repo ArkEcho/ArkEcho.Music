@@ -185,6 +185,12 @@ namespace ArkEcho.Core
             }
         }
 
+        public async Task<bool> UpdateMusicRating(Guid guid, int rating)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating/{guid},{rating}", string.Empty))
+                return response != null && response.Success;
+        }
+
         public async Task<bool> PostLogging(LogMessage logMessage)
         {
             string bodyContent = await logMessage.SaveToJsonString();
