@@ -9,7 +9,7 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MusicController : ArkEchoController
+    public class MusicController : BaseController
     {
         public MusicController() : base("Music")
         {
@@ -147,6 +147,18 @@ namespace ArkEcho.Server
             FileContentResult result = new FileContentResult(data, "application/octet-stream");
 
             return result;
+        }
+
+        [HttpPost("Rating")]
+        public async Task<ActionResult> UpdateMusicRating(Guid guid, int rating)
+        {
+            if (guid == Guid.Empty)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
+                return BadRequest();
+            }
+
+            return Ok();
         }
     }
 }

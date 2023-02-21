@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
-    public abstract class ArkEchoController : ControllerBase
+    public abstract class BaseController : ControllerBase
     {
         protected Logger Logger { get; private set; } = null;
 
@@ -13,7 +13,7 @@ namespace ArkEcho.Server
 
         protected Server Server { get; private set; } = Server.Instance;
 
-        public ArkEchoController(string controllerName) : base()
+        public BaseController(string controllerName) : base()
         {
             this.ControllerName = controllerName;
             Logger = new FileLogger(Server.Instance.Environment, $"{controllerName}-REST", Server.Instance.LoggingWorker);
