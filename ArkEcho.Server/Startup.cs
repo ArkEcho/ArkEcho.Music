@@ -21,14 +21,7 @@ namespace ArkEcho.Server
 
             // TODO: Disable on Release Build?
             // For Wasm Page
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                builder.WithOrigins("https://localhost:7223/", "https://localhost:5002", "https://localhost:5001/")
-                       .AllowAnyMethod()
-                       .AllowAnyOrigin()
-                       .AllowAnyHeader());
-            });
+            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -38,7 +31,9 @@ namespace ArkEcho.Server
             app.UseRouting();
 
             // For Wasm Page
-            app.UseCors();
+            app.UseCors(builder => builder.AllowAnyOrigin()
+                              .AllowAnyHeader()
+                              .AllowAnyMethod());
 
             app.UseEndpoints(endpoints =>
             {
