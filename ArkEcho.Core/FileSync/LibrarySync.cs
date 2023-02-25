@@ -39,10 +39,23 @@ namespace ArkEcho.Core
                 logger.LogError("Given library is null!");
                 return false;
             }
-            else if (string.IsNullOrEmpty(musicFolder) || !Directory.Exists(musicFolder))
+            else if (string.IsNullOrEmpty(musicFolder))
             {
-                logger.LogError($"Given MusicFolder doesn't exist");
+                logger.LogError($"Given MusicFolder is empty");
                 return false;
+            }
+
+            if (!Directory.Exists(musicFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(musicFolder);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"Exception Creating MusicFolder - {ex.GetFullMessage()}");
+                    return false;
+                }
             }
 
             logger.LogImportant($"Checking Files");
