@@ -51,12 +51,12 @@
                 <tbody>                
                     @foreach (MusicFile file in model.Library.GetMusicFiles(context))
                     {
-                        <tr @ondblclick="() => startMusicFile(file)" >
-                            <td>@file.Track</td>
-                            <td>@file.Title</td>
-                            <td>@file.Performer</td>
-                            <td>@file.Duration.ConvertTimeMilliseconds()</td>
-                            <td>
+                        <tr class="noselection" @ondblclick="() => startMusicFile(file)" >
+                            <td class="noselection">@file.Track</td>
+                            <td class="noselection">@file.Title</td>
+                            <td class="noselection">@file.Performer</td>
+                            <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
+                            <td class="noselection">
                                 @{
                                     int value = file.Rating;                                
                                     <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
@@ -73,6 +73,17 @@
         <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="5">Total Mass: @context.Items.Sum((e) => e.Duration)</MudTh>
     </GroupFooterTemplate>*@
 </MudTable>
+
+<style>
+    .noselection{
+        user-select: none; /* standard syntax */
+        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+        -moz-user-select: none; /* mozilla browsers */
+        -khtml-user-select: none; /* webkit (konqueror) browsers */
+        -ms-user-select: none; /* IE10+ */
+    }
+
+</style>
 
 @code {
     private TableGroupDefinition<Album> groupDefinition = null;
