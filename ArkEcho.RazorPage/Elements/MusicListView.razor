@@ -51,7 +51,7 @@
                 <tbody>                
                     @foreach (MusicFile file in model.Library.GetMusicFiles(context))
                     {
-                        <tr class="noselection" @ondblclick="() => startMusicFile(file)" >
+                        <tr class="noselection @(getRowColor(file))" @ondblclick="() => startMusicFile(file)">
                             <td class="noselection">@file.Track</td>
                             <td class="noselection">@file.Title</td>
                             <td class="noselection">@file.Performer</td>
@@ -88,6 +88,13 @@
 @code {
     private TableGroupDefinition<Album> groupDefinition = null;
 
+    private string getRowColor(MusicFile file)
+    {
+        if (model.Player.PlayingFile == null)
+            return string.Empty;
+        return model.Player.PlayingFile.GUID == file.GUID ? "mud-info" : string.Empty;
+    }
+
     protected string getTableGroupName(TableGroupData<object, Album> context)
     {
         switch (Display.Mode)
@@ -101,8 +108,15 @@
         }
     }
 
+    protected async Task titleChanged()    
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
     protected override Task OnInitializedAsync()
     {
+        model.Player.TitleChanged += () => titleChanged();
+
         groupDefinition = new TableGroupDefinition<Album>()
         {
             GroupName = string.Empty,
