@@ -2,7 +2,6 @@
 @inherits MusicDisplayBase
 
 @inject IAppModel model
-@inject HTMLHelper helper
 
 <MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="79vh" FixedHeader="true"
             Items="@getFilteredAlbum()" Virtualize="true" GroupBy="@groupDefinition"
@@ -14,7 +13,7 @@
     </HeaderContent>
 
     <ColGroup>
-        <col span="1" style="width: 15%;" /> <col span="1" style="width: 85%;" />
+        <col span="1" style="width: 100%;" />
     </ColGroup>
 
     <GroupHeaderTemplate>
@@ -24,76 +23,19 @@
     </GroupHeaderTemplate>
 
     <RowTemplate>
-    @{
-        AlbumArtist artist = model.Library.GetAlbumArtist(context.AlbumArtist);
-
-        <MudTd DataLabel="Album">            
-            <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />  
-                <MudText Typo="Typo.body2">@(context.Name )</MudText>
-                <MudText Typo="Typo.body2">@(artist.Name )</MudText>
-                @*<MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>*@
-            </MudStack>                
-        </MudTd>
-    }
-
-        <MudTd DataLabel="Titel">
-            <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
-                <thead>                    
-                </thead>
-                <colgroup>
-                    <col span="1" style="width: 5%;">
-                    <col span="1" style="width: 40%;">
-                    <col span="1" style="width: 40%;">
-                    <col span="1" style="width: 10%;">
-                    <col span="1" style="width: 5%;">
-                </colgroup>
-                <tbody>                
-                    @foreach (MusicFile file in model.Library.GetMusicFiles(context))
-                    {
-                        <tr class="noselection @(getRowColor(file))" @ondblclick="() => startMusicFile(file)">
-                            <td class="noselection">@file.Track</td>
-                            <td class="noselection">@file.Title</td>
-                            <td class="noselection">@file.Performer</td>
-                            <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
-                            <td class="noselection">
-                                @{
-                                    int value = file.Rating;                                
-                                    <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </MudSimpleTable>
+        <MudTd DataLabel="Data">
+            <MusicListElement HeaderInfo="@(Display.Mode == DisplayMode.DisplayModes.Album ? context : model.Library.GetAlbumArtist(context.AlbumArtist))"
+                              DisplayAsRow="true" ListElementDoubleClicked="startMusicFile" MusicToDisplay="model.Library.GetMusicFiles(context)" />
         </MudTd>
     </RowTemplate>
-
+    
     @*<GroupFooterTemplate>
         <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="5">Total Mass: @context.Items.Sum((e) => e.Duration)</MudTh>
     </GroupFooterTemplate>*@
 </MudTable>
 
-<style>
-    .noselection{
-        user-select: none; /* standard syntax */
-        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-        -moz-user-select: none; /* mozilla browsers */
-        -khtml-user-select: none; /* webkit (konqueror) browsers */
-        -ms-user-select: none; /* IE10+ */
-    }
-
-</style>
-
 @code {
     private TableGroupDefinition<Album> groupDefinition = null;
-
-    private string getRowColor(MusicFile file)
-    {
-        if (model.Player.PlayingFile == null)
-            return string.Empty;
-        return model.Player.PlayingFile.GUID == file.GUID ? "mud-info" : string.Empty;
-    }
 
     protected string getTableGroupName(TableGroupData<object, Album> context)
     {
@@ -108,15 +50,8 @@
         }
     }
 
-    protected async Task titleChanged()    
-    {
-        await InvokeAsync(StateHasChanged);
-    }
-
     protected override Task OnInitializedAsync()
     {
-        model.Player.TitleChanged += () => titleChanged();
-
         groupDefinition = new TableGroupDefinition<Album>()
         {
             GroupName = string.Empty,
