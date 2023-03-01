@@ -1,6 +1,9 @@
 ﻿
 @inherits MusicDisplayBase
 
+
+@inject IDialogService DialogService
+@inject IAppModel model
 @inject HTMLHelper helper
 
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
@@ -22,7 +25,7 @@
                                 <MudStack Row="true">
                                     <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
                                     <MudSpacer />
-                                    <MudIconButton Icon="@Icons.Material.Rounded.List" Color="Color.Default" />
+                                    <MudIconButton Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
                                 </MudStack>
                             </MudStack>
                         </MudPaper>
@@ -56,10 +59,20 @@
     </Virtualize>
 </MudPaper>
 
-    @code {
+@code {
+    DialogOptions options = new DialogOptions() { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
+
     public class GridVirtualize
     {
         public List<Album> Elements { get; set; } = new List<Album>();
+    }
+
+    private async Task albumListClicked(Album album)
+    {
+        // TODO: Eigener Dialog Service
+        DialogParameters parameters = new DialogParameters { ["HeaderInfo"] = album, ["DisplayedMusicFiles"] = model.Library.GetMusicFiles(album) };
+        IDialogReference dialog = await DialogService.ShowAsync<MusicListDialog>(album.Name, parameters, options);
+        DialogResult result = await dialog.Result;
     }
 
     private List<GridVirtualize> getFilteredAlbumVList()

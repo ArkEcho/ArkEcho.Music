@@ -1,0 +1,35 @@
+﻿
+@inject IAppModel model
+
+<MudDialog DisableSidePadding="true">
+    <DialogContent>
+        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
+            <MusicListElement DisplayAsRow="false" HeaderInfo="HeaderInfo" MusicToDisplay="DisplayedMusicFiles" ListElementDoubleClicked="startMusicFile" />
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudPaper Width="100%" Elevation="1">
+            <PlayerControl />
+        </MudPaper>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [Parameter]
+    public List<MusicFile> DisplayedMusicFiles { get; set; }
+
+    [Parameter]
+    public object HeaderInfo { get; set; }
+
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; }
+
+    protected void startMusicFile(MusicFile file)
+    {
+        model.Player.Start(DisplayedMusicFiles, DisplayedMusicFiles.IndexOf(file));
+    }
+
+    //void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+}

@@ -13,7 +13,7 @@
     private List<Album> displayedData = null;
 
     protected void startMusicAlbum(Album album)
-    {        
+    {
         List<MusicFile> files = model.Library.GetMusicFiles(album);
 
         if (files.Count == 0)

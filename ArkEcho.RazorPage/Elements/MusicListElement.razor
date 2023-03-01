@@ -3,7 +3,7 @@
 @inject HTMLHelper helper
 
 <MudStack Row="@DisplayAsRow">
-    <MudPaper Width="@(DisplayAsRow ? "12vw" : "100vw")">
+    <MudPaper Width="@(DisplayAsRow ? "12vw" : "100%")">
         <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
             @if (HeaderInfo is Album)
             {
@@ -16,7 +16,7 @@
             }
         </MudStack>
     </MudPaper>
-    <MudPaper Width="@(DisplayAsRow ? "85vw" : "100vw")">
+    <MudPaper Width="@(DisplayAsRow ? "85vw" : "100%")">
         <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
             <thead>
             </thead>
@@ -60,6 +60,8 @@
 
 
 @code {
+    // TODO Bessere Parameter Namen
+
     [Parameter]
     public bool DisplayAsRow { get; set; } = false;
 
