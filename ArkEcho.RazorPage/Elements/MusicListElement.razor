@@ -1,52 +1,34 @@
 ﻿
 @inject IAppModel model
-@inject HTMLHelper helper
 
-<MudStack Row="@DisplayAsRow">
-    <MudPaper Width="@(DisplayAsRow ? "12vw" : "100%")">
-        <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-            @if (HeaderInfo is Album)
-            {
-                Album context = (Album)HeaderInfo;
-                AlbumArtist artist = model.Library.GetAlbumArtist(context.AlbumArtist);
-
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />
-                <MudText Typo="Typo.body2">@(context.Name)</MudText>
-                <MudText Typo="Typo.body2">@(artist.Name)</MudText>
-            }
-        </MudStack>
-    </MudPaper>
-    <MudPaper Width="@(DisplayAsRow ? "85vw" : "100%")">
-        <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
-            <thead>
-            </thead>
-            <colgroup>
-                <col span="1" style="width: 5%;">
-                <col span="1" style="width: 40%;">
-                <col span="1" style="width: 40%;">
-                <col span="1" style="width: 10%;">
-                <col span="1" style="width: 5%;">
-            </colgroup>
-            <tbody>
-                @foreach (MusicFile file in MusicToDisplay)
-                {
-                    <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">
-                        <td class="noselection">@file.Track</td>
-                        <td class="noselection">@file.Title</td>
-                        <td class="noselection">@file.Performer</td>
-                        <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
-                        <td class="noselection">
-                            @{
-                                int value = file.Rating;
-                                <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </MudSimpleTable>
-    </MudPaper>
-</MudStack>
+<MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false">
+    <thead>
+    </thead>
+    <colgroup>
+        <col span="1" style="width: 5%;">
+        <col span="1" style="width: 40%;">
+        <col span="1" style="width: 40%;">
+        <col span="1" style="width: 10%;">
+        <col span="1" style="width: 5%;">
+    </colgroup>
+    <tbody>
+        @foreach (MusicFile file in MusicList)
+        {
+            <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">
+                <td class="noselection">@file.Track</td>
+                <td class="noselection">@file.Title</td>
+                <td class="noselection">@file.Performer</td>
+                <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
+                <td class="noselection">
+                    @{
+                        int value = file.Rating;
+                        <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
 
 <style>
     .noselection {
@@ -60,16 +42,9 @@
 
 
 @code {
-    // TODO Bessere Parameter Namen
 
     [Parameter]
-    public bool DisplayAsRow { get; set; } = false;
-
-    [Parameter]
-    public object HeaderInfo { get; set; }
-
-    [Parameter]
-    public List<MusicFile> MusicToDisplay { get; set; } = new List<MusicFile>();
+    public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
 
     [Parameter]
     public EventCallback<MusicFile> ListElementDoubleClicked { get; set; }
@@ -82,7 +57,7 @@
 
     protected async Task titleChanged()
     {
-        if (MusicToDisplay.Any(x => x == model.Player.PlayingFile))
+        if (MusicList.Any(x => x == model.Player.PlayingFile))
         {
             Console.WriteLine($"Redraw {model.Player.PlayingFile.Title}");
             await InvokeAsync(StateHasChanged);

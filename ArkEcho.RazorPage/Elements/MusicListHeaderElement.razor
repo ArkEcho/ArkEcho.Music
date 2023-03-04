@@ -1,0 +1,33 @@
+﻿
+@inject IAppModel model
+@inject HTMLHelper helper
+
+<MudStack Row="true">
+    <MudPaper Width="12vw">
+        <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
+            @if (Header is Album)
+            {
+                Album context = (Album)Header;
+                AlbumArtist artist = model.Library.GetAlbumArtist(context.AlbumArtist);
+
+                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="100" Height="100" ObjectFit="ObjectFit.Fill" />
+                <MudText Typo="Typo.body2">@(context.Name)</MudText>
+                <MudText Typo="Typo.body2">@(artist.Name)</MudText>
+            }
+        </MudStack>
+    </MudPaper>
+    <MudPaper Width="85vw">
+        <MusicListElement MusicList="MusicList" ListElementDoubleClicked="ListElementDoubleClicked" />
+    </MudPaper>
+</MudStack>
+
+@code {
+    [Parameter]
+    public object Header { get; set; }
+
+    [Parameter]
+    public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
+
+    [Parameter]
+    public EventCallback<MusicFile> ListElementDoubleClicked { get; set; }
+}

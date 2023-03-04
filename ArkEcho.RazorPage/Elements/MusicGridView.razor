@@ -1,7 +1,6 @@
 ﻿
 @inherits MusicDisplayBase
 
-
 @inject IDialogService DialogService
 @inject IAppModel model
 @inject HTMLHelper helper
@@ -20,7 +19,7 @@
                                 <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" ObjectFit="ObjectFit.Fill" />
 
                                 <MudText Typo="Typo.body2">@album.Name.Truncate(25)</MudText>                            
-                                <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album))</MudText>
+                                <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album, 25))</MudText>
                                 <MudText Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
                                 <MudStack Row="true">
                                     <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
@@ -60,7 +59,7 @@
 </MudPaper>
 
 @code {
-    DialogOptions options = new DialogOptions() { MaxWidth = MaxWidth.ExtraLarge, FullWidth = true, CloseButton = true, CloseOnEscapeKey = true };
+    DialogOptions options = new DialogOptions() { FullScreen = true, CloseButton = true, CloseOnEscapeKey = true };
 
     public class GridVirtualize
     {
@@ -70,7 +69,7 @@
     private async Task albumListClicked(Album album)
     {
         // TODO: Eigener Dialog Service
-        DialogParameters parameters = new DialogParameters { ["HeaderInfo"] = album, ["DisplayedMusicFiles"] = model.Library.GetMusicFiles(album) };
+        DialogParameters parameters = new DialogParameters { ["Header"] = album, ["MusicList"] = model.Library.GetMusicFiles(album) };
         IDialogReference dialog = await DialogService.ShowAsync<MusicListDialog>(album.Name, parameters, options);
         DialogResult result = await dialog.Result;
     }

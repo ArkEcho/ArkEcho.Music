@@ -1,14 +1,32 @@
 ﻿
+@inherits MusicBase
+
 @inject IAppModel model
+@inject HTMLHelper helper
 
 <MudDialog DisableSidePadding="true">
+    <TitleContent>
+        <MudPaper Elevation="0">
+            <MudContainer MaxWidth="MaxWidth.Small">
+                @if (Header is Album)
+                {
+                    Album album = (Album)Header;
+                    <MudStack Spacing="2">
+                        <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
+                        <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
+                        <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
+                    </MudStack>
+                }
+            </MudContainer>
+        </MudPaper>
+    </TitleContent>
     <DialogContent>
-        <MudContainer Style="max-height: 80vh; overflow-y: scroll">
-            <MusicListElement DisplayAsRow="false" HeaderInfo="HeaderInfo" MusicToDisplay="DisplayedMusicFiles" ListElementDoubleClicked="startMusicFile" />
-        </MudContainer>
+        <MudPaper Class="overflow-auto" Height="61.5vh" Width="100%" Elevation="0">
+            <MusicListElement MusicList="MusicList" ListElementDoubleClicked="startMusicFile" />
+        </MudPaper>
     </DialogContent>
     <DialogActions>
-        <MudPaper Width="100%" Elevation="1">
+        <MudPaper Width="100%" Elevation="0">
             <PlayerControl />
         </MudPaper>
     </DialogActions>
@@ -17,17 +35,17 @@
 @code {
 
     [Parameter]
-    public List<MusicFile> DisplayedMusicFiles { get; set; }
+    public object Header { get; set; }
 
     [Parameter]
-    public object HeaderInfo { get; set; }
+    public List<MusicFile> MusicList { get; set; }
 
     [CascadingParameter] 
     MudDialogInstance MudDialog { get; set; }
 
     protected void startMusicFile(MusicFile file)
     {
-        model.Player.Start(DisplayedMusicFiles, DisplayedMusicFiles.IndexOf(file));
+        model.Player.Start(MusicList, MusicList.IndexOf(file));
     }
 
     //void Submit() => MudDialog.Close(DialogResult.Ok(true));

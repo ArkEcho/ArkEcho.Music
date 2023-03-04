@@ -24,8 +24,8 @@
 
     <RowTemplate>
         <MudTd DataLabel="Data">
-            <MusicListElement HeaderInfo="@(Display.Mode == DisplayMode.DisplayModes.Album ? context : model.Library.GetAlbumArtist(context.AlbumArtist))"
-                              DisplayAsRow="true" ListElementDoubleClicked="startMusicFile" MusicToDisplay="model.Library.GetMusicFiles(context)" />
+            <MusicListHeaderElement Header="@(Display.Mode == DisplayMode.DisplayModes.Album ? context : model.Library.GetAlbumArtist(context.AlbumArtist))"
+                              ListElementDoubleClicked="startMusicFile" MusicList="model.Library.GetMusicFiles(context)" />
         </MudTd>
     </RowTemplate>
     
