@@ -19,7 +19,6 @@ namespace ArkEcho.Server
             services.AddSingleton(Server.Instance);
             services.AddControllers();
 
-            // TODO: Disable on Release Build?
             // For Wasm Page
             services.AddCors();
         }

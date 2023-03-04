@@ -146,7 +146,7 @@ namespace ArkEcho.Server
                     library.AlbumArtists.Add(albumArtist);
                 }
 
-                Album album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                Album album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase) && x.AlbumArtist == albumArtist.GUID);
                 if (album == null)
                 {
                     album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
