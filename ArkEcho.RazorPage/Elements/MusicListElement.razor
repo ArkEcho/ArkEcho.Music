@@ -38,6 +38,10 @@
         -khtml-user-select: none; /* webkit (konqueror) browsers */
         -ms-user-select: none; /* IE10+ */
     }
+
+    tr.playing:hover{
+        background-color: var(--mud-palette-info-darken) !important;
+    }
 </style>
 
 
@@ -59,7 +63,6 @@
     {
         if (MusicList.Any(x => x == model.Player.PlayingFile))
         {
-            Console.WriteLine($"Redraw {model.Player.PlayingFile.Title}");
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -68,7 +71,7 @@
     {
         if (model.Player.PlayingFile == null)
             return string.Empty;
-        return model.Player.PlayingFile.GUID == file.GUID ? "mud-info" : string.Empty;
+        return model.Player.PlayingFile.GUID == file.GUID ? "blue playing" : string.Empty;
     }
 
     protected async Task ratingValueChanged(int newValue, MusicFile selectedFile)
