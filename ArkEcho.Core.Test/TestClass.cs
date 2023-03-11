@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ArkEcho.Core.Test.Resources
+namespace ArkEcho.Core.Test
 {
     public class SimpleTestClass : JsonBase
     {

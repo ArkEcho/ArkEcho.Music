@@ -2,46 +2,31 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core.Test
 {
     [TestClass]
-    public class RestChunkTransferTest
+    public class RestChunkTransferTest : FileTestBase
     {
-        private const string testFolder = @"\TempFiles\";
         private const string testFileOne = "testOne.mp3";
         private const string testFileTwo = "testTwo.mp3";
 
-        private TransferFileBase createTestFile(string file, int sizeMb)
-        {
-            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + testFolder;
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            string filePath = path + file;
-
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-
-            FileStream fs = new FileStream(filePath, FileMode.CreateNew);
-            fs.Seek(1024 * 1024 * sizeMb, SeekOrigin.Begin);
-            fs.WriteByte(0);
-            fs.Close();
-
-            return new TransferFileBase(filePath);
-        }
 
         private TransferFileBase getTestFileOne()
         {
-            return createTestFile(testFileOne, 1);
+            return new TransferFileBase(CreateTestFile(testFileOne, 1));
         }
 
         private TransferFileBase getTestFileTwo()
         {
-            return createTestFile(testFileTwo, 100);
+            return new TransferFileBase(CreateTestFile(testFileTwo, 100));
+        }
+
+        private void cleanTestFiles()
+        {
+            DeleteTestFile(testFileOne);
+            DeleteTestFile(testFileTwo);
         }
 
         [TestMethod]
@@ -58,6 +43,8 @@ namespace ArkEcho.Core.Test
 
             tfbOne.CheckSum.Should().Be("2cb74edba754a81d121c9db6833704a8e7d417e5b13d1a19f4a52f007d644264");
             tfbTwo.CheckSum.Should().Be("7f12a2ac8cc123711b92c20e22583eaa49582c52a8c1f3050f81dd1aa6591007");
+
+            cleanTestFiles();
         }
 
         [TestMethod]
@@ -68,6 +55,8 @@ namespace ArkEcho.Core.Test
 
             tfbOne.Chunks.Count.Should().Be(2);
             tfbTwo.Chunks.Count.Should().Be(101);
+
+            cleanTestFiles();
         }
 
         [TestMethod]
@@ -83,6 +72,8 @@ namespace ArkEcho.Core.Test
             }
 
             Assert.IsTrue(positionSize == tfbOne.FileSize);
+
+            cleanTestFiles();
         }
 
         [TestMethod]
@@ -137,6 +128,8 @@ namespace ArkEcho.Core.Test
 
                 streamOne?.Dispose();
                 streamTwo?.Dispose();
+
+                cleanTestFiles();
             }
         }
     }
