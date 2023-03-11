@@ -1,3 +1,4 @@
+using ArkEcho.Core.Test.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

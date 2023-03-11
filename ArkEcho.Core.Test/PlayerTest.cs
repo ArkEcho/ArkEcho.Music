@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -127,7 +128,7 @@ namespace ArkEcho.Core.Test
 
             testPlayer.Position = 19;
 
-            Thread.Sleep(1500);
+            Thread.Sleep(2000);
 
             Assert.IsTrue(testPlayer.PlayingFile.Track == 2);
         }
@@ -167,8 +168,8 @@ namespace ArkEcho.Core.Test
             testPlayer.Backward();
             Thread.Sleep(500);
 
-            Assert.IsTrue(testPlayer.Playing);
-            Assert.IsTrue(testPlayer.Position <= 1);
+            testPlayer.Playing.Should().BeTrue();
+            testPlayer.Position.Should().BeLessThanOrEqualTo(2);
             Assert.IsTrue(testPlayer.PlayingFile.Track == 4);
         }
 

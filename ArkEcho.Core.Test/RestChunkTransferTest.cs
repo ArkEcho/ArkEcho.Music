@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Core.Test
@@ -8,28 +10,38 @@ namespace ArkEcho.Core.Test
     [TestClass]
     public class RestChunkTransferTest
     {
-        private const string testFolder = @"C:\Work\Test\TestFiles\";
+        private const string testFolder = @"\TempFiles\";
+        private const string testFileOne = "testOne.mp3";
+        private const string testFileTwo = "testTwo.mp3";
 
-        private const string testFileOne = testFolder + "testOne.mp3";
-        private const string testFileTwo = testFolder + "testTwo.mp3";
+        private TransferFileBase createTestFile(string file, int sizeMb)
+        {
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + testFolder;
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            string filePath = path + file;
+
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+
+            FileStream fs = new FileStream(filePath, FileMode.CreateNew);
+            fs.Seek(1024 * 1024 * sizeMb, SeekOrigin.Begin);
+            fs.WriteByte(0);
+            fs.Close();
+
+            return new TransferFileBase(filePath);
+        }
 
         private TransferFileBase getTestFileOne()
         {
-            return new TransferFileBase(testFolder + "Doom Eternal - ETERNAL GAINS - GYM MIX.mp3");
+            return createTestFile(testFileOne, 1);
         }
 
         private TransferFileBase getTestFileTwo()
         {
-            return new TransferFileBase(testFolder + "01 Papercut.mp3");
-        }
-
-        private void cleanTestFiles()
-        {
-            if (File.Exists(testFileOne))
-                File.Delete(testFileOne);
-
-            if (File.Exists(testFileTwo))
-                File.Delete(testFileTwo);
+            return createTestFile(testFileTwo, 100);
         }
 
         [TestMethod]
@@ -41,9 +53,11 @@ namespace ArkEcho.Core.Test
             bool testOne = tfbOne.TestCheckSum();
             bool testTwo = tfbTwo.TestCheckSum();
 
-            Assert.IsTrue(tfbOne.CheckSum != tfbTwo.CheckSum);
-            Assert.IsTrue(testOne);
-            Assert.IsTrue(testTwo);
+            testOne.Should().BeTrue();
+            testTwo.Should().BeTrue();
+
+            tfbOne.CheckSum.Should().Be("2cb74edba754a81d121c9db6833704a8e7d417e5b13d1a19f4a52f007d644264");
+            tfbTwo.CheckSum.Should().Be("7f12a2ac8cc123711b92c20e22583eaa49582c52a8c1f3050f81dd1aa6591007");
         }
 
         [TestMethod]
@@ -52,8 +66,8 @@ namespace ArkEcho.Core.Test
             TransferFileBase tfbOne = getTestFileOne();
             TransferFileBase tfbTwo = getTestFileTwo();
 
-            Assert.IsTrue(tfbOne.Chunks.Count == 7); // 100mb / 15mb ~ 7 Chunks
-            Assert.IsTrue(tfbTwo.Chunks.Count == 1); // 4.3 / 15mb ~ 1 Chunks
+            tfbOne.Chunks.Count.Should().Be(2);
+            tfbTwo.Chunks.Count.Should().Be(101);
         }
 
         [TestMethod]
@@ -74,8 +88,6 @@ namespace ArkEcho.Core.Test
         [TestMethod]
         public async Task LoadFileWithRestTest()
         {
-            cleanTestFiles();
-
             MemoryStream streamOne = null;
             MemoryStream streamTwo = null;
             FileStream fs = null;
@@ -125,8 +137,6 @@ namespace ArkEcho.Core.Test
 
                 streamOne?.Dispose();
                 streamTwo?.Dispose();
-
-                cleanTestFiles();
             }
         }
     }
