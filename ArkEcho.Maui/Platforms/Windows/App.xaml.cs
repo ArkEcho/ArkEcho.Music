@@ -1,7 +1,4 @@
-﻿// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
-using Microsoft.Maui.Handlers;
+﻿using Microsoft.Maui.Handlers;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
@@ -9,9 +6,6 @@ using WinRT.Interop;
 
 namespace ArkEcho.Maui.WinUI;
 
-/// <summary>
-/// Provides application-specific behavior to supplement the default Application class.
-/// </summary>
 public partial class App : MauiWinUIApplication
 {
     AppWindow appWindow = null;
@@ -34,18 +28,14 @@ public partial class App : MauiWinUIApplication
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             appWindow = AppWindow.GetFromWindowId(windowId);
 
-            // The TitleBar is null when not Windows 11 (well...at least on Windows 10 machines) 
-            if (appWindow.TitleBar != null)
-            {
-                appWindow.TitleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
-                appWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 50, 51, 61);
-                appWindow.TitleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
+            appWindow.TitleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
+            appWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 50, 51, 61);
+            appWindow.TitleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
 
-                appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
-                appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+            appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
+            appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-                setDragRegion();
-            }
+            setDragRegion();
         });
     }
 
