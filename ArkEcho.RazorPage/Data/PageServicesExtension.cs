@@ -7,9 +7,9 @@ namespace ArkEcho.RazorPage.Data
 {
     public static class ServiceCollectionExtension
     {
-        public static void AddArkEchoServices<T1, T2>(this IServiceCollection serviceCollection, AppEnvironment environment)
-            where T1 : LocalStorageBase
-            where T2 : AppModelBase
+        public static void AddArkEchoServices<StorageImplementation, AppModelImplementation>(this IServiceCollection serviceCollection, AppEnvironment environment)
+            where StorageImplementation : LocalStorageBase
+            where AppModelImplementation : AppModelBase
         {
             serviceCollection.AddMudServices(config =>
             {
@@ -26,8 +26,8 @@ namespace ArkEcho.RazorPage.Data
 
             serviceCollection.AddSingleton(environment);
 
-            serviceCollection.AddSingleton<ILocalStorage, T1>();
-            serviceCollection.AddSingleton<IAppModel, T2>();
+            serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
+            serviceCollection.AddSingleton<IAppModel, AppModelImplementation>();
 
             serviceCollection.AddScoped<HTMLHelper>();
         }
