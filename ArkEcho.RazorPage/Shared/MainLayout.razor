@@ -4,42 +4,46 @@
 @inject AppEnvironment environment
 @inject NavigationManager NavigationManager
 
-<MudLayout>
-
-    <MudAppBar Elevation="1">
+<MudPaper Class="d-flex" Style="height: 48px" Elevation="1">
+    <MudPaper Class="ml-2 d-flex flex-grow-1 justify-start" Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
-        <MudText Typo="Typo.h5">ArkEcho Music</MudText>
-        @if (environment.Development)
-        {
-            <MudText Class="mx-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">xs</MudText>
-            <MudText Class="mx-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">sm</MudText>
-            <MudText Class="mx-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">md</MudText>
-            <MudText Class="mx-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">lg</MudText>
-            <MudText Class="mx-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">xl</MudText>
-            <MudText Class="mx-2 d-none d-xxl-flex" Typo="Typo.h5">xxl</MudText>
-        }
 
-        <MudSpacer />
+        <MudStack Class="mt-2" Row="true">
+            <MudText Typo="Typo.h5">ArkEcho Music</MudText>
+            @if (environment.Development)
+            {
+                <MudText Class="mx-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">xs</MudText>
+                <MudText Class="mx-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">sm</MudText>
+                <MudText Class="mx-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">md</MudText>
+                <MudText Class="mx-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">lg</MudText>
+                <MudText Class="mx-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">xl</MudText>
+                <MudText Class="mx-2 d-none d-xxl-flex" Typo="Typo.h5">xxl</MudText>
+            }
+        </MudStack>
+    </MudPaper>
 
-        <MudItem>
-            <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
-            <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
-                <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
-                <MudDivider Class="ma-2"/>
-                <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
-            </MudPopover>
-        </MudItem>
-    </MudAppBar>
+    <MudPaper Class="mr-2 mt-1 d-flex flex-grow-1 justify-end" Elevation="0">
+        <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
+        <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
+            <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
+            <MudDivider Class="ma-2"/>
+            <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
+        </MudPopover>
+    </MudPaper>
 
-    <MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
+    <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="144px" Elevation="0">
+    </MudPaper>
+</MudPaper>
 
-    <MudMainContent>
-        @Body
-    </MudMainContent>
+<MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <NavMenu />
+</MudDrawer>
 
-</MudLayout>
+<MudPaper>
+    @Body
+</MudPaper>
+
+<MudOverlay Class="mud-overlay-popover" Visible="userPopoverOpen" OnClick="userPopoverToggle" DarkBackground="false" />
 
 @code
 {

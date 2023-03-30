@@ -24,29 +24,53 @@ public partial class App : MauiWinUIApplication
             nativeWindow.SizeChanged += (object sender, Microsoft.UI.Xaml.WindowSizeChangedEventArgs args) => setDragRegion();
             nativeWindow.Title = "TestBlazorMaui";
 
+            Microsoft.Maui.Devices.DeviceDisplay.MainDisplayInfoChanged += (object sender, DisplayInfoChangedEventArgs args) => setDragRegion();
+
             var hWnd = WindowNative.GetWindowHandle(nativeWindow);
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             appWindow = AppWindow.GetFromWindowId(windowId);
 
-            appWindow.TitleBar.ButtonBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
-            appWindow.TitleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(255, 50, 51, 61);
-            appWindow.TitleBar.ButtonInactiveBackgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
-
             appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
             appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-            setDragRegion();
+            setButtonColor();
         });
+    }
+
+    private void setButtonColor()
+    {
+        Windows.UI.Color backgroundColor = Windows.UI.Color.FromArgb(255, 55, 55, 64);
+        Windows.UI.Color hoverBackgroundColor = Windows.UI.Color.FromArgb(255, 50, 51, 61);
+
+        appWindow.TitleBar.ButtonBackgroundColor = backgroundColor;
+        appWindow.TitleBar.ButtonInactiveBackgroundColor = backgroundColor;
+        appWindow.TitleBar.ButtonHoverBackgroundColor = hoverBackgroundColor;
+    }
+
+    private int getTitleBarHeight()
+    {
+        double displayHeight = Microsoft.Maui.Devices.DeviceDisplay.MainDisplayInfo.Height;
+        if (displayHeight >= 2160) // 4k
+            return 96;
+        else if (displayHeight >= 1440) // 1440p
+            return 72;
+        else
+            return 48;
     }
 
     private void setDragRegion()
     {
+        int titleBarHeight = getTitleBarHeight();
+        int navbuttonWidth = 80; // Left Navigation Menu
+        int avatarButtonWidth = 135; // Right Avatar Button
+        int systemButtonWidth = titleBarHeight * 3; // Min/Max/Close
+
         RectInt32 rect = new RectInt32
         {
-            X = appWindow.TitleBar.LeftInset,
+            X = navbuttonWidth,
             Y = 0,
-            Height = appWindow.TitleBar.Height,
-            Width = appWindow.Size.Width - appWindow.TitleBar.RightInset
+            Height = titleBarHeight,
+            Width = ((appWindow.Size.Width - (systemButtonWidth)) - avatarButtonWidth) - navbuttonWidth
         };
 
         appWindow.TitleBar.SetDragRectangles(new RectInt32[] { rect });
