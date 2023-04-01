@@ -6,5 +6,8 @@ namespace ArkEcho.Maui
     {
         string GetPlatformSpecificMusicFolder(User user);
         Task<string> PickFolder();
+        void SetTitle(string title);
+        void SetDarkMode(bool darkMode);
+        void SetDragArea(bool fullTitlebar);
     }
 }
