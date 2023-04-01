@@ -6,7 +6,7 @@ namespace ArkEcho.Maui;
 
 public class MauiProgram
 {
-    public static MauiApp CreateMauiApp(Resources.Platform executingPlatform)
+    public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, IMauiHelper mauiHelper)
     {
         AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform, true);
 
@@ -16,11 +16,7 @@ public class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
 
-#if ANDROID
-        builder.Services.AddSingleton<IMauiHelper, AndroidMaui.AndroidMauiHelper>();
-#elif WINDOWS
-        builder.Services.AddSingleton<IMauiHelper, WinUI.WindowsMauiHelper>();
-#endif
+        builder.Services.AddSingleton<IMauiHelper>(mauiHelper);
 
         builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
 

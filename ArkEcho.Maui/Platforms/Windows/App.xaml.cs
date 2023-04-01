@@ -61,8 +61,8 @@ public partial class App : MauiWinUIApplication
     private void setDragRegion()
     {
         int titleBarHeight = getTitleBarHeight();
-        int navbuttonWidth = 80; // Left Navigation Menu
-        int avatarButtonWidth = 135; // Right Avatar Button
+        int navbuttonWidth = Convert.ToInt32(titleBarHeight * 0.85); // Left Navigation Menu
+        int avatarButtonWidth = Convert.ToInt32(titleBarHeight * 1.5); // Right Avatar Button
         int systemButtonWidth = titleBarHeight * 3; // Min/Max/Close
 
         RectInt32 rect = new RectInt32
@@ -78,7 +78,7 @@ public partial class App : MauiWinUIApplication
 
     protected override MauiApp CreateMauiApp()
     {
-        var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows);
+        var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows, new WindowsMauiHelper());
         if (app == null)
             Exit();
         return app;
