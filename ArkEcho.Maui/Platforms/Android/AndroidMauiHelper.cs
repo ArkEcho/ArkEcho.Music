@@ -27,8 +27,8 @@ namespace ArkEcho.Maui.AndroidMaui
         }
 
         public Task<string> PickFolder() { return Task.FromResult(string.Empty); }
-        public void SetDarkMode(bool darkMode) { }
+        public bool DarkMode { get; set; }
         public void SetDragArea(bool fullTitlebar) { }
-        public void SetTitle(string title) { }
+        public string ApplicationTitle { get; set; }
     }
 }

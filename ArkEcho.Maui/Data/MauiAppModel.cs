@@ -32,6 +32,8 @@ namespace ArkEcho.Maui
             List<MusicFile> missing = new();
             bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
 
+            mauiHelper.SetDragArea(false);
+
             return !success || missing.Count > 0;
         }
 

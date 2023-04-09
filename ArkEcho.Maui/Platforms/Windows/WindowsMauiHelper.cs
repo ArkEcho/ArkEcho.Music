@@ -59,12 +59,20 @@ namespace ArkEcho.Maui.WinUI
             appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
             appWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-            SetTitle("ArkEcho Music");
-            SetDarkMode(darkMode);
+            ApplicationTitle = "ArkEcho Music";
+            DarkMode = darkMode;
         }
 
-        public void SetTitle(string title) => nativeWindow.Title = title;
-        public void SetDarkMode(bool darkMode) => setButtonColor(darkMode);
+        public string ApplicationTitle
+        {
+            get { return nativeWindow.Title; }
+            set { nativeWindow.Title = value; }
+        }
+
+        public bool DarkMode
+        {
+            set { setButtonColor(value); }
+        }
 
         public void SetDragArea(bool fullTitlebar)
         {

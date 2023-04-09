@@ -81,17 +81,16 @@
             return;
         }
 
-        if(await model.AuthenticateUser(username, password))
+        if(!await model.AuthenticateUser(username, password))
         {
-            showOverlay(true);
-            await model.InitializeOnLogin();
-            showOverlay(false);
-            NavigationManager.NavigateTo("/Music");            
-        }
-        else
             showSnackbarError($"Username or Password wrong!");
+            return;
+        }
 
-        return;
+        showOverlay(true);
+        await model.InitializeOnLogin();
+        showOverlay(false);
+        NavigationManager.NavigateTo("/Music");
     }
 
     private void showOverlay(bool show)
