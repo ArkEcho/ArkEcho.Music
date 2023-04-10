@@ -20,6 +20,7 @@ namespace ArkEcho.Server
             DoWork += MusicLibraryWorker_DoWork;
         }
 
+        // TODO: Multiple Worker (CoreCount / 2)
         private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             logger.LogStatic($"Start loading MusicLibrary...");
@@ -31,7 +32,9 @@ namespace ArkEcho.Server
             MusicLibrary library = new();
             List<string> errors = new();
 
-            loadMusicFiles(musicDirectoryPath, library);
+            foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedMusicFileFormats))
+                loadMusicFile(filePath, library);
+
             loadPlaylistFiles(musicDirectoryPath, library);
 
             sw.Stop();
@@ -85,18 +88,18 @@ namespace ArkEcho.Server
             }
         }
 
-        private void loadMusicFiles(string musicDirectoryPath, MusicLibrary library)
+        private void loadMusicFile(string filePath, MusicLibrary library)
         {
-            foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedMusicFileFormats))
+            using (TagLib.File tagFile = TagLib.File.Create(filePath))
             {
-                TagLib.File tagFile = TagLib.File.Create(filePath);
                 if (tagFile == null)
                 {
                     logger.LogError($"Couldn't load Tags for {filePath}");
-                    continue;
+                    return;
                 }
 
                 MusicFile music = null;
+
                 try
                 {
                     music = new(filePath)
@@ -106,23 +109,36 @@ namespace ArkEcho.Server
                         Disc = (int)tagFile.Tag.Disc,
                         Track = (int)tagFile.Tag.Track,
                         Year = (int)tagFile.Tag.Year,
-                        Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds)
+                        Duration = Convert.ToInt32(tagFile.Properties.Duration.TotalMilliseconds),
+                        Rating = ShellFileAccess.GetRating(filePath),
+                        Bitrate = tagFile.Properties.AudioBitrate,
                     };
+
+                    //if (filePath.Contains("Kryptonite"))
+                    //{
+                    //    // TODO: Move to Unit Tests
+                    //    ShellFileAccess.SetRating(filePath, 5);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 4);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 3);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 2);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 1);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //    ShellFileAccess.SetRating(filePath, 0);
+                    //    ShellFileAccess.GetRating(filePath);
+                    //}
                 }
                 catch (Exception ex)
                 {
                     logger.LogError($"Exception on creating File for {filePath}, {ex.Message}");
-                    tagFile?.Dispose();
-                    tagFile = null;
-                    continue;
+                    return;
                 }
 
                 if (!checkFolderStructureAndTags(music, tagFile.Tag))
-                {
-                    tagFile?.Dispose();
-                    tagFile = null;
-                    continue;
-                }
+                    return;
 
                 AlbumArtist albumArtist = library.AlbumArtists.Find(x => x.Name.Equals(tagFile.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
                 if (albumArtist == null)
@@ -131,7 +147,7 @@ namespace ArkEcho.Server
                     library.AlbumArtists.Add(albumArtist);
                 }
 
-                Album album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                Album album = library.Album.Find(x => x.Name.Equals(tagFile.Tag.Album, StringComparison.OrdinalIgnoreCase) && x.AlbumArtist == albumArtist.GUID);
                 if (album == null)
                 {
                     album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
@@ -157,9 +173,6 @@ namespace ArkEcho.Server
                 albumArtist.MusicFileIDs.Add(music.GUID);
 
                 library.MusicFiles.Add(music);
-
-                tagFile?.Dispose();
-                tagFile = null;
             }
         }
 

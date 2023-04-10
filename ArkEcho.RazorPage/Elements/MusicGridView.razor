@@ -1,40 +1,77 @@
 ﻿
 @inherits MusicDisplayBase
 
+@inject IDialogService DialogService
+@inject IAppModel model
 @inject HTMLHelper helper
 
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
 
 <MudPaper Height="79vh" Class="overflow-auto px-4">
     <Virtualize Items="getFilteredAlbumVList()">
-        <MudGrid Spacing="2" Justify="Justify.Center">
-            @foreach(Album album in context.Elements)
-            {
-                <MudItem xs="6" sm="4" md="3" lg="2" xl="2">
-                    <MudPaper Class="pa-2" Elevation="1">
-                        <MudStack>
-                            <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" ObjectFit="ObjectFit.Fill" />
+        <ItemContent>
+            <MudGrid Spacing="2" Justify="Justify.Center">
+                @foreach(Album album in context.Elements)
+                {
+                    <MudItem xs="6" sm="4" md="3" lg="2" xl="2">
+                        <MudPaper Class="pa-2" Elevation="1">
+                            <MudStack>
+                                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" ObjectFit="ObjectFit.Fill" />
 
-                            <MudText Typo="Typo.body2">@album.Name.Truncate(25)</MudText>                            
-                            <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album))</MudText>
-                            <MudText Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
-                            <MudStack Row="true">
-                                <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
-                                <MudSpacer />
-                                <MudIconButton Icon="@Icons.Material.Rounded.List" Color="Color.Default" />
+                                <MudText Typo="Typo.body2">@album.Name.Truncate(25)</MudText>                            
+                                <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album, 25))</MudText>
+                                <MudText Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
+                                <MudStack Row="true">
+                                    <MudIconButton OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
+                                    <MudSpacer />
+                                    <MudIconButton Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
+                                </MudStack>
                             </MudStack>
-                        </MudStack>
-                    </MudPaper>
-                </MudItem>
-            }
-        </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </ItemContent>
+        @*<Placeholder>
+            <MudGrid Spacing="2" Justify="Justify.Center">
+                @for(int i = 0; i<12; i++)
+                {
+                    <MudItem xs="6" sm="4" md="3" lg="2" xl="2">
+                        <MudPaper Class="pa-2" Elevation="1">
+                            <MudStack>
+                                <MudImage Class="rounded-lg" ObjectFit="ObjectFit.Fill" />
+
+                                <MudText Typo="Typo.body2">NAME</MudText>
+                                <MudText Typo="Typo.overline">ARTIST</MudText>
+                                    <MudText Typo="Typo.overline">TITEL</MudText>
+                                <MudStack Row="true">
+                                    <MudIconButton Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
+                                    <MudSpacer />
+                                    <MudIconButton Icon="@Icons.Material.Rounded.List" Color="Color.Default" />
+                                </MudStack>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </Placeholder>*@
     </Virtualize>
 </MudPaper>
 
-    @code {
+@code {
+    DialogOptions options = new DialogOptions() { FullScreen = true, CloseButton = true, CloseOnEscapeKey = true };
+
     public class GridVirtualize
     {
         public List<Album> Elements { get; set; } = new List<Album>();
+    }
+
+    private async Task albumListClicked(Album album)
+    {
+        // TODO: Eigener Dialog Service
+        DialogParameters parameters = new DialogParameters { ["Header"] = album, ["MusicList"] = model.Library.GetMusicFiles(album) };
+        IDialogReference dialog = await DialogService.ShowAsync<MusicListDialog>(album.Name, parameters, options);
+        DialogResult result = await dialog.Result;
     }
 
     private List<GridVirtualize> getFilteredAlbumVList()

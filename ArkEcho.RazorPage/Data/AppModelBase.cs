@@ -48,7 +48,8 @@ namespace ArkEcho.RazorPage.Data
             return AuthenticatedUser != null;
         }
 
-        public async Task LogoutUser()
+        // TODO: Abstrakte Funktionen zu Virtual ändern (Login etc.)
+        public virtual async Task LogoutUser()
         {
             if (Player.Playing)
                 Player.Stop();
@@ -139,6 +140,11 @@ namespace ArkEcho.RazorPage.Data
         public async Task<string> GetAlbumCover(Guid albumGuid)
         {
             return await rest.GetAlbumCover(albumGuid);
+        }
+
+        public async Task<bool> UpdateMusicRating(Guid musicFileGuid, int rating)
+        {
+            return await rest.UpdateMusicRating(musicFileGuid, rating);
         }
 
         protected abstract Task<bool> initializePlayer();

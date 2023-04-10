@@ -1,0 +1,88 @@
+﻿
+@inject IAppModel model
+
+<MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false">
+    <thead>
+    </thead>
+    <colgroup>
+        <col span="1" style="width: 5%;">
+        <col span="1" style="width: 40%;">
+        <col span="1" style="width: 40%;">
+        <col span="1" style="width: 10%;">
+        <col span="1" style="width: 5%;">
+    </colgroup>
+    <tbody>
+        @foreach (MusicFile file in MusicList)
+        {
+            <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">
+                <td class="noselection">@file.Track</td>
+                <td class="noselection">@file.Title</td>
+                <td class="noselection">@file.Performer</td>
+                <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
+                <td class="noselection">
+                    @{
+                        int value = file.Rating;
+                        <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</MudSimpleTable>
+
+<style>
+    .noselection {
+        user-select: none; /* standard syntax */
+        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+        -moz-user-select: none; /* mozilla browsers */
+        -khtml-user-select: none; /* webkit (konqueror) browsers */
+        -ms-user-select: none; /* IE10+ */
+    }
+
+    tr.playing:hover{
+        background-color: var(--mud-palette-info-darken) !important;
+    }
+</style>
+
+
+@code {
+
+    [Parameter]
+    public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
+
+    [Parameter]
+    public EventCallback<MusicFile> ListElementDoubleClicked { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        model.Player.TitleChanged += () => titleChanged();
+        return base.OnInitializedAsync();
+    }
+
+    protected async Task titleChanged()
+    {
+        if (MusicList.Any(x => x == model.Player.PlayingFile))
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private string getRowColor(MusicFile file)
+    {
+        if (model.Player.PlayingFile == null)
+            return string.Empty;
+        return model.Player.PlayingFile.GUID == file.GUID ? "blue playing" : string.Empty;
+    }
+
+    protected async Task ratingValueChanged(int newValue, MusicFile selectedFile)
+    {
+        if (newValue == selectedFile.Rating) // On Display the Event is called...
+            return;
+
+        selectedFile.Rating = newValue;
+        if (!await model.UpdateMusicRating(selectedFile.GUID, selectedFile.Rating))
+        {
+            // TODO: Give Error
+        }
+    }
+}

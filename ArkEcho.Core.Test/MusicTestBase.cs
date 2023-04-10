@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 
 namespace ArkEcho.Core.Test
 {
-    [TestClass]
     public partial class MusicTestBase
     {
         public MusicLibrary GetTestMusicLibrary()

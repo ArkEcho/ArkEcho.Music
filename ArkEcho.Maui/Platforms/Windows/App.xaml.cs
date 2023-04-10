@@ -1,28 +1,28 @@
-﻿// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+﻿using Microsoft.Maui.Handlers;
 
-namespace ArkEcho.Maui.WinUI
+namespace ArkEcho.Maui.WinUI;
+
+public partial class App : MauiWinUIApplication
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
-    public partial class App : MauiWinUIApplication
-    {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
-        public App()
-        {
-            this.InitializeComponent();
-        }
+    private WindowsMauiHelper helper = null;
 
-        protected override MauiApp CreateMauiApp()
+    public App()
+    {
+        this.InitializeComponent();
+        helper = new WindowsMauiHelper();
+
+        WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
         {
-            var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows);
-            if (app == null)
-                Exit();
-            return app;
-        }
+            // TODO: DarkMode from Windows Settings
+            helper.SetWindow(handler.PlatformView, true);
+        });
+    }
+
+    protected override MauiApp CreateMauiApp()
+    {
+        var app = MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Windows, helper);
+        if (app == null)
+            Exit();
+        return app;
     }
 }

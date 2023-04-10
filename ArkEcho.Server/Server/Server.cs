@@ -233,7 +233,7 @@ namespace ArkEcho.Server
                 {
                     dbAccess?.DisconnectFromDatabase();
 
-                    LoggingWorker.Dispose();
+                    LoggingWorker?.Dispose();
                     LoggingWorker = null;
 
                     musicWorker?.Dispose();

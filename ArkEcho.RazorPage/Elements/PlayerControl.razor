@@ -16,7 +16,7 @@
                 <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
             </MudPaper>
 
-            <MudTooltip Arrow="true" Placement="Placement.Top" Delayed="0.5">
+            <MudTooltip Arrow="true" Placement="Placement.Top" Delay="0.5">
                 <ChildContent>
                     <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
                         <MudText Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
@@ -75,7 +75,7 @@
                 <MudIconButton Class="d-md-none d-flex" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Color="Color.Primary" Size="Size.Small" />
 
                 <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Color="Color.Primary" Size="Size.Medium" />
-                <MudPaper Class="mr-1 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
+                <MudPaper Class="mr-4 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
                     <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
                 </MudPaper>
             </MudPaper>

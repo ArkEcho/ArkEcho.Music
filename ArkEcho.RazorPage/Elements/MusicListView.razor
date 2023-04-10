@@ -2,7 +2,6 @@
 @inherits MusicDisplayBase
 
 @inject IAppModel model
-@inject HTMLHelper helper
 
 <MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="79vh" FixedHeader="true"
             Items="@getFilteredAlbum()" Virtualize="true" GroupBy="@groupDefinition"
@@ -10,16 +9,11 @@
             GroupFooterClass="mb-4" Dense="true" MultiSelection="false">
 
     <HeaderContent>
-        @*<MudTh>Album</MudTh>
-        <MudTh>#</MudTh>
-        <MudTh>Titel</MudTh>
-        <MudTh>Performer</MudTh>
-        <MudTh>Dauer</MudTh>*@
+        @*<MudTh>Album</MudTh> <MudTh>#</MudTh> <MudTh>Titel</MudTh> <MudTh>Performer</MudTh> <MudTh>Dauer</MudTh>*@
     </HeaderContent>
 
     <ColGroup>
-        <col span="1" style="width: 15%;" />
-        <col span="1" style="width: 85%;" />
+        <col span="1" style="width: 100%;" />
     </ColGroup>
 
     <GroupHeaderTemplate>
@@ -29,44 +23,12 @@
     </GroupHeaderTemplate>
 
     <RowTemplate>
-    @{
-        AlbumArtist artist = model.Library.GetAlbumArtist(context.AlbumArtist);
-
-        <MudTd DataLabel="Album">            
-            <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(context.Cover64))" Width="80" Height="80" ObjectFit="ObjectFit.Fill" />  
-                <MudText Typo="Typo.body2">@(context.Name )</MudText>
-                <MudText Typo="Typo.body2">@(artist.Name )</MudText>
-                @*<MudText Typo="Typo.body2">@(context.Items.Sum((e) => e.Duration).ConvertTimeMilliseconds())</MudText>*@
-            </MudStack>                
+        <MudTd DataLabel="Data">
+            <MusicListHeaderElement Header="@(Display.Mode == DisplayMode.DisplayModes.Album ? context : model.Library.GetAlbumArtist(context.AlbumArtist))"
+                              ListElementDoubleClicked="startMusicFile" MusicList="model.Library.GetMusicFiles(context)" />
         </MudTd>
-
-        <MudTd DataLabel="Titel">
-            <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false" Style="overflow-x: auto;">
-                <thead>                    
-                </thead>
-                <colgroup>
-                    <col span="1" style="width: 10%;">
-                    <col span="1" style="width: 40%;">
-                    <col span="1" style="width: 40%;">
-                    <col span="1" style="width: 10%;">
-                </colgroup>
-                <tbody>                
-                    @foreach (MusicFile file in model.Library.GetMusicFiles(context))
-                    {
-                        <tr @ondblclick="() => startMusicFile(file)" >
-                            <td>@file.Track</td>
-                            <td>@file.Title</td>
-                            <td>@file.Performer</td>
-                            <td>@file.Duration.ConvertTimeMilliseconds()</td>
-                        </tr>
-                    }
-                </tbody>
-            </MudSimpleTable>
-        </MudTd>
-    }
     </RowTemplate>
-
+    
     @*<GroupFooterTemplate>
         <MudTh Class="mud-table-cell-custom-group mud-table-cell-custom-group-footer" colspan="5">Total Mass: @context.Items.Sum((e) => e.Duration)</MudTh>
     </GroupFooterTemplate>*@

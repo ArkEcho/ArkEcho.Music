@@ -10,7 +10,7 @@ namespace ArkEcho.Server
     // TODO: Alle Controller Abstrahieren für Unit Test -> Umkehr Basis Klasse als eigentliche Implementierung
     [Route("api/[controller]")]
     [ApiController]
-    public class FileController : ArkEchoController
+    public class FileController : BaseController
     {
         public FileController() : base("File")
         {

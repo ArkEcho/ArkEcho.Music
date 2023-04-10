@@ -6,7 +6,7 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoggingController : ArkEchoController
+    public class LoggingController : BaseController
     {
         public LoggingController() : base("Logging")
         {

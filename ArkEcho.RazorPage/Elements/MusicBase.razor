@@ -1,0 +1,9 @@
+﻿@inject IAppModel model
+
+@code {
+
+    protected string getAlbumArtistNameTruncated(Album album, int truncation)
+    {
+        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(truncation);
+    }
+}

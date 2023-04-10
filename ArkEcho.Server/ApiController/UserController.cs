@@ -7,7 +7,7 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticateController : ArkEchoController
+    public class AuthenticateController : BaseController
     {
         public AuthenticateController() : base("Authenticate")
         {

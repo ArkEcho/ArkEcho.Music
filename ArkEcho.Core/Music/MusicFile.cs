@@ -34,6 +34,12 @@ namespace ArkEcho.Core
         [JsonInclude]
         public int Duration { get; set; } = 0;
 
+        [JsonInclude]
+        public int Rating { get; set; } = 0;
+
+        [JsonInclude]
+        public int Bitrate { get; set; } = 0;
+
         /// <summary>
         /// For Serialization and Unit Tests
         /// </summary>

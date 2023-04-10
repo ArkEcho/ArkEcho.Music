@@ -13,7 +13,7 @@ namespace ArkEcho.Maui.AndroidMaui
 
         protected override MauiApp CreateMauiApp()
         {
-            return MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Android);
+            return MauiProgram.CreateMauiApp(ArkEcho.Resources.Platform.Android, new AndroidMauiHelper());
         }
     }
 }

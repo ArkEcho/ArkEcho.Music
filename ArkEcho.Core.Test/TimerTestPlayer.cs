@@ -45,6 +45,7 @@ namespace ArkEcho.Core.Test
         {
             playingChanged(false);
             timer.Stop();
+            positionTenthSeconds = 0;
         }
 
         protected override void loadAudio(bool StartOnLoad)
@@ -88,6 +89,7 @@ namespace ArkEcho.Core.Test
         protected override void stopAudio()
         {
             timer.Stop();
+            positionTenthSeconds = 0;
             playingChanged(false);
         }
     }

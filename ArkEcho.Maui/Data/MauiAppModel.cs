@@ -32,7 +32,15 @@ namespace ArkEcho.Maui
             List<MusicFile> missing = new();
             bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
 
+            mauiHelper.SetDragArea(false);
+
             return !success || missing.Count > 0;
+        }
+
+        public override Task LogoutUser()
+        {
+            mauiHelper.SetDragArea(true);
+            return base.LogoutUser();
         }
 
         public override async Task<bool> StartSynchronizeMusic()

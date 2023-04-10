@@ -4,7 +4,7 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ControlController : ArkEchoController
+    public class ControlController : BaseController
     {
         public ControlController() : base("Control")
         {

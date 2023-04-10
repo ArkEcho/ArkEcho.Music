@@ -1,4 +1,7 @@
-﻿@inject IAppModel model
+﻿
+@inherits MusicBase
+
+@inject IAppModel model
 
 @code {
     [Parameter]
@@ -13,7 +16,7 @@
     private List<Album> displayedData = null;
 
     protected void startMusicAlbum(Album album)
-    {        
+    {
         List<MusicFile> files = model.Library.GetMusicFiles(album);
 
         if (files.Count == 0)
@@ -30,11 +33,6 @@
             return; // TODO: Give Error
 
         model.Player.Start(files, files.IndexOf(file));
-    }
-
-    protected string getAlbumArtistNameTruncated(Album album)
-    {
-        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(25);
     }
 
     protected List<Album> getFilteredAlbum()

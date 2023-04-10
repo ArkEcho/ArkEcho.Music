@@ -9,7 +9,7 @@ namespace ArkEcho.Server
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MusicController : ArkEchoController
+    public class MusicController : BaseController
     {
         public MusicController() : base("Music")
         {
@@ -121,7 +121,7 @@ namespace ArkEcho.Server
 
         // GET: api/Music/Playlists
         [HttpGet("Playlists")]
-        public async Task<ActionResult> GetPlaylistsList(int countIndex)
+        public async Task<ActionResult> GetPlaylistsList()
         {
             MusicLibrary library = Server.Instance.GetMusicLibrary();
             if (library == null)
@@ -147,6 +147,30 @@ namespace ArkEcho.Server
             FileContentResult result = new FileContentResult(data, "application/octet-stream");
 
             return result;
+        }
+
+        [HttpPost("Rating/{guid},{rating}")]
+        public async Task<ActionResult> UpdateMusicRating(Guid guid, int rating)
+        {
+            if (guid == Guid.Empty)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
+                return BadRequest();
+            }
+            else if (rating < 0 || rating > 5)
+                return BadRequest();
+
+            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            if (library == null)
+                return BadRequest();
+
+            MusicFile musicFile = library.MusicFiles.Find(x => x.GUID == guid);
+            if (musicFile == null)
+                return BadRequest();
+
+            ShellFileAccess.SetRating(musicFile.FullPath, rating);
+
+            return Ok();
         }
     }
 }

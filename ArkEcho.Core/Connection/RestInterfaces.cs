@@ -30,6 +30,8 @@ namespace ArkEcho.Core
 
         Task<string> GetAlbumCover(Guid guid);
 
+        Task<bool> UpdateMusicRating(Guid guid, int rating);
+
         // File
         Task<MemoryStream> GetFile(TransferFileBase tfb);
     }
