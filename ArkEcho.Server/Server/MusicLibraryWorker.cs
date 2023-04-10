@@ -20,6 +20,7 @@ namespace ArkEcho.Server
             DoWork += MusicLibraryWorker_DoWork;
         }
 
+        // TODO: Multiple Worker (CoreCount / 2)
         private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             logger.LogStatic($"Start loading MusicLibrary...");

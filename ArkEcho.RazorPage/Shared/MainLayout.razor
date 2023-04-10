@@ -31,8 +31,10 @@
         </MudPopover>
     </MudPaper>
 
-    <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="144px" Elevation="0">
-    </MudPaper>
+    @if (environment.Platform == Resources.Platform.Windows)
+    {
+        <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="144px" Elevation="0" />
+    }
 </MudPaper>
 
 <MudDrawer @bind-Open="@showSidebar" ClipMode="DrawerClipMode.Always" Elevation="2">

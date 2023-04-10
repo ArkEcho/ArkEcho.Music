@@ -37,6 +37,12 @@ namespace ArkEcho.Maui
             return !success || missing.Count > 0;
         }
 
+        public override Task LogoutUser()
+        {
+            mauiHelper.SetDragArea(true);
+            return base.LogoutUser();
+        }
+
         public override async Task<bool> StartSynchronizeMusic()
         {
             if (!await LoadLibraryFromServer())

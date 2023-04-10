@@ -30,6 +30,7 @@ namespace ArkEcho.Server
             app.UseRouting();
 
             // For Wasm Page
+            // For Testing in Firefox: Settings -> Security -> Certificates -> Server -> Add server Address (while Running)
             app.UseCors(builder => builder.AllowAnyOrigin()
                               .AllowAnyHeader()
                               .AllowAnyMethod());
