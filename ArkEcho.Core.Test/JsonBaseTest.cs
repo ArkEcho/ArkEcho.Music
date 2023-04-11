@@ -8,7 +8,6 @@ namespace ArkEcho.Core.Test
     {
         private TestClass getTestClass()
         {
-
             string jsonOriginal = Properties.Resources.TestClass_txt.RemoveCRLF();
 
             TestClass testclass = new TestClass();

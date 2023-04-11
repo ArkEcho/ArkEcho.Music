@@ -114,22 +114,6 @@ namespace ArkEcho.Server
                         Bitrate = tagFile.Properties.AudioBitrate,
                     };
 
-                    //if (filePath.Contains("Kryptonite"))
-                    //{
-                    //    // TODO: Move to Unit Tests
-                    //    ShellFileAccess.SetRating(filePath, 5);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //    ShellFileAccess.SetRating(filePath, 4);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //    ShellFileAccess.SetRating(filePath, 3);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //    ShellFileAccess.SetRating(filePath, 2);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //    ShellFileAccess.SetRating(filePath, 1);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //    ShellFileAccess.SetRating(filePath, 0);
-                    //    ShellFileAccess.GetRating(filePath);
-                    //}
                 }
                 catch (Exception ex)
                 {
