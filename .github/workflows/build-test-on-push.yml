@@ -24,16 +24,16 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Restore Server
-        run: dotnet restore $ServerSLN
+        run: dotnet restore ${{ env.ServerSLN }}
       - name: Restore Maui
-        run: dotnet restore $MauiSLN
+        run: dotnet restore ${{ env.MauiSLN }}
       - name: Restore WebPage
-        run: dotnet restore $WebPageSLN
-      - name: Build
-        run: dotnet build $ServerSLN --no-restore --configuration Release
-      - name: Build
-        run: dotnet build $MauiSLN --no-restore --configuration Release
-      - name: Build
-        run: dotnet build $WebPageSLN --no-restore --configuration Release
+        run: dotnet restore ${{ env.WebPageSLN }}
+      - name: Build Server
+        run: dotnet build ${{ env.ServerSLN }} --no-restore --configuration Release
+      - name: Build Maui
+        run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release
+      - name: Build WebPage
+        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release
       - name: Test
-        run: dotnet test $ServerSLN --no-restore
+        run: dotnet test ${{ env.ServerSLN }} --no-restore
