@@ -43,7 +43,7 @@ jobs:
       - name: Restore Maui
         run: dotnet restore ${{ env.MauiSLN }}
       - name: Build Maui
-        run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false
+        run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false -p:RunAOTCompilation=false
 
 
   restore-build-webpage:
@@ -59,4 +59,4 @@ jobs:
       - name: Restore WebPage
         run: dotnet restore ${{ env.WebPageSLN }}
       - name: Build WebPage
-        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false
+        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false -p:RunAOTCompilation=false
