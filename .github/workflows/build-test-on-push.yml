@@ -26,4 +26,4 @@ jobs:
       #- name: Build
         #run: dotnet build Arkecho.Server.sln --configuration Release
       - name: Test
-        run: dotnet test Arkecho.Server.sln --verbosity normal
+        run: dotnet test .\Arkecho.Server.sln --verbosity normal
