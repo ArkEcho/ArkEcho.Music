@@ -11,29 +11,52 @@ on:
   workflow_dispatch:
   
 jobs:
-  restore-build-test:
+
+  restore-build-test-server:
 
     runs-on: windows-latest
     
     env:
       ServerSLN: Arkecho.Server.sln
-      MauiSLN: Arkecho.Maui.sln
-      WebPageSLN: Arkecho.WebPage.sln
      
     steps:
       - uses: actions/checkout@v3
       
       - name: Restore Server
         run: dotnet restore ${{ env.ServerSLN }}
-      - name: Restore Maui
-        run: dotnet restore ${{ env.MauiSLN }}
-      - name: Restore WebPage
-        run: dotnet restore ${{ env.WebPageSLN }}
       - name: Build Server
         run: dotnet build ${{ env.ServerSLN }} --no-restore --configuration Release
-      - name: Build Maui
-        run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release
-      - name: Build WebPage
-        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release
       - name: Test
         run: dotnet test ${{ env.ServerSLN }} --no-restore
+        
+        
+  restore-build-test-maui:
+
+    runs-on: windows-latest
+    
+    env:
+      MauiSLN: Arkecho.Maui.sln
+     
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Restore Maui
+        run: dotnet restore ${{ env.MauiSLN }}
+      - name: Build Maui
+        run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false :PublishTrimmed=false
+
+
+  restore-build-test-webpage:
+
+    runs-on: windows-latest
+    
+    env:
+      WebPageSLN: Arkecho.WebPage.sln
+     
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Restore WebPage
+        run: dotnet restore ${{ env.WebPageSLN }}
+      - name: Build WebPage
+        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false :PublishTrimmed=false
