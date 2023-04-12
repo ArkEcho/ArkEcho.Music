@@ -17,13 +17,23 @@ jobs:
     
     env:
       ServerSLN: Arkecho.Server.sln
+      MauiSLN: Arkecho.Maui.sln
+      WebPageSLN: Arkecho.WebPage.sln
      
     steps:
       - uses: actions/checkout@v3
       
-      - name: Restore
-        run: dotnet restore Arkecho.Server.sln
+      - name: Restore Server
+        run: dotnet restore $ServerSLN
+      - name: Restore Maui
+        run: dotnet restore $MauiSLN
+      - name: Restore WebPage
+        run: dotnet restore $WebPageSLN
       - name: Build
-        run: dotnet build Arkecho.Server.sln --no-restore --configuration Release
+        run: dotnet build $ServerSLN --no-restore --configuration Release
+      - name: Build
+        run: dotnet build $MauiSLN --no-restore --configuration Release
+      - name: Build
+        run: dotnet build $WebPageSLN --no-restore --configuration Release
       - name: Test
-        run: dotnet test ArkEcho.Server.sln --no-restore
+        run: dotnet test $ServerSLN --no-restore
