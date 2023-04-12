@@ -21,9 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Install dependencies
-        run: dotnet restore Arkecho.Server.sln
+      #- name: Install dependencies
+        #run: dotnet restore Arkecho.Server.sln
       - name: Build
-        run: dotnet build Arkecho.Server.sln --configuration Release --no-restore
+        run: dotnet build Arkecho.Server.sln --configuration Release
       - name: Test
         run: dotnet test Arkecho.Server.sln --no-restore --verbosity normal
