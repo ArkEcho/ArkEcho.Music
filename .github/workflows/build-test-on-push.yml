@@ -15,12 +15,15 @@ jobs:
 
     runs-on: ubuntu-latest
     
+    env:
+      ServerSLN: Arkecho.Server.sln
+     
     steps:
       - uses: actions/checkout@v3
       
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore $ServerSLN
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build $ServerSLN --configuration Release --no-restore
       - name: Test
-        run: dotnet test ArkEcho.Server.sln --no-restore --verbosity normal
+        run: dotnet test $ServerSLN --no-restore --verbosity normal
