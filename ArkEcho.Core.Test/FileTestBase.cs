@@ -37,5 +37,19 @@ namespace ArkEcho.Core.Test
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
+
+        public string CreateMp3TestFile(string fileName)
+        {
+            DeleteTestFile(fileName);
+
+            byte[] fileContent = Properties.Resources.documentary_ambient_guitar_william_king_145480;
+            string filePath = getTestFolder() + fileName;
+
+            FileStream fs = new FileStream(filePath, FileMode.CreateNew);
+            fs.Write(fileContent);
+            fs.Close();
+
+            return filePath;
+        }
     }
 }
