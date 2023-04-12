@@ -1,7 +1,8 @@
-﻿using ArkEcho.Server;
+﻿using ArkEcho.Core.Test;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ArkEcho.Core.Test
+namespace ArkEcho.Server.Test
 {
     [TestClass]
     public class ShellFileAccessTest : FileTestBase
@@ -12,18 +13,11 @@ namespace ArkEcho.Core.Test
             string testFile = "TestMp3.mp3";
             string filePath = CreateMp3TestFile(testFile);
 
-            ShellFileAccess.SetRating(filePath, 5);
-            ShellFileAccess.GetRating(filePath);
-            ShellFileAccess.SetRating(filePath, 4);
-            ShellFileAccess.GetRating(filePath);
-            ShellFileAccess.SetRating(filePath, 3);
-            ShellFileAccess.GetRating(filePath);
-            ShellFileAccess.SetRating(filePath, 2);
-            ShellFileAccess.GetRating(filePath);
-            ShellFileAccess.SetRating(filePath, 1);
-            ShellFileAccess.GetRating(filePath);
-            ShellFileAccess.SetRating(filePath, 0);
-            ShellFileAccess.GetRating(filePath);
+            for (int i = 5; i <= 0; i--)
+            {
+                ShellFileAccess.SetRating(filePath, i);
+                ShellFileAccess.GetRating(filePath).Should().Be(i);
+            }
 
             DeleteTestFile(testFile);
         }
