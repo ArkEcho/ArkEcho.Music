@@ -26,4 +26,4 @@ jobs:
       #- name: Build
         #run: dotnet build Arkecho.Server.sln --configuration Release
       - name: Test
-        run: dotnet test ArkEcho.Server.Test/ArkEcho.Server.Test.csproj
+        run: dotnet test ArkEcho.Server.sln
