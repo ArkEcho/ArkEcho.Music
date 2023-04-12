@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  build:
+  restore-build-test:
 
     runs-on: windows-latest
     
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Install dependencies
+      - name: Restore
         run: dotnet restore Arkecho.Server.sln
       - name: Build
         run: dotnet build Arkecho.Server.sln --no-restore --configuration Release
