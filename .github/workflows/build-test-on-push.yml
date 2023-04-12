@@ -23,7 +23,7 @@ jobs:
       
       #- name: Install dependencies
         #run: dotnet restore Arkecho.Server.sln
-      - name: Build
-        run: dotnet build Arkecho.Server.sln --configuration Release
+      #- name: Build
+        #run: dotnet build Arkecho.Server.sln --configuration Release
       - name: Test
-        run: dotnet test Arkecho.Server.sln --no-restore --verbosity normal
+        run: dotnet test Arkecho.Server.sln --verbosity normal
