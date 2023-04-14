@@ -4,12 +4,15 @@
 @inject AppEnvironment environment
 @inject NavigationManager NavigationManager
 
-<MudPaper Class="d-flex" Style="height: 48px" Elevation="1">
-    <MudPaper Class="ml-2 d-flex flex-grow-1 justify-start" Elevation="0">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
+<MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
+    <MudPaper Class="d-flex flex-grow-1 justify-start appbarstyle" Style="" Elevation="0">
+        <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
-        <MudStack Class="mt-2" Row="true">
-            <MudText Typo="Typo.h5">ArkEcho Music</MudText>
+        <MudStack Row="true">
+            <svg class="mt-2 ml-n1" width="32px" height="32px">
+                @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
+            </svg>
+            <MudText Class="mt-2 ml-n1" Typo="Typo.h5">Music</MudText>
             @if (environment.Development)
             {
                 <MudText Class="mx-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">xs</MudText>
@@ -22,8 +25,8 @@
         </MudStack>
     </MudPaper>
 
-    <MudPaper Class="mr-2 mt-1 d-flex flex-grow-1 justify-end" Elevation="0">
-        <MudFab Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
+    <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" Elevation="0">
+        <MudFab Class="mr-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
         <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
             <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
             <MudDivider Class="ma-2"/>
@@ -33,7 +36,7 @@
 
     @if (environment.Platform == Resources.Platform.Windows)
     {
-        <MudPaper Class="d-flex flex-grow-1 justify-end" MaxWidth="144px" Elevation="0" />
+        <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" MaxWidth="144px" Elevation="0" />
     }
 </MudPaper>
 
@@ -46,6 +49,11 @@
 </MudPaper>
 
 <MudOverlay Class="mud-overlay-popover" Visible="userPopoverOpen" OnClick="userPopoverToggle" DarkBackground="false" />
+<style>
+    .appbarstyle{
+        background-color: var(--mud-palette-background-grey);
+    }
+</style>
 
 @code
 {

@@ -83,7 +83,7 @@ namespace ArkEcho.Maui.WinUI
         private void setButtonColor(bool darkMode)
         {
             // TODO: LightMode Buttons
-            Windows.UI.Color backgroundColor = Windows.UI.Color.FromArgb(255, 55, 55, 64);
+            Windows.UI.Color backgroundColor = Windows.UI.Color.FromArgb(255, 39, 39, 47);
             Windows.UI.Color hoverBackgroundColor = Windows.UI.Color.FromArgb(255, 50, 51, 61);
 
             appWindow.TitleBar.ButtonBackgroundColor = backgroundColor;
