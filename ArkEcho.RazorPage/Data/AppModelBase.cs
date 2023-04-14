@@ -147,8 +147,13 @@ namespace ArkEcho.RazorPage.Data
             return await rest.UpdateMusicRating(musicFileGuid, rating);
         }
 
+        public virtual async Task<bool> InitializeOnLogin()
+        {
+            SetStatus(IAppModel.Status.Authorized);
+            return true;
+        }
+
         protected abstract Task<bool> initializePlayer();
-        public abstract Task<bool> InitializeOnLogin();
 
         public abstract Task StartSynchronizeMusic();
         public abstract Task<bool> ChangeMusicFolder();

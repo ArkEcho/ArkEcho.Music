@@ -8,13 +8,15 @@ namespace ArkEcho.RazorPage.Data
         {
             Started = 0,
 
-            Connecting,
+            Connecting = 10,
             Connected,
             NotConnected,
 
-            LoadingLibrary,
+            LoadingLibrary = 20,
             LoadingAlbumCover,
             Initialized,
+
+            Authorized = 50,
         }
 
         MusicLibrary Library { get; }

@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@layout CenteredCardLayout
+@layout LoginLayout
 
 @inject IAppModel model
 @inject NavigationManager NavigationManager
@@ -53,24 +53,28 @@
     {
         model.StatusChanged += () => onAppStatusChanged();
 
+        await model.InitializeOnLoad();
+
         if (await model.IsUserAuthenticated())
         {
-            showOverlay(true);
-            await model.InitializeOnLoad();
-            await model.InitializeOnLogin();
-            showOverlay(false);
-
-            NavigationManager.NavigateTo("/Music");
+            await logIn();
             return;
         }
-
-        await model.InitializeOnLoad();
     }
 
     private async Task onAppStatusChanged()
     {
         if (model.AppStatus == IAppModel.Status.Initialized)
             StateHasChanged();
+    }
+
+    private async Task logIn()
+    {
+        showOverlay(true);
+        await model.InitializeOnLogin();
+        showOverlay(false);
+
+        NavigationManager.NavigateTo("/Music");
     }
 
     private async Task validateUser()
@@ -87,10 +91,7 @@
             return;
         }
 
-        showOverlay(true);
-        await model.InitializeOnLogin();
-        showOverlay(false);
-        NavigationManager.NavigateTo("/Music");
+        await logIn();
     }
 
     private void showOverlay(bool show)

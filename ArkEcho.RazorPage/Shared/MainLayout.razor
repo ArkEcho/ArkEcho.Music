@@ -5,34 +5,38 @@
 @inject NavigationManager NavigationManager
 
 <MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
-    <MudPaper Class="d-flex flex-grow-1 justify-start appbarstyle" Style="" Elevation="0">
-        <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
+    <MudPaper Class="d-flex flex-grow-1 justify-start appbarstyle" Elevation="0">
+        <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(!loggedIn())" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
-        <MudStack Row="true">
-            <svg class="mt-2 ml-n1" width="32px" height="32px">
+        <MudStack Row="true" Spacing="0">
+            <svg class="mt-2" width="32px" height="32px">
                 @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
             </svg>
-            <MudText Class="mt-2 ml-n1" Typo="Typo.h5">Music</MudText>
+            <MudText Class="mt-2" Typo="Typo.h5">Music</MudText>
+
             @if (environment.Development)
             {
-                <MudText Class="mx-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">xs</MudText>
-                <MudText Class="mx-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">sm</MudText>
-                <MudText Class="mx-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">md</MudText>
-                <MudText Class="mx-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">lg</MudText>
-                <MudText Class="mx-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">xl</MudText>
-                <MudText Class="mx-2 d-none d-xxl-flex" Typo="Typo.h5">xxl</MudText>
+                <MudText Class="mt-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">&nbsp;&nbsp; xs</MudText>
+                <MudText Class="mt-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">&nbsp;&nbsp;sm</MudText>
+                <MudText Class="mt-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">&nbsp;&nbsp;md</MudText>
+                <MudText Class="mt-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">&nbsp;&nbsp; lg</MudText>
+                <MudText Class="mt-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">&nbsp;&nbsp;xl</MudText>
+                <MudText Class="mt-2 d-none d-xxl-flex" Typo="Typo.h5">&nbsp;&nbsp;xxl</MudText>
             }
         </MudStack>
     </MudPaper>
 
-    <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" Elevation="0">
-        <MudFab Class="mr-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
-        <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
-            <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
-            <MudDivider Class="ma-2"/>
-            <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
-        </MudPopover>
-    </MudPaper>
+    @if (loggedIn())
+    {
+        <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" Elevation="0">
+            <MudFab Class="mr-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
+            <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
+                <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
+                <MudDivider Class="ma-2"/>
+                <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
+            </MudPopover>
+        </MudPaper>
+    }
 
     @if (environment.Platform == Resources.Platform.Windows)
     {
@@ -56,10 +60,15 @@
 </style>
 
 @code
-{
+    {
     // TODO: Sync Status in Model, Anzeige über ICON in App Leiste -> Link zu Sync Page
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
+
+    private bool loggedIn()
+    {
+        return (int)model.AppStatus >= 50;
+    }
 
     protected override async Task OnInitializedAsync()
     {

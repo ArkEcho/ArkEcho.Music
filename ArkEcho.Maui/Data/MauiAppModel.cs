@@ -30,11 +30,13 @@ namespace ArkEcho.Maui
         public override async Task<bool> InitializeOnLogin()
         {
             List<MusicFile> missing = new();
+
+            // TODO: Give error on success & missing
             bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
 
             mauiHelper.SetDragArea(false);
 
-            return !success || missing.Count > 0;
+            return await base.InitializeOnLogin();
         }
 
         public override Task LogoutUser()
