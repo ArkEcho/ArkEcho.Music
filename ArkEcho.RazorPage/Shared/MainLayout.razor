@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 
 <MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
-    <MudPaper Class="d-flex flex-grow-1 justify-start appbarstyle" Elevation="0">
+    <MudPaper Class="d-flex justify-start appbarstyle" Elevation="0">
         <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(!loggedIn())" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
         <MudStack Row="true" Spacing="0">
@@ -26,11 +26,13 @@
         </MudStack>
     </MudPaper>
 
+    <MudPaper Class="d-flex flex-grow-1 justify-center appbarstyle" Elevation="0" />
+
     @if (loggedIn())
     {
-        <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" Elevation="0">
-            <MudFab Class="mr-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="A" OnClick="userPopoverToggle">A</MudFab>
-            <MudPopover OverflowBehavior="OverflowBehavior.FlipNever" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight" Class="pa-2">
+        <MudPaper Class="d-flex justify-end appbarstyle" Elevation="0">
+            <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="Z" OnClick="userPopoverToggle" />
+            <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                 <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
                 <MudDivider Class="ma-2"/>
                 <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
@@ -53,6 +55,7 @@
 </MudPaper>
 
 <MudOverlay Class="mud-overlay-popover" Visible="userPopoverOpen" OnClick="userPopoverToggle" DarkBackground="false" />
+
 <style>
     .appbarstyle{
         background-color: var(--mud-palette-background-grey);
