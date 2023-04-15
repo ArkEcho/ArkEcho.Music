@@ -1,12 +1,10 @@
 
-name: Build & Test on push
+name: Build & Test on push to develop
 
 on:
   push:
-    branches: 
-      - master
+    branches:
       - develop
-      - release/*
 
   workflow_dispatch:
   
