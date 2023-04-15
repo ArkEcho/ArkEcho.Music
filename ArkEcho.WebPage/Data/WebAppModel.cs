@@ -19,14 +19,14 @@ namespace ArkEcho.WebPage
             jsPlayer = new JSPlayer(jsRuntime, logger, $"https://192.168.178.20:5002");
         }
 
-        protected async override Task<bool> initializePlayer()
+        protected override async Task<bool> initializePlayer()
         {
             return jsPlayer.InitPlayer();
         }
 
         public override async Task<bool> InitializeOnLogin()
         {
-            return true;
+            return await base.InitializeOnLogin();
         }
 
         public override Task StartSynchronizeMusic()

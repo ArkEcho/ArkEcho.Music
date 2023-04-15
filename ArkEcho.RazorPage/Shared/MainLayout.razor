@@ -9,19 +9,19 @@
         <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(!loggedIn())" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
         <MudStack Row="true" Spacing="0">
-            <svg class="mt-2" width="32px" height="32px">
+            <svg class="mt-1" width="36px" height="36px">
                 @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
             </svg>
-            <MudText Class="mt-2" Typo="Typo.h5">Music</MudText>
+            <MudText Class="mt-1" Typo="Typo.h4">Music</MudText>
 
             @if (environment.Development)
             {
-                <MudText Class="mt-2 d-none d-xs-flex d-sm-none" Typo="Typo.h5">&nbsp;&nbsp; xs</MudText>
-                <MudText Class="mt-2 d-none d-sm-flex d-md-none" Typo="Typo.h5">&nbsp;&nbsp;sm</MudText>
-                <MudText Class="mt-2 d-none d-md-flex d-lg-none" Typo="Typo.h5">&nbsp;&nbsp;md</MudText>
-                <MudText Class="mt-2 d-none d-lg-flex d-xl-none" Typo="Typo.h5">&nbsp;&nbsp; lg</MudText>
-                <MudText Class="mt-2 d-none d-xl-flex d-xxl-none" Typo="Typo.h5">&nbsp;&nbsp;xl</MudText>
-                <MudText Class="mt-2 d-none d-xxl-flex" Typo="Typo.h5">&nbsp;&nbsp;xxl</MudText>
+                <MudText Class="mt-1 d-none d-xs-flex d-sm-none" Typo="Typo.h4">&nbsp;&nbsp; xs</MudText>
+                <MudText Class="mt-1 d-none d-sm-flex d-md-none" Typo="Typo.h4">&nbsp;&nbsp;sm</MudText>
+                <MudText Class="mt-1 d-none d-md-flex d-lg-none" Typo="Typo.h4">&nbsp;&nbsp;md</MudText>
+                <MudText Class="mt-1 d-none d-lg-flex d-xl-none" Typo="Typo.h4">&nbsp;&nbsp; lg</MudText>
+                <MudText Class="mt-1 d-none d-xl-flex d-xxl-none" Typo="Typo.h4">&nbsp;&nbsp;xl</MudText>
+                <MudText Class="mt-1 d-none d-xxl-flex" Typo="Typo.h4">&nbsp;&nbsp;xxl</MudText>
             }
         </MudStack>
     </MudPaper>
