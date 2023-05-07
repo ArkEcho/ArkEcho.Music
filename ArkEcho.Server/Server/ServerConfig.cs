@@ -20,9 +20,6 @@ namespace ArkEcho.Server
         public bool Compression { get; private set; } = false;
 
         [JsonProperty]
-        public int Port { get; private set; } = 5002;
-
-        [JsonProperty]
         public Logging.LogLevel LogLevel { get; set; } = Logging.LogLevel.Important;
     }
 }
