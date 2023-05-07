@@ -16,7 +16,7 @@ namespace ArkEcho.WebPage
         public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, AppEnvironment environment)
             : base(environment, localStorage)
         {
-            jsPlayer = new JSPlayer(jsRuntime, logger, $"https://192.168.178.20:5002");
+            jsPlayer = new JSPlayer(jsRuntime, logger, environment.ServerAddress);
         }
 
         protected override async Task<bool> initializePlayer()

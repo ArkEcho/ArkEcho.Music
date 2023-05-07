@@ -29,7 +29,7 @@ namespace ArkEcho.RazorPage.Data
         {
             Environment = environment;
 
-            rest = new Rest($"https://192.168.178.20:5002", Environment.UserHttpClientHandler, false);
+            rest = new Rest(environment.ServerAddress, Environment.UserHttpClientHandler, false);
 
             logger = new RestLogger(Environment, "AppModel", rest);
 

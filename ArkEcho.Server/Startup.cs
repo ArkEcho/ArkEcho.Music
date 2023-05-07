@@ -20,7 +20,7 @@ namespace ArkEcho.Server
             services.AddControllers();
 
             // For Wasm Page
-            services.AddCors();
+            //services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,9 +31,9 @@ namespace ArkEcho.Server
 
             // For Wasm Page
             // For Testing in Firefox: Settings -> Security -> Certificates -> Server -> Add server Address (while Running)
-            app.UseCors(builder => builder.AllowAnyOrigin()
-                              .AllowAnyHeader()
-                              .AllowAnyMethod());
+            //app.UseCors(builder => builder.AllowAnyOrigin()
+            //                  .AllowAnyHeader()
+            //                  .AllowAnyMethod());
 
             app.UseEndpoints(endpoints =>
             {

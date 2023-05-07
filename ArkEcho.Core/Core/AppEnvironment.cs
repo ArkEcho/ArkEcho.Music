@@ -15,9 +15,12 @@ namespace ArkEcho.Core
         // TODO: Better Name here and in Rest
         public bool UserHttpClientHandler { get; set; } = false;
 
+        public string ServerAddress { get; set; } = string.Empty;
+
         public AppEnvironment(string appName, bool development, Resources.Platform platform, bool userHttpClientHandler)
         {
             AppName = appName;
+            ServerAddress = "https://192.168.178.20:5002";
             Development = development;
             Platform = platform;
             UserHttpClientHandler = userHttpClientHandler;
