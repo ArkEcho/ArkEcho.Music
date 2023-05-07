@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.5" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -20,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ArkEcho.Core\ArkEcho.Core.csproj" />
+    <ProjectReference Include="..\ArkEcho.RazorPage\ArkEcho.RazorPage.csproj" />
+    <ProjectReference Include="..\ArkEcho.WebPage\ArkEcho.WebPage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

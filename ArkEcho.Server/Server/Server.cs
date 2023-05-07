@@ -1,7 +1,5 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.Server.Database;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +15,6 @@ namespace ArkEcho.Server
     {
         private const string serverConfigFileName = "ServerConfig.json";
 
-        private IWebHost host = null;
         private MusicLibrary library = null;
         private MusicLibraryWorker musicWorker = null;
         private Logger logger = null;
@@ -27,6 +24,7 @@ namespace ArkEcho.Server
 
         /// <summary>   
         /// SingleTon
+        /// TODO: Remove Singleton
         /// </summary>
         public static Server Instance { get; } = new Server();
 
@@ -105,12 +103,6 @@ namespace ArkEcho.Server
 
             loadMusicLibrary();
 
-            host = WebHost.CreateDefaultBuilder()
-                                    .UseUrls($"https://*:{Config.Port}")
-                                    .UseKestrel()
-                                    .UseStartup<Startup>()
-                                    .Build();
-
             Initialized = true;
 
             //for (int i = 0; i < 5000000; i++)
@@ -158,19 +150,17 @@ namespace ArkEcho.Server
 
         private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
-            if (e.Result != null)
-            {
-                library = (MusicLibrary)e.Result;
-
-                Console.WriteLine($"#####################################################################");
-                Console.WriteLine($"    Library loaded! {library.MusicFiles.Count} Music Files");
-                Console.WriteLine($"#####################################################################");
-            }
-            else
+            if (e.Result == null)
             {
                 logger.LogError("### Error loading Music Library, stopping!");
-                Stop();
+                return;
             }
+
+            library = (MusicLibrary)e.Result;
+
+            Console.WriteLine($"#####################################################################");
+            Console.WriteLine($"    Library loaded! {library.MusicFiles.Count} Music Files");
+            Console.WriteLine($"#####################################################################");
         }
 
         public List<TransferFileBase> GetAllFiles()
@@ -199,22 +189,6 @@ namespace ArkEcho.Server
         public string GetAlbumCover(Guid guid)
         {
             return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
-        }
-
-        public void Start()
-        {
-            host.Run();
-        }
-
-        public void Stop()
-        {
-            host.StopAsync();
-        }
-
-        public void Restart()
-        {
-            RestartRequested = true;
-            Stop();
         }
 
         public bool Initialized { get; private set; } = false;
