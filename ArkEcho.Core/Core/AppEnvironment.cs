@@ -20,7 +20,7 @@ namespace ArkEcho.Core
         public AppEnvironment(string appName, bool development, Resources.Platform platform, bool userHttpClientHandler)
         {
             AppName = appName;
-            ServerAddress = "https://localhost:7236";
+            ServerAddress = "https://192.168.178.20:7236"; // TODO: AAA Server Address
             Development = development;
             Platform = platform;
             UserHttpClientHandler = userHttpClientHandler;
