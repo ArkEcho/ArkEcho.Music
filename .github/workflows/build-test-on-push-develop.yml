@@ -42,19 +42,3 @@ jobs:
         run: dotnet restore ${{ env.MauiSLN }}
       - name: Build Maui
         run: dotnet build ${{ env.MauiSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false -p:RunAOTCompilation=false
-
-
-  restore-build-webpage:
-
-    runs-on: windows-latest
-    
-    env:
-      WebPageSLN: Arkecho.WebPage.sln
-     
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Restore WebPage
-        run: dotnet restore ${{ env.WebPageSLN }}
-      - name: Build WebPage
-        run: dotnet build ${{ env.WebPageSLN }} --no-restore --configuration Release -p:PublishReadyToRun=false -p:PublishTrimmed=false -p:RunAOTCompilation=false
