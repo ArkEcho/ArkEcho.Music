@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
 {
-    // TODO: Eigene Playlists erstellen speichern verwalten
-    // TODO: Playlists ändern und über Rest übertragen
     public sealed class Server : IDisposable
     {
         private const string serverConfigFileName = "ServerConfig.json";
@@ -191,6 +191,19 @@ namespace ArkEcho.Server
         public bool Initialized { get; private set; } = false;
 
         public bool RestartRequested { get; private set; } = false;
+
+        public string GetAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
 
         #region Dispose
 

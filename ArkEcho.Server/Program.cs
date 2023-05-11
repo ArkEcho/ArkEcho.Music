@@ -9,6 +9,7 @@ using (Server.Instance)
     if (!await Server.Instance.Init())
     {
         Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
+        Console.ReadLine();
         return;
     }
 
@@ -39,10 +40,16 @@ using (Server.Instance)
 
     app.UseRouting();
 
-
     app.MapRazorPages();
     app.MapControllers();
     app.MapFallbackToFile("index.html");
+
+    // TODO: Better Solution
+    string port = ":7236";
+    app.Urls.Add("https://" + Server.Instance.GetAddress() + port);
+    app.Urls.Add("https://localhost" + port);
+    foreach (string url in app.Urls)
+        Console.WriteLine($"Listening on: {url}");
 
     app.Run();
 }

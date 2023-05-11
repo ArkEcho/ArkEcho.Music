@@ -6,6 +6,9 @@ using System.Text.Json.Serialization;
 
 namespace ArkEcho.Core
 {
+    // TODO: Eigene Playlists erstellen speichern verwalten
+    // TODO: Playlists ändern und über Rest übertragen
+    // TODO: MudBlazor DragZone liste Verschiebbar
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Playlist : TransferFileBase
     {
