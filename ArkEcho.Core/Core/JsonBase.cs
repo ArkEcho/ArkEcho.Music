@@ -38,7 +38,7 @@ namespace ArkEcho.Core
 
         public async Task<bool> LoadFromFile(string Folder, bool RewriteAddMissingParams = false)
         {
-            string filepath = $"{Folder}\\{fileName}";
+            string filepath = $"{Folder}{fileName}";
             bool foundCorrectExistingFile = false;
 
             Console.WriteLine($"Loading Config File {filepath}");

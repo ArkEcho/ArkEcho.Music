@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -46,17 +45,15 @@ namespace ArkEcho.Server
 
             Environment = new AppEnvironment(Resources.ARKECHOSERVER, Debugger.IsAttached, Resources.Platform.Server, true);
 
-            string executingLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
             Config = new ServerConfig(serverConfigFileName);
-            if (!Config.LoadFromFile(executingLocation, true).Result)
+            if (!Config.LoadFromFile(AppContext.BaseDirectory, true).Result)
             {
                 Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Server");
                 return false;
             }
             else if (string.IsNullOrEmpty(Config.MusicFolder.LocalPath) || !Directory.Exists(Config.MusicFolder.LocalPath))
             {
-                Console.WriteLine("### Music File Path not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
+                Console.WriteLine($"### Music File Path {Config.MusicFolder.LocalPath} not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
             else if (Directory.GetFiles(Config.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(Config.MusicFolder.LocalPath).Length == 0)
