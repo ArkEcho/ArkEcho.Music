@@ -11,7 +11,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class MusicController : BaseController
     {
-        public MusicController() : base("Music")
+        public MusicController(Server server) : base(server, "Music")
         {
         }
 
@@ -28,13 +28,13 @@ namespace ArkEcho.Server
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            MusicFile musicFile = Server.GetMusicFile(guid);
+            MusicFile musicFile = server.GetMusicFile(guid);
 
             if (musicFile == null)
                 return BadRequest();
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.FullPath);
-            if (Server.Config.Compression)
+            if (server.Config.Compression)
                 content = await ZipCompression.Zip(content);
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
@@ -50,7 +50,7 @@ namespace ArkEcho.Server
         [HttpGet("Library")]
         public async Task<ActionResult> GetLibraryGuid()
         {
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -67,7 +67,7 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            string cover = Server.GetAlbumCover(guid);
+            string cover = server.GetAlbumCover(guid);
 
             if (string.IsNullOrEmpty(cover))
             {
@@ -82,7 +82,7 @@ namespace ArkEcho.Server
         [HttpGet("MusicFiles/{countIndex}")]
         public async Task<ActionResult> GetMusicLibrary(int countIndex)
         {
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -101,7 +101,7 @@ namespace ArkEcho.Server
         [HttpGet("Albums")]
         public async Task<ActionResult> GetAlbumList(int countIndex)
         {
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -112,7 +112,7 @@ namespace ArkEcho.Server
         [HttpGet("AlbumArtists")]
         public async Task<ActionResult> GetAlbumArtistsList(int countIndex)
         {
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -123,7 +123,7 @@ namespace ArkEcho.Server
         [HttpGet("Playlists")]
         public async Task<ActionResult> GetPlaylistsList()
         {
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -135,7 +135,7 @@ namespace ArkEcho.Server
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
@@ -160,7 +160,7 @@ namespace ArkEcho.Server
             else if (rating < 0 || rating > 5)
                 return BadRequest();
 
-            MusicLibrary library = Server.Instance.GetMusicLibrary();
+            MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 

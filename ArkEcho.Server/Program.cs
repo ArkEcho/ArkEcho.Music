@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-using (Server.Instance)
+using (Server server = new Server())
 {
-    if (!await Server.Instance.Init())
+    if (!await server.Init())
     {
         Console.WriteLine("Problem on Initializing the ArkEcho.Server!");
         Console.ReadLine();
@@ -15,7 +15,7 @@ using (Server.Instance)
 
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddSingleton(Server.Instance);
+    builder.Services.AddSingleton(server);
     builder.Services.AddControllersWithViews();
     builder.Services.AddRazorPages();
 
@@ -46,7 +46,7 @@ using (Server.Instance)
 
     // TODO: Better Solution
     string port = ":7236";
-    app.Urls.Add("https://" + Server.Instance.GetAddress() + port);
+    app.Urls.Add("https://" + server.GetAddress() + port);
     app.Urls.Add("https://localhost" + port);
     foreach (string url in app.Urls)
         Console.WriteLine($"Listening on: {url}");

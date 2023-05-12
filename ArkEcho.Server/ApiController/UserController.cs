@@ -9,7 +9,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class AuthenticateController : BaseController
     {
-        public AuthenticateController() : base("Authenticate")
+        public AuthenticateController(Server server) : base(server, "Authenticate")
         {
         }
 
@@ -24,7 +24,7 @@ namespace ArkEcho.Server
 
             User user = await getUserFromHttpRequest();
 
-            User checkedUser = await Server.AuthenticateUserForLoginAsync(user);
+            User checkedUser = await server.AuthenticateUserForLoginAsync(user);
 
             return await checkUserMakeAnswer(checkedUser);
         }
@@ -42,7 +42,7 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            Server.LogoutUser(guid);
+            server.LogoutUser(guid);
 
             return Ok();
         }
@@ -60,7 +60,7 @@ namespace ArkEcho.Server
 
             Guid guid = new Guid(guidString);
 
-            User checkedUser = Server.CheckUserToken(guid);
+            User checkedUser = server.CheckUserToken(guid);
 
             return await checkUserMakeAnswer(checkedUser);
         }
@@ -76,7 +76,7 @@ namespace ArkEcho.Server
 
             User user = await getUserFromHttpRequest();
 
-            bool success = await Server.UpdateUserAsync(user);
+            bool success = await server.UpdateUserAsync(user);
 
             return success ? Ok() : BadRequest();
         }

@@ -15,11 +15,11 @@
         @foreach (MusicFile file in MusicList)
         {
             <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">
-                <td class="noselection">@file.Track</td>
-                <td class="noselection">@file.Title</td>
-                <td class="noselection">@file.Performer</td>
-                <td class="noselection">@file.Duration.ConvertTimeMilliseconds()</td>
-                <td class="noselection">
+                <td class="noselection px-6 py-1">@file.Track</td>
+                <td class="noselection px-6 py-1">@file.Title</td>
+                <td class="noselection px-6 py-1">@file.Performer</td>
+                <td class="noselection px-6 py-1">@file.Duration.ConvertTimeMilliseconds()</td>
+                <td class="noselection px-6 py-1">
                     @{
                         int value = file.Rating;
                         <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />

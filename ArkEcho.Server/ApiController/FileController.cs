@@ -12,7 +12,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class FileController : BaseController
     {
-        public FileController() : base("File")
+        public FileController(Server server) : base(server, "File")
         {
 
         }
@@ -27,7 +27,7 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            List<TransferFileBase> files = Server.GetAllFiles();
+            List<TransferFileBase> files = server.GetAllFiles();
 
             if (files == null)
             {

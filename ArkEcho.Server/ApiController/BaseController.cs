@@ -11,12 +11,13 @@ namespace ArkEcho.Server
 
         protected string ControllerName { get; private set; } = string.Empty;
 
-        protected Server Server { get; private set; } = Server.Instance;
+        protected Server server = null;
 
-        public BaseController(string controllerName) : base()
+        public BaseController(Server server, string controllerName) : base()
         {
+            this.server = server;
             this.ControllerName = controllerName;
-            Logger = new FileLogger(Server.Instance.Environment, $"{controllerName}-REST", Server.Instance.LoggingWorker);
+            Logger = new FileLogger(server.Environment, $"{controllerName}-REST", server.LoggingWorker);
         }
 
         protected async Task<string> getStringFromHttpBody()

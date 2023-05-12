@@ -8,7 +8,7 @@ namespace ArkEcho.Server
     [ApiController]
     public class LoggingController : BaseController
     {
-        public LoggingController() : base("Logging")
+        public LoggingController(Server server) : base(server, "Logging")
         {
         }
 
@@ -24,7 +24,7 @@ namespace ArkEcho.Server
             LogMessage message = new();
             await message.LoadFromJsonString(requestString);
 
-            Server.LoggingWorker.AddLogMessage(message);
+            server.LoggingWorker.AddLogMessage(message);
 
             return Ok();
         }

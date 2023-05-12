@@ -21,18 +21,12 @@ namespace ArkEcho.Server
         private IDatabaseAccess dbAccess = null;
         private List<User> loggedInUsers = new List<User>();
 
-        /// <summary>   
-        /// SingleTon
-        /// TODO: Remove Singleton
-        /// </summary>
-        public static Server Instance { get; } = new Server();
-
         public ServerConfig Config { get; private set; } = null;
 
         public FileLoggingWorker LoggingWorker { get; private set; } = null;
 
         public AppEnvironment Environment { get; private set; } = null;
-        private Server()
+        public Server()
         {
             library = new MusicLibrary();
             dbAccess = new SqliteDatabaseAccess();
