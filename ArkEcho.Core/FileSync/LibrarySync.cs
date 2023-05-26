@@ -117,7 +117,7 @@ namespace ArkEcho.Core
 
                     double test = ((double)count / missing.Count) * 50;
                     int progress = Convert.ToInt32(test + 20);
-                    progressEvent($"Loading {file.FileName}", progress);
+                    progressEvent($"{file.Title}\r\n{file.Performer}", progress);
 
                     bool success = await loadFileFromServer(file);
                     if (!success)

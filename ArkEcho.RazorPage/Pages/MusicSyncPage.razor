@@ -9,7 +9,7 @@
     <MudPaper Class="my-4 pa-2" Outlined="true">
         <MudStack>
             <MudStack Class="my-1" Row="true">
-                <MudField Label="Music Library Path" Variant="Variant.Filled">@Model.MusicFolder</MudField>
+                <MudField Label="Music Library Path" Class="overflow-x-auto" Variant="Variant.Filled">@Model.MusicFolder</MudField>
                 @if (showChangeFolderButton())
                 {
                     <MudIconButton Class="mt-3" Icon="@Icons.Material.Rounded.FolderOpen" Disabled="@(status == Resources.Status.Busy)" 
@@ -24,7 +24,7 @@
             <MudPaper Class=" my-1 d-flex justify-center" Elevation="0">
                 <MudStack Spacing="1">
                     <MudText Align="Align.Center" Typo="Typo.body1">@(status == Resources.Status.Idle ? "Idle" : "Syncing")</MudText>
-                    <MudText Align="Align.Center" Typo="Typo.body2">@syncMessage</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.body2">@((MarkupString)syncMessage)</MudText>
                 </MudStack>
             </MudPaper>
 
@@ -57,8 +57,8 @@
 
         if(result)
             Snackbar.Add("Music Folder changed successfully!", Severity.Success, config => { config.ShowCloseIcon = true; });
-        else
-            Snackbar.Add("Changing Music Folder failed!", Severity.Error, config => { config.ShowCloseIcon = true; });
+            
+        await InvokeAsync(StateHasChanged);
     }
 
     private async void synchronizeMusic()
@@ -76,7 +76,7 @@
 
     private async void OnProgressEvent(object sender, LibrarySync.ProgressEventArgs args)
     {
-        syncMessage = args.Message;
+        syncMessage = args.Message.Replace("\r\n", "<br>");
         syncProgress = args.ProgressPercent;
 
         await InvokeAsync(StateHasChanged);

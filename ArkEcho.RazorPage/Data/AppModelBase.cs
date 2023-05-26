@@ -81,20 +81,25 @@ namespace ArkEcho.RazorPage.Data
             if (!await initializePlayer())
                 return false;
 
-            return await LoadLibraryFromServer();
+            SetStatus(IAppModel.Status.LoadingLibrary);
+
+            if (await LoadLibraryFromServer())
+            {
+                SetStatus(IAppModel.Status.Initialized);
+                return true;
+            }
+            else
+                return false;
         }
 
         protected async Task<bool> LoadLibraryFromServer()
         {
-            SetStatus(IAppModel.Status.LoadingLibrary);
-
             if (Library != null)
             {
                 Guid serverLibraryGuid = await rest.GetMusicLibraryGuid();
                 if (serverLibraryGuid == Library.GUID)
                 {
                     logger.LogDebug($"Library already loaded and synced with Server");
-                    SetStatus(IAppModel.Status.Initialized);
                     return true;
                 }
             }
@@ -112,8 +117,6 @@ namespace ArkEcho.RazorPage.Data
 
             Console.WriteLine($"Loading Library {sw.ElapsedMilliseconds} ms");
 
-            SetStatus(IAppModel.Status.LoadingAlbumCover);
-
             sw.Restart();
 
             foreach (Album album in Library.Album)
@@ -122,8 +125,6 @@ namespace ArkEcho.RazorPage.Data
                     album.Cover64 = await GetAlbumCover(album.GUID);
             }
             Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
-
-            SetStatus(IAppModel.Status.Initialized);
 
             if (Library.MusicFiles.Count > 0)
             {
