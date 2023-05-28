@@ -21,22 +21,13 @@ namespace ArkEcho.WebPage
 
         protected override async Task<bool> initializePlayer()
         {
-            return jsPlayer.InitPlayer();
+            return jsPlayer.InitPlayer(rest.ApiToken.ToString());
         }
 
-        public override async Task<bool> InitializeOnLogin()
-        {
-            return await base.InitializeOnLogin();
-        }
+        public override async Task<bool> InitializeOnLogin() => await base.InitializeOnLogin();
 
-        public override Task StartSynchronizeMusic()
-        {
-            throw new NotImplementedException();
-        }
+        public override Task StartSynchronizeMusic() => throw new NotImplementedException();
 
-        public override Task<bool> ChangeMusicFolder()
-        {
-            throw new NotImplementedException();
-        }
+        public override Task<bool> ChangeMusicFolder() => throw new NotImplementedException();
     }
 }

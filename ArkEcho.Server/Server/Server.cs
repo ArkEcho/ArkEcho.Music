@@ -104,10 +104,11 @@ namespace ArkEcho.Server
             return Initialized;
         }
 
-        public async Task<User> AuthenticateUserForLoginAsync(User user)
+        public async Task<User> AuthenticateUserForLoginAsync(string userName, string userPasswordEncrypted)
         {
+            // TODO: Select by name and password
             List<User> users = await dbAccess.GetUsersAsync();
-            User toLogin = users.Find(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(user.Password, StringComparison.OrdinalIgnoreCase));
+            User toLogin = users.Find(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(userPasswordEncrypted, StringComparison.OrdinalIgnoreCase));
             if (toLogin == null)
                 return null;
 

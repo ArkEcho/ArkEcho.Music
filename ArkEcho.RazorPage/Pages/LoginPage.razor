@@ -17,7 +17,7 @@
         <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
                         Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
         
-        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != IAppModel.Status.Initialized)">Login</MudButton>
+        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != IAppModel.Status.Connected)">Login</MudButton>
         <AppStatus ReconnectClicked="reconnectClicked" />
     </MudStack>
 </MudPaper>
@@ -40,7 +40,7 @@
 
     private async Task inputKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == IAppModel.Status.Initialized)
+        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == IAppModel.Status.Connected)
             await validateUser();
     }
 
@@ -51,7 +51,7 @@
 
     protected async override Task OnInitializedAsync()
     {
-        model.StatusChanged += () => onAppStatusChanged();
+        model.StatusChanged += () => StateHasChanged();
 
         await model.InitializeOnLoad();
 
@@ -62,17 +62,16 @@
         }
     }
 
-    private async Task onAppStatusChanged()
-    {
-        if (model.AppStatus == IAppModel.Status.Initialized)
-            StateHasChanged();
-    }
-
     private async Task logIn()
     {
         showOverlay(true);
-        await model.InitializeOnLogin();
+
+        bool result = await model.InitializeOnLogin();
+
         showOverlay(false);
+
+        if (!result)
+            return;
 
         NavigationManager.NavigateTo("/Music");
     }

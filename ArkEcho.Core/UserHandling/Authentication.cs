@@ -36,17 +36,21 @@ namespace ArkEcho.WebPage
             User authenticated = await rest.AuthenticateUser(username, Encryption.EncryptSHA256(password));
 
             if (authenticated != null)
+            {
                 await localStorage.SetItemAsync(SESSIONTOKEN, authenticated.SessionToken);
+                rest.ApiToken = await rest.GetApiToken(authenticated.SessionToken);
+            }
 
             return authenticated;
         }
 
-        public async Task<bool> MarkUserAsLoggedOut(Guid sessionToken)
+        public async Task<bool> LogoutUser()
         {
             try
             {
+                Guid accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
                 await localStorage.RemoveItemAsync(SESSIONTOKEN);
-                await rest.LogoutSession(sessionToken);
+                await rest.LogoutSession(accessToken);
                 return true;
             }
             catch (Exception)

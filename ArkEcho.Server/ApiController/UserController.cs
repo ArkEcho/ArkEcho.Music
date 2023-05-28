@@ -1,6 +1,8 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -36,9 +38,11 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            User user = await getUserFromHttpRequest();
+            List<string> content = (await getStringFromHttpBody()).FromBase64().Split(';', StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (content.Count != 2)
+                return BadRequest();
 
-            User checkedUser = await server.AuthenticateUserForLoginAsync(user);
+            User checkedUser = await server.AuthenticateUserForLoginAsync(content[0], content[1]);
 
             return await checkUserMakeAnswer(checkedUser);
         }

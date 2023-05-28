@@ -17,13 +17,13 @@ namespace ArkEcho.WebPage
             this.serverAddress = serverAddress;
         }
 
-        public bool InitPlayer()
+        public bool InitPlayer(string apiToken)
         {
             if (Initialized)
                 return Initialized;
 
             var dotNetReference = DotNetObjectReference.Create(this);
-            jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
+            jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference, Resources.ApiTokenHeaderKey, apiToken });
 
             Initialized = true;
             return Initialized;

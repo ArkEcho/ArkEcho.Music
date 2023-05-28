@@ -5,8 +5,10 @@ class HowlerPlayer {
         //this.LogPlayer('Created new HowlerPlayer!');
     }
 
-    Init(NETObject) {
+    Init(NETObject, ApiTokenHeaderKey, ApiToken) {
         this.NetObject = NETObject;
+        this.ApiTokenHeaderKey = ApiTokenHeaderKey;
+        this.ApiToken = ApiToken;
         //this.LogPlayer('HowlerPlayer initialized!');
     }
 
@@ -15,6 +17,12 @@ class HowlerPlayer {
         this.sound = new Howl({
             //preload: true,
             html5: true,
+
+            xhr: {
+                headers: {
+                    self.ApiTokenHeaderKey: self.ApiToken,
+                },
+            },
 
             src: [Source],
             autoplay: DirectPlay,

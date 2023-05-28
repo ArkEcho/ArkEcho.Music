@@ -15,6 +15,11 @@
 
     private List<Album> displayedData = null;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
     protected void startMusicAlbum(Album album)
     {
         List<MusicFile> files = model.Library.GetMusicFiles(album);

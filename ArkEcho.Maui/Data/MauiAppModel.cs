@@ -1,7 +1,4 @@
-﻿using ArkEcho.Core;
-using ArkEcho.RazorPage.Data;
-
-namespace ArkEcho.Maui
+﻿namespace ArkEcho.Maui
 {
     public class MauiAppModel : AppModelBase
     {
@@ -31,12 +28,14 @@ namespace ArkEcho.Maui
         {
             List<MusicFile> missing = new();
 
+            await base.InitializeOnLogin();
+
             // TODO: Give error on success & missing
             bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
 
             mauiHelper.SetDragArea(false);
 
-            return await base.InitializeOnLogin();
+            return success;
         }
 
         public override Task LogoutUser()

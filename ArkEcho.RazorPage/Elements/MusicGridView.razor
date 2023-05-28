@@ -66,6 +66,11 @@
         public List<Album> Elements { get; set; } = new List<Album>();
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
     private async Task albumListClicked(Album album)
     {
         // TODO: Eigener Dialog Service

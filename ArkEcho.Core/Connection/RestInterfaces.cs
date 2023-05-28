@@ -24,7 +24,7 @@ namespace ArkEcho.Core
 
         Task<bool> CheckSession(Guid sessionToken);
 
-        Task<bool> UpdateUser(Guid sessionToken, User userToUpdate);
+        Task<bool> UpdateUser(User userToUpdate);
 
         Task<Guid> GetApiToken(Guid sessionToken);
 

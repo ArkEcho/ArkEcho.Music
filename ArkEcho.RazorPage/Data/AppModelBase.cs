@@ -55,7 +55,7 @@ namespace ArkEcho.RazorPage.Data
 
             SetStatus(IAppModel.Status.Started);
 
-            await authentication.MarkUserAsLoggedOut(AuthenticatedUser.SessionToken);
+            await authentication.LogoutUser();
             AuthenticatedUser = null;
         }
 
@@ -76,19 +76,7 @@ namespace ArkEcho.RazorPage.Data
             }
 
             SetStatus(IAppModel.Status.Connected);
-
-            if (!await initializePlayer())
-                return false;
-
-            SetStatus(IAppModel.Status.LoadingLibrary);
-
-            if (await LoadLibraryFromServer())
-            {
-                SetStatus(IAppModel.Status.Initialized);
-                return true;
-            }
-            else
-                return false;
+            return true;
         }
 
         protected async Task<bool> LoadLibraryFromServer()
@@ -149,6 +137,16 @@ namespace ArkEcho.RazorPage.Data
 
         public virtual async Task<bool> InitializeOnLogin()
         {
+            if (!await initializePlayer())
+                return false;
+
+            SetStatus(IAppModel.Status.LoadingLibrary);
+
+            if (!await LoadLibraryFromServer())
+                return false;
+
+            Console.WriteLine($"Library {Library.MusicFiles.Count}");
+
             SetStatus(IAppModel.Status.Authorized);
             return true;
         }

@@ -13,7 +13,6 @@ namespace ArkEcho.RazorPage.Data
             NotConnected,
 
             LoadingLibrary = 20,
-            Initialized,
 
             Authorized = 50,
         }

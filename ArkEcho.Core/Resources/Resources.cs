@@ -17,6 +17,7 @@ namespace ArkEcho
         public const int MaxFileSize = int.MaxValue; // ~2Gb
         public const int RestChunkSize = 1048576;// 1mb
         public const int RestMusicFileCount = 100; // Only 500 Objects are transmitted at once
+        public const string ApiTokenHeaderKey = "API-TOKEN";
 
         public enum Status
         {

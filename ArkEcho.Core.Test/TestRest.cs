@@ -24,11 +24,6 @@ namespace ArkEcho.Core.Test
                 return stream.WriteAsync(data, 0, data.Length);
             }
 
-            public override Task<bool> GetResultBoolAsync()
-            {
-                throw new NotImplementedException();
-            }
-
             public override Task<byte[]> GetResultByteArrayAsync()
             {
                 throw new NotImplementedException();
@@ -50,7 +45,7 @@ namespace ArkEcho.Core.Test
             this.files = files;
         }
 
-        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
+        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent, bool apiToken)
         {
             if (method != HttpMethods.Get)
                 return null;
