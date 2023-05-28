@@ -17,9 +17,6 @@ namespace ArkEcho.Server
         public Uri DatabasePath { get; private set; } = new Uri("about:blank");
 
         [JsonProperty]
-        public bool Compression { get; private set; } = false;
-
-        [JsonProperty]
         public Logging.LogLevel LogLevel { get; set; } = Logging.LogLevel.Important;
     }
 }
