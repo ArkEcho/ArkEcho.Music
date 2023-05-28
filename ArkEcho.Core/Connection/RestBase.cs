@@ -19,8 +19,10 @@ namespace ArkEcho.Core
 
             public bool Success { get; set; } = false;
 
-            public abstract Task<string> GetResultContentAsStringAsync();
-            public abstract Task<byte[]> GetResultContentAsByteArrayAsync();
+            public abstract Task<string> GetResultStringAsync();
+            public abstract Task<byte[]> GetResultByteArrayAsync();
+            public abstract Task<bool> GetResultBoolAsync();
+            public abstract Task<Guid> GetResultGuidAsync();
             public abstract Task CopyContentToStreamAsync(Stream stream);
 
             protected virtual void Dispose(bool disposing)
@@ -38,13 +40,12 @@ namespace ArkEcho.Core
             }
         }
 
-        private bool compression = false;
-
         public int Timeout { get; set; } = 10000;
 
-        public RestBase(bool compression)
+        public Guid ApiToken { get; set; }
+
+        public RestBase()
         {
-            this.compression = compression;
         }
 
         public async Task<bool> CheckConnection()
@@ -53,36 +54,49 @@ namespace ArkEcho.Core
                 return response != null;
         }
 
-        public async Task<User> AuthenticateUserForLogin(User userToAuthenticate)
+        public async Task<User> GetUser(Guid sessionToken)
         {
-            string bodyContent = await userToAuthenticate.SaveToJsonString();
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate", sessionToken.ToString()))
+                return await checkAndReturnAuthenticateResult(response);
+        }
+
+        public async Task<User> AuthenticateUser(string userName, string userPasswordEnrypted)
+        {
+            string bodyContent = $"{userName};{userPasswordEnrypted}";
             using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64()))
                 return await checkAndReturnAuthenticateResult(response);
         }
-        public async Task<bool> LogoutUser(Guid guid)
-        {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Logout", guid.ToString()))
-                return response != null && response.Success;
-        }
 
-        public async Task<User> CheckUserToken(Guid guid)
+        public async Task<bool> UpdateUser(Guid sessionToken, User userToUpdate)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Token", guid.ToString()))
-                return await checkAndReturnAuthenticateResult(response);
-        }
-
-        public async Task<bool> UpdateUser(User userToUpdate)
-        {
-            string bodyContent = await userToUpdate.SaveToJsonString();
+            string bodyContent = $"{sessionToken};{await userToUpdate.SaveToJsonString()}";
             using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Update", bodyContent.ToBase64()))
                 return response != null && response.Success;
+        }
+
+        public async Task<bool> LogoutSession(Guid sessionToken)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Logout", sessionToken.ToString()))
+                return response != null && response.Success;
+        }
+
+        public async Task<bool> CheckSession(Guid sessionToken)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/SessionToken", sessionToken.ToString()))
+                return await response.GetResultBoolAsync();
+        }
+
+        public async Task<Guid> GetApiToken(Guid sessionToken)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/ApiToken", sessionToken.ToString()))
+                return await response.GetResultGuidAsync();
         }
 
         private async Task<User> checkAndReturnAuthenticateResult(HttpResponseBase response)
         {
             if (response != null && response.Success)
             {
-                string content = await response.GetResultContentAsStringAsync();
+                string content = await response.GetResultStringAsync();
 
                 content = content.FromBase64();
 
@@ -104,7 +118,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return Guid.Empty;
 
-                if (!Guid.TryParse(await response.GetResultContentAsStringAsync(), out Guid result))
+                if (!Guid.TryParse(await response.GetResultStringAsync(), out Guid result))
                     return Guid.Empty;
                 else
                     return result;
@@ -120,7 +134,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return null;
 
-                if (!Guid.TryParse(await response.GetResultContentAsStringAsync(), out Guid result))
+                if (!Guid.TryParse(await response.GetResultStringAsync(), out Guid result))
                     return null;
 
                 library.GUID = result;
@@ -131,7 +145,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return null;
 
-                library.Album = await Serializer.Deserialize<List<Album>>(await response.GetResultContentAsByteArrayAsync());
+                library.Album = await Serializer.Deserialize<List<Album>>(await response.GetResultByteArrayAsync());
             }
 
             using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/AlbumArtists", string.Empty))
@@ -139,7 +153,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return null;
 
-                library.AlbumArtists = await Serializer.Deserialize<List<AlbumArtist>>(await response.GetResultContentAsByteArrayAsync());
+                library.AlbumArtists = await Serializer.Deserialize<List<AlbumArtist>>(await response.GetResultByteArrayAsync());
             }
 
             using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Playlists", string.Empty))
@@ -147,7 +161,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return null;
 
-                library.Playlists = await Serializer.Deserialize<List<Playlist>>(await response.GetResultContentAsByteArrayAsync());
+                library.Playlists = await Serializer.Deserialize<List<Playlist>>(await response.GetResultByteArrayAsync());
             }
 
             int count = 0;
@@ -160,7 +174,7 @@ namespace ArkEcho.Core
                     if (response == null || !response.Success)
                         break;
 
-                    files = await Serializer.Deserialize<List<MusicFile>>(await response.GetResultContentAsByteArrayAsync());
+                    files = await Serializer.Deserialize<List<MusicFile>>(await response.GetResultByteArrayAsync());
                 }
                 count++;
 
@@ -181,7 +195,7 @@ namespace ArkEcho.Core
                 if (response == null || !response.Success)
                     return string.Empty;
 
-                return await response.GetResultContentAsStringAsync();
+                return await response.GetResultStringAsync();
             }
         }
 
@@ -234,6 +248,5 @@ namespace ArkEcho.Core
         }
 
         protected abstract Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent);
-
     }
 }

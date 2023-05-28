@@ -88,7 +88,7 @@ namespace ArkEcho.Core.Test
                 TransferFileBase tfbOne = getTestFileOne();
                 TransferFileBase tfbTwo = getTestFileTwo();
 
-                TestRest rest = new TestRest(new List<TransferFileBase> { tfbOne, tfbTwo }, false);
+                TestRest rest = new TestRest(new List<TransferFileBase> { tfbOne, tfbTwo });
 
                 streamOne = await rest.GetFile(tfbOne);
                 streamTwo = await rest.GetFile(tfbTwo);

@@ -13,6 +13,20 @@ namespace ArkEcho.Server
         {
         }
 
+        [HttpPost]
+        public async Task<ActionResult> GetUser()
+        {
+            if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+                return BadRequest();
+            }
+
+            User checkedUser = server.GetUserFromSessionToken(await getGuidFromHttpRequest());
+
+            return await checkUserMakeAnswer(checkedUser);
+        }
+
         [HttpPost("Login")]
         public async Task<ActionResult> AuthenticateUserForLogin()
         {
@@ -38,16 +52,12 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            string guidString = await getStringFromHttpBody();
-
-            Guid guid = new Guid(guidString);
-
-            server.LogoutUser(guid);
+            server.LogoutSession(await getGuidFromHttpRequest());
 
             return Ok();
         }
 
-        [HttpPost("Token")]
+        [HttpPost("SessionToken")]
         public async Task<ActionResult> CheckUserToken()
         {
             if (HttpContext.Request.ContentLength == 0)
@@ -56,13 +66,9 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            string guidString = await getStringFromHttpBody();
+            bool result = server.CheckSession(await getGuidFromHttpRequest());
 
-            Guid guid = new Guid(guidString);
-
-            User checkedUser = server.CheckUserToken(guid);
-
-            return await checkUserMakeAnswer(checkedUser);
+            return result ? Ok() : NotFound();
         }
 
         [HttpPost("Update")]
@@ -78,7 +84,30 @@ namespace ArkEcho.Server
 
             bool success = await server.UpdateUserAsync(user);
 
-            return success ? Ok() : BadRequest();
+            return success ? Ok() : NotFound();
+        }
+
+        [HttpPost("ApiToken")]
+        public async Task<ActionResult> GetApiToken()
+        {
+            if (HttpContext.Request.ContentLength == 0)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+                return BadRequest();
+            }
+
+            bool result = server.CheckSession(await getGuidFromHttpRequest());
+
+            return result ? Ok() : NotFound();
+        }
+
+        private async Task<Guid> getGuidFromHttpRequest()
+        {
+            string guidString = await getStringFromHttpBody();
+            if (Guid.TryParse(guidString, out Guid guid))
+                return guid;
+            else
+                return Guid.Empty;
         }
 
         private async Task<User> getUserFromHttpRequest()

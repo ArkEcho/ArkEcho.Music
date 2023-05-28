@@ -7,6 +7,7 @@ namespace ArkEcho.Core
     public interface IRest
     {
         int Timeout { get; set; }
+        Guid ApiToken { get; set; }
 
         // Control
         Task<bool> CheckConnection();
@@ -15,13 +16,17 @@ namespace ArkEcho.Core
         Task<bool> PostLogging(LogMessage logMessage);
 
         // User
-        Task<User> AuthenticateUserForLogin(User userToAuthenticate);
+        Task<User> AuthenticateUser(string userName, string userPasswordEnrypted);
 
-        Task<bool> LogoutUser(Guid guid);
+        Task<User> GetUser(Guid sessionToken);
 
-        Task<User> CheckUserToken(Guid guid);
+        Task<bool> LogoutSession(Guid sessionToken);
 
-        Task<bool> UpdateUser(User userToUpdate);
+        Task<bool> CheckSession(Guid sessionToken);
+
+        Task<bool> UpdateUser(Guid sessionToken, User userToUpdate);
+
+        Task<Guid> GetApiToken(Guid sessionToken);
 
         // Music
         Task<Guid> GetMusicLibraryGuid();

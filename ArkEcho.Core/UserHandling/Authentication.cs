@@ -8,7 +8,7 @@ namespace ArkEcho.WebPage
     {
         private Rest rest = null;
         private ILocalStorage localStorage = null;
-        private const string ACCESSTOKEN = "AE_ACCESS_TOKEN";
+        private const string SESSIONTOKEN = "AE_ACCESS_TOKEN";
 
         public Authentication(ILocalStorage localStorage, Rest rest)
         {
@@ -16,40 +16,37 @@ namespace ArkEcho.WebPage
             this.rest = rest;
         }
 
-        public async Task<User> GetAuthenticationState()
+        public async Task<bool> GetAuthenticationState()
         {
             Guid accessToken = Guid.Empty;
 
             try
             {
-                accessToken = await localStorage.GetItemAsync<Guid>(ACCESSTOKEN);
-
-                User authenticated = await rest.CheckUserToken(accessToken);
-
-                return authenticated;
+                accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
+                return await rest.CheckSession(accessToken);
             }
             catch (Exception ex)
             {
             }
-            return null;
+            return false;
         }
 
         public async Task<User> AuthenticateUserForLogin(string username, string password)
         {
-            User authenticated = await rest.AuthenticateUserForLogin(new User() { UserName = username, Password = password });
+            User authenticated = await rest.AuthenticateUser(username, Encryption.EncryptSHA256(password));
 
             if (authenticated != null)
-                await localStorage.SetItemAsync(ACCESSTOKEN, authenticated.AccessToken);
+                await localStorage.SetItemAsync(SESSIONTOKEN, authenticated.SessionToken);
 
             return authenticated;
         }
 
-        public async Task<bool> MarkUserAsLoggedOut(Guid accessToken)
+        public async Task<bool> MarkUserAsLoggedOut(Guid sessionToken)
         {
             try
             {
-                await rest.LogoutUser(accessToken);
-                await localStorage.RemoveItemAsync(ACCESSTOKEN);
+                await localStorage.RemoveItemAsync(SESSIONTOKEN);
+                await rest.LogoutSession(sessionToken);
                 return true;
             }
             catch (Exception)

@@ -24,12 +24,12 @@ namespace ArkEcho.Core
                 return responseMessage.Content.CopyToAsync(stream);
             }
 
-            public override Task<string> GetResultContentAsStringAsync()
+            public override Task<string> GetResultStringAsync()
             {
                 return responseMessage.Content.ReadAsStringAsync();
             }
 
-            public override Task<byte[]> GetResultContentAsByteArrayAsync()
+            public override Task<byte[]> GetResultByteArrayAsync()
             {
                 return responseMessage.Content.ReadAsByteArrayAsync();
             }
@@ -39,9 +39,24 @@ namespace ArkEcho.Core
                 responseMessage?.Dispose();
                 base.Dispose(disposing);
             }
+
+            public override async Task<bool> GetResultBoolAsync()
+            {
+                string result = await responseMessage.Content.ReadAsStringAsync();
+                return true;
+            }
+
+            public override async Task<Guid> GetResultGuidAsync()
+            {
+                string result = await responseMessage.Content.ReadAsStringAsync();
+                if (Guid.TryParse(result, out Guid guid))
+                    return guid;
+                else
+                    return Guid.Empty;
+            }
         }
 
-        public Rest(string connectionUrl, bool userHttpClientHandler, bool compression) : base(compression)
+        public Rest(string connectionUrl, bool userHttpClientHandler) : base()
         {
             if (userHttpClientHandler)
             {

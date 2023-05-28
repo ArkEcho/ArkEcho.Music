@@ -29,7 +29,7 @@ namespace ArkEcho.RazorPage.Data
         {
             Environment = environment;
 
-            rest = new Rest(environment.ServerAddress, Environment.UserHttpClientHandler, false);
+            rest = new Rest(environment.ServerAddress, Environment.UserHttpClientHandler);
 
             logger = new RestLogger(Environment, "AppModel", rest);
 
@@ -38,13 +38,12 @@ namespace ArkEcho.RazorPage.Data
 
         public async Task<bool> IsUserAuthenticated()
         {
-            AuthenticatedUser = await authentication.GetAuthenticationState();
-            return AuthenticatedUser != null;
+            return await authentication.GetAuthenticationState();
         }
 
         public async Task<bool> AuthenticateUser(string username, string password)
         {
-            AuthenticatedUser = await authentication.AuthenticateUserForLogin(username, Encryption.EncryptSHA256(password));
+            AuthenticatedUser = await authentication.AuthenticateUserForLogin(username, password);
             return AuthenticatedUser != null;
         }
 
@@ -56,7 +55,7 @@ namespace ArkEcho.RazorPage.Data
 
             SetStatus(IAppModel.Status.Started);
 
-            await authentication.MarkUserAsLoggedOut(AuthenticatedUser.AccessToken);
+            await authentication.MarkUserAsLoggedOut(AuthenticatedUser.SessionToken);
             AuthenticatedUser = null;
         }
 

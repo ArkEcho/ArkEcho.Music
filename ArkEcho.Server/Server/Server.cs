@@ -19,9 +19,11 @@ namespace ArkEcho.Server
         private Logger logger = null;
 
         private IDatabaseAccess dbAccess = null;
-        private List<User> loggedInUsers = new List<User>();
 
-        public ServerConfig Config { get; private set; } = null;
+        private List<User> loggedInUsers = new List<User>();
+        private List<TokenInstance> apiTokens = new List<TokenInstance>(); // TODO: Timeout
+
+        private ServerConfig serverConfig = null;
 
         public FileLoggingWorker LoggingWorker { get; private set; } = null;
 
@@ -39,18 +41,18 @@ namespace ArkEcho.Server
 
             Environment = new AppEnvironment(Resources.ARKECHOSERVER, Debugger.IsAttached, Resources.Platform.Server, true);
 
-            Config = new ServerConfig(serverConfigFileName);
-            if (!Config.LoadFromFile(AppContext.BaseDirectory, true).Result)
+            serverConfig = new ServerConfig(serverConfigFileName);
+            if (!serverConfig.LoadFromFile(AppContext.BaseDirectory, true).Result)
             {
                 Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Server");
                 return false;
             }
-            else if (string.IsNullOrEmpty(Config.MusicFolder.LocalPath) || !Directory.Exists(Config.MusicFolder.LocalPath))
+            else if (string.IsNullOrEmpty(serverConfig.MusicFolder.LocalPath) || !Directory.Exists(serverConfig.MusicFolder.LocalPath))
             {
-                Console.WriteLine($"### Music File Path {Config.MusicFolder.LocalPath} not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
+                Console.WriteLine($"### Music File Path {serverConfig.MusicFolder.LocalPath} not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
                 return false;
             }
-            else if (Directory.GetFiles(Config.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(Config.MusicFolder.LocalPath).Length == 0)
+            else if (Directory.GetFiles(serverConfig.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(serverConfig.MusicFolder.LocalPath).Length == 0)
             {
                 Console.WriteLine("### Given Music Directory is empty!");
                 return false;
@@ -58,7 +60,7 @@ namespace ArkEcho.Server
 
             try
             {
-                await dbAccess.ConnectToDatabase(Config.DatabasePath.LocalPath);
+                await dbAccess.ConnectToDatabase(serverConfig.DatabasePath.LocalPath);
 
                 var test = dbAccess.GetUsersAsync().Result;
 
@@ -81,13 +83,13 @@ namespace ArkEcho.Server
             }
 
             // We have the config -> initialize logging
-            LoggingWorker = new FileLoggingWorker(Config.LoggingFolder.LocalPath, Config.LogLevel);
+            LoggingWorker = new FileLoggingWorker(serverConfig.LoggingFolder.LocalPath, serverConfig.LogLevel);
             LoggingWorker.RunWorkerAsync();
 
             logger = new FileLogger(Environment, "Main", LoggingWorker);
 
             logger.LogStatic("Configuration for ArkEcho.Server:");
-            logger.LogStatic($"\r\n{Config.SaveToJsonString().Result}");
+            logger.LogStatic($"\r\n{serverConfig.SaveToJsonString().Result}");
 
             musicWorker = new MusicLibraryWorker(new FileLogger(Environment, "MusicWorker", LoggingWorker));
             musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
@@ -109,20 +111,10 @@ namespace ArkEcho.Server
             if (toLogin == null)
                 return null;
 
-            toLogin.AccessToken = Guid.NewGuid();
+            toLogin.SessionToken = Guid.NewGuid();
             loggedInUsers.Add(toLogin);
 
             return toLogin;
-        }
-
-        public void LogoutUser(Guid token)
-        {
-            loggedInUsers.RemoveAll(x => x.AccessToken == token);
-        }
-
-        public User CheckUserToken(Guid token)
-        {
-            return loggedInUsers.Find(x => x.AccessToken.Equals(token));
         }
 
         public async Task<bool> UpdateUserAsync(User user)
@@ -133,10 +125,35 @@ namespace ArkEcho.Server
             return await dbAccess.UpdateUserAsync(user);
         }
 
+        public User GetUserFromSessionToken(Guid sessionToken)
+        {
+            return loggedInUsers.Find(x => x.SessionToken.Equals(sessionToken));
+        }
+
+        public void LogoutSession(Guid token)
+        {
+            loggedInUsers.RemoveAll(x => x.SessionToken == token);
+        }
+
+        public bool CheckSession(Guid token)
+        {
+            return loggedInUsers.Find(x => x.SessionToken.Equals(token)) != null;
+        }
+
+        public Guid GetApiToken(Guid sessionToken)
+        {
+            if (!CheckSession(sessionToken))
+                return Guid.Empty;
+
+            TokenInstance apiToken = new TokenInstance();
+            apiTokens.Add(apiToken);
+            return apiToken.ApiToken;
+        }
+
         private void loadMusicLibrary()
         {
             library = null;
-            musicWorker.RunWorkerAsync(Config.MusicFolder.LocalPath);
+            musicWorker.RunWorkerAsync(serverConfig.MusicFolder.LocalPath);
         }
 
         private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)

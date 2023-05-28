@@ -24,18 +24,28 @@ namespace ArkEcho.Core.Test
                 return stream.WriteAsync(data, 0, data.Length);
             }
 
-            public override Task<byte[]> GetResultContentAsByteArrayAsync()
+            public override Task<bool> GetResultBoolAsync()
             {
                 throw new NotImplementedException();
             }
 
-            public override Task<string> GetResultContentAsStringAsync()
+            public override Task<byte[]> GetResultByteArrayAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<Guid> GetResultGuidAsync()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Task<string> GetResultStringAsync()
             {
                 throw new NotImplementedException();
             }
         }
 
-        public TestRest(List<TransferFileBase> files, bool compression) : base(compression)
+        public TestRest(List<TransferFileBase> files) : base()
         {
             this.files = files;
         }
