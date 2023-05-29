@@ -18,12 +18,11 @@ namespace ArkEcho.WebPage
 
         public async Task<bool> GetAuthenticationState()
         {
-            Guid accessToken = Guid.Empty;
-
             try
             {
-                accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
-                return await rest.CheckSession(accessToken);
+                Guid accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
+                if (accessToken != Guid.Empty)
+                    return await rest.CheckSession(accessToken);
             }
             catch (Exception ex)
             {

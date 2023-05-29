@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -24,6 +25,19 @@ namespace ArkEcho.Server
         {
             Stream req = HttpContext.Request.Body;
             return await new StreamReader(req).ReadToEndAsync();
+        }
+
+        protected bool checkApiToken(Guid apiToken)
+        {
+            return server.CheckApiToken(apiToken);
+        }
+
+        protected bool checkApiToken()
+        {
+            string apiToken = HttpContext.Request.Headers[Resources.ApiTokenHeaderKey];
+            if (!Guid.TryParse(apiToken, out Guid guid))
+                return false;
+            return checkApiToken(guid);
         }
     }
 }

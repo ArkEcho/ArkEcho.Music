@@ -76,9 +76,7 @@ namespace ArkEcho.Server
             if (sessionToken == Guid.Empty)
                 return BadRequest();
 
-            bool result = server.CheckSession(sessionToken);
-
-            return result ? Ok() : NotFound();
+            return Ok(server.GetApiToken(sessionToken).ToString());
         }
 
         private async Task<User> getUserFromHttpRequest()

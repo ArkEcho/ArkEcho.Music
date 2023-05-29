@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -138,7 +139,12 @@ namespace ArkEcho.Server
 
         public bool CheckSession(Guid token)
         {
-            return loggedInUsers.Find(x => x.SessionToken.Equals(token)) != null;
+            return loggedInUsers.Any(x => x.SessionToken.Equals(token));
+        }
+
+        public bool CheckApiToken(Guid apiToken)
+        {
+            return apiTokens.Any(x => x.ApiToken.Equals(apiToken));
         }
 
         public Guid GetApiToken(Guid sessionToken)

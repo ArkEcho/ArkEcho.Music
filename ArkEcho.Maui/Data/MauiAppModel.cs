@@ -1,4 +1,7 @@
-﻿namespace ArkEcho.Maui
+﻿using ArkEcho.Core;
+using ArkEcho.RazorPage.Data;
+
+namespace ArkEcho.Maui
 {
     public class MauiAppModel : AppModelBase
     {

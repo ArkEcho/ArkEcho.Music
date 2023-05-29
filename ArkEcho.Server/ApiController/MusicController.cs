@@ -15,14 +15,13 @@ namespace ArkEcho.Server
         }
 
         // GET: api/Music/[GUID]
-        [HttpGet("{musicFileGuid}")]
-        public async Task<ActionResult> GetMusicFile(Guid musicFileGuid)
+        [HttpGet("{musicFileGuid};{apiToken}")]
+        public async Task<ActionResult> GetMusicFile(Guid musicFileGuid, Guid apiToken)
         {
             if (musicFileGuid == Guid.Empty)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request!");
                 return BadRequest();
-            }
+            else if (!checkApiToken(apiToken))
+                return BadRequest();
 
             MusicFile musicFile = server.GetMusicFile(musicFileGuid);
 
