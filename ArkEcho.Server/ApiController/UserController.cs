@@ -1,8 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -15,74 +13,55 @@ namespace ArkEcho.Server
         {
         }
 
-        [HttpPost]
-        public async Task<ActionResult> GetUser()
+        [HttpPost("{sessionToken}")]
+        public async Task<ActionResult> GetUser(Guid sessionToken)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+            if (sessionToken == Guid.Empty)
                 return BadRequest();
-            }
 
-            User checkedUser = server.GetUserFromSessionToken(await getGuidFromHttpRequest());
+            User checkedUser = server.GetUserFromSessionToken(sessionToken);
 
             return await checkUserMakeAnswer(checkedUser);
         }
 
-        [HttpPost("Login")]
-        public async Task<ActionResult> AuthenticateUserForLogin()
+        [HttpPost("Login/{userName};{userPasswordEncrypted}")]
+        public async Task<ActionResult> AuthenticateUserForLogin(string userName, string userPasswordEncrypted)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
-                return BadRequest();
-            }
-
-            List<string> content = (await getStringFromHttpBody()).FromBase64().Split(';', StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (content.Count != 2)
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPasswordEncrypted))
                 return BadRequest();
 
-            User checkedUser = await server.AuthenticateUserForLoginAsync(content[0], content[1]);
+            User checkedUser = await server.AuthenticateUserForLoginAsync(userName, userPasswordEncrypted);
 
             return await checkUserMakeAnswer(checkedUser);
         }
 
-        [HttpPost("Logout")]
-        public async Task<ActionResult> LogoutUser()
+        [HttpPost("Logout/{sessionToken}")]
+        public async Task<ActionResult> LogoutUser(Guid sessionToken)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+            if (sessionToken == Guid.Empty)
                 return BadRequest();
-            }
 
-            server.LogoutSession(await getGuidFromHttpRequest());
+            server.LogoutSession(sessionToken);
 
             return Ok();
         }
 
-        [HttpPost("SessionToken")]
-        public async Task<ActionResult> CheckUserToken()
+        [HttpPost("SessionToken/{sessionToken}")]
+        public async Task<ActionResult> CheckUserToken(Guid sessionToken)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+            if (sessionToken == Guid.Empty)
                 return BadRequest();
-            }
 
-            bool result = server.CheckSession(await getGuidFromHttpRequest());
+            bool result = server.CheckSession(sessionToken);
 
             return result ? Ok() : NotFound();
         }
 
-        [HttpPost("Update")]
-        public async Task<ActionResult> UpdateUser()
+        [HttpPost("Update/{sessionToken}")]
+        public async Task<ActionResult> UpdateUser(Guid sessionToken)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+            if (HttpContext.Request.ContentLength == 0 || sessionToken == Guid.Empty)
                 return BadRequest();
-            }
 
             User user = await getUserFromHttpRequest();
 
@@ -91,27 +70,15 @@ namespace ArkEcho.Server
             return success ? Ok() : NotFound();
         }
 
-        [HttpPost("ApiToken")]
-        public async Task<ActionResult> GetApiToken()
+        [HttpPost("ApiToken/{sessionToken}")]
+        public async Task<ActionResult> GetApiToken(Guid sessionToken)
         {
-            if (HttpContext.Request.ContentLength == 0)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Content is Empty!");
+            if (sessionToken == Guid.Empty)
                 return BadRequest();
-            }
 
-            bool result = server.CheckSession(await getGuidFromHttpRequest());
+            bool result = server.CheckSession(sessionToken);
 
             return result ? Ok() : NotFound();
-        }
-
-        private async Task<Guid> getGuidFromHttpRequest()
-        {
-            string guidString = await getStringFromHttpBody();
-            if (Guid.TryParse(guidString, out Guid guid))
-                return guid;
-            else
-                return Guid.Empty;
         }
 
         private async Task<User> getUserFromHttpRequest()

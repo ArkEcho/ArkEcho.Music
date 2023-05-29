@@ -55,40 +55,39 @@ namespace ArkEcho.Core
 
         public async Task<User> GetUser(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate", sessionToken.ToString(), false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/{sessionToken}", string.Empty, false))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<User> AuthenticateUser(string userName, string userPasswordEnrypted)
         {
-            string bodyContent = $"{userName};{userPasswordEnrypted}";
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Login", bodyContent.ToBase64(), false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Login/{userName};{userPasswordEnrypted}", string.Empty, false))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<bool> UpdateUser(User userToUpdate)
         {
-            string bodyContent = $"{userToUpdate.SessionToken};{await userToUpdate.SaveToJsonString()}";
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Update", bodyContent.ToBase64(), false))
+            string bodyContent = await userToUpdate.SaveToJsonString();
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Update/{userToUpdate.SessionToken}", bodyContent.ToBase64(), false))
                 return response != null && response.Success;
         }
 
         public async Task<bool> LogoutSession(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/Logout", sessionToken.ToString(), false))
-                return response != null && response.Success;
-        }
-
-        public async Task<bool> CheckSession(Guid sessionToken)
-        {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/SessionToken", sessionToken.ToString(), false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Logout/{sessionToken}", string.Empty, false))
                 return response != null && response.Success;
         }
 
         public async Task<Guid> GetApiToken(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Authenticate/ApiToken", sessionToken.ToString(), false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/ApiToken/{sessionToken}", string.Empty, false))
                 return await response.GetResultGuidAsync();
+        }
+
+        public async Task<bool> CheckSession(Guid sessionToken)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/SessionToken/{sessionToken}", string.Empty, false))
+                return response != null && response.Success;
         }
 
         private async Task<User> checkAndReturnAuthenticateResult(HttpResponseBase response)
@@ -200,7 +199,7 @@ namespace ArkEcho.Core
 
         public async Task<bool> UpdateMusicRating(Guid guid, int rating)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating/{guid},{rating}", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating/{guid};{rating}", string.Empty, true))
                 return response != null && response.Success;
         }
 

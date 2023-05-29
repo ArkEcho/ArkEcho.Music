@@ -151,6 +151,19 @@ namespace ArkEcho.Server
             return apiToken.ApiToken;
         }
 
+        public bool UpdateMusicRating(Guid musicGuid, int rating)
+        {
+            if (library == null)
+                return false;
+
+            MusicFile musicFile = library.MusicFiles.Find(x => x.GUID == musicGuid);
+            if (musicFile == null)
+                return false;
+
+            ShellFileAccess.SetRating(musicFile.FullPath, rating);
+            return true;
+        }
+
         private void loadMusicLibrary()
         {
             library = null;

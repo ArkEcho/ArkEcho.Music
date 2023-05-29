@@ -1,7 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -16,19 +15,16 @@ namespace ArkEcho.Server
         }
 
         // GET: api/Music/[GUID]
-        [HttpGet("{guid}")]
-        public async Task<ActionResult> GetMusicFile(Guid guid)
+        [HttpGet("{musicFileGuid}")]
+        public async Task<ActionResult> GetMusicFile(Guid musicFileGuid)
         {
-            if (guid == Guid.Empty)
+            if (musicFileGuid == Guid.Empty)
             {
                 Logger.LogImportant($"{Request.Path} Bad Request!");
                 return BadRequest();
             }
 
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            MusicFile musicFile = server.GetMusicFile(guid);
+            MusicFile musicFile = server.GetMusicFile(musicFileGuid);
 
             if (musicFile == null)
                 return BadRequest();
@@ -37,9 +33,6 @@ namespace ArkEcho.Server
 
             FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
             result.FileDownloadName = Path.GetFileName(musicFile.FileName);
-
-            sw.Stop();
-            Logger.LogImportant($"{Request.Path} took {sw.ElapsedMilliseconds}ms");
 
             return result;
         }
@@ -56,16 +49,16 @@ namespace ArkEcho.Server
         }
 
         // GET: api/Music/AlbumCover/[GUID]
-        [HttpGet("AlbumCover/{guid}")]
-        public async Task<ActionResult> GetAlbumCover(Guid guid)
+        [HttpGet("AlbumCover/{albumGuid}")]
+        public async Task<ActionResult> GetAlbumCover(Guid albumGuid)
         {
-            if (guid == Guid.Empty)
+            if (albumGuid == Guid.Empty)
             {
                 Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
                 return BadRequest();
             }
 
-            string cover = server.GetAlbumCover(guid);
+            string cover = server.GetAlbumCover(albumGuid);
 
             if (string.IsNullOrEmpty(cover))
             {
@@ -117,6 +110,20 @@ namespace ArkEcho.Server
             return await GetByteResult(library.AlbumArtists);
         }
 
+        [HttpPost("Rating/{musicGuid};{rating}")]
+        public async Task<ActionResult> UpdateMusicRating(Guid musicGuid, int rating)
+        {
+            if (musicGuid == Guid.Empty)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
+                return BadRequest();
+            }
+            else if (rating < 0 || rating > 5)
+                return BadRequest();
+
+            return server.UpdateMusicRating(musicGuid, rating) ? Ok() : NotFound();
+        }
+
         // GET: api/Music/Playlists
         [HttpGet("Playlists")]
         public async Task<ActionResult> GetPlaylistsList()
@@ -130,45 +137,15 @@ namespace ArkEcho.Server
 
         private async Task<ActionResult> GetByteResult(object toSerialize)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
             byte[] data = await Serializer.Serialize(toSerialize);
 
-            sw.Stop();
-            Logger.LogImportant($"{Request.Path} took {sw.ElapsedMilliseconds}ms");
-
             FileContentResult result = new FileContentResult(data, "application/octet-stream");
 
             return result;
-        }
-
-        [HttpPost("Rating/{guid},{rating}")]
-        public async Task<ActionResult> UpdateMusicRating(Guid guid, int rating)
-        {
-            if (guid == Guid.Empty)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
-                return BadRequest();
-            }
-            else if (rating < 0 || rating > 5)
-                return BadRequest();
-
-            MusicLibrary library = server.GetMusicLibrary();
-            if (library == null)
-                return BadRequest();
-
-            MusicFile musicFile = library.MusicFiles.Find(x => x.GUID == guid);
-            if (musicFile == null)
-                return BadRequest();
-
-            ShellFileAccess.SetRating(musicFile.FullPath, rating);
-
-            return Ok();
         }
     }
 }
