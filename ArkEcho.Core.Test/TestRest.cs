@@ -61,8 +61,11 @@ namespace ArkEcho.Core.Test
         private async Task<HttpResponseBase> ChunkTransfer(string path)
         {
             int guidLength = Guid.NewGuid().ToString().Length;
-            Guid fileGuid = Guid.Parse(path.Substring(path.IndexOf("&chunk") - guidLength, guidLength));
-            Guid chunkGuid = Guid.Parse(path.Substring(path.Length - guidLength));
+            int indexFileChunkParam = path.IndexOf($"&{Resources.UrlParamFileChunk}");
+
+            // TODO: Regex Match
+            Guid fileGuid = Guid.Parse(path.Substring(indexFileChunkParam - guidLength, guidLength));
+            Guid chunkGuid = Guid.Parse(path.Substring(indexFileChunkParam + Resources.UrlParamFileChunk.Length + 2, guidLength));
 
             TransferFileBase tfb = files.Find(x => x.GUID == fileGuid);
             if (tfb == null)

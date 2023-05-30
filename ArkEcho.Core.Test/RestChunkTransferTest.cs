@@ -93,8 +93,8 @@ namespace ArkEcho.Core.Test
                 streamOne = await rest.GetFile(tfbOne);
                 streamTwo = await rest.GetFile(tfbTwo);
 
-                Assert.IsTrue(streamOne != null);
-                Assert.IsTrue(streamTwo != null);
+                streamOne.Should().NotBeNull();
+                streamTwo.Should().NotBeNull();
 
                 using (fs = new FileStream(testFileOne, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                 {
@@ -108,15 +108,15 @@ namespace ArkEcho.Core.Test
                     streamTwo.CopyTo(fs);
                 }
 
-                Assert.IsTrue(File.Exists(testFileOne));
-                Assert.IsTrue(File.Exists(testFileTwo));
+                File.Exists(testFileOne).Should().BeTrue();
+                File.Exists(testFileTwo).Should().BeTrue();
 
                 string checkSumOne = TransferFileBase.GetCheckSum(testFileOne);
                 string checkSumTwo = TransferFileBase.GetCheckSum(testFileTwo);
 
                 // We cant use "TestCheckSum()" because we created a new file with another name
-                Assert.IsTrue(tfbOne.CheckSum == checkSumOne);
-                Assert.IsTrue(tfbTwo.CheckSum == checkSumTwo);
+                tfbOne.CheckSum.Should().Be(checkSumOne);
+                tfbTwo.CheckSum.Should().Be(checkSumTwo);
             }
             catch
             {
