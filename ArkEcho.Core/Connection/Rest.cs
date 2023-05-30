@@ -63,7 +63,7 @@ namespace ArkEcho.Core
                 client = new HttpClient() { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 10) };
         }
 
-        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent, bool useApiToken)
+        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
         {
             HttpMethod httpMethod = null;
             switch (method)
@@ -81,9 +81,6 @@ namespace ArkEcho.Core
             HttpRequestMessage request = new HttpRequestMessage(httpMethod, path);
             if (!string.IsNullOrEmpty(httpContent))
                 request.Content = new StringContent(httpContent);
-
-            if (useApiToken)
-                request.Headers.Add(Resources.ApiTokenHeaderKey, ApiToken.ToString());
 
             HttpResponse response = null;
 

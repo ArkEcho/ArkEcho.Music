@@ -49,44 +49,44 @@ namespace ArkEcho.Core
 
         public async Task<bool> CheckConnection()
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Control", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Control", string.Empty))
                 return response != null;
         }
 
         public async Task<User> GetUser(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/{sessionToken}", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<User> AuthenticateUser(string userName, string userPasswordEnrypted)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Login/{userName};{userPasswordEnrypted}", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Login?{Resources.UrlParamUserName}={userName}&{Resources.UrlParamUserPassword}={userPasswordEnrypted}", string.Empty))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<bool> UpdateUser(User userToUpdate)
         {
             string bodyContent = await userToUpdate.SaveToJsonString();
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Update/{userToUpdate.SessionToken}", bodyContent.ToBase64(), false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Update?{Resources.UrlParamSessionToken}={userToUpdate.SessionToken}", bodyContent.ToBase64()))
                 return response != null && response.Success;
         }
 
         public async Task<bool> LogoutSession(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Logout/{sessionToken}", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Logout?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return response != null && response.Success;
         }
 
         public async Task<Guid> GetApiToken(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/ApiToken/{sessionToken}", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/ApiToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return await response.GetResultGuidAsync();
         }
 
         public async Task<bool> CheckSession(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/SessionToken/{sessionToken}", string.Empty, false))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/SessionToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return response != null && response.Success;
         }
 
@@ -111,7 +111,7 @@ namespace ArkEcho.Core
 
         public async Task<Guid> GetMusicLibraryGuid()
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library?{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return Guid.Empty;
@@ -127,7 +127,7 @@ namespace ArkEcho.Core
         {
             MusicLibrary library = new MusicLibrary();
 
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Library?{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return null;
@@ -138,7 +138,7 @@ namespace ArkEcho.Core
                 library.GUID = result;
             }
 
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Albums", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Albums?{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return null;
@@ -146,7 +146,7 @@ namespace ArkEcho.Core
                 library.Album = await Serializer.Deserialize<List<Album>>(await response.GetResultByteArrayAsync());
             }
 
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/AlbumArtists", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/AlbumArtists?{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return null;
@@ -154,7 +154,7 @@ namespace ArkEcho.Core
                 library.AlbumArtists = await Serializer.Deserialize<List<AlbumArtist>>(await response.GetResultByteArrayAsync());
             }
 
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, "/api/Music/Playlists", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/Playlists?{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return null;
@@ -167,7 +167,7 @@ namespace ArkEcho.Core
             {
                 List<MusicFile> files = null;
 
-                using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/MusicFiles/{count}", string.Empty, true))
+                using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/MusicFiles?{Resources.UrlParamMusicFileCountIndex}={count}&{getApiTokenParam()}", string.Empty))
                 {
                     if (response == null || !response.Success)
                         break;
@@ -188,7 +188,7 @@ namespace ArkEcho.Core
 
         public async Task<string> GetAlbumCover(Guid guid)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover/{guid}", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Music/AlbumCover?{Resources.UrlParamAlbumGuid}={guid}&{getApiTokenParam()}", string.Empty))
             {
                 if (response == null || !response.Success)
                     return string.Empty;
@@ -199,7 +199,7 @@ namespace ArkEcho.Core
 
         public async Task<bool> UpdateMusicRating(Guid guid, int rating)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating/{guid};{rating}", string.Empty, true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating?{Resources.UrlParamMusicFile}={guid}&{Resources.UrlParamMusicRating}={rating}&{getApiTokenParam()}", string.Empty))
                 return response != null && response.Success;
         }
 
@@ -207,7 +207,7 @@ namespace ArkEcho.Core
         {
             string bodyContent = await logMessage.SaveToJsonString();
 
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, "/api/Logging", bodyContent.ToBase64(), true))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Logging?{getApiTokenParam()}", bodyContent.ToBase64()))
                 return response != null && response.Success;
         }
 
@@ -221,7 +221,7 @@ namespace ArkEcho.Core
                 foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
                 {
                     using (HttpResponseBase response = await makeRequest(HttpMethods.Get,
-                        $"/api/File/ChunkTransfer?file={tfb.GUID}&chunk={chunk.GUID}", string.Empty, true))
+                        $"/api/File/ChunkTransfer?{Resources.UrlParamMusicFile}={tfb.GUID}&{Resources.UrlParamFileChunk}={chunk.GUID}&{getApiTokenParam()}", string.Empty))
                     {
                         if (response == null || !response.Success)
                         {
@@ -245,6 +245,11 @@ namespace ArkEcho.Core
             }
         }
 
-        protected abstract Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent, bool useApiToken);
+        private string getApiTokenParam()
+        {
+            return $"{Resources.UrlParamApiToken}={ApiToken}";
+        }
+
+        protected abstract Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent);
     }
 }

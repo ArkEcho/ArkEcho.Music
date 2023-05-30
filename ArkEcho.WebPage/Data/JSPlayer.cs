@@ -56,7 +56,7 @@ namespace ArkEcho.WebPage
 
         protected override void loadAudio(bool StartOnLoad)
         {
-            string source = $"{serverAddress}/api/Music/{PlayingFile.GUID};{apiToken}"; // Howler doesn't support adding HTML5 Header
+            string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={apiToken}"; // Howler doesn't support adding HTML5 Header
             jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 

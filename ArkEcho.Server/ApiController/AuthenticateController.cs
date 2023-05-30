@@ -13,8 +13,8 @@ namespace ArkEcho.Server
         {
         }
 
-        [HttpPost("{sessionToken}")]
-        public async Task<ActionResult> GetUser(Guid sessionToken)
+        [HttpPost()]
+        public async Task<ActionResult> GetUser([FromQuery] Guid sessionToken)
         {
             if (sessionToken == Guid.Empty)
                 return BadRequest();
@@ -24,30 +24,30 @@ namespace ArkEcho.Server
             return await checkUserMakeAnswer(checkedUser);
         }
 
-        [HttpPost("Login/{userName};{userPasswordEncrypted}")]
-        public async Task<ActionResult> AuthenticateUserForLogin(string userName, string userPasswordEncrypted)
+        [HttpPost("Login")]
+        public async Task<ActionResult> AuthenticateUserForLogin([FromQuery] string userName, [FromQuery] string userPassword)
         {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPasswordEncrypted))
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPassword))
                 return BadRequest();
 
-            User checkedUser = await server.AuthenticateUserForLoginAsync(userName, userPasswordEncrypted);
+            User checkedUser = await server.AuthenticateUserForLoginAsync(userName, userPassword);
 
             return await checkUserMakeAnswer(checkedUser);
         }
 
-        [HttpPost("Logout/{sessionToken}")]
-        public async Task<ActionResult> LogoutUser(Guid sessionToken)
+        [HttpPost("Logout")]
+        public async Task<ActionResult> LogoutUser([FromQuery] Guid sessionToken)
         {
             if (sessionToken == Guid.Empty)
                 return BadRequest();
 
             server.LogoutSession(sessionToken);
 
-            return Ok();
+            return server.LogoutSession(sessionToken) ? Ok() : NotFound();
         }
 
-        [HttpPost("SessionToken/{sessionToken}")]
-        public async Task<ActionResult> CheckUserToken(Guid sessionToken)
+        [HttpPost("SessionToken")]
+        public async Task<ActionResult> CheckUserToken([FromQuery] Guid sessionToken)
         {
             if (sessionToken == Guid.Empty)
                 return BadRequest();
@@ -57,8 +57,8 @@ namespace ArkEcho.Server
             return result ? Ok() : NotFound();
         }
 
-        [HttpPost("Update/{sessionToken}")]
-        public async Task<ActionResult> UpdateUser(Guid sessionToken)
+        [HttpPost("Update")]
+        public async Task<ActionResult> UpdateUser([FromQuery] Guid sessionToken)
         {
             if (HttpContext.Request.ContentLength == 0 || sessionToken == Guid.Empty)
                 return BadRequest();
@@ -70,13 +70,14 @@ namespace ArkEcho.Server
             return success ? Ok() : NotFound();
         }
 
-        [HttpPost("ApiToken/{sessionToken}")]
-        public async Task<ActionResult> GetApiToken(Guid sessionToken)
+        [HttpPost("ApiToken")]
+        public async Task<ActionResult> GetApiToken([FromQuery] Guid sessionToken)
         {
             if (sessionToken == Guid.Empty)
                 return BadRequest();
 
-            return Ok(server.GetApiToken(sessionToken).ToString());
+            Guid apiToken = server.GetApiToken(sessionToken);
+            return apiToken != Guid.Empty ? Ok(apiToken.ToString()) : NotFound();
         }
 
         private async Task<User> getUserFromHttpRequest()

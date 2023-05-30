@@ -31,13 +31,5 @@ namespace ArkEcho.Server
         {
             return server.CheckApiToken(apiToken);
         }
-
-        protected bool checkApiToken()
-        {
-            string apiToken = HttpContext.Request.Headers[Resources.ApiTokenHeaderKey];
-            if (!Guid.TryParse(apiToken, out Guid guid))
-                return false;
-            return checkApiToken(guid);
-        }
     }
 }

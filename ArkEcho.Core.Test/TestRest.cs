@@ -45,7 +45,7 @@ namespace ArkEcho.Core.Test
             this.files = files;
         }
 
-        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent, bool apiToken)
+        protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
         {
             if (method != HttpMethods.Get)
                 return null;

@@ -132,9 +132,9 @@ namespace ArkEcho.Server
             return loggedInUsers.Find(x => x.SessionToken.Equals(sessionToken));
         }
 
-        public void LogoutSession(Guid token)
+        public bool LogoutSession(Guid token)
         {
-            loggedInUsers.RemoveAll(x => x.SessionToken == token);
+            return loggedInUsers.RemoveAll(x => x.SessionToken == token) > 0;
         }
 
         public bool CheckSession(Guid token)

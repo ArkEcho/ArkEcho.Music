@@ -17,11 +17,14 @@ namespace ArkEcho.Server
 
         }
 
-        // GET: api/File/ChunkTransfer?file=[Guid]&chunk=[Guid]
+        // GET: api/File/ChunkTransfer?file=[Guid]&chunk=[Guid]&apiToken=[Guid]
         [HttpGet("ChunkTransfer")]
-        public async Task<ActionResult> GetFileChunkTransfer(Guid file, Guid chunk)
+        public async Task<ActionResult> GetFileChunkTransfer([FromQuery] Guid musicFile, [FromQuery] Guid fileChunk, [FromQuery] Guid apiToken)
         {
-            if (file == Guid.Empty || chunk == Guid.Empty)
+            if (!checkApiToken(apiToken))
+                return BadRequest();
+
+            if (musicFile == Guid.Empty || fileChunk == Guid.Empty)
             {
                 Logger.LogError($"{Request.Path} is invalid!");
                 return BadRequest();
@@ -35,25 +38,25 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            TransferFileBase tfb = files.Find(x => x.GUID == file);
+            TransferFileBase tfb = files.Find(x => x.GUID == musicFile);
             if (tfb == null)
             {
                 Logger.LogError($"File requested not found!");
                 return BadRequest();
             }
 
-            TransferFileBase.FileChunk fileChunk = tfb.Chunks.Find(x => x.GUID == chunk);
-            if (fileChunk == null)
+            TransferFileBase.FileChunk fileChunkObj = tfb.Chunks.Find(x => x.GUID == fileChunk);
+            if (fileChunkObj == null)
             {
                 Logger.LogError($"Chunk requested not found!");
                 return BadRequest();
             }
 
-            byte[] data = new byte[fileChunk.Size];
+            byte[] data = new byte[fileChunkObj.Size];
             using (FileStream fs = new FileStream(tfb.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                fs.Position = fileChunk.Position;
-                await fs.ReadAsync(data, 0, fileChunk.Size);
+                fs.Position = fileChunkObj.Position;
+                await fs.ReadAsync(data, 0, fileChunkObj.Size);
             }
 
             FileContentResult result = new FileContentResult(data, "application/stream");

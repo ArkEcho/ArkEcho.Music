@@ -14,32 +14,35 @@ namespace ArkEcho.Server
         {
         }
 
-        // GET: api/Music/[GUID]
-        [HttpGet("{musicFileGuid};{apiToken}")]
-        public async Task<ActionResult> GetMusicFile(Guid musicFileGuid, Guid apiToken)
+        // GET: api/Music?musicFile=[GUID]?apiToken=[apiToken]
+        [HttpGet()]
+        public async Task<ActionResult> GetMusicFile([FromQuery] Guid musicFile, [FromQuery] Guid apiToken)
         {
-            if (musicFileGuid == Guid.Empty)
+            if (!checkApiToken(apiToken))
                 return BadRequest();
-            else if (!checkApiToken(apiToken))
-                return BadRequest();
-
-            MusicFile musicFile = server.GetMusicFile(musicFileGuid);
-
-            if (musicFile == null)
+            else if (musicFile == Guid.Empty)
                 return BadRequest();
 
-            byte[] content = await System.IO.File.ReadAllBytesAsync(musicFile.FullPath);
+            MusicFile file = server.GetMusicFile(musicFile);
 
-            FileContentResult result = new FileContentResult(content, $"application/{musicFile.FileFormat}");
-            result.FileDownloadName = Path.GetFileName(musicFile.FileName);
+            if (file == null)
+                return NotFound();
+
+            byte[] content = await System.IO.File.ReadAllBytesAsync(file.FullPath);
+
+            FileContentResult result = new FileContentResult(content, $"application/{file.FileFormat}");
+            result.FileDownloadName = Path.GetFileName(file.FileName);
 
             return result;
         }
 
         // GET: api/Music/Library
         [HttpGet("Library")]
-        public async Task<ActionResult> GetLibraryGuid()
+        public async Task<ActionResult> GetLibraryGuid([FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return BadRequest();
+
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
@@ -47,10 +50,12 @@ namespace ArkEcho.Server
             return Ok(library.GUID.ToString());
         }
 
-        // GET: api/Music/AlbumCover/[GUID]
-        [HttpGet("AlbumCover/{albumGuid}")]
-        public async Task<ActionResult> GetAlbumCover(Guid albumGuid)
+        [HttpGet("AlbumCover")]
+        public async Task<ActionResult> GetAlbumCover([FromQuery] Guid albumGuid, [FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return BadRequest();
+
             if (albumGuid == Guid.Empty)
             {
                 Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
@@ -62,21 +67,23 @@ namespace ArkEcho.Server
             if (string.IsNullOrEmpty(cover))
             {
                 Logger.LogImportant($"{Request.Path} Bad Request, Cover is Empty!");
-                return BadRequest();
+                return NotFound();
             }
 
             return Ok(cover);
         }
 
-        // GET: api/Music/MusicFiles/CountIndex
-        [HttpGet("MusicFiles/{countIndex}")]
-        public async Task<ActionResult> GetMusicLibrary(int countIndex)
+        [HttpGet("MusicFiles")]
+        public async Task<ActionResult> GetMusicFiles([FromQuery] int musicFileCountIndex, [FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
-            int start = countIndex * Resources.RestMusicFileCount;
+            int start = musicFileCountIndex * Resources.RestMusicFileCount;
             int count = Resources.RestMusicFileCount;
 
             if (start >= library.MusicFiles.Count)
@@ -89,8 +96,11 @@ namespace ArkEcho.Server
 
         // GET: api/Music/Albums
         [HttpGet("Albums")]
-        public async Task<ActionResult> GetAlbumList(int countIndex)
+        public async Task<ActionResult> GetAlbumList([FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
@@ -100,8 +110,11 @@ namespace ArkEcho.Server
 
         // GET: api/Music/AlbumArtists
         [HttpGet("AlbumArtists")]
-        public async Task<ActionResult> GetAlbumArtistsList(int countIndex)
+        public async Task<ActionResult> GetAlbumArtistsList([FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
@@ -109,29 +122,35 @@ namespace ArkEcho.Server
             return await GetByteResult(library.AlbumArtists);
         }
 
-        [HttpPost("Rating/{musicGuid};{rating}")]
-        public async Task<ActionResult> UpdateMusicRating(Guid musicGuid, int rating)
-        {
-            if (musicGuid == Guid.Empty)
-            {
-                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
-                return BadRequest();
-            }
-            else if (rating < 0 || rating > 5)
-                return BadRequest();
-
-            return server.UpdateMusicRating(musicGuid, rating) ? Ok() : NotFound();
-        }
-
         // GET: api/Music/Playlists
         [HttpGet("Playlists")]
-        public async Task<ActionResult> GetPlaylistsList()
+        public async Task<ActionResult> GetPlaylistsList([FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
             MusicLibrary library = server.GetMusicLibrary();
             if (library == null)
                 return BadRequest();
 
             return await GetByteResult(library.Playlists);
+        }
+
+        [HttpPost("Rating")]
+        public async Task<ActionResult> UpdateMusicRating([FromQuery] Guid musicFile, [FromQuery] int musicRating, [FromQuery] Guid apiToken)
+        {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
+            if (musicFile == Guid.Empty)
+            {
+                Logger.LogImportant($"{Request.Path} Bad Request, Guid Empty!");
+                return BadRequest();
+            }
+            else if (musicRating < 0 || musicRating > 5)
+                return BadRequest();
+
+            return server.UpdateMusicRating(musicFile, musicRating) ? Ok() : NotFound();
         }
 
         private async Task<ActionResult> GetByteResult(object toSerialize)

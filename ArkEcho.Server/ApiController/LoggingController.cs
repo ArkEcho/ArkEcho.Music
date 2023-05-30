@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -13,8 +14,11 @@ namespace ArkEcho.Server
         }
 
         [HttpPost]
-        public async Task<ActionResult> LoggingPost()
+        public async Task<ActionResult> LoggingPost([FromQuery] Guid apiToken)
         {
+            if (!checkApiToken(apiToken))
+                return Unauthorized();
+
             if (HttpContext.Request.ContentLength == 0)
                 return BadRequest();
 

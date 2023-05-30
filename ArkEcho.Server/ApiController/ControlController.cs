@@ -17,6 +17,5 @@ namespace ArkEcho.Server
         {
             return Ok();
         }
-
     }
 }
