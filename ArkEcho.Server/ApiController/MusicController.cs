@@ -136,7 +136,7 @@ namespace ArkEcho.Server
             return await GetByteResult(library.Playlists);
         }
 
-        [HttpPost("Rating")]
+        [HttpPut("Rating")]
         public async Task<ActionResult> UpdateMusicRating([FromQuery] Guid musicFile, [FromQuery] int musicRating, [FromQuery] Guid apiToken)
         {
             if (!checkApiToken(apiToken))

@@ -11,6 +11,7 @@ namespace ArkEcho.Core
         {
             Get,
             Post,
+            Put
         }
 
         public abstract class HttpResponseBase : IDisposable
@@ -55,38 +56,38 @@ namespace ArkEcho.Core
 
         public async Task<User> GetUser(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Authenticate?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<User> AuthenticateUser(string userName, string userPasswordEnrypted)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Login?{Resources.UrlParamUserName}={userName}&{Resources.UrlParamUserPassword}={userPasswordEnrypted}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Authenticate/Login?{Resources.UrlParamUserName}={userName}&{Resources.UrlParamUserPassword}={userPasswordEnrypted}", string.Empty))
                 return await checkAndReturnAuthenticateResult(response);
         }
 
         public async Task<bool> UpdateUser(User userToUpdate)
         {
             string bodyContent = await userToUpdate.SaveToJsonString();
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Update?{Resources.UrlParamSessionToken}={userToUpdate.SessionToken}", bodyContent.ToBase64()))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Put, $"/api/Authenticate/Update?{Resources.UrlParamSessionToken}={userToUpdate.SessionToken}", bodyContent.ToBase64()))
                 return response != null && response.Success;
         }
 
         public async Task<bool> LogoutSession(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/Logout?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Authenticate/Logout?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return response != null && response.Success;
         }
 
         public async Task<Guid> GetApiToken(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/ApiToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Authenticate/ApiToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return await response.GetResultGuidAsync();
         }
 
         public async Task<bool> CheckSession(Guid sessionToken)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Authenticate/SessionToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get, $"/api/Authenticate/SessionToken?{Resources.UrlParamSessionToken}={sessionToken}", string.Empty))
                 return response != null && response.Success;
         }
 
@@ -199,7 +200,7 @@ namespace ArkEcho.Core
 
         public async Task<bool> UpdateMusicRating(Guid guid, int rating)
         {
-            using (HttpResponseBase response = await makeRequest(HttpMethods.Post, $"/api/Music/Rating?{Resources.UrlParamMusicFile}={guid}&{Resources.UrlParamMusicRating}={rating}&{getApiTokenParam()}", string.Empty))
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Put, $"/api/Music/Rating?{Resources.UrlParamMusicFile}={guid}&{Resources.UrlParamMusicRating}={rating}&{getApiTokenParam()}", string.Empty))
                 return response != null && response.Success;
         }
 
