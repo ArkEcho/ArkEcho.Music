@@ -47,7 +47,6 @@ namespace ArkEcho.RazorPage.Data
             return AuthenticatedUser != null;
         }
 
-        // TODO: Abstrakte Funktionen zu Virtual ändern (Login etc.)
         public virtual async Task LogoutUser()
         {
             if (Player.Playing)

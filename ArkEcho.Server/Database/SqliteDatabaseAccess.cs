@@ -84,6 +84,31 @@ namespace ArkEcho.Server.Database
             return users;
         }
 
+        public async Task<User> GetUserAsync(string username, string passwordEncrypted)
+        {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
+
+            string sql = $"select * from {User.UserTableName} where username = '{username}' and password = '{passwordEncrypted}'";
+
+            using SQLiteCommand command = new SQLiteCommand(sql, connection);
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+
+            Dictionary<string, int> keyValues = getFieldValueMap<User.UserTable>(reader);
+
+            User user = null;
+            while (await reader.ReadAsync())
+            {
+                user = new User();
+
+                user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
+                user.UserName = username;
+                user.Password = passwordEncrypted;
+                await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
+            }
+            return user;
+        }
+
         public async Task<bool> UpdateUserAsync(User user)
         {
             if (connection == null)

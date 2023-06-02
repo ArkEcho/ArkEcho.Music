@@ -107,16 +107,14 @@ namespace ArkEcho.Server
 
         public async Task<User> AuthenticateUserForLoginAsync(string userName, string userPasswordEncrypted)
         {
-            // TODO: Select by name and password
-            List<User> users = await dbAccess.GetUsersAsync();
-            User toLogin = users.Find(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase) && x.Password.Equals(userPasswordEncrypted, StringComparison.OrdinalIgnoreCase));
-            if (toLogin == null)
+            User user = await dbAccess.GetUserAsync(userName, userPasswordEncrypted);
+            if (user == null)
                 return null;
 
-            toLogin.SessionToken = Guid.NewGuid();
-            loggedInUsers.Add(toLogin);
+            user.SessionToken = Guid.NewGuid();
+            loggedInUsers.Add(user);
 
-            return toLogin;
+            return user;
         }
 
         public async Task<bool> UpdateUserAsync(User user)

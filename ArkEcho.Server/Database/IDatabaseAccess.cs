@@ -12,6 +12,8 @@ namespace ArkEcho.Server.Database
 
         Task<List<User>> GetUsersAsync();
 
+        Task<User> GetUserAsync(string username, string passwordEncrypted);
+
         Task<bool> UpdateUserAsync(User user);
 
         Task<bool> InsertUserAsync(User user);
