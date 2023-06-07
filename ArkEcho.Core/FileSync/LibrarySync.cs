@@ -219,7 +219,10 @@ namespace ArkEcho.Core
                         else if (wrong != null && !file.TestCheckSum()) // Test Checksum -> Album Cover changed etc.
                             wrong.Add(file);
                         else
+                        {
+                            file.ExistsLocally = true;
                             exist.Add(file);
+                        }
                     }
 
                     success = true;

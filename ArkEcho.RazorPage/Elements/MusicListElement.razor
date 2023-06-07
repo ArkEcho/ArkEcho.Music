@@ -1,4 +1,5 @@
 ﻿
+@inject AppEnvironment environment
 @inject IAppModel model
 
 <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false">
@@ -14,18 +15,33 @@
     <tbody>
         @foreach (MusicFile file in MusicList)
         {
-            <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">
-                <td class="noselection px-6 py-1">@file.Track</td>
-                <td class="noselection px-6 py-1">@file.Title</td>
-                <td class="noselection px-6 py-1">@file.Performer</td>
-                <td class="noselection px-6 py-1">@file.Duration.ConvertTimeMilliseconds()</td>
-                <td class="noselection px-6 py-1">
-                    @{
-                        int value = file.Rating;
-                        <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
-                    }
-                </td>
-            </tr>
+            if ((environment.Platform == Resources.Platform.Windows || environment.Platform == Resources.Platform.Android) && !file.ExistsLocally)
+            {
+                <tr class="noselection disabled">
+                    <td class="noselection px-6 py-1">@file.Track</td>
+                    <td class="noselection px-6 py-1">@file.Title</td>
+                    <td class="noselection px-6 py-1">@file.Performer</td>
+                    <td class="noselection px-6 py-1">@file.Duration.ConvertTimeMilliseconds()</td>
+                    <td class="noselection px-6 py-1">
+                        <MudRating SelectedValue=file.Rating Disabled=true Size="Size.Small" />                        
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr class="noselection @(getRowColor(file))" @ondblclick="() => ListElementDoubleClicked.InvokeAsync(file)">            
+                    <td class="noselection px-6 py-1">@file.Track</td>
+                    <td class="noselection px-6 py-1">@file.Title</td>
+                    <td class="noselection px-6 py-1">@file.Performer</td>
+                    <td class="noselection px-6 py-1">@file.Duration.ConvertTimeMilliseconds()</td>
+                    <td class="noselection px-6 py-1">
+                        @{
+                            int value = file.Rating;
+                            <MudRating SelectedValueChanged="(int newValue) => ratingValueChanged(newValue, file)" SelectedValue=@value Size="Size.Small" />
+                        }
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </MudSimpleTable>
@@ -39,6 +55,16 @@
         -ms-user-select: none; /* IE10+ */
     }
 
+    tr.disabled{
+        color: var(--mud-palette-black) !important;
+    }
+    tr.disabled:hover{
+        background-color: var(--mud-palette-surface) !important;
+    }
+
+    tr.playing{
+        background-color: var(--mud-palette-info) !important;
+    }
     tr.playing:hover{
         background-color: var(--mud-palette-info-darken) !important;
     }
@@ -46,7 +72,7 @@
 
 
 @code {
-
+    
     [Parameter]
     public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
 
@@ -71,7 +97,9 @@
     {
         if (model.Player.PlayingFile == null)
             return string.Empty;
-        return model.Player.PlayingFile.GUID == file.GUID ? "blue playing" : string.Empty;
+        else if (model.Player.PlayingFile.GUID == file.GUID)
+            return "playing";
+        return string.Empty;
     }
 
     protected async Task ratingValueChanged(int newValue, MusicFile selectedFile)

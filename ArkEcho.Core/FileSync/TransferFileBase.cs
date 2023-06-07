@@ -29,6 +29,8 @@ namespace ArkEcho.Core
 
         public Uri Folder { get; set; }
 
+        public bool ExistsLocally { get; set; } = false;
+
         /// <summary>
         /// ONLY FOR SERIALIZATION
         /// </summary>
