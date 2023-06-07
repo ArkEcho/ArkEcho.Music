@@ -5,18 +5,28 @@ namespace ArkEcho.RazorPage.Data
 {
     public class SnackbarDialogService
     {
-        private ISnackbar snackbar;
+        private ISnackbar snackbarProvider;
         private NavigationManager navigation;
+        private Snackbar musicFilesMissingSnackbar;
 
         public SnackbarDialogService(ISnackbar snackbar, NavigationManager navigation)
         {
-            this.snackbar = snackbar;
+            this.snackbarProvider = snackbar;
             this.navigation = navigation;
+        }
+
+        public void CloseOnLogout()
+        {
+            if (musicFilesMissingSnackbar != null)
+            {
+                snackbarProvider.Remove(musicFilesMissingSnackbar);
+                musicFilesMissingSnackbar = null;
+            }
         }
 
         public void CheckingLibraryFailed()
         {
-            snackbar.Add("Checking Library Failed!", Severity.Info, config =>
+            snackbarProvider.Add("Checking Library Failed!", Severity.Info, config =>
             {
                 config.SnackbarVariant = Variant.Outlined;
             });
@@ -24,7 +34,10 @@ namespace ArkEcho.RazorPage.Data
 
         public void MusicFilesMissing()
         {
-            snackbar.Add("Some Files are missing", Severity.Info, config =>
+            if (musicFilesMissingSnackbar != null)
+                return;
+
+            musicFilesMissingSnackbar = snackbarProvider.Add("Some Files are missing", Severity.Info, config =>
             {
                 config.ShowCloseIcon = true;
                 config.SnackbarVariant = Variant.Outlined;

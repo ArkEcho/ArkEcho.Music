@@ -77,7 +77,7 @@
     protected override async Task OnInitializedAsync()
     {
         model.SetSnackbarDialogService(snackbarDialogService);
-        
+
         if (!await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
@@ -96,6 +96,7 @@
 
     public async Task Logout()
     {
+        snackbarDialogService.CloseOnLogout();
         await model.LogoutUser();
         showSidebar = false;
         userPopoverOpen = false;
