@@ -8,9 +8,8 @@ namespace ArkEcho.RazorPage.Data
         {
             Started = 0,
 
-            Connecting = 10,
-            Connected,
-            NotConnected,
+            NotConnected = 10,
+            Connected = 20,
 
             LoadingLibrary = 20,
 
@@ -36,6 +35,7 @@ namespace ArkEcho.RazorPage.Data
         Task<string> GetAlbumCover(Guid albumGuid);
         Task<bool> UpdateMusicRating(Guid guid, int rating);
 
+        void SetSnackbarDialogService(SnackbarDialogService snackbarDialogService);
         Task StartSynchronizeMusic();
         Task<bool> ChangeMusicFolder();
     }

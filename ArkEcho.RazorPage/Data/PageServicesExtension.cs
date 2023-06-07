@@ -14,20 +14,16 @@ namespace ArkEcho.RazorPage.Data
             serviceCollection.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
-
                 config.SnackbarConfiguration.PreventDuplicates = false;
                 config.SnackbarConfiguration.NewestOnTop = false;
-                config.SnackbarConfiguration.ShowCloseIcon = true;
-                config.SnackbarConfiguration.VisibleStateDuration = 10000;
-                config.SnackbarConfiguration.HideTransitionDuration = 500;
-                config.SnackbarConfiguration.ShowTransitionDuration = 500;
-                config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
             });
 
             serviceCollection.AddSingleton(environment);
 
             serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
             serviceCollection.AddSingleton<IAppModel, AppModelImplementation>();
+
+            serviceCollection.AddScoped<SnackbarDialogService>();
 
             serviceCollection.AddScoped<HTMLHelper>();
         }

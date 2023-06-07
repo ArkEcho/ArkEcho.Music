@@ -2,7 +2,9 @@
 
 @inject IAppModel model
 @inject AppEnvironment environment
+@inject ISnackbar snackbar
 @inject NavigationManager NavigationManager
+@inject SnackbarDialogService snackbarDialogService
 
 <MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
     <MudPaper Class="d-flex justify-start appbarstyle" Elevation="0">
@@ -63,8 +65,7 @@
 </style>
 
 @code
-    {
-    // TODO: Sync Status in Model, Anzeige über ICON in App Leiste -> Link zu Sync Page
+{
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
 
@@ -75,8 +76,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        model.SetSnackbarDialogService(snackbarDialogService);
+        
         if (!await model.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
+
+        await base.OnInitializedAsync();
     }
 
     private void userPopoverToggle()
@@ -92,6 +97,8 @@
     public async Task Logout()
     {
         await model.LogoutUser();
+        showSidebar = false;
+        userPopoverOpen = false;
         NavigationManager.NavigateTo("/");
     }
 }

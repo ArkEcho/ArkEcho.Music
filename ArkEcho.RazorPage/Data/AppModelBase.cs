@@ -21,6 +21,7 @@ namespace ArkEcho.RazorPage.Data
 
         protected Rest rest = null;
         protected Logger logger = null;
+        protected SnackbarDialogService snackbarDialogService = null;
         private Authentication authentication = null;
 
         public event Action StatusChanged;
@@ -43,6 +44,9 @@ namespace ArkEcho.RazorPage.Data
 
         public async Task<bool> AuthenticateUser(string username, string password)
         {
+            if (await IsUserAuthenticated())
+                return true;
+
             AuthenticatedUser = await authentication.AuthenticateUserForLogin(username, password);
             return AuthenticatedUser != null;
         }
@@ -66,8 +70,6 @@ namespace ArkEcho.RazorPage.Data
 
         public async Task<bool> InitializeOnLoad()
         {
-            SetStatus(IAppModel.Status.Connecting);
-
             if (!await rest.CheckConnection())
             {
                 SetStatus(IAppModel.Status.NotConnected);
@@ -154,5 +156,7 @@ namespace ArkEcho.RazorPage.Data
 
         public abstract Task StartSynchronizeMusic();
         public abstract Task<bool> ChangeMusicFolder();
+
+        public void SetSnackbarDialogService(SnackbarDialogService snackbarDialogService) => this.snackbarDialogService = snackbarDialogService;
     }
 }

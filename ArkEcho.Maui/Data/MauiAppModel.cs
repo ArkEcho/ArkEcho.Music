@@ -33,11 +33,19 @@ namespace ArkEcho.Maui
 
             await base.InitializeOnLogin();
 
-            // TODO: Give error on success & missing
             bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
 
-            mauiHelper.SetDragArea(false);
+            if (!success)
+            {
+                SetStatus(IAppModel.Status.Connected);
+                snackbarDialogService.CheckingLibraryFailed();
+                return false;
+            }
 
+            if (missing.Count > 0)
+                snackbarDialogService.MusicFilesMissing();
+
+            mauiHelper.SetDragArea(false);
             return success;
         }
 
