@@ -103,8 +103,6 @@ namespace ArkEcho.RazorPage.Data
             }
             await Library.CreateAlbumFileMap();
 
-            Console.WriteLine($"Loading Library {sw.ElapsedMilliseconds} ms");
-
             sw.Restart();
 
             foreach (Album album in Library.Album)
@@ -112,7 +110,6 @@ namespace ArkEcho.RazorPage.Data
                 if (string.IsNullOrEmpty(album.Cover64))
                     album.Cover64 = await GetAlbumCover(album.GUID);
             }
-            Console.WriteLine($"Cover {sw.ElapsedMilliseconds} ms");
 
             if (Library.MusicFiles.Count > 0)
             {
@@ -145,8 +142,6 @@ namespace ArkEcho.RazorPage.Data
 
             if (!await LoadLibraryFromServer())
                 return false;
-
-            Console.WriteLine($"Library {Library.MusicFiles.Count}");
 
             SetStatus(IAppModel.Status.Authorized);
             return true;

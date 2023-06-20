@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -17,6 +18,7 @@ namespace ArkEcho.Server
 
         private MusicLibrary library = null;
         private MusicLibraryWorker musicWorker = null;
+        private ManualResetEventSlim libraryWorkerEvent = new ManualResetEventSlim(false);
         private Logger logger = null;
 
         private IDatabaseAccess dbAccess = null;
@@ -37,10 +39,8 @@ namespace ArkEcho.Server
 
         public async Task<bool> Init()
         {
-            if (Initialized)
-                return Initialized;
-
             Environment = new AppEnvironment(Resources.ARKECHOSERVER, Debugger.IsAttached, Resources.Platform.Server, true);
+            Console.WriteLine($"Running in {(Environment.Development ? "Development" : "Production")}, Address={Environment.ServerAddress}");
 
             serverConfig = new ServerConfig(serverConfigFileName);
             if (!serverConfig.LoadFromFile(AppContext.BaseDirectory, true).Result)
@@ -62,21 +62,6 @@ namespace ArkEcho.Server
             try
             {
                 await dbAccess.ConnectToDatabase(serverConfig.DatabasePath.LocalPath);
-
-                var test = dbAccess.GetUsersAsync().Result;
-
-                if (test.Count == 0)
-                {
-                    User user = new User()
-                    {
-                        UserName = "test",
-                        Password = Encryption.EncryptSHA256("test")
-                    };
-                    user.Settings.MusicPathList.Add(new UserSettings.UserPath() { MachineName = System.Environment.MachineName, Path = new Uri(@"D:\_TEMP\Music") });
-                    await dbAccess.InsertUserAsync(user);
-                }
-
-                test = await dbAccess.GetUsersAsync();
             }
             catch (Exception ex)
             {
@@ -95,14 +80,60 @@ namespace ArkEcho.Server
             musicWorker = new MusicLibraryWorker(new FileLogger(Environment, "MusicWorker", LoggingWorker));
             musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
 
-            loadMusicLibrary();
+            library = null;
+            musicWorker.RunWorkerAsync(serverConfig.MusicFolder.LocalPath);
 
-            Initialized = true;
+            libraryWorkerEvent.Wait();
 
             //for (int i = 0; i < 5000000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
-            return Initialized;
+            return library != null;
+        }
+
+        public async Task<string> CmdListAllUsers()
+        {
+            var users = await dbAccess.GetUsersAsync();
+
+            if (users.Count == 0)
+                return "no users in database";
+
+            string result = $"user count={users.Count}";
+            foreach (var user in users)
+            {
+                result += $"\r\n{user.ID,-3} {user.UserName,-10} {(user.Settings.DarkMode ? "dark" : "light")}";
+                foreach (var item in user.Settings.MusicPathList)
+                    result += $"\n\t{item.MachineName,-15} {item.Path.AbsolutePath}";
+            }
+            return result;
+        }
+
+        public async Task<string> CmdCreateUser(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+                return "empty username or password!";
+
+            User user = new User()
+            {
+                UserName = userName,
+                Password = Encryption.EncryptSHA256(password)
+            };
+
+            if (!await dbAccess.InsertUserAsync(user))
+                return "error on creating new user!";
+
+            return $"created user {userName}";
+        }
+
+        public async Task<string> CmdDeleteUser(int userId)
+        {
+            if (userId <= 0)
+                return "invalid id";
+
+            if (!await dbAccess.DeleteUserAsync(userId))
+                return "error on deleting user!";
+
+            return $"deleted user id {userId}";
         }
 
         public async Task<User> AuthenticateUserForLoginAsync(string userName, string userPasswordEncrypted)
@@ -168,25 +199,18 @@ namespace ArkEcho.Server
             return true;
         }
 
-        private void loadMusicLibrary()
-        {
-            library = null;
-            musicWorker.RunWorkerAsync(serverConfig.MusicFolder.LocalPath);
-        }
-
         private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             if (e.Result == null)
+                logger.LogError("Error loading Music Library");
+            else
             {
-                logger.LogError("### Error loading Music Library, stopping!");
-                return;
+
+                library = (MusicLibrary)e.Result;
+                Console.WriteLine($"Library loaded {library.MusicFiles.Count} Music Files");
+                logger.LogStatic($"Library loaded, {library.MusicFiles.Count} Music Files");
             }
-
-            library = (MusicLibrary)e.Result;
-
-            Console.WriteLine($"#####################################################################");
-            Console.WriteLine($"    Library loaded! {library.MusicFiles.Count} Music Files");
-            Console.WriteLine($"#####################################################################");
+            libraryWorkerEvent.Set();
         }
 
         public List<TransferFileBase> GetAllFiles()
@@ -217,10 +241,6 @@ namespace ArkEcho.Server
             return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
         }
 
-        public bool Initialized { get; private set; } = false;
-
-        public bool RestartRequested { get; private set; } = false;
-
         public string GetAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -234,10 +254,7 @@ namespace ArkEcho.Server
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
-        #region Dispose
-
         private bool disposed;
-
         private void Dispose(bool disposing)
         {
             if (!disposed)
@@ -262,6 +279,5 @@ namespace ArkEcho.Server
             Dispose(disposing: true);
         }
 
-        #endregion
     }
 }

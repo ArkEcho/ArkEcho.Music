@@ -7,7 +7,7 @@ class HowlerPlayer {
 
     Init(NETObject) {
         this.NetObject = NETObject;
-        this.LogPlayer('HowlerPlayer initialized!');
+        //this.LogPlayer('HowlerPlayer initialized!');
     }
 
     InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {

@@ -131,6 +131,18 @@ namespace ArkEcho.Server.Database
             return await command.ExecuteNonQueryAsync() == 1;
         }
 
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            if (connection == null)
+                throw new Exception($"Not Connected to Database!");
+
+            string sql = $"delete from {User.UserTableName}  where id = {userId}";
+
+            using SQLiteCommand command = new SQLiteCommand(sql, connection);
+
+            return await command.ExecuteNonQueryAsync() == 1;
+        }
+
         private Dictionary<string, int> getFieldValueMap<T>(DbDataReader reader)
              where T : Enum
         {
