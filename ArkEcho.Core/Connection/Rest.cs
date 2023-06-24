@@ -74,6 +74,9 @@ namespace ArkEcho.Core
                 case HttpMethods.Post:
                     httpMethod = HttpMethod.Post;
                     break;
+                case HttpMethods.Put:
+                    httpMethod = HttpMethod.Put;
+                    break;
                 default:
                     throw new Exception($"Not Supported HTTP Method {method}!");
             }

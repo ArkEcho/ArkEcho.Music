@@ -29,11 +29,10 @@ namespace ArkEcho.Maui
 
         public override async Task<bool> InitializeOnLogin()
         {
-            List<MusicFile> missing = new();
-
             await base.InitializeOnLogin();
 
-            bool success = await Sync.CheckLibrary(getMusicSyncPath(), Library, new List<MusicFile>(), missing);
+            LibrarySync.LibraryCheckResult result = new LibrarySync.LibraryCheckResult();
+            bool success = await Sync.CheckLibraryOnStart(getMusicSyncPath(), Library, result);
 
             if (!success)
             {
@@ -42,7 +41,7 @@ namespace ArkEcho.Maui
                 return false;
             }
 
-            if (missing.Count > 0)
+            if (result.FilesMissing)
                 snackbarDialogService.MusicFilesMissing();
 
             mauiHelper.SetDragArea(false);

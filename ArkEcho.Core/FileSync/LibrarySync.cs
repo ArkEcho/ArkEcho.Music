@@ -23,6 +23,11 @@ namespace ArkEcho.Core
 
         public EventHandler<ProgressEventArgs> SyncProgress;
 
+        public class LibraryCheckResult
+        {
+            public bool FilesMissing { get; set; }
+        }
+
         private Rest rest = null;
         protected Logger logger = null;
 
@@ -176,6 +181,7 @@ namespace ArkEcho.Core
 
                 if (File.Exists(file.FullPath))
                 {
+                    file.ExistsLocally = true;
                     logger.LogImportant($"Success loading File in {sw.ElapsedMilliseconds}, {file.FullPath}");
                     return true;
                 }
@@ -192,7 +198,29 @@ namespace ArkEcho.Core
             }
         }
 
-        public async Task<bool> CheckLibrary(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing, List<MusicFile> wrong = null)
+        public async Task<bool> CheckLibraryOnStart(string musicFolder, MusicLibrary library, LibraryCheckResult result)
+        {
+            if (!Directory.Exists(musicFolder))
+            {
+                logger.LogImportant($"Music Folder doesn't exist Folder={musicFolder}");
+                result.FilesMissing = true;
+                return true;
+            }
+
+            List<MusicFile> missing = new();
+            if (!await CheckLibrary(musicFolder, library, new List<MusicFile>(), missing, new List<MusicFile>()))
+            {
+                logger.LogError($"Error checking Library on Start");
+                return false;
+            }
+
+            if (missing.Count == 0)
+                result.FilesMissing = false;
+
+            return true;
+        }
+
+        public async Task<bool> CheckLibrary(string musicFolder, MusicLibrary library, List<MusicFile> exist, List<MusicFile> missing, List<MusicFile> wrong)
         {
             bool success = false;
 
