@@ -12,7 +12,6 @@ namespace ArkEcho.Core.Test
         private void getPlayer(out Player testPlayer)
         {
             testPlayer = new TimerTestPlayer();
-            Assert.IsTrue(testPlayer.Initialized);
         }
 
         private void getFileList(int count, out List<MusicFile> fileList)

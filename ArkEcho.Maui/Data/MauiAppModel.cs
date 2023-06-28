@@ -5,25 +5,25 @@ namespace ArkEcho.Maui
 {
     public class MauiAppModel : AppModelBase
     {
-        public override Player Player { get { return player; } }
+        public override Player Player { get; protected set; }
 
         public override LibrarySync Sync { get; }
 
         public override string MusicFolder { get { return getMusicSyncPath(); } }
 
-        private VLCPlayer player = null;
         private IMauiHelper mauiHelper = null;
 
         public MauiAppModel(ILocalStorage localStorage, AppEnvironment environment, IMauiHelper mauiHelper)
             : base(environment, localStorage)
         {
-            player = new VLCPlayer(logger);
             this.mauiHelper = mauiHelper;
             Sync = new LibrarySync(environment, rest, new RestLogger(environment, "LibrarySync", rest));
         }
 
         protected override async Task<bool> initializePlayer()
         {
+            var player = new VLCPlayer(logger);
+            Player = player;
             return player.InitPlayer();
         }
 

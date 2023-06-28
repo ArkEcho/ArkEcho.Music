@@ -34,9 +34,7 @@ namespace ArkEcho.Maui
                 mediaplayer.Stopped += Mediaplayer_Stopped;
 
                 setAudioVolume();
-
-                Initialized = true;
-                return Initialized;
+                return true;
             }
             catch (Exception ex)
             {
@@ -92,6 +90,7 @@ namespace ArkEcho.Maui
         protected override void disposeAudio()
         {
             mediaplayer.Media?.Dispose();
+            mediaplayer.Media = null;
         }
 
         protected override void playAudio()

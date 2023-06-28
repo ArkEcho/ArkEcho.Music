@@ -20,15 +20,14 @@ namespace ArkEcho.WebPage
 
         public bool InitPlayer(string apiToken)
         {
-            if (Initialized)
-                return Initialized;
-
             this.apiToken = apiToken;
-            var dotNetReference = DotNetObjectReference.Create(this);
-            jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
-
-            Initialized = true;
-            return Initialized;
+            try
+            {
+                var dotNetReference = DotNetObjectReference.Create(this);
+                jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
+                return true;
+            }
+            catch { return false; }
         }
 
         [JSInvokable]

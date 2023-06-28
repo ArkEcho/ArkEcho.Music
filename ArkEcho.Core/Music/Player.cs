@@ -17,12 +17,9 @@ namespace ArkEcho.Core
 
         public Player() { }
 
-        public bool Initialized { get; protected set; }
-
-        private List<MusicFile> listToPlay = null;
-
         public MusicFile PlayingFile { get; private set; } = null;
 
+        private List<MusicFile> listToPlay = null;
         private int songIndex = 0;
 
 
@@ -43,7 +40,7 @@ namespace ArkEcho.Core
                 setAudioVolume();
             }
         }
-        private int volume = 50;
+        private int volume = 100;
 
         #endregion
 
@@ -316,6 +313,12 @@ namespace ArkEcho.Core
         protected void AudioEnd()
         {
             Forward();
+        }
+
+        public void Reset() // TODO: Better name Solution, called on Logout
+        {
+            PlayingFile = null;
+            listToPlay = null;
         }
 
         protected abstract void log(string Text, Logging.LogLevel Level);

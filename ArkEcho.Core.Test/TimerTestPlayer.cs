@@ -17,8 +17,6 @@ namespace ArkEcho.Core.Test
                 Enabled = true,
             };
             timer.Elapsed += Timer_Elapsed;
-
-            Initialized = true;
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)

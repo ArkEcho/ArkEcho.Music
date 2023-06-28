@@ -32,7 +32,6 @@ namespace ArkEcho.RazorPage.Data
 
         Task<bool> InitializeOnLoad();
         Task<bool> InitializeOnLogin();
-        Task<string> GetAlbumCover(Guid albumGuid);
         Task<bool> UpdateMusicRating(Guid guid, int rating);
 
         void SetSnackbarDialogService(SnackbarDialogService snackbarDialogService);

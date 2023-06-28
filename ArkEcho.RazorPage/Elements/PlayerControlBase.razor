@@ -103,8 +103,9 @@
             playingAlbumArtist = Model.Library.GetAlbumArtist(Model.Player.PlayingFile.AlbumArtist);
 
             if (string.IsNullOrEmpty(playingAlbum.Cover64))
-                playingAlbum.Cover64 = await Model.GetAlbumCover(playingAlbum.GUID);
-            Image64 = helper.GetBase64PngImg(playingAlbum.Cover64);
+                Image64 = ArkEcho.Core.Properties.Resources.logo_svg;
+            else
+                Image64 = helper.GetBase64PngImg(playingAlbum.Cover64);
         }
         else
         {

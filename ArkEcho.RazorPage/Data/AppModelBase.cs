@@ -8,7 +8,7 @@ namespace ArkEcho.RazorPage.Data
     {
         public MusicLibrary Library { get; private set; }
 
-        public abstract Player Player { get; }
+        public abstract Player Player { get; protected set; }
 
         public abstract LibrarySync Sync { get; }
 
@@ -55,10 +55,12 @@ namespace ArkEcho.RazorPage.Data
         {
             if (Player.Playing)
                 Player.Stop();
+            Player.Reset();
 
             SetStatus(IAppModel.Status.Started);
 
             await authentication.LogoutUser();
+
             AuthenticatedUser = null;
         }
 
@@ -108,7 +110,7 @@ namespace ArkEcho.RazorPage.Data
             foreach (Album album in Library.Album)
             {
                 if (string.IsNullOrEmpty(album.Cover64))
-                    album.Cover64 = await GetAlbumCover(album.GUID);
+                    album.Cover64 = await rest.GetAlbumCover(album.GUID);
             }
 
             if (Library.MusicFiles.Count > 0)
@@ -121,11 +123,6 @@ namespace ArkEcho.RazorPage.Data
                 logger.LogStatic($"Error initializing Library/Music Count is Zero!");
                 return false;
             }
-        }
-
-        public async Task<string> GetAlbumCover(Guid albumGuid)
-        {
-            return await rest.GetAlbumCover(albumGuid);
         }
 
         public async Task<bool> UpdateMusicRating(Guid musicFileGuid, int rating)

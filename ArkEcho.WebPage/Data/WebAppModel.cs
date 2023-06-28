@@ -6,22 +6,24 @@ namespace ArkEcho.WebPage
 {
     public class WebAppModel : AppModelBase
     {
-        public override Player Player { get { return jsPlayer; } }
+        public override Player Player { get; protected set; }
         public override LibrarySync Sync { get; }
 
         public override string MusicFolder { get { return string.Empty; } }
 
-        private JSPlayer jsPlayer = null;
+        private IJSRuntime jsRuntime = null;
 
         public WebAppModel(IJSRuntime jsRuntime, ILocalStorage localStorage, AppEnvironment environment)
             : base(environment, localStorage)
         {
-            jsPlayer = new JSPlayer(jsRuntime, logger, environment.ServerAddress);
+            this.jsRuntime = jsRuntime;
         }
 
         protected override async Task<bool> initializePlayer()
         {
-            return jsPlayer.InitPlayer(rest.ApiToken.ToString());
+            var player = new JSPlayer(jsRuntime, logger, Environment.ServerAddress);
+            Player = player;
+            return ((JSPlayer)Player).InitPlayer(rest.ApiToken.ToString());
         }
 
         public override async Task<bool> InitializeOnLogin() => await base.InitializeOnLogin();
