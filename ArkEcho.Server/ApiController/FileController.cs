@@ -30,7 +30,7 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            List<TransferFileBase> files = server.GetAllFiles();
+            List<TransferFileBase> files = server.GetAllFiles(apiToken);
 
             if (files == null)
             {

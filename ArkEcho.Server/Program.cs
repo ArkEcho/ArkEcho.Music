@@ -87,7 +87,8 @@ public class Program
                     {
                         string userName = readUserInput("username: ");
                         string password = readUserInput("password: ");
-                        Console.WriteLine(await server.CmdCreateUser(userName, password));
+                        string musiclibarypath = readUserInput("musiclibarypath: ");
+                        Console.WriteLine(await server.CmdCreateUser(userName, password, musiclibarypath));
                     }
                     else if (userInput == "delete")
                     {

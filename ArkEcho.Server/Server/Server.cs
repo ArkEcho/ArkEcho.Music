@@ -3,7 +3,6 @@ using ArkEcho.Server.Database;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -16,8 +15,8 @@ namespace ArkEcho.Server
     {
         private const string serverConfigFileName = "ServerConfig.json";
 
-        private MusicLibrary library = null;
-        private MusicLibraryWorker musicWorker = null;
+        private MusicLibraryManager libraryManager = null;
+
         private ManualResetEventSlim libraryWorkerEvent = new ManualResetEventSlim(false);
         private Logger logger = null;
 
@@ -33,7 +32,6 @@ namespace ArkEcho.Server
         public AppEnvironment Environment { get; private set; } = null;
         public Server()
         {
-            library = new MusicLibrary();
             dbAccess = new SqliteDatabaseAccess();
         }
 
@@ -46,16 +44,6 @@ namespace ArkEcho.Server
             if (!serverConfig.LoadFromFile(AppContext.BaseDirectory, true).Result)
             {
                 Console.WriteLine("### No Config File found/Error Loading -> created new one, please configure. Stopping Server");
-                return false;
-            }
-            else if (string.IsNullOrEmpty(serverConfig.MusicFolder.LocalPath) || !Directory.Exists(serverConfig.MusicFolder.LocalPath))
-            {
-                Console.WriteLine($"### Music File Path {serverConfig.MusicFolder.LocalPath} not found! Enter Correct Path like: \"C:\\Users\\UserName\\Music\"");
-                return false;
-            }
-            else if (Directory.GetFiles(serverConfig.MusicFolder.LocalPath).Length == 0 && Directory.GetDirectories(serverConfig.MusicFolder.LocalPath).Length == 0)
-            {
-                Console.WriteLine("### Given Music Directory is empty!");
                 return false;
             }
 
@@ -77,18 +65,22 @@ namespace ArkEcho.Server
             logger.LogStatic("Configuration for ArkEcho.Server:");
             logger.LogStatic($"\r\n{serverConfig.SaveToJsonString().Result}");
 
-            musicWorker = new MusicLibraryWorker(new FileLogger(Environment, "MusicWorker", LoggingWorker));
-            musicWorker.RunWorkerCompleted += MusicLibraryWorker_RunWorkerCompleted;
-
-            library = null;
-            musicWorker.RunWorkerAsync(serverConfig.MusicFolder.LocalPath);
+            libraryManager = new MusicLibraryManager(new FileLogger(Environment, "MusicManager", LoggingWorker));
+            libraryManager.Finished += LibraryManager_Finished;
+            libraryManager.LoadUserLibraries(await dbAccess.GetUsersAsync());
 
             libraryWorkerEvent.Wait();
 
             //for (int i = 0; i < 5000000; i++)
             //    logger.LogStatic($"LOREM IPSUM BLA UND BLUB; DAT IST EIN TEXT!");
 
-            return library != null;
+            return true;
+        }
+
+        private void LibraryManager_Finished(object sender, EventArgs e)
+        {
+            Console.WriteLine($"Music Libraries loaded");
+            libraryWorkerEvent.Set();
         }
 
         public async Task<string> CmdListAllUsers()
@@ -101,22 +93,25 @@ namespace ArkEcho.Server
             string result = $"user count={users.Count}";
             foreach (var user in users)
             {
-                result += $"\r\n{user.ID,-3} {user.UserName,-10} {(user.Settings.DarkMode ? "dark" : "light")}";
+                result += $"\r\n{user.ID,-3} {user.UserName,-10} {(user.Settings.DarkMode ? "dark" : "light")} {user.MusicLibraryPath}";
                 foreach (var item in user.Settings.MusicPathList)
                     result += $"\n\t{item.MachineName,-15} {item.Path.AbsolutePath}";
             }
             return result;
         }
 
-        public async Task<string> CmdCreateUser(string userName, string password)
+        public async Task<string> CmdCreateUser(string userName, string password, string musiclibrarypath)
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 return "empty username or password!";
+            else if (musiclibrarypath.Length > 255)
+                return "musiclibrarypath is too long, max 255 char";
 
             User user = new User()
             {
                 UserName = userName,
-                Password = Encryption.EncryptSHA256(password)
+                Password = Encryption.EncryptSHA256(password),
+                MusicLibraryPath = musiclibrarypath
             };
 
             if (!await dbAccess.InsertUserAsync(user))
@@ -178,16 +173,27 @@ namespace ArkEcho.Server
 
         public Guid GetApiToken(Guid sessionToken)
         {
-            if (!CheckSession(sessionToken))
+            User user = GetUserFromSessionToken(sessionToken);
+            if (user == null)
                 return Guid.Empty;
 
-            TokenInstance apiToken = new TokenInstance();
+            TokenInstance apiToken = new TokenInstance(user.ID);
             apiTokens.Add(apiToken);
             return apiToken.ApiToken;
         }
 
-        public bool UpdateMusicRating(Guid musicGuid, int rating)
+        public MusicLibrary GetUserMusicLibrary(Guid apiToken)
         {
+            TokenInstance token = apiTokens.Find(x => x.ApiToken == apiToken);
+            if (token == null)
+                return null;
+
+            return libraryManager.GetMusicLibrary(token.UserID);
+        }
+
+        public bool UpdateMusicRating(Guid apiToken, Guid musicGuid, int rating)
+        {
+            MusicLibrary library = GetUserMusicLibrary(apiToken);
             if (library == null)
                 return false;
 
@@ -199,22 +205,9 @@ namespace ArkEcho.Server
             return true;
         }
 
-        private void MusicLibraryWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        public List<TransferFileBase> GetAllFiles(Guid apiToken)
         {
-            if (e.Result == null)
-                logger.LogError("Error loading Music Library");
-            else
-            {
-
-                library = (MusicLibrary)e.Result;
-                Console.WriteLine($"Library loaded {library.MusicFiles.Count} Music Files");
-                logger.LogStatic($"Library loaded, {library.MusicFiles.Count} Music Files");
-            }
-            libraryWorkerEvent.Set();
-        }
-
-        public List<TransferFileBase> GetAllFiles()
-        {
+            MusicLibrary library = GetUserMusicLibrary(apiToken);
             if (library == null)
                 return null;
 
@@ -226,18 +219,15 @@ namespace ArkEcho.Server
             return list;
         }
 
-        public MusicLibrary GetMusicLibrary()
+        public MusicFile GetMusicFile(Guid apiToken, Guid guid)
         {
-            return library;
-        }
-
-        public MusicFile GetMusicFile(Guid guid)
-        {
+            MusicLibrary library = GetUserMusicLibrary(apiToken);
             return library != null ? library.MusicFiles.Find(x => x.GUID == guid) : null;
         }
 
-        public string GetAlbumCover(Guid guid)
+        public string GetAlbumCover(Guid apiToken, Guid guid)
         {
+            MusicLibrary library = GetUserMusicLibrary(apiToken);
             return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
         }
 
@@ -266,8 +256,8 @@ namespace ArkEcho.Server
                     LoggingWorker?.Dispose();
                     LoggingWorker = null;
 
-                    musicWorker?.Dispose();
-                    musicWorker = null;
+                    libraryManager?.Dispose();
+                    libraryManager = null;
                 }
 
                 disposed = true;

@@ -44,7 +44,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30), settings blob)";
+            string sql = $"create table {User.UserTableName} (id integer primary key autoincrement, username varchar(30), password varchar(30), musiclibrarypath varchar(255), settings blob)";
 
             SQLiteCommand command = new SQLiteCommand(sql, connection);
             await command.ExecuteNonQueryAsync();
@@ -72,16 +72,22 @@ namespace ArkEcho.Server.Database
             List<User> users = new List<User>();
             while (await reader.ReadAsync())
             {
-                User user = new User();
-
-                user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
-                user.UserName = reader.GetString(keyValues[User.UserTable.USERNAME.ToString()]);
-                user.Password = reader.GetString(keyValues[User.UserTable.PASSWORD.ToString()]);
-                await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
-
+                User user = await getUserFromResult(reader, keyValues);
                 users.Add(user);
             }
             return users;
+        }
+
+        private static async Task<User> getUserFromResult(DbDataReader reader, Dictionary<string, int> keyValues)
+        {
+            User user = new User();
+
+            user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
+            user.UserName = reader.GetString(keyValues[User.UserTable.USERNAME.ToString()]);
+            user.Password = reader.GetString(keyValues[User.UserTable.PASSWORD.ToString()]);
+            user.MusicLibraryPath = reader.GetString(keyValues[User.UserTable.MUSICLIBRARYPATH.ToString()]);
+            await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
+            return user;
         }
 
         public async Task<User> GetUserAsync(string username, string passwordEncrypted)
@@ -99,12 +105,7 @@ namespace ArkEcho.Server.Database
             User user = null;
             while (await reader.ReadAsync())
             {
-                user = new User();
-
-                user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
-                user.UserName = username;
-                user.Password = passwordEncrypted;
-                await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
+                user = await getUserFromResult(reader, keyValues);
             }
             return user;
         }
@@ -114,7 +115,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', settings = '{await user.Settings.SaveToJsonString()}' where id = {user.ID}";
+            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', musiclibrarypath = '{user.MusicLibraryPath}', settings = '{await user.Settings.SaveToJsonString()}' where id = {user.ID}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() == 1;
@@ -125,7 +126,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"insert into {User.UserTableName} (username, password, settings) values ('{user.UserName}', '{user.Password}', '{await user.Settings.SaveToJsonString()}')";
+            string sql = $"insert into {User.UserTableName} (username, password, musiclibrarypath, settings) values ('{user.UserName}', '{user.Password}', '{user.MusicLibraryPath}', '{await user.Settings.SaveToJsonString()}')";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() == 1;

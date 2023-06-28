@@ -12,35 +12,37 @@ namespace ArkEcho.Server
 {
     public class MusicLibraryWorker : BackgroundWorker
     {
+        public int ID { get; private set; }
+
         private Logger logger = null;
 
-        public MusicLibraryWorker(Logger logger) : base()
+        public MusicLibraryWorker(int id, Logger logger) : base()
         {
+            ID = id;
             this.logger = logger;
             DoWork += MusicLibraryWorker_DoWork;
         }
 
-        // TODO: Multiple Worker (CoreCount / 2)
         private void MusicLibraryWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            logger.LogStatic($"Start loading MusicLibrary...");
+            logger.LogDebug($"{ID}: Start loading MusicLibrary");
 
             Stopwatch sw = new();
             sw.Start();
-            string musicDirectoryPath = (string)e.Argument;
 
-            MusicLibrary library = new();
-            List<string> errors = new();
+            var data = (MusicLibraryManager.LibraryData)e.Argument;
 
-            foreach (string filePath in getAllFilesSubSearch(musicDirectoryPath, Resources.SupportedMusicFileFormats))
-                loadMusicFile(filePath, library);
+            data.Library = new();
 
-            loadPlaylistFiles(musicDirectoryPath, library);
+            foreach (string filePath in getAllFilesSubSearch(data.Path, Resources.SupportedMusicFileFormats))
+                loadMusicFile(filePath, data.Library);
+
+            loadPlaylistFiles(data.Path, data.Library);
 
             sw.Stop();
-            logger.LogStatic($"Finished loading MusicLibrary in {sw.ElapsedMilliseconds}ms, {library.MusicFiles.Count} Music Files & {library.Playlists.Count} Playlists");
+            logger.LogDebug($"{ID}: Finished loading MusicLibrary in {sw.ElapsedMilliseconds}ms, {data.Library.MusicFiles.Count} Music Files & {data.Library.Playlists.Count} Playlists");
 
-            e.Result = library;
+            e.Result = data;
         }
 
         private void loadPlaylistFiles(string musicDirectoryPath, MusicLibrary library)
@@ -71,7 +73,7 @@ namespace ArkEcho.Server
 
                     return playlist.MusicFiles.Count > 0;
             }
-            logger.LogError($"Unknown Playlist Format {playlist.FileFormat}");
+            logger.LogError($"{ID}: Unknown Playlist Format {playlist.FileFormat}");
             return false;
         }
 
@@ -84,7 +86,7 @@ namespace ArkEcho.Server
                 if (file != null)
                     playlist.MusicFiles.Add(file.GUID);
                 else
-                    logger.LogError($"Error parsing Playlist {playlist.Title}, {info.ToString()} not found!");
+                    logger.LogError($"{ID}: Error parsing Playlist {playlist.Title}, {info.ToString()} not found!");
             }
         }
 
@@ -94,7 +96,7 @@ namespace ArkEcho.Server
             {
                 if (tagFile == null)
                 {
-                    logger.LogError($"Couldn't load Tags for {filePath}");
+                    logger.LogError($"{ID}: Couldn't load Tags for {filePath}");
                     return;
                 }
 
@@ -117,7 +119,7 @@ namespace ArkEcho.Server
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError($"Exception on creating File for {filePath}, {ex.Message}");
+                    logger.LogError($"{ID}: Exception on creating File for {filePath}, {ex.Message}");
                     return;
                 }
 
@@ -174,7 +176,7 @@ namespace ArkEcho.Server
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error reading File Info for {directoryPath}, {ex.Message}");
+                logger.LogError($"{ID}: Error reading File Info for {directoryPath}, {ex.Message}");
             }
 
             return results;
@@ -184,12 +186,12 @@ namespace ArkEcho.Server
         {
             if (string.IsNullOrEmpty(tag.FirstAlbumArtist) || string.IsNullOrEmpty(tag.Album))
             {
-                logger.LogError($"Skipped! No Album/AlbumArtist {music.FullPath}");
+                logger.LogError($"{ID}: Skipped! No Album/AlbumArtist {music.FullPath}");
                 return false;
             }
             else if (tag.Pictures.Length == 0)
             {
-                logger.LogError($"File has no Album Cover! {music.FullPath}");
+                logger.LogError($"{ID}: File has no Album Cover! {music.FullPath}");
                 return false;
             }
             else
@@ -197,13 +199,13 @@ namespace ArkEcho.Server
                 List<string> parts = music.FullPath.Split("\\").ToList();
                 if (!parts[parts.Count - 3].Equals(tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase))
                 {
-                    logger.LogError($"Skipped! AlbumArtist != Foldername {music.FullPath}");
+                    logger.LogError($"{ID}: Skipped! AlbumArtist != Foldername {music.FullPath}");
                     return false;
                 }
 
                 if (!parts[parts.Count - 2].Equals(tag.Album, StringComparison.OrdinalIgnoreCase))
                 {
-                    logger.LogError($"Skipped! Albumname != Foldername {music.FullPath}");
+                    logger.LogError($"{ID}: Skipped! Albumname != Foldername {music.FullPath}");
                     return false;
                 }
             }

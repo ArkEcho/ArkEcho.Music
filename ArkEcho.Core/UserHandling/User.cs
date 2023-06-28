@@ -11,6 +11,7 @@ namespace ArkEcho.Core
             ID,
             USERNAME,
             PASSWORD,
+            MUSICLIBRARYPATH,
             SETTINGS
         }
 

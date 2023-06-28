@@ -23,7 +23,7 @@ namespace ArkEcho.Server
             else if (musicFile == Guid.Empty)
                 return BadRequest();
 
-            MusicFile file = server.GetMusicFile(musicFile);
+            MusicFile file = server.GetMusicFile(apiToken, musicFile);
 
             if (file == null)
                 return NotFound();
@@ -43,7 +43,7 @@ namespace ArkEcho.Server
             if (!checkApiToken(apiToken))
                 return BadRequest();
 
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
@@ -62,7 +62,7 @@ namespace ArkEcho.Server
                 return BadRequest();
             }
 
-            string cover = server.GetAlbumCover(albumGuid);
+            string cover = server.GetAlbumCover(apiToken, albumGuid);
 
             if (string.IsNullOrEmpty(cover))
             {
@@ -79,7 +79,7 @@ namespace ArkEcho.Server
             if (!checkApiToken(apiToken))
                 return Unauthorized();
 
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
@@ -91,7 +91,7 @@ namespace ArkEcho.Server
             else if (start + Resources.RestMusicFileCount > library.MusicFiles.Count)
                 count = library.MusicFiles.Count - start;
 
-            return await GetByteResult(library.MusicFiles.GetRange(start, count));
+            return await getByteResult(apiToken, library.MusicFiles.GetRange(start, count));
         }
 
         // GET: api/Music/Albums
@@ -101,11 +101,11 @@ namespace ArkEcho.Server
             if (!checkApiToken(apiToken))
                 return Unauthorized();
 
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
-            return await GetByteResult(library.Album);
+            return await getByteResult(apiToken, library.Album);
         }
 
         // GET: api/Music/AlbumArtists
@@ -115,11 +115,11 @@ namespace ArkEcho.Server
             if (!checkApiToken(apiToken))
                 return Unauthorized();
 
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
-            return await GetByteResult(library.AlbumArtists);
+            return await getByteResult(apiToken, library.AlbumArtists);
         }
 
         // GET: api/Music/Playlists
@@ -129,11 +129,11 @@ namespace ArkEcho.Server
             if (!checkApiToken(apiToken))
                 return Unauthorized();
 
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
-            return await GetByteResult(library.Playlists);
+            return await getByteResult(apiToken, library.Playlists);
         }
 
         [HttpPut("Rating")]
@@ -150,12 +150,12 @@ namespace ArkEcho.Server
             else if (musicRating < 0 || musicRating > 5)
                 return BadRequest();
 
-            return server.UpdateMusicRating(musicFile, musicRating) ? Ok() : NotFound();
+            return server.UpdateMusicRating(apiToken, musicFile, musicRating) ? Ok() : NotFound();
         }
 
-        private async Task<ActionResult> GetByteResult(object toSerialize)
+        private async Task<ActionResult> getByteResult(Guid apiToken, object toSerialize)
         {
-            MusicLibrary library = server.GetMusicLibrary();
+            MusicLibrary library = server.GetUserMusicLibrary(apiToken);
             if (library == null)
                 return BadRequest();
 
