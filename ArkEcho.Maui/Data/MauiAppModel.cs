@@ -74,10 +74,10 @@ namespace ArkEcho.Maui
             if (string.IsNullOrEmpty(newFolder) || !Directory.Exists(newFolder))
                 return false;
 
-            UserSettings.UserPath path = AuthenticatedUser.Settings.GetLocalUserSettings();
+            UserSettings.MusicPath path = AuthenticatedUser.Settings.GetLocalUserSettings();
             if (path == null)
             {
-                path = new UserSettings.UserPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
+                path = new UserSettings.MusicPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
                 AuthenticatedUser.Settings.MusicPathList.Add(path);
             }
             else

@@ -24,6 +24,9 @@ namespace ArkEcho.Core
         public string Password { get; set; } = string.Empty;
 
         [JsonProperty]
+        public string MusicLibraryPath { get; set; } = string.Empty;
+
+        [JsonProperty]
         public Guid SessionToken { get; set; } = Guid.Empty;
 
         [JsonProperty]

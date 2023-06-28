@@ -15,7 +15,7 @@ namespace ArkEcho.Maui.WinUI
 
         public string GetPlatformSpecificMusicFolder(User user)
         {
-            UserSettings.UserPath path = user.Settings.GetLocalUserSettings();
+            UserSettings.MusicPath path = user.Settings.GetLocalUserSettings();
             if (path != null)
                 return path.Path.LocalPath;
             else

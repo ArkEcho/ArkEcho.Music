@@ -9,9 +9,9 @@ namespace ArkEcho.Core
         public bool DarkMode { get; set; } = true;
 
         [JsonProperty]
-        public List<UserPath> MusicPathList { get; set; } = new List<UserPath>();
+        public List<MusicPath> MusicPathList { get; set; } = new List<MusicPath>();
 
-        public class UserPath : JsonBase
+        public class MusicPath : JsonBase
         {
             [JsonProperty]
             public string MachineName { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace ArkEcho.Core
             public Uri Path { get; set; } = new Uri("about:blank");
         }
 
-        public UserPath GetLocalUserSettings()
+        public MusicPath GetLocalUserSettings()
         {
             return MusicPathList.Find(x => x.MachineName.Equals(System.Environment.MachineName, StringComparison.OrdinalIgnoreCase));
         }
