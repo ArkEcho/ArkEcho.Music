@@ -85,7 +85,7 @@ namespace ArkEcho.Server.Database
             user.ID = reader.GetInt32(keyValues[User.UserTable.ID.ToString()]);
             user.UserName = reader.GetString(keyValues[User.UserTable.USERNAME.ToString()]);
             user.Password = reader.GetString(keyValues[User.UserTable.PASSWORD.ToString()]);
-            user.MusicLibraryPath = reader.GetString(keyValues[User.UserTable.MUSICLIBRARYPATH.ToString()]);
+            user.MusicLibraryPath = new Uri(reader.GetString(keyValues[User.UserTable.MUSICLIBRARYPATH.ToString()]));
             await user.Settings.LoadFromJsonString(reader.GetString(keyValues[User.UserTable.SETTINGS.ToString()]));
             return user;
         }
@@ -114,9 +114,7 @@ namespace ArkEcho.Server.Database
         {
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
-
-            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', musiclibrarypath = '{user.MusicLibraryPath}', settings = '{await user.Settings.SaveToJsonString()}' where id = {user.ID}";
-
+            string sql = $"update {User.UserTableName} set username = '{user.UserName}', password = '{user.Password}', musiclibrarypath = '{user.MusicLibraryPath.AbsolutePath}', settings = '{await user.Settings.SaveToJsonString()}' where id = {user.ID}";
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() == 1;
         }
@@ -126,7 +124,7 @@ namespace ArkEcho.Server.Database
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"insert into {User.UserTableName} (username, password, musiclibrarypath, settings) values ('{user.UserName}', '{user.Password}', '{user.MusicLibraryPath}', '{await user.Settings.SaveToJsonString()}')";
+            string sql = $"insert into {User.UserTableName} (username, password, musiclibrarypath, settings) values ('{user.UserName}', '{user.Password}', '{user.MusicLibraryPath.AbsolutePath}', '{await user.Settings.SaveToJsonString()}')";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             return await command.ExecuteNonQueryAsync() == 1;

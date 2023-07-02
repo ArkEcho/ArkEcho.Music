@@ -44,7 +44,7 @@ namespace ArkEcho.Server
                     libraryData.Add(new LibraryData()
                     {
                         UserID = user.ID,
-                        Path = user.MusicLibraryPath
+                        Path = user.MusicLibraryPath.AbsolutePath
                     });
                 }
             }

@@ -3,6 +3,7 @@ using ArkEcho.Server.Database;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -93,7 +94,7 @@ namespace ArkEcho.Server
             string result = $"user count={users.Count}";
             foreach (var user in users)
             {
-                result += $"\r\n{user.ID,-3} {user.UserName,-10} {(user.Settings.DarkMode ? "dark" : "light")} {user.MusicLibraryPath}";
+                result += $"\r\n{user.ID,-3} {user.UserName,-10} {(user.Settings.DarkMode ? "dark" : "light")} {user.MusicLibraryPath.AbsolutePath}";
                 foreach (var item in user.Settings.MusicPathList)
                     result += $"\n\t{item.MachineName,-15} {item.Path.AbsolutePath}";
             }
@@ -106,12 +107,22 @@ namespace ArkEcho.Server
                 return "empty username or password!";
             else if (musiclibrarypath.Length > 255)
                 return "musiclibrarypath is too long, max 255 char";
+            else if (!Path.Exists(musiclibrarypath))
+                return "musiclibrarypath doesn't exist";
+
+            Uri uri = new Uri(musiclibrarypath);
+
+            List<User> users = await dbAccess.GetUsersAsync();
+            if (users.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)))
+                return "username already in use";
+            else if (users.Any(x => x.MusicLibraryPath == uri))
+                return "musiclibrarypath already in use";
 
             User user = new User()
             {
                 UserName = userName,
                 Password = Encryption.EncryptSHA256(password),
-                MusicLibraryPath = musiclibrarypath
+                MusicLibraryPath = uri
             };
 
             if (!await dbAccess.InsertUserAsync(user))
