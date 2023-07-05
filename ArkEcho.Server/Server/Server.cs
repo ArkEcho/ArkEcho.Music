@@ -131,6 +131,11 @@ namespace ArkEcho.Server
             return $"created user {userName}";
         }
 
+        public async Task<string> CmdUpdateUser(string id, string field, string newValue)
+        {
+            return "";
+        }
+
         public async Task<string> CmdDeleteUser(int userId)
         {
             if (userId <= 0)

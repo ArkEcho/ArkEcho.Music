@@ -75,9 +75,10 @@ public class Program
                 break;
             else if (input == "user")
             {
+                string userMenu = "user menu";
                 while (true)
                 {
-                    string userInput = readUserInput("user menu $ ");
+                    string userInput = readUserInput($"{userMenu} $ ");
 
                     if (userInput == "stop")
                         break;
@@ -85,14 +86,24 @@ public class Program
                         Console.WriteLine(await server.CmdListAllUsers());
                     else if (userInput == "create")
                     {
-                        string userName = readUserInput("username: ");
-                        string password = readUserInput("password: ");
-                        string musiclibarypath = readUserInput("musiclibarypath: ");
+                        string userName = readUserInput($"{userMenu} username $ ");
+                        string password = readUserInput($"{userMenu} password $ ");
+                        string musiclibarypath = readUserInput($"{userMenu} musiclibarypath $ ");
                         Console.WriteLine(await server.CmdCreateUser(userName, password, musiclibarypath));
+                    }
+                    else if (userInput == "update")
+                    {
+                        string id = readUserInput($"{userMenu} id $ ");
+                        if (int.TryParse(id, out int userid))
+                        {
+                            string field = readUserInput($"{userMenu} field $ ");
+                            string newValue = readUserInput($"{userMenu} new value $ ");
+                            Console.WriteLine(await server.CmdUpdateUser(id, field, newValue));
+                        }
                     }
                     else if (userInput == "delete")
                     {
-                        string id = readUserInput("id: ");
+                        string id = readUserInput($"{userMenu} id $ ");
                         if (int.TryParse(id, out int userid))
                             Console.WriteLine(await server.CmdDeleteUser(userid));
                     }
