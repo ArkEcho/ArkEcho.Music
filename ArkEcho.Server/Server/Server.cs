@@ -103,8 +103,8 @@ namespace ArkEcho.Server
 
         public async Task<string> CmdCreateUser(string userName, string password, string musiclibrarypath)
         {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
-                return "empty username or password!";
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password) || !Path.Exists(musiclibrarypath))
+                return "invalid input";
 
             User user = new User()
             {
@@ -140,6 +140,9 @@ namespace ArkEcho.Server
 
         public async Task<string> CmdUpdateUser(int id, string field, string newValue)
         {
+            if (string.IsNullOrEmpty(field) || string.IsNullOrEmpty(newValue) || id <= 0)
+                return "invalid input";
+
             User user = await dbAccess.GetUserAsync(id);
             if (user == null)
                 return $"User ID {id} not found!";
@@ -149,7 +152,11 @@ namespace ArkEcho.Server
             else if (field.Equals("password", StringComparison.OrdinalIgnoreCase))
                 user.Password = Encryption.EncryptSHA256(newValue);
             else if (field.Equals("musiclibrarypath", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!Path.Exists(newValue))
+                    return "invalid input for musiclibrarypath";
                 user.MusicLibraryPath = new Uri(newValue);
+            }
 
             string checkResult = await checkUser(user);
             if (!string.IsNullOrEmpty(checkResult))

@@ -69,41 +69,52 @@ public class Program
     {
         while (true)
         {
-            string input = readUserInput("cmdMenu $ ");
+            string input = readUserInput("menu>");
 
             if (input == "stop")
                 break;
+            else if (input == "help")
+            {
+                Console.WriteLine("user\tUser Menu");
+            }
             else if (input == "user")
             {
-                string userMenu = "user menu";
+                string userMenu = "user";
                 while (true)
                 {
-                    string userInput = readUserInput($"{userMenu} $ ");
+                    string userInput = readUserInput($"{userMenu}>");
 
                     if (userInput == "stop")
                         break;
+                    else if (userInput == "help")
+                    {
+                        Console.WriteLine("ls\tList all users");
+                        Console.WriteLine("create\tCreate new user");
+                        Console.WriteLine("update\tUpdate user properties");
+                        Console.WriteLine("delete\tDelete a user");
+                    }
                     else if (userInput == "ls")
                         Console.WriteLine(await server.CmdListAllUsers());
                     else if (userInput == "create")
                     {
-                        string userName = readUserInput($"{userMenu} username $ ");
-                        string password = readUserInput($"{userMenu} password $ ");
-                        string musiclibarypath = readUserInput($"{userMenu} musiclibarypath $ ");
+                        string userName = readUserInput($"{userMenu} create $ username>");
+                        string password = readUserInput($"{userMenu} create $ password>");
+                        string musiclibarypath = readUserInput($"{userMenu} update $ musiclibarypath>");
                         Console.WriteLine(await server.CmdCreateUser(userName, password, musiclibarypath));
                     }
                     else if (userInput == "update")
                     {
-                        string id = readUserInput($"{userMenu} id $ ");
+                        string id = readUserInput($"{userMenu} update $ id>");
                         if (int.TryParse(id, out int userid))
                         {
-                            string field = readUserInput($"{userMenu} field $ ");
-                            string newValue = readUserInput($"{userMenu} new value $ ");
+                            string field = readUserInput($"{userMenu} update $ field>");
+                            string newValue = readUserInput($"{userMenu} update $ value>");
                             Console.WriteLine(await server.CmdUpdateUser(userid, field, newValue));
                         }
                     }
                     else if (userInput == "delete")
                     {
-                        string id = readUserInput($"{userMenu} id $ ");
+                        string id = readUserInput($"{userMenu} delete $ id>");
                         if (int.TryParse(id, out int userid))
                             Console.WriteLine(await server.CmdDeleteUser(userid));
                     }
