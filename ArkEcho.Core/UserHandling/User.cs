@@ -16,7 +16,7 @@ namespace ArkEcho.Core
         }
 
         [JsonProperty]
-        public int ID { get; set; }
+        public int ID { get; set; } = 0;
 
         [JsonProperty]
         public string UserName { get; set; } = string.Empty;

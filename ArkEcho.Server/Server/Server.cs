@@ -105,35 +105,60 @@ namespace ArkEcho.Server
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
                 return "empty username or password!";
-            else if (musiclibrarypath.Length > 255)
-                return "musiclibrarypath is too long, max 255 char";
-            else if (!Path.Exists(musiclibrarypath))
-                return "musiclibrarypath doesn't exist";
-
-            Uri uri = new Uri(musiclibrarypath);
-
-            List<User> users = await dbAccess.GetUsersAsync();
-            if (users.Any(x => x.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)))
-                return "username already in use";
-            else if (users.Any(x => x.MusicLibraryPath == uri))
-                return "musiclibrarypath already in use";
 
             User user = new User()
             {
                 UserName = userName,
                 Password = Encryption.EncryptSHA256(password),
-                MusicLibraryPath = uri
+                MusicLibraryPath = new Uri(musiclibrarypath)
             };
+
+            string checkResult = await checkUser(user);
+            if (!string.IsNullOrEmpty(checkResult))
+                return checkResult;
 
             if (!await dbAccess.InsertUserAsync(user))
                 return "error on creating new user!";
 
-            return $"created user {userName}";
+            return $"created user {user.UserName}";
         }
 
-        public async Task<string> CmdUpdateUser(string id, string field, string newValue)
+        private async Task<string> checkUser(User user)
         {
-            return "";
+            List<User> users = await dbAccess.GetUsersAsync();
+            if (users.Any(x => x.UserName.Equals(user.UserName, StringComparison.OrdinalIgnoreCase) && x.ID != user.ID))
+                return "username already in use";
+            else if (user.MusicLibraryPath.AbsolutePath.Length > 255)
+                return "musiclibrarypath is too long, max 255 char";
+            else if (!Path.Exists(user.MusicLibraryPath.AbsolutePath))
+                return "musiclibrarypath doesn't exist";
+            else if (users.Any(x => x.MusicLibraryPath == user.MusicLibraryPath && x.ID != user.ID))
+                return "musiclibrarypath already in use";
+
+            return string.Empty;
+        }
+
+        public async Task<string> CmdUpdateUser(int id, string field, string newValue)
+        {
+            User user = await dbAccess.GetUserAsync(id);
+            if (user == null)
+                return $"User ID {id} not found!";
+
+            if (field.Equals("username", StringComparison.OrdinalIgnoreCase))
+                user.UserName = newValue;
+            else if (field.Equals("password", StringComparison.OrdinalIgnoreCase))
+                user.Password = Encryption.EncryptSHA256(newValue);
+            else if (field.Equals("musiclibrarypath", StringComparison.OrdinalIgnoreCase))
+                user.MusicLibraryPath = new Uri(newValue);
+
+            string checkResult = await checkUser(user);
+            if (!string.IsNullOrEmpty(checkResult))
+                return checkResult;
+
+            if (!await dbAccess.UpdateUserAsync(user))
+                return "error updating user!";
+
+            return "updated user";
         }
 
         public async Task<string> CmdDeleteUser(int userId)

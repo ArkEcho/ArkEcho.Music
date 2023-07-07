@@ -98,7 +98,7 @@ public class Program
                         {
                             string field = readUserInput($"{userMenu} field $ ");
                             string newValue = readUserInput($"{userMenu} new value $ ");
-                            Console.WriteLine(await server.CmdUpdateUser(id, field, newValue));
+                            Console.WriteLine(await server.CmdUpdateUser(userid, field, newValue));
                         }
                     }
                     else if (userInput == "delete")

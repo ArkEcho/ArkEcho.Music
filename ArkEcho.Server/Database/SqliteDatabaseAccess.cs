@@ -90,12 +90,22 @@ namespace ArkEcho.Server.Database
             return user;
         }
 
+        public async Task<User> GetUserAsync(int id)
+        {
+            return await getUserAsync($"id = {id}");
+        }
+
         public async Task<User> GetUserAsync(string username, string passwordEncrypted)
+        {
+            return await getUserAsync($"username = '{username}' and password = '{passwordEncrypted}'");
+        }
+
+        private async Task<User> getUserAsync(string whereClause)
         {
             if (connection == null)
                 throw new Exception($"Not Connected to Database!");
 
-            string sql = $"select * from {User.UserTableName} where username = '{username}' and password = '{passwordEncrypted}'";
+            string sql = $"select * from {User.UserTableName} where {whereClause}";
 
             using SQLiteCommand command = new SQLiteCommand(sql, connection);
             using DbDataReader reader = await command.ExecuteReaderAsync();
