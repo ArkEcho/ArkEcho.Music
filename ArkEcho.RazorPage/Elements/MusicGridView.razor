@@ -16,7 +16,7 @@
                     <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
                         <MudPaper Class="pa-2" Elevation="1">
                             <MudStack>
-                                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="180" Height="180" ObjectFit="ObjectFit.Fill" />
+                                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
                                 <MudText Class="mb-n1" Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
                                 <MudText Class="my-n1" Typo="Typo.overline">@(getAlbumArtistNameTruncated(album, 25))</MudText>
                                 <MudStack Row="true">

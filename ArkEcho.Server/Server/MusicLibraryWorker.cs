@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -138,8 +141,7 @@ namespace ArkEcho.Server
                 {
                     album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
 
-                    using (MemoryStream ms = new MemoryStream(tagFile.Tag.Pictures[0].Data.Data))
-                        album.Cover64 = Convert.ToBase64String(ms.ToArray());
+                    album.Cover64 = resizeImage(tagFile.Tag.Pictures[0].Data.Data);
 
                     library.Album.Add(album);
 
@@ -160,6 +162,56 @@ namespace ArkEcho.Server
 
                 library.MusicFiles.Add(music);
             }
+        }
+
+        private string resizeImage(byte[] data)
+        {
+            string result = string.Empty;
+            if (data.Length == 0)
+                return result;
+
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(data))
+                using (Bitmap bmp = new Bitmap(ms))
+                {
+                    if ((bmp.Width >= bmp.Height - 10 && bmp.Width <= bmp.Height + 10) && data.Length < 100000) // Width/Height within 10px and original Image < 100kb
+                        return Convert.ToBase64String(ms.ToArray());
+
+                    // From Stackoverflow ;)
+                    var destRect = new Rectangle(0, 0, Resources.ImageSize, Resources.ImageSize);
+                    var destImage = new Bitmap(Resources.ImageSize, Resources.ImageSize);
+
+                    destImage.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+
+                    using (var graphics = Graphics.FromImage(destImage))
+                    {
+                        graphics.CompositingMode = CompositingMode.SourceCopy;
+                        graphics.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = SmoothingMode.HighQuality;
+                        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                        using (var wrapMode = new ImageAttributes())
+                        {
+                            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                            graphics.DrawImage(bmp, destRect, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrapMode);
+                        }
+                    }
+                    using (MemoryStream export = new MemoryStream())
+                    {
+                        destImage.Save(export, ImageFormat.Png);
+                        result = Convert.ToBase64String(export.ToArray());
+                        Debug.WriteLine($"Image from {data.Length / 1000}kb to {export.Length / 1000}kb");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Exception converting Image\r\n{ex.GetFullMessage()}");
+            }
+
+            return result;
         }
 
         private List<string> getAllFilesSubSearch(string directoryPath, List<string> fileExtensionFilter)
