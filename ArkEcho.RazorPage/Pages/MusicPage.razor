@@ -4,9 +4,9 @@
 
 <MudStack>
 
-    <MudPaper Class="d-flex" MaxHeight="50px" Style="top: 0; width: 100%" Elevation="1">
+    <MudElement Class="d-flex" Style="top: 0; width: 100%; max-height: 50px;">
 
-        <MudPaper Class="d-flex ml-2" MaxWidth="220px" Elevation="0">
+        <MudElement Class="d-flex ml-2" Style="max-width: 220px;">
             <MudSelect @bind-Value=selectedDisplayMode T="DisplayMode" AnchorOrigin="Origin.BottomCenter" Dense="true" Margin="Margin.Dense">
                 @foreach (DisplayMode mode in DisplayMode.displayModes)
                 {
@@ -15,10 +15,10 @@
             </MudSelect>
             <MudIconButton Class="ml-2 my-2" Icon="@Icons.Material.Rounded.List" Color="Color.Tertiary" Variant="@(listButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
             <MudIconButton Class="ml-1 my-2" Icon="@Icons.Material.Rounded.GridView" Color="Color.Tertiary" Variant="@(gridButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
-        </MudPaper>
+        </MudElement>
         <MudSpacer />
 
-        <MudPaper Class="d-flex" Elevation="0">
+        <MudElement Class="d-flex">
             <MudSelect Class="mr-2 d-none d-md-flex" @bind-Value=selectedSortingMode T="SortingMode" AnchorOrigin="Origin.BottomCenter" Dense="true" Margin="Margin.Dense">
                 @foreach(SortingMode mode in SortingMode.sortModes)
                 {
@@ -27,10 +27,10 @@
             </MudSelect>
             <MudTextField Class="mr-2 d-none d-md-flex" @bind-Value="searchMusicValue" Margin="Margin.Dense" Label="Search" Variant="Variant.Text"
                           Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Secondary" />
-        </MudPaper>
-    </MudPaper>
+        </MudElement>
+    </MudElement>
 
-    <MudPaper Class="d-flex" Elevation="0">
+    <MudElement Class="d-flex">
 
         @if(listButtonActive)
         {
@@ -41,7 +41,7 @@
             <MusicGridView Display="@selectedDisplayMode" Sorting="@selectedSortingMode" SearchContent="@searchMusicValue" />
         }
 
-    </MudPaper>
+    </MudElement>
 
 </MudStack>
 

@@ -3,7 +3,7 @@
 @inject HTMLHelper helper
 
 <MudStack Row="true">
-    <MudPaper Width="12vw">
+    <MudElement Style="width: 8vw;">
         <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
             @if (Header is Album)
             {
@@ -15,10 +15,10 @@
                 <MudText Typo="Typo.body2">@(artist.Name)</MudText>
             }
         </MudStack>
-    </MudPaper>
-    <MudPaper Width="85vw">
+    </MudElement>
+    <MudElement Style="width: 90vw;">
         <MusicListElement MusicList="MusicList" ListElementDoubleClicked="ListElementDoubleClicked" />
-    </MudPaper>
+    </MudElement>
 </MudStack>
 
 @code {

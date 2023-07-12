@@ -22,7 +22,7 @@ namespace ArkEcho.Core
             AppName = appName;
 
             // TODO: Better Solution
-            ServerAddress = development ? "https://192.168.178.20:7236" : "https://";
+            ServerAddress = development ? "http://192.168.178.20:7236" : "https://";
 
             Development = development;
             Platform = platform;
