@@ -140,8 +140,20 @@ namespace ArkEcho.Server
                 if (album == null)
                 {
                     album = new Album() { AlbumArtist = albumArtist.GUID, Name = tagFile.Tag.Album };
-
-                    album.Cover64 = resizeImage(tagFile.Tag.Pictures[0].Data.Data);
+                    byte[] coverData = tagFile.Tag.Pictures[0].Data.Data;
+                    try
+                    {
+                        album.Cover64 = resizeImage(coverData);
+                    }
+                    catch (ArgumentException arg)
+                    {
+                        logger.LogError($"Error loading Image for Album {album.Name}, just try it");
+                        album.Cover64 = Convert.ToBase64String(coverData);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError($"Exception converting Image for Album {album.Name}:\r\n{ex.GetFullMessage()}");
+                    }
 
                     library.Album.Add(album);
 
@@ -170,45 +182,38 @@ namespace ArkEcho.Server
             if (data.Length == 0)
                 return result;
 
-            try
+            using (MemoryStream ms = new MemoryStream(data))
+            using (Bitmap bmp = new Bitmap(ms))
             {
-                using (MemoryStream ms = new MemoryStream(data))
-                using (Bitmap bmp = new Bitmap(ms))
+                if ((bmp.Width >= bmp.Height - 10 && bmp.Width <= bmp.Height + 10) && data.Length < 100000) // Width/Height within 10px and original Image < 100kb
+                    return Convert.ToBase64String(ms.ToArray());
+
+                // From Stackoverflow ;)
+                var destRect = new Rectangle(0, 0, Resources.ImageSize, Resources.ImageSize);
+                var destImage = new Bitmap(Resources.ImageSize, Resources.ImageSize);
+
+                destImage.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+
+                using (var graphics = Graphics.FromImage(destImage))
                 {
-                    if ((bmp.Width >= bmp.Height - 10 && bmp.Width <= bmp.Height + 10) && data.Length < 100000) // Width/Height within 10px and original Image < 100kb
-                        return Convert.ToBase64String(ms.ToArray());
+                    graphics.CompositingMode = CompositingMode.SourceCopy;
+                    graphics.CompositingQuality = CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                    // From Stackoverflow ;)
-                    var destRect = new Rectangle(0, 0, Resources.ImageSize, Resources.ImageSize);
-                    var destImage = new Bitmap(Resources.ImageSize, Resources.ImageSize);
-
-                    destImage.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
-
-                    using (var graphics = Graphics.FromImage(destImage))
+                    using (var wrapMode = new ImageAttributes())
                     {
-                        graphics.CompositingMode = CompositingMode.SourceCopy;
-                        graphics.CompositingQuality = CompositingQuality.HighQuality;
-                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        graphics.SmoothingMode = SmoothingMode.HighQuality;
-                        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                        using (var wrapMode = new ImageAttributes())
-                        {
-                            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                            graphics.DrawImage(bmp, destRect, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrapMode);
-                        }
-                    }
-                    using (MemoryStream export = new MemoryStream())
-                    {
-                        destImage.Save(export, ImageFormat.Png);
-                        result = Convert.ToBase64String(export.ToArray());
-                        Debug.WriteLine($"Image from {data.Length / 1000}kb to {export.Length / 1000}kb");
+                        wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                        graphics.DrawImage(bmp, destRect, 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrapMode);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"Exception converting Image\r\n{ex.GetFullMessage()}");
+                using (MemoryStream export = new MemoryStream())
+                {
+                    destImage.Save(export, ImageFormat.Png);
+                    result = Convert.ToBase64String(export.ToArray());
+                    Debug.WriteLine($"Image from {data.Length / 1000}kb to {export.Length / 1000}kb");
+                }
             }
 
             return result;
