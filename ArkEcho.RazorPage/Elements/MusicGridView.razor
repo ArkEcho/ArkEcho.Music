@@ -8,34 +8,33 @@
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
 
 <MudElement Style="height: 79vh; width: 100vw;" Class="overflow-auto px-4">
-    <Virtualize Items="getFilteredAlbumVList()">
-        <ItemContent>
-            <MudGrid Spacing="2" Justify="Justify.Center">
-                @foreach(Album album in context.Elements)
-                {
-                    <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
-                        <MudPaper Class="pa-2" Elevation="1">
+    @*<Virtualize Items="getFilteredAlbumVList()">
+        <ItemContent>*@
+    <MudGrid Spacing="2" Justify="Justify.Center">
+        @foreach (Album album in getFilteredAlbum())
+        {
+            <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
+                <MudPaper Class=@getAlbumCSS(album) Elevation="1">
+                    <MudStack>
+                        <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
+                        <MudText Class="mb-n1" Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
+                        <MudText Class="my-n1" Typo="Typo.overline">@(getAlbumArtistNameTruncated(album, 25))</MudText>
+                        <MudStack Row="true">
                             <MudStack>
-                                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
-                                <MudText Class="mb-n1" Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
-                                <MudText Class="my-n1" Typo="Typo.overline">@(getAlbumArtistNameTruncated(album, 25))</MudText>
-                                <MudStack Row="true">
-                                    <MudStack>
-                                        <MudSpacer />
-                                        <MudText Class="my-n4" Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
-                                        <MudSpacer />
-                                    </MudStack>
-
-                                    <MudIconButton Class="my-n4" OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
-                                    <MudIconButton Class="my-n4" Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
-                                </MudStack>
+                                <MudSpacer />
+                                <MudText Class="my-n4" Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
+                                <MudSpacer />
                             </MudStack>
-                        </MudPaper>
-                    </MudItem>
-                }
-            </MudGrid>
-        </ItemContent>
-        @*<Placeholder>
+                            <MudIconButton Class="my-n4" OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
+                            <MudIconButton Class="my-n4" Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+    @*</ItemContent>
+        <Placeholder>
             <MudGrid Spacing="2" Justify="Justify.Center">
                 @for(int i = 0; i<12; i++)
                 {
@@ -57,8 +56,8 @@
                     </MudItem>
                 }
             </MudGrid>
-        </Placeholder>*@
-    </Virtualize>
+        </Placeholder>
+    </Virtualize>*@
 </MudElement>
 
 @code {
@@ -74,6 +73,14 @@
         await base.OnInitializedAsync();
     }
 
+    private string getAlbumCSS(Album album)
+    {
+        string result = "pa-2";
+        if (model.Player.PlayingFile?.Album == album.GUID)
+            result += " playing";
+        return result;
+    }
+
     private async Task albumListClicked(Album album)
     {
         // TODO: Eigener Dialog Service
@@ -82,15 +89,15 @@
         DialogResult result = await dialog.Result;
     }
 
-    private List<GridVirtualize> getFilteredAlbumVList()
-    {
-        List<GridVirtualize> result = new List<GridVirtualize>();
+    //private List<GridVirtualize> getFilteredAlbumVList()
+    //{
+    //    List<GridVirtualize> result = new List<GridVirtualize>();
 
-        IEnumerable<Album[]> test = getFilteredAlbum().Chunk(12); // Put max twelve Albums in each virtualized MudGrid
+    //    IEnumerable<Album[]> test = getFilteredAlbum().Chunk(56); // Put max twelve Albums in each virtualized MudGrid
 
-        foreach(Album[] sub in test)        
-            result.Add(new GridVirtualize() { Elements = sub.ToList() });
+    //    foreach(Album[] sub in test)        
+    //        result.Add(new GridVirtualize() { Elements = sub.ToList() });
         
-        return result;
-    }
+    //    return result;
+    //}
 }
