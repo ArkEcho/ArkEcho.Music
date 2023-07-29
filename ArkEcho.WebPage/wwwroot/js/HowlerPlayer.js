@@ -8,9 +8,53 @@ class HowlerPlayer {
     Init(NETObject) {
         this.NetObject = NETObject;
         //this.LogPlayer('HowlerPlayer initialized!');
+        initBrowserInterop();
     }
 
-    InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
+    initBrowserInterop() {
+        if ("mediaSession" in navigator) {
+            //navigator.mediaSession.metadata = new MediaMetadata({
+            //    title: "Unforgettable",
+            //    artist: "Nat King Cole",
+            //    album: "The Ultimate Collection (Remastered)",
+            //});
+
+            navigator.mediaSession.setActionHandler("play", () => {
+                //alert("Play");
+                self.NetObject.invokeMethodAsync('BrowserPlayPause');
+            });
+            navigator.mediaSession.setActionHandler("pause", () => {
+                //alert("Pause");
+                self.NetObject.invokeMethodAsync('BrowserPlayPause');
+            });
+            //navigator.mediaSession.setActionHandler("stop", () => {
+            //    //alert("Stop");
+            //    self.NetObject.invokeMethodAsync('BrowserStop');
+            //});
+
+            //navigator.mediaSession.setActionHandler("seekbackward", () => {
+            //    alert("seekbackward");
+            //    //self.NetObject.invokeMethodAsync('BrowserPreviousTrack');
+            //});
+            //navigator.mediaSession.setActionHandler("seekforward", () => {
+            //    alert("seekforward");
+            //    //self.NetObject.invokeMethodAsync('BrowserNextTrack');
+            //});
+            //navigator.mediaSession.setActionHandler("previoustrack", () => {
+            //    alert("PreviousTrack");
+            //    //self.NetObject.invokeMethodAsync('BrowserPreviousTrack');
+            //});
+            //navigator.mediaSession.setActionHandler("nexttrack", () => {
+            //    alert("NextTrack");
+            //    //self.NetObject.invokeMethodAsync('BrowserNextTrack');
+            //});
+        }
+        else {
+            this.LogPlayer('mediasession not found!');
+        }
+    }
+
+    InitAudio(Source, pageTitle, FileFormat, DirectPlay, Volume, Mute) {
         var self = this;
         this.sound = new Howl({
             //preload: true,
@@ -51,6 +95,9 @@ class HowlerPlayer {
                 //self.LogPlayer('Volume!');
             }
         });
+
+        // Change Title in Browser Tab
+        document.title = pageTitle;
 
         //this.LogPlayer('Init Audio Succeed');
     }

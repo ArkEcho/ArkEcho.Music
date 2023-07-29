@@ -48,6 +48,30 @@ namespace ArkEcho.WebPage
             playingChanged(playing);
         }
 
+        [JSInvokable]
+        public void BrowserPlayPause()
+        {
+            PlayPause();
+        }
+
+        //[JSInvokable]
+        //public void BrowserStop()
+        //{
+        //    Stop();
+        //}
+
+        //[JSInvokable]
+        //public void BrowserNextTrack()
+        //{
+        //    Forward();
+        //}
+
+        //[JSInvokable]
+        //public void BrowserPreviousTrack()
+        //{
+        //    Backward();
+        //}
+
         protected override void log(string text, Logging.LogLevel level)
         {
             logger.Log(text, level);
@@ -56,7 +80,8 @@ namespace ArkEcho.WebPage
         protected override void loadAudio(bool StartOnLoad)
         {
             string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={apiToken}"; // Howler doesn't support adding HTML5 Header
-            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
+            string pageTitle = $"{PlayingFile.Title} - {PlayingFile.Performer}";
+            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, pageTitle, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeAudio()
