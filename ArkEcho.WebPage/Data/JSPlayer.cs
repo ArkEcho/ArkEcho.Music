@@ -48,6 +48,31 @@ namespace ArkEcho.WebPage
             playingChanged(playing);
         }
 
+        [JSInvokable]
+        public void BrowserPlayPause()
+        {
+            PlayPause();
+            // TODO: Playing updaten; playingChanged doesn't work
+        }
+
+        //[JSInvokable]
+        //public void BrowserStop()
+        //{
+        //    Stop();
+        //}
+
+        //[JSInvokable]
+        //public void BrowserNextTrack()
+        //{
+        //    Forward();
+        //}
+
+        //[JSInvokable]
+        //public void BrowserPreviousTrack()
+        //{
+        //    Backward();
+        //}
+
         protected override void log(string text, Logging.LogLevel level)
         {
             logger.Log(text, level);
@@ -56,6 +81,8 @@ namespace ArkEcho.WebPage
         protected override void loadAudio(bool StartOnLoad)
         {
             string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={apiToken}"; // Howler doesn't support adding HTML5 Header
+            string pageTitle = $"{PlayingFile.Title} - {PlayingFile.Performer}";
+            jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { pageTitle });
             jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, PlayingFile.FileFormat, StartOnLoad, Volume, Mute });
         }
 
@@ -92,6 +119,11 @@ namespace ArkEcho.WebPage
         protected override void setAudioPosition()
         {
             jsRuntime.InvokeVoidAsync("Player.SetAudioPosition", new object[] { Position });
+        }
+
+        protected override void dispose()
+        {
+            jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { "ArkEcho" });
         }
     }
 }

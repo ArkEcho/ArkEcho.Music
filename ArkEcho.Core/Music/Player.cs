@@ -315,8 +315,9 @@ namespace ArkEcho.Core
             Forward();
         }
 
-        public void Reset() // TODO: Better name Solution, called on Logout
+        public void Dispose()
         {
+            dispose();
             PlayingFile = null;
             listToPlay = null;
         }
@@ -330,5 +331,6 @@ namespace ArkEcho.Core
         protected abstract void setAudioMute();
         protected abstract void setAudioVolume();
         protected abstract void setAudioPosition();
+        protected abstract void dispose();
     }
 }

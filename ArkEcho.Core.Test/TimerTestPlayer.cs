@@ -90,5 +90,11 @@ namespace ArkEcho.Core.Test
             positionTenthSeconds = 0;
             playingChanged(false);
         }
+
+        protected override void dispose()
+        {
+            timer?.Dispose();
+            timer = null;
+        }
     }
 }
