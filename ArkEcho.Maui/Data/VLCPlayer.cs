@@ -123,5 +123,14 @@ namespace ArkEcho.Maui
             float position = (float)Position / ((float)PlayingFile.Duration / 1000);
             mediaplayer.Position = position; // Doesn't work if not playing/stopped!
         }
+
+        protected override void dispose()
+        {
+            libvlc?.Dispose();
+            libvlc = null;
+
+            mediaplayer?.Dispose();
+            libvlc = null;
+        }
     }
 }

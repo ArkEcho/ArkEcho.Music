@@ -55,7 +55,7 @@ namespace ArkEcho.RazorPage.Data
         {
             if (Player.Playing)
                 Player.Stop();
-            Player.Reset();
+            Player.Dispose();
 
             SetStatus(IAppModel.Status.Started);
 

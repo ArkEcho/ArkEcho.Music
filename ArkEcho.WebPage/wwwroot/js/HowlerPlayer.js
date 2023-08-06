@@ -54,7 +54,7 @@ class HowlerPlayer {
         }
     }
 
-    InitAudio(Source, pageTitle, FileFormat, DirectPlay, Volume, Mute) {
+    InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
         var self = this;
         this.sound = new Howl({
             //preload: true,
@@ -96,10 +96,12 @@ class HowlerPlayer {
             }
         });
 
+        //this.LogPlayer('Init Audio Succeed');
+    }
+
+    SetDocumentTitle(pageTitle) {
         // Change Title in Browser Tab
         document.title = pageTitle;
-
-        //this.LogPlayer('Init Audio Succeed');
     }
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
