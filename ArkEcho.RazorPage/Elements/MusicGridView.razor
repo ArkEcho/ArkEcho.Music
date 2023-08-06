@@ -14,7 +14,7 @@
         @foreach (Album album in getFilteredAlbum())
         {
             <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
-                <MudPaper Class=@getAlbumCSS(album) Elevation="1">
+                <MudPaper Class="pa-2" Style=@getAlbumCSS(album) Elevation="1">
                     <MudStack>
                         <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
                         <MudText Class="mb-n1" Typo="Typo.body2">@album.Name.Truncate(25)</MudText>
@@ -75,9 +75,9 @@
 
     private string getAlbumCSS(Album album)
     {
-        string result = "pa-2";
+        string result = string.Empty;
         if (model.Player.PlayingFile?.Album == album.GUID)
-            result += " playing";
+            result += $"background-color: {Colors.Blue.Darken1};";
         return result;
     }
 
