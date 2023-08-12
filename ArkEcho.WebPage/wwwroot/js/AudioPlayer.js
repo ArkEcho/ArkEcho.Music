@@ -1,60 +1,55 @@
 ﻿
-class HowlerPlayer {
+
+//let audio = document.createElement('audio');
+
+class AudioPlayer {
     constructor() {
         this.stepCount = 0;
-        //this.LogPlayer('Created new HowlerPlayer!');
+        this.netObject = null;
+        this.stopProgress = false;
+        this.audio = document.createElement('audio');
     }
 
+    /* Called by .NET */
     Init(NETObject) {
-        this.NetObject = NETObject;
-        //this.LogPlayer('HowlerPlayer initialized!');
+        this.netObject = NETObject;
     }
 
-    InitAudio(Source, FileFormat, DirectPlay, Volume, Mute) {
-        var self = this;
-        this.sound = new Howl({
-            //preload: true,
-            html5: true,
+    /* Called by .NET */
+    InitAudio(source, directPlay, volume, mute) {
 
-            src: [Source],
-            autoplay: DirectPlay,
-            format: [FileFormat],
-            volume: Volume / 100,
-            mute: Mute,
+        this.audio.src = source;
+        this.audio.muted = mute;
+        this.audio.volume = volume / 100;
 
-            onend: function () {
-                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-                self.NetObject.invokeMethodAsync('AudioEndedJS');
-                //self.LogPlayer('Sound Ended!');
-            },
-            onplay: function () {
-                self.stop = false;
-                self.NetObject.invokeMethodAsync('AudioPlayingJS', true);
-                requestAnimationFrame(self.Step.bind(self));
-            },
-            onpause: function () {
-                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-            },
-            onseek: function () {
-                //self.LogPlayer('Seek!');
-            },
-            onmute: function () {
-                //self.LogPlayer('(Un)Mute!');
-            },
-            onstop: function () {
-                self.NetObject.invokeMethodAsync('AudioPlayingJS', false);
-            },
-            onload: function () {
-                //self.LogPlayer('Load!');
-            },
-            onvolume: function () {
-                //self.LogPlayer('Volume!');
-            }
-        });
+        this.audio.onplaying = function () {
+            player.netObject.invokeMethodAsync('AudioPlayingJS', true);
+        };
+        this.audio.onpause = function () {
+            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+        };
+        this.audio.onended = function () {
+            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+            player.netObject.invokeMethodAsync('AudioEndedJS');
+        };
+        this.audio.onstop = function () {
+            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+        };
 
-        //this.LogPlayer('Init Audio Succeed');
+        if (directPlay) {
+            this.audio.play()
+                .then(_ => {
+                    this.stopProgress = false;
+                    this.netObject.invokeMethodAsync('AudioPlayingJS', true);
+                    requestAnimationFrame(this.Step.bind(this));
+                }
+                )
+                .catch(error => this.log(error));
+        }
     }
 
+
+    /* Called by .NET */
     SetDocumentTitle(pageTitle) {
         // Change Title in Browser Tab
         document.title = pageTitle;
@@ -62,73 +57,72 @@ class HowlerPlayer {
 
     // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
     Step() {
-        if (this.stop)
+        if (this.stopProgress)
             return;
 
         if (this.stepCount >= 20) {
             this.stepCount = 0;                
-            if (this.sound.playing()) {
-                this.NetObject.invokeMethodAsync('AudioPositionChangedJS', this.GetAudioPosition());
+            if (!this.audio.paused) {
+                this.netObject.invokeMethodAsync('AudioPositionChangedJS', this.GetAudioPosition());
             }
         }
         this.stepCount++;
         requestAnimationFrame(this.Step.bind(this));
     }
 
+    /* Called by .NET */
     DisposeAudio() {
-        this.stop = true;
-        this.sound.unload();
-        //this.LogPlayer('Disposed Audio');
+        this.stopProgress = true;
+        this.StopAudio();
     }
 
+    /* Called by .NET */
     PlayAudio() {
-        var id = 0;
-
-        if (!this.sound.playing())
-            id = this.sound.play();
-
-        //this.LogPlayer('Sound Play ID ' + id);
+        if (this.audio.paused)
+            this.audio.play();
     }
 
+    /* Called by .NET */
     PauseAudio() {
-        this.sound.pause();
-        //this.LogPlayer('Sound Paused');
+        if (!this.audio.paused)
+            this.audio.pause();
     }
 
+    /* Called by .NET */
     StopAudio() {
-        this.stop = true;
-        this.sound.stop();
-        //this.LogPlayer('Sound Stop is ' + (this.sound.seek() == 0 && !this.sound.playing()));
+        this.stopProgress = true;
+        this.audio.pause();
+        this.audio.currentTime = 0;
     }
 
-    SetAudioMute(Mute) {
-        this.sound.mute(Mute);
-        //this.LogPlayer('Sound Mute is ' + Mute);
+    /* Called by .NET */
+    SetAudioMute(mute) {
+        this.audio.muted = mute;
     }
 
-    SetAudioVolume(NewVolume) {
-        this.sound.volume(NewVolume / 100);
-        //this.LogPlayer('Sound Volume is ' + this.sound.volume());
+    /* Called by .NET */
+    SetAudioVolume(volume) {
+        this.audio.volume = volume / 100;
     }
 
-    SetAudioPosition(NewTime) {
-        this.sound.seek(NewTime);
-        //this.LogPlayer('Sound Position is ' + this.sound.seek());
+    /* Called by .NET */
+    SetAudioPosition(newTime) {
+        this.audio.currentTime = newTime;
     }
 
+    /* Called by .NET */
     GetAudioPosition() {
-        var pos = Math.round(this.sound.seek());
-        //this.LogPlayer('Sound Position is ' + pos);
+        let pos = Math.round(this.audio.currentTime);
         return pos;
     }
 
-    LogPlayer(Text) {
-        console.log('[' + this.GetCurrentDateTime() + '] ' + Text);
+    log(text) {
+        console.log('[' + this.getCurrentDateTime() + '] ' + text);
     }
 
-    GetCurrentDateTime() {
-        var currentdate = new Date();
-        var datetime = currentdate.getFullYear() + "-"
+    getCurrentDateTime() {
+        let currentdate = new Date();
+        let datetime = currentdate.getFullYear() + "-"
             + ((currentdate.getMonth() + 1) < 10 ? "0" : "") + (currentdate.getMonth() + 1) + "-"
             + (currentdate.getDate() < 10 ? "0" : "") + currentdate.getDate() + "_"
             + (currentdate.getHours() < 10 ? "0" : "") + currentdate.getHours() + ":"
@@ -139,4 +133,4 @@ class HowlerPlayer {
     }
 }
 
-var Player = new HowlerPlayer();
+var player = new AudioPlayer();
