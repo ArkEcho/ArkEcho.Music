@@ -70,7 +70,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        model.Player.TitleChanged += () => titleChanged();
         await base.OnInitializedAsync();
+    }
+
+    protected async Task titleChanged()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     private string getAlbumCSS(Album album)
