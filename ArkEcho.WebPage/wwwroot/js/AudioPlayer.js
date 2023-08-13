@@ -13,6 +13,30 @@ class AudioPlayer {
     /* Called by .NET */
     Init(NETObject) {
         this.netObject = NETObject;
+
+        if ("mediaSession" in navigator) {
+            navigator.mediaSession.setActionHandler("play", () => {
+                //this.log("Browser Play");
+                this.netObject.invokeMethodAsync('BrowserPlayPause');
+            });
+            navigator.mediaSession.setActionHandler("pause", () => {
+                //this.log("Browser Pause");
+                this.netObject.invokeMethodAsync('BrowserPlayPause');
+            });
+            // Stop is kinda buggy? After pressing Stop you can't control the audio anymore via the MediaSession
+            //navigator.mediaSession.setActionHandler("stop", () => {
+            //    //this.log("Browser Stop");
+            //    this.netObject.invokeMethodAsync('BrowserStop');
+            //});
+            navigator.mediaSession.setActionHandler("previoustrack", () => {
+                //this.log("Browser Previous");
+                this.netObject.invokeMethodAsync('BrowserPreviousTrack');
+            });
+            navigator.mediaSession.setActionHandler("nexttrack", () => {
+                //this.log("Browser Next");
+                this.netObject.invokeMethodAsync('BrowserNextTrack');
+            });
+        }
     }
 
     /* Called by .NET */
@@ -23,28 +47,18 @@ class AudioPlayer {
         this.audio.volume = volume / 100;
 
         this.audio.onplaying = function () {
-            player.netObject.invokeMethodAsync('AudioPlayingJS', true);
+            Player.netObject.invokeMethodAsync('AudioPlayingJS', true);
         };
         this.audio.onpause = function () {
-            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+            Player.netObject.invokeMethodAsync('AudioPlayingJS', false);
         };
         this.audio.onended = function () {
-            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
-            player.netObject.invokeMethodAsync('AudioEndedJS');
-        };
-        this.audio.onstop = function () {
-            player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+            Player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+            Player.netObject.invokeMethodAsync('AudioEndedJS');
         };
 
         if (directPlay) {
-            this.audio.play()
-                .then(_ => {
-                    this.stopProgress = false;
-                    this.netObject.invokeMethodAsync('AudioPlayingJS', true);
-                    requestAnimationFrame(this.Step.bind(this));
-                }
-                )
-                .catch(error => this.log(error));
+            this.PlayAudio();
         }
     }
 
@@ -78,20 +92,24 @@ class AudioPlayer {
 
     /* Called by .NET */
     PlayAudio() {
-        if (this.audio.paused)
+        if (this.audio.paused) {
             this.audio.play();
+            this.stopProgress = false;
+            requestAnimationFrame(this.Step.bind(this));
+        }
     }
 
     /* Called by .NET */
     PauseAudio() {
-        if (!this.audio.paused)
+        if (!this.audio.paused) {
             this.audio.pause();
+            this.stopProgress = true;
+        }
     }
 
     /* Called by .NET */
     StopAudio() {
-        this.stopProgress = true;
-        this.audio.pause();
+        this.PauseAudio();
         this.audio.currentTime = 0;
     }
 
@@ -133,4 +151,4 @@ class AudioPlayer {
     }
 }
 
-var player = new AudioPlayer();
+var Player = new AudioPlayer();

@@ -48,6 +48,30 @@ namespace ArkEcho.WebPage
             playingChanged(playing);
         }
 
+        [JSInvokable]
+        public void BrowserPlayPause()
+        {
+            PlayPause();
+        }
+
+        [JSInvokable]
+        public void BrowserStop()
+        {
+            Stop();
+        }
+
+        [JSInvokable]
+        public void BrowserPreviousTrack()
+        {
+            Backward();
+        }
+
+        [JSInvokable]
+        public void BrowserNextTrack()
+        {
+            Forward();
+        }
+
         protected override void log(string text, Logging.LogLevel level)
         {
             logger.Log(text, level);

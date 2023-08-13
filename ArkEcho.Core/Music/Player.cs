@@ -251,7 +251,6 @@ namespace ArkEcho.Core
                 return;
 
             stopAudio();
-            position = 0;
         }
 
         public void Forward()
