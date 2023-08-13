@@ -7,14 +7,22 @@ class AudioPlayer {
         this.stepCount = 0;
         this.netObject = null;
         this.stopProgress = false;
-        this.audio = document.createElement('audio');
     }
 
     /* Called by .NET */
     Init(NETObject) {
         this.netObject = NETObject;
+    }
 
+    /* Called by .NET */
+    InitAudio(source, directPlay, volume, mute) {
+
+        this.audio = document.createElement('audio');
+
+        navigator.mediaSession.playbackState = "paused";
         if ("mediaSession" in navigator) {
+
+            //this.log("Setting Mediasession Handler");
             navigator.mediaSession.setActionHandler("play", () => {
                 //this.log("Browser Play");
                 this.netObject.invokeMethodAsync('BrowserPlayPause');
@@ -23,11 +31,12 @@ class AudioPlayer {
                 //this.log("Browser Pause");
                 this.netObject.invokeMethodAsync('BrowserPlayPause');
             });
-            // Stop is kinda buggy? After pressing Stop you can't control the audio anymore via the MediaSession
-            //navigator.mediaSession.setActionHandler("stop", () => {
-            //    //this.log("Browser Stop");
-            //    this.netObject.invokeMethodAsync('BrowserStop');
-            //});
+            navigator.mediaSession.setActionHandler("stop", () => {
+                // Stop is kinda buggy? After pressing Stop you can't control the audio anymore via the MediaSession UNTIL the user makes an Input
+                // It works perfectly fine if Stop is pressed via the HTML Button....
+                //this.log("Browser Stop");
+                this.netObject.invokeMethodAsync('BrowserStop');
+            });
             navigator.mediaSession.setActionHandler("previoustrack", () => {
                 //this.log("Browser Previous");
                 this.netObject.invokeMethodAsync('BrowserPreviousTrack');
@@ -37,10 +46,6 @@ class AudioPlayer {
                 this.netObject.invokeMethodAsync('BrowserNextTrack');
             });
         }
-    }
-
-    /* Called by .NET */
-    InitAudio(source, directPlay, volume, mute) {
 
         this.audio.src = source;
         this.audio.muted = mute;
@@ -48,18 +53,22 @@ class AudioPlayer {
 
         this.audio.onplaying = function () {
             Player.netObject.invokeMethodAsync('AudioPlayingJS', true);
+            navigator.mediaSession.playbackState = "playing";
         };
         this.audio.onpause = function () {
             Player.netObject.invokeMethodAsync('AudioPlayingJS', false);
+            navigator.mediaSession.playbackState = "none";
         };
         this.audio.onended = function () {
             Player.netObject.invokeMethodAsync('AudioPlayingJS', false);
             Player.netObject.invokeMethodAsync('AudioEndedJS');
+            navigator.mediaSession.playbackState = "none";
         };
 
         if (directPlay) {
             this.PlayAudio();
         }
+        //this.log("Initialized");
     }
 
 
@@ -86,8 +95,28 @@ class AudioPlayer {
 
     /* Called by .NET */
     DisposeAudio() {
-        this.stopProgress = true;
-        this.StopAudio();
+        this.PauseAudio();
+
+        this.audio.src = '';        
+
+        const parentElement = this.audio.parentNode;
+        if (parentElement) {
+            parentElement.removeChild(this.audio);
+        }
+
+        this.audio = null;
+        //this.log("Audio is " + this.audio);
+
+        if ("mediaSession" in navigator) {
+            navigator.mediaSession.setActionHandler("play", null);
+            navigator.mediaSession.setActionHandler("pause", null);
+            navigator.mediaSession.setActionHandler("stop",null);
+            navigator.mediaSession.setActionHandler("previoustrack", null);
+            navigator.mediaSession.setActionHandler("nexttrack",null);
+        }
+        navigator.mediaSession.setPositionState(null);
+        navigator.mediaSession.playbackState = "none";
+        //this.log("Disposed");
     }
 
     /* Called by .NET */
@@ -105,12 +134,6 @@ class AudioPlayer {
             this.audio.pause();
             this.stopProgress = true;
         }
-    }
-
-    /* Called by .NET */
-    StopAudio() {
-        this.PauseAudio();
-        this.audio.currentTime = 0;
     }
 
     /* Called by .NET */

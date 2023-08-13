@@ -200,11 +200,11 @@ namespace ArkEcho.Core
             else
                 songIndex = index;
 
-            loadNextPlayingFile(true);
+            loadPlayingFile(true);
             return Playing;
         }
 
-        private void loadNextPlayingFile(bool StartOnLoad)
+        private void loadPlayingFile(bool StartOnLoad)
         {
             disposeAudio();
             position = 0;
@@ -250,7 +250,7 @@ namespace ArkEcho.Core
             if (PlayingFile == null)
                 return;
 
-            stopAudio();
+            loadPlayingFile(false);
         }
 
         public void Forward()
@@ -266,15 +266,15 @@ namespace ArkEcho.Core
                 if (Shuffle) // Reset shuffle Order and start new Song
                 {
                     setShuffleList(lastGuid, -1);
-                    loadNextPlayingFile(true);
+                    loadPlayingFile(true);
                 }
                 else // Reached end of List, load first but dont start
-                    loadNextPlayingFile(false);
+                    loadPlayingFile(false);
             }
             else
             {
                 songIndex++;
-                loadNextPlayingFile(true);
+                loadPlayingFile(true);
             }
         }
 
@@ -294,7 +294,7 @@ namespace ArkEcho.Core
                 {
                     Guid lastGuid = listToPlay[shuffledIndexList[songIndex]].GUID;
                     setShuffleList(lastGuid, -1);
-                    loadNextPlayingFile(true);
+                    loadPlayingFile(true);
                 }
                 else
                 {
@@ -305,7 +305,7 @@ namespace ArkEcho.Core
             else
             {
                 songIndex--;
-                loadNextPlayingFile(true);
+                loadPlayingFile(true);
             }
         }
 

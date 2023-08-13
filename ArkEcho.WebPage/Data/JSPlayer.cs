@@ -102,7 +102,7 @@ namespace ArkEcho.WebPage
 
         protected override void stopAudio()
         {
-            jsRuntime.InvokeVoidAsync("Player.StopAudio", new object[] { });
+            //jsRuntime.InvokeVoidAsync("Player.StopAudio", new object[] { });
         }
 
         protected override void setAudioMute()
