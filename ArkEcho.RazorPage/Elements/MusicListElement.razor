@@ -72,12 +72,14 @@
 
 
 @code {
-    
+
     [Parameter]
     public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
 
     [Parameter]
     public EventCallback<MusicFile> ListElementDoubleClicked { get; set; }
+
+    private bool playingTitle = false;
 
     protected override Task OnInitializedAsync()
     {
@@ -91,6 +93,11 @@
         {
             await InvokeAsync(StateHasChanged);
         }
+        else if(playingTitle)
+        {
+            playingTitle = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private string getRowColor(MusicFile file)
@@ -98,7 +105,10 @@
         if (model.Player.PlayingFile == null)
             return string.Empty;
         else if (model.Player.PlayingFile.GUID == file.GUID)
+        {
+            playingTitle = true;
             return "playing";
+        }
         return string.Empty;
     }
 
