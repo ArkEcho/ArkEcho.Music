@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using ArkEcho.Maui.Platforms.Windows;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
@@ -12,6 +13,39 @@ namespace ArkEcho.Maui.WinUI
         private Microsoft.UI.Xaml.Window nativeWindow = null;
         private AppWindow appWindow = null;
         private bool fullTitleBar = true;
+
+        public event Action MediaPlayPauseKeyPressed;
+        public event Action MediaStopKeyPressed;
+        public event Action MediaPreviousTrackKeyPressed;
+        public event Action MediaNextTrackKeyPressed;
+
+        public WindowsMauiHelper()
+        {
+            NativeMediaKeyHook.MediaKeyEventHandler += WindowsMauiHelper_MediaKeyEventHandler;
+            NativeMediaKeyHook.Instance.StartKeyHook();
+        }
+
+        private void WindowsMauiHelper_MediaKeyEventHandler(object sender, int mediaKey)
+        {
+            //Debug.WriteLine(mediaKey);
+            switch (mediaKey)
+            {
+                case NativeMediaKeyHook.VK_MEDIA_PLAY_PAUSE:
+                    MediaPlayPauseKeyPressed?.Invoke();
+                    break;
+                case NativeMediaKeyHook.VK_MEDIA_STOP:
+                    MediaStopKeyPressed?.Invoke();
+                    break;
+                case NativeMediaKeyHook.VK_MEDIA_PREV_TRACK:
+                    MediaPreviousTrackKeyPressed?.Invoke();
+                    break;
+                case NativeMediaKeyHook.VK_MEDIA_NEXT_TRACK:
+                    MediaNextTrackKeyPressed?.Invoke();
+                    break;
+                default:
+                    break;
+            }
+        }
 
         public string GetPlatformSpecificMusicFolder(User user)
         {

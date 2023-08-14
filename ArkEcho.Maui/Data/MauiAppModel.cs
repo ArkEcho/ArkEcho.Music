@@ -24,7 +24,7 @@ namespace ArkEcho.Maui
         {
             var player = new VLCPlayer(logger);
             Player = player;
-            return player.InitPlayer();
+            return player.InitPlayer(mauiHelper);
         }
 
         public override async Task<bool> InitializeOnLogin()

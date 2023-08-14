@@ -4,6 +4,11 @@ namespace ArkEcho.Maui
 {
     public interface IMauiHelper
     {
+        public event Action MediaPlayPauseKeyPressed;
+        public event Action MediaStopKeyPressed;
+        public event Action MediaPreviousTrackKeyPressed;
+        public event Action MediaNextTrackKeyPressed;
+
         string GetPlatformSpecificMusicFolder(User user);
         Task<string> PickFolder();
 

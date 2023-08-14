@@ -4,6 +4,11 @@ namespace ArkEcho.Maui.AndroidMaui
 {
     public class AndroidMauiHelper : IMauiHelper
     {
+        public event Action MediaPlayPauseKeyPressed;
+        public event Action MediaStopKeyPressed;
+        public event Action MediaPreviousTrackKeyPressed;
+        public event Action MediaNextTrackKeyPressed;
+
         public string GetPlatformSpecificMusicFolder(User user)
         {
             string baseFolderPath = string.Empty;

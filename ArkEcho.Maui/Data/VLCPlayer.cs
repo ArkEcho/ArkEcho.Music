@@ -19,7 +19,7 @@ namespace ArkEcho.Maui
             logger.Log(Text, Level);
         }
 
-        public bool InitPlayer()
+        public bool InitPlayer(IMauiHelper helper)
         {
             try
             {
@@ -33,7 +33,13 @@ namespace ArkEcho.Maui
                 mediaplayer.Paused += Mediaplayer_Paused;
                 mediaplayer.Stopped += Mediaplayer_Stopped;
 
+                helper.MediaPlayPauseKeyPressed += () => PlayPause();
+                helper.MediaStopKeyPressed += () => Stop();
+                helper.MediaPreviousTrackKeyPressed += () => Backward();
+                helper.MediaNextTrackKeyPressed += () => Forward();
+
                 setAudioVolume();
+
                 return true;
             }
             catch (Exception ex)
