@@ -1,6 +1,6 @@
 ﻿
 
-//let audio = document.createElement('audio');
+let audio = document.createElement('audio');
 
 class AudioPlayer {
     constructor() {
@@ -47,7 +47,15 @@ class AudioPlayer {
             });
         }
 
-        this.audio.src = source;
+        this.audioSrc = document.createElement('source');
+
+        this.audioSrc.setAttribute('src', source);
+        this.audioSrc.setAttribute('type', 'audio/mpeg');
+
+        //this.audio.src = source;
+
+        this.audio.append(this.audioSrc);
+
         this.audio.muted = mute;
         this.audio.volume = volume / 100;
 
@@ -97,14 +105,23 @@ class AudioPlayer {
     DisposeAudio() {
         this.PauseAudio();
 
-        this.audio.src = '';        
+        this.audioSrc.setAttribute('src', '');
+        this.audio.remove(this.audioSrc);
+        this.audio.src = '';
 
-        const parentElement = this.audio.parentNode;
-        if (parentElement) {
-            parentElement.removeChild(this.audio);
+        const parentAudio = this.audio.parentNode;
+        if (parentAudio) {
+            parentAudio.removeChild(this.audio);
+        }
+
+        const parentSource = this.audioSrc.parentNode;
+        if (parentSource) {
+            parentSource.removeChild(this.audioSrc);
         }
 
         this.audio = null;
+        this.audioSrc = null;
+
         //this.log("Audio is " + this.audio);
 
         if ("mediaSession" in navigator) {
