@@ -12,12 +12,11 @@ class AudioPlayer {
     /* Called by .NET */
     Init(NETObject) {
         this.netObject = NETObject;
+        this.audio = document.createElement('audio');
     }
 
     /* Called by .NET */
     InitAudio(source, directPlay, volume, mute) {
-
-        this.audio = document.createElement('audio');
 
         navigator.mediaSession.playbackState = "paused";
         if ("mediaSession" in navigator) {
@@ -47,14 +46,14 @@ class AudioPlayer {
             });
         }
 
-        this.audioSrc = document.createElement('source');
+        //this.audioSrc = document.createElement('source');
 
-        this.audioSrc.setAttribute('src', source);
-        this.audioSrc.setAttribute('type', 'audio/mpeg');
+        //this.audioSrc.setAttribute('src', source);
+        //this.audioSrc.setAttribute('type', 'audio/mpeg');
 
-        //this.audio.src = source;
+        this.audio.src = source;
 
-        this.audio.append(this.audioSrc);
+        //this.audio.append(this.audioSrc);
 
         this.audio.muted = mute;
         this.audio.volume = volume / 100;
@@ -103,24 +102,19 @@ class AudioPlayer {
 
     /* Called by .NET */
     DisposeAudio() {
-        this.PauseAudio();
+        this.audio.pause();
+        this.stopProgress = true;
 
-        this.audioSrc.setAttribute('src', '');
-        this.audio.remove(this.audioSrc);
         this.audio.src = '';
+        //this.audioSrc.removeAttribute('src');
 
-        const parentAudio = this.audio.parentNode;
-        if (parentAudio) {
-            parentAudio.removeChild(this.audio);
-        }
+        //const parentAudio = this.audio.parentNode;
+        //if (parentAudio) {
+        //    parentAudio.removeChild(this.audio);
+        //}
 
-        const parentSource = this.audioSrc.parentNode;
-        if (parentSource) {
-            parentSource.removeChild(this.audioSrc);
-        }
-
-        this.audio = null;
-        this.audioSrc = null;
+        //this.audio = null;
+        //this.audioSrc = null;
 
         //this.log("Audio is " + this.audio);
 

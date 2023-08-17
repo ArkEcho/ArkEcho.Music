@@ -1,7 +1,6 @@
 ﻿using ArkEcho.Core;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ArkEcho.Server
@@ -30,10 +29,7 @@ namespace ArkEcho.Server
 
             byte[] content = await System.IO.File.ReadAllBytesAsync(file.FullPath);
 
-            FileContentResult result = new FileContentResult(content, $"application/{file.FileFormat}");
-            result.FileDownloadName = Path.GetFileName(file.FileName);
-
-            return result;
+            return File(content, file.MimeType);
         }
 
         // GET: api/Music/Library

@@ -56,5 +56,21 @@ namespace ArkEcho.Core
                 return $"{Performer} - {Title}";
             }
         }
+
+        public string MimeType
+        {
+            get
+            {
+                switch (FileFormat)
+                {
+                    //case "wma":
+                    //    return "audio/x-ms-wma";
+                    case "m4a":
+                        return "audio/m4a";
+                    default:
+                        return "audio/mpeg";
+                }
+            }
+        }
     }
 }

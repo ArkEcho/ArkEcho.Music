@@ -50,7 +50,7 @@ namespace ArkEcho
         {
             "mp3",
             "m4a",
-            "wma"
+            //"wma" // Cant get played by Web Html Audio -> convert to MP3
         };
 
         public static readonly List<string> SupportedPlaylistFileFormats = new List<string>()
