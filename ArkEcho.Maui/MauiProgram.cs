@@ -17,6 +17,7 @@ public class MauiProgram
         builder.Services.AddMauiBlazorWebView();
 
         builder.Services.AddSingleton<IMauiHelper>(mauiHelper);
+        builder.Services.AddSingleton<LibrarySync>();
 
         builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
 

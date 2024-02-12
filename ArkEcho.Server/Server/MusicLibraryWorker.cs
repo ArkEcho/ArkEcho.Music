@@ -40,6 +40,13 @@ namespace ArkEcho.Server
             foreach (string filePath in getAllFilesSubSearch(data.Path, Resources.SupportedMusicFileFormats))
                 loadMusicFile(filePath, data.Library);
 
+            foreach (Album album in data.Library.Album)
+            {
+                List<MusicFile> files = data.Library.MusicFiles.FindAll(x => x.Album == album.GUID);
+                files = files.OrderBy(x => x.Track).ThenBy(x => x.Title).ToList();
+                album.MusicFiles = album.MusicFiles.OrderBy(x => files.IndexOf(files.Find(y => y.GUID == x))).ToList();
+            }
+
             loadPlaylistFiles(data.Path, data.Library);
 
             sw.Stop();

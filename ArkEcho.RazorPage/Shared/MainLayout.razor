@@ -3,8 +3,12 @@
 @inject IAppModel model
 @inject AppEnvironment environment
 @inject ISnackbar snackbar
+@inject Authentication authentication
 @inject NavigationManager NavigationManager
-@inject SnackbarDialogService snackbarDialogService
+@* @inject SnackbarDialogService snackbarDialogService // TODO *@ 
+
+
+@implements IAsyncDisposable
 
 <MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
     <MudPaper Class="d-flex justify-start appbarstyle" Elevation="0">
@@ -35,7 +39,7 @@
         <MudPaper Class="d-flex justify-end appbarstyle" Elevation="0">
             <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="Z" OnClick="userPopoverToggle" />
             <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
-                <MudText Typo="Typo.body2" Class="px-4 py-1">@model.AuthenticatedUser?.UserName</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-1">@authentication?.AuthenticatedUser.UserName</MudText>
                 <MudDivider Class="ma-2"/>
                 <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
             </MudPopover>
@@ -76,9 +80,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        model.SetSnackbarDialogService(snackbarDialogService);
-
-        if (!await model.IsUserAuthenticated())
+        if (!await authentication.IsUserAuthenticated())
             NavigationManager.NavigateTo("/");
 
         await base.OnInitializedAsync();
@@ -96,10 +98,17 @@
 
     public async Task Logout()
     {
-        snackbarDialogService.CloseOnLogout();
+        //snackbarDialogService.CloseOnLogout();
+
+        await authentication.LogoutUser();
         await model.LogoutUser();
         showSidebar = false;
         userPopoverOpen = false;
         NavigationManager.NavigateTo("/");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Logout();
     }
 }

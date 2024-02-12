@@ -7,17 +7,16 @@ namespace ArkEcho.Maui
     {
         public override Player Player { get; protected set; }
 
-        public override LibrarySync Sync { get; }
-
-        public override string MusicFolder { get { return getMusicSyncPath(); } }
-
+        //private SnackbarDialogService snack;
         private IMauiHelper mauiHelper = null;
+        private LibrarySync sync;
 
-        public MauiAppModel(ILocalStorage localStorage, AppEnvironment environment, IMauiHelper mauiHelper)
-            : base(environment, localStorage)
+        public MauiAppModel( /*SnackbarDialogService snack,*/ LibrarySync sync, Logger logger, Rest rest, IMauiHelper mauiHelper) // TODO
+            : base(logger, rest)
         {
+            //this.snack = snack;
             this.mauiHelper = mauiHelper;
-            Sync = new LibrarySync(environment, rest, new RestLogger(environment, "LibrarySync", rest));
+            this.sync = sync;
         }
 
         protected override async Task<bool> initializePlayer()
@@ -32,17 +31,17 @@ namespace ArkEcho.Maui
             await base.InitializeOnLogin();
 
             LibrarySync.LibraryCheckResult result = new LibrarySync.LibraryCheckResult();
-            bool success = await Sync.CheckLibraryOnStart(getMusicSyncPath(), Library, result);
+            bool success = await sync.CheckLibraryOnStart(Library, result);
 
             if (!success)
             {
                 SetStatus(IAppModel.Status.Connected);
-                snackbarDialogService.CheckingLibraryFailed();
+                //snack.CheckingLibraryFailed();
                 return false;
             }
 
-            if (result.FilesMissing)
-                snackbarDialogService.MusicFilesMissing();
+            //if (result.FilesMissing)
+            //    snack.MusicFilesMissing();
 
             mauiHelper.SetDragArea(false);
             return success;
@@ -52,38 +51,6 @@ namespace ArkEcho.Maui
         {
             mauiHelper.SetDragArea(true);
             return base.LogoutUser();
-        }
-
-        public override async Task<bool> StartSynchronizeMusic()
-        {
-            if (!await LoadLibraryFromServer())
-                return false;
-
-            return await Sync.StartSyncMusicLibrary(getMusicSyncPath(), Library);
-        }
-
-        private string getMusicSyncPath()
-        {
-            return mauiHelper.GetPlatformSpecificMusicFolder(AuthenticatedUser);
-        }
-
-        public override async Task<bool> ChangeMusicFolder()
-        {
-            string newFolder = await mauiHelper.PickFolder();
-
-            if (string.IsNullOrEmpty(newFolder) || !Directory.Exists(newFolder))
-                return false;
-
-            UserSettings.MusicPath path = AuthenticatedUser.Settings.GetLocalUserSettings();
-            if (path == null)
-            {
-                path = new UserSettings.MusicPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
-                AuthenticatedUser.Settings.MusicPathList.Add(path);
-            }
-            else
-                path.Path = new Uri(newFolder);
-
-            return await rest.UpdateUser(AuthenticatedUser);
         }
     }
 }

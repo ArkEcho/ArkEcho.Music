@@ -1,6 +1,6 @@
 ﻿using ArkEcho.Core;
 
-namespace ArkEcho.Maui
+namespace ArkEcho.RazorPage.Data
 {
     public interface IMauiHelper
     {

@@ -50,17 +50,17 @@ namespace ArkEcho.Core
             }
         }
 
-        public Rest(string connectionUrl, bool userHttpClientHandler) : base()
+        public Rest(AppEnvironment environment) : base()
         {
-            if (userHttpClientHandler)
+            if (environment.UserHttpClientHandler)
             {
                 // TODO: Disable on Release Build?
                 HttpClientHandler handler = new HttpClientHandler();
                 handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
-                client = new HttpClient(handler) { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 10) };
+                client = new HttpClient(handler) { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
             }
             else
-                client = new HttpClient() { BaseAddress = new Uri(connectionUrl), Timeout = new TimeSpan(0, 0, 10) };
+                client = new HttpClient() { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
         }
 
         protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)

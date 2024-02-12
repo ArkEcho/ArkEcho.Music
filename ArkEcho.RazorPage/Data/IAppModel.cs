@@ -18,24 +18,16 @@ namespace ArkEcho.RazorPage.Data
 
         MusicLibrary Library { get; }
         Player Player { get; }
-        LibrarySync Sync { get; }
-        string MusicFolder { get; }
-        AppEnvironment Environment { get; }
-        User AuthenticatedUser { get; }
+
         Status AppStatus { get; }
 
         event Action StatusChanged;
 
-        Task<bool> AuthenticateUser(string username, string password);
-        Task<bool> IsUserAuthenticated();
         Task LogoutUser();
 
         Task<bool> InitializeOnLoad();
         Task<bool> InitializeOnLogin();
+        Task<bool> LoadLibraryFromServer();
         Task<bool> UpdateMusicRating(Guid guid, int rating);
-
-        void SetSnackbarDialogService(SnackbarDialogService snackbarDialogService);
-        Task StartSynchronizeMusic();
-        Task<bool> ChangeMusicFolder();
     }
 }

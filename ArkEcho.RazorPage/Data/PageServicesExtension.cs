@@ -21,9 +21,13 @@ namespace ArkEcho.RazorPage.Data
             serviceCollection.AddSingleton(environment);
 
             serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
+            serviceCollection.AddSingleton<Logger, RestLogger>();
+            serviceCollection.AddSingleton<Rest>();
+            serviceCollection.AddSingleton<Authentication>();
+
             serviceCollection.AddSingleton<IAppModel, AppModelImplementation>();
 
-            serviceCollection.AddScoped<SnackbarDialogService>();
+            //serviceCollection.AddScoped<SnackbarDialogService>();
 
             serviceCollection.AddScoped<HTMLHelper>();
         }

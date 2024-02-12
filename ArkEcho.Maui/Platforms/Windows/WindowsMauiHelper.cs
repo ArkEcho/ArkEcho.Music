@@ -1,5 +1,6 @@
 ﻿using ArkEcho.Core;
 using ArkEcho.Maui.Platforms.Windows;
+using ArkEcho.RazorPage.Data;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;

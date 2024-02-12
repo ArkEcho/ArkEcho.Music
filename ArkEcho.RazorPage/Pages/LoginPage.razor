@@ -3,6 +3,7 @@
 @layout LoginLayout
 
 @inject IAppModel model
+@inject Authentication authentication
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
@@ -54,7 +55,7 @@
 
         await model.InitializeOnLoad();
 
-        if (await model.IsUserAuthenticated())
+        if (await authentication.IsUserAuthenticated())
         {
             await logIn();
             return;
@@ -77,15 +78,9 @@
 
     private async Task validateUser()
     {
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (!await authentication.AuthenticateUser(username, password))
         {
-            showSnackbarError($"Empty username or password!");
-            return;
-        }
-
-        if(!await model.AuthenticateUser(username, password))
-        {
-            showSnackbarError($"Username or Password wrong!");
+            Snackbar.Add($"Username or Password wrong!", Severity.Error, config => { config.ShowCloseIcon = true; });
             return;
         }
 
@@ -96,11 +91,6 @@
     {
         overlayVisible = show;
         StateHasChanged();
-    }
-
-    private void showSnackbarError(string message)
-    {
-        Snackbar.Add(message, Severity.Error, config => { config.ShowCloseIcon = true; });
     }
 
     private void passwordAdornmentClick()

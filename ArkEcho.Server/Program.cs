@@ -57,9 +57,6 @@ public class Program
 
         app.RunAsync();
 
-        Console.WriteLine($"server started");
-        Console.WriteLine("######################################");
-
         await cmdMenu(server);
 
         await app.StopAsync();
@@ -67,6 +64,10 @@ public class Program
 
     private static async Task cmdMenu(Server server)
     {
+        Console.WriteLine("# Arkecho Server started #");
+        Console.WriteLine("# Type help for commands #");
+        Console.WriteLine("######################################");
+
         while (true)
         {
             string input = readUserInput("menu>");
@@ -84,7 +85,7 @@ public class Program
                 {
                     string userInput = readUserInput($"{userMenu}>");
 
-                    if (userInput == "stop")
+                    if (userInput == "exit")
                         break;
                     else if (userInput == "help")
                     {
@@ -92,6 +93,7 @@ public class Program
                         Console.WriteLine("create\tCreate new user");
                         Console.WriteLine("update\tUpdate user properties");
                         Console.WriteLine("delete\tDelete a user");
+                        Console.WriteLine("exit\tBack to main menu");
                     }
                     else if (userInput == "ls")
                         Console.WriteLine(await server.CmdListAllUsers());

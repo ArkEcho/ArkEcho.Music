@@ -5,7 +5,7 @@ namespace ArkEcho.Core
     public class RestLogger : Logger
     {
         private Rest rest = null;
-        public RestLogger(AppEnvironment environment, string context, Rest rest) : base(environment, context)
+        public RestLogger(AppEnvironment environment, Rest rest) : base(environment, "CONTEXT") // TODO
         {
             this.rest = rest;
         }

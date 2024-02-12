@@ -4,12 +4,17 @@
 
 @inject IAppModel Model
 @inject ISnackbar Snackbar
+@inject AppEnvironment environment
+@inject LibrarySync sync
+@inject IMauiHelper mauiHelper
+@inject Authentication authentication
+@inject Rest rest
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper Class="my-4 pa-2" Outlined="true">
         <MudStack>
             <MudStack Class="my-1" Row="true">
-                <MudField Label="Music Library Path" Class="overflow-x-auto" Variant="Variant.Filled">@Model.MusicFolder</MudField>
+                <MudField Label="Music Library Path" Class="overflow-x-auto" Variant="Variant.Filled">@sync.MusicFolder</MudField>
                 @if (showChangeFolderButton())
                 {
                     <MudIconButton Class="mt-3" Icon="@Icons.Material.Rounded.FolderOpen" Disabled="@(status == Resources.Status.Busy)" 
@@ -41,23 +46,37 @@
     private int syncProgress = 0;
     protected override async Task OnInitializedAsync()
     {
-        Model.Sync.SyncProgress += OnProgressEvent;
+        sync.SyncProgress += OnProgressEvent;
 
         await base.OnInitializedAsync();
     }
 
     private bool showChangeFolderButton()
     {
-        return Model.Environment.Platform == Resources.Platform.Windows; 
+        return environment.Platform == Resources.Platform.Windows;
     }
 
     private async void changeMusicFolder()
     {
-        bool result = await Model.ChangeMusicFolder();
+        string newFolder = await mauiHelper.PickFolder();
+
+        if (string.IsNullOrEmpty(newFolder) || !Directory.Exists(newFolder))
+            return;
+
+        UserSettings.MusicPath path = authentication.AuthenticatedUser.Settings.GetLocalUserSettings();
+        if (path == null)
+        {
+            path = new UserSettings.MusicPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
+            authentication.AuthenticatedUser.Settings.MusicPathList.Add(path);
+        }
+        else
+            path.Path = new Uri(newFolder);
+
+        bool result = await rest.UpdateUser(authentication.AuthenticatedUser);
 
         if(result)
             Snackbar.Add("Music Folder changed successfully!", Severity.Success, config => { config.ShowCloseIcon = true; });
-            
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -67,7 +86,12 @@
 
         status = Resources.Status.Busy;
 
-        await Model.StartSynchronizeMusic();
+        await InvokeAsync(StateHasChanged);
+
+        if (!await Model.LoadLibraryFromServer())
+            return;
+
+        await sync.StartSyncMusicLibrary(Model.Library);
 
         status = Resources.Status.Idle;
 

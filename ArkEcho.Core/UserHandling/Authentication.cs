@@ -1,8 +1,7 @@
-﻿using ArkEcho.Core;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
-namespace ArkEcho.WebPage
+namespace ArkEcho.Core
 {
     public class Authentication
     {
@@ -10,13 +9,15 @@ namespace ArkEcho.WebPage
         private ILocalStorage localStorage = null;
         private const string SESSIONTOKEN = "AE_ACCESS_TOKEN";
 
+        public User AuthenticatedUser { get; private set; }
+
         public Authentication(ILocalStorage localStorage, Rest rest)
         {
             this.localStorage = localStorage;
             this.rest = rest;
         }
 
-        public async Task<bool> GetAuthenticationState()
+        public async Task<bool> IsUserAuthenticated()
         {
             try
             {
@@ -30,17 +31,22 @@ namespace ArkEcho.WebPage
             return false;
         }
 
-        public async Task<User> AuthenticateUserForLogin(string username, string password)
+        public async Task<bool> AuthenticateUser(string username, string password)
         {
-            User authenticated = await rest.AuthenticateUser(username, Encryption.EncryptSHA256(password));
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return false;
 
-            if (authenticated != null)
-            {
-                await localStorage.SetItemAsync(SESSIONTOKEN, authenticated.SessionToken);
-                rest.ApiToken = await rest.GetApiToken(authenticated.SessionToken);
-            }
+            if (await IsUserAuthenticated())
+                return true;
 
-            return authenticated;
+            AuthenticatedUser = await rest.AuthenticateUser(username, Encryption.EncryptSHA256(password));
+
+            if (AuthenticatedUser == null)
+                return false;
+
+            await localStorage.SetItemAsync(SESSIONTOKEN, AuthenticatedUser.SessionToken);
+            rest.ApiToken = await rest.GetApiToken(AuthenticatedUser.SessionToken);
+            return true;
         }
 
         public async Task<bool> LogoutUser()

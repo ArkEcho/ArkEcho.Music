@@ -9,10 +9,10 @@ namespace ArkEcho.RazorPage.Data
         private NavigationManager navigation;
         private Snackbar musicFilesMissingSnackbar;
 
-        public SnackbarDialogService(ISnackbar snackbar, NavigationManager navigation)
+        public SnackbarDialogService(ISnackbar snackbar/*, NavigationManager navigation*/) // TODO
         {
             this.snackbarProvider = snackbar;
-            this.navigation = navigation;
+            //this.navigation = navigation;
         }
 
         public void CloseOnLogout()
@@ -49,7 +49,7 @@ namespace ArkEcho.RazorPage.Data
                 config.ActionVariant = Variant.Filled;
                 config.Onclick = snackbar =>
                 {
-                    navigation.NavigateTo("/Sync");
+                    //navigation.NavigateTo("/Sync");
                     return Task.CompletedTask;
                 };
             });

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ArkEcho.Core;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace ArkEcho.Core
+namespace ArkEcho.RazorPage.Data
 {
     // TODO: Progress mit Nummer/Gesamt
     public class LibrarySync
@@ -23,6 +20,8 @@ namespace ArkEcho.Core
 
         public EventHandler<ProgressEventArgs> SyncProgress;
 
+        public string MusicFolder { get; }
+
         public class LibraryCheckResult
         {
             public bool FilesMissing { get; set; }
@@ -30,15 +29,25 @@ namespace ArkEcho.Core
 
         private Rest rest = null;
         protected Logger logger = null;
+        private IMauiHelper mauiHelper;
+        private Authentication authentication;
 
-        public LibrarySync(AppEnvironment environment, Rest rest, Logger logger)
+        public LibrarySync(IMauiHelper mauiHelper, Authentication authentication, Rest rest, Logger logger)
         {
             this.rest = rest;
             this.logger = logger;
+            this.mauiHelper = mauiHelper;
+            this.authentication = authentication;
         }
 
-        public async Task<bool> StartSyncMusicLibrary(string musicFolder, MusicLibrary library)
+        private string getUserMusicFolder()
         {
+            return mauiHelper.GetPlatformSpecificMusicFolder(authentication.AuthenticatedUser);
+        }
+
+        public async Task<bool> StartSyncMusicLibrary(MusicLibrary library)
+        {
+            string musicFolder = getUserMusicFolder();
             if (library == null)
             {
                 logger.LogError("Given library is null!");
@@ -198,8 +207,9 @@ namespace ArkEcho.Core
             }
         }
 
-        public async Task<bool> CheckLibraryOnStart(string musicFolder, MusicLibrary library, LibraryCheckResult result)
+        public async Task<bool> CheckLibraryOnStart(MusicLibrary library, LibraryCheckResult result)
         {
+            string musicFolder = getUserMusicFolder();
             if (!Directory.Exists(musicFolder))
             {
                 logger.LogImportant($"Music Folder doesn't exist Folder={musicFolder}");

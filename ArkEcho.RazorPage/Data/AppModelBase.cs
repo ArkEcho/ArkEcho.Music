@@ -1,5 +1,4 @@
 ﻿using ArkEcho.Core;
-using ArkEcho.WebPage;
 using System.Diagnostics;
 
 namespace ArkEcho.RazorPage.Data
@@ -10,45 +9,19 @@ namespace ArkEcho.RazorPage.Data
 
         public abstract Player Player { get; protected set; }
 
-        public abstract LibrarySync Sync { get; }
-
-        public abstract string MusicFolder { get; }
-
-        public AppEnvironment Environment { get; }
-        public User AuthenticatedUser { get; private set; } = null;
-
         public IAppModel.Status AppStatus { get; private set; } = IAppModel.Status.Started;
 
         protected Rest rest = null;
-        protected Logger logger = null;
-        protected SnackbarDialogService snackbarDialogService = null;
+        protected Logger logger;
+
         private Authentication authentication = null;
 
         public event Action StatusChanged;
 
-        public AppModelBase(AppEnvironment environment, ILocalStorage localStorage)
+        public AppModelBase(Logger logger, Rest rest)
         {
-            Environment = environment;
-
-            rest = new Rest(environment.ServerAddress, Environment.UserHttpClientHandler);
-
-            logger = new RestLogger(Environment, "AppModel", rest);
-
-            authentication = new Authentication(localStorage, rest);
-        }
-
-        public async Task<bool> IsUserAuthenticated()
-        {
-            return await authentication.GetAuthenticationState();
-        }
-
-        public async Task<bool> AuthenticateUser(string username, string password)
-        {
-            if (await IsUserAuthenticated())
-                return true;
-
-            AuthenticatedUser = await authentication.AuthenticateUserForLogin(username, password);
-            return AuthenticatedUser != null;
+            this.rest = rest;
+            this.logger = logger;
         }
 
         public virtual async Task LogoutUser()
@@ -58,10 +31,6 @@ namespace ArkEcho.RazorPage.Data
             Player.Dispose();
 
             SetStatus(IAppModel.Status.Started);
-
-            await authentication.LogoutUser();
-
-            AuthenticatedUser = null;
         }
 
         protected void SetStatus(IAppModel.Status status)
@@ -82,7 +51,7 @@ namespace ArkEcho.RazorPage.Data
             return true;
         }
 
-        protected async Task<bool> LoadLibraryFromServer()
+        public async Task<bool> LoadLibraryFromServer()
         {
             if (Library != null)
             {
@@ -145,10 +114,5 @@ namespace ArkEcho.RazorPage.Data
         }
 
         protected abstract Task<bool> initializePlayer();
-
-        public abstract Task StartSynchronizeMusic();
-        public abstract Task<bool> ChangeMusicFolder();
-
-        public void SetSnackbarDialogService(SnackbarDialogService snackbarDialogService) => this.snackbarDialogService = snackbarDialogService;
     }
 }
