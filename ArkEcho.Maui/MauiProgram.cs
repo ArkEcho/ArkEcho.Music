@@ -1,4 +1,5 @@
 ﻿using ArkEcho.Core;
+using ArkEcho.Maui.Data;
 using ArkEcho.RazorPage.Data;
 using System.Diagnostics;
 
@@ -19,7 +20,7 @@ public class MauiProgram
         builder.Services.AddSingleton<IMauiHelper>(mauiHelper);
         builder.Services.AddSingleton<LibrarySync>();
 
-        builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel, VLCPlayer>(environment);
+        builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel, VLCPlayer, MauiPlatformController>(environment);
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

@@ -10,19 +10,13 @@ namespace ArkEcho.RazorPage.Data
         protected Rest rest = null;
         protected Logger logger;
 
-        private Authentication authentication = null;
-
         public AppModelBase(Logger logger, Rest rest)
         {
             this.rest = rest;
             this.logger = logger;
         }
 
-        public virtual async Task LogoutUser()
-        {
-        }
-
-        public async Task<bool> LoadLibraryFromServer()
+        public async virtual Task<bool> LoadLibraryFromServer()
         {
             if (Library != null)
             {
@@ -68,11 +62,6 @@ namespace ArkEcho.RazorPage.Data
         public async Task<bool> UpdateMusicRating(Guid musicFileGuid, int rating)
         {
             return await rest.UpdateMusicRating(musicFileGuid, rating);
-        }
-
-        public virtual async Task<bool> InitializeOnLogin()
-        {
-            return await LoadLibraryFromServer();
         }
     }
 }

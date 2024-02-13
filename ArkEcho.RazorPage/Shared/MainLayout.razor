@@ -7,6 +7,7 @@
 @inject NavigationManager NavigationManager
 @* @inject SnackbarDialogService snackbarDialogService // TODO *@ 
 @inject Player player
+@inject PlatformControllerBase platformController
 
 @implements IAsyncDisposable
 
@@ -97,7 +98,7 @@
 
         player.Dispose();
         await authentication.LogoutUser();
-        await model.LogoutUser();
+        await platformController.ProcessUserLogout();
 
         showSidebar = false;
         userPopoverOpen = false;

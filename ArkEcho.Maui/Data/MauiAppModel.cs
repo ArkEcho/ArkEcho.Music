@@ -6,20 +6,18 @@ namespace ArkEcho.Maui
     public class MauiAppModel : AppModelBase
     {
         //private SnackbarDialogService snack;
-        private IMauiHelper mauiHelper = null;
         private LibrarySync sync;
 
-        public MauiAppModel( /*SnackbarDialogService snack,*/ LibrarySync sync, Logger logger, Rest rest, IMauiHelper mauiHelper) // TODO
+        public MauiAppModel( /*SnackbarDialogService snack,*/ LibrarySync sync, Logger logger, Rest rest) // TODO
             : base(logger, rest)
         {
             //this.snack = snack;
-            this.mauiHelper = mauiHelper;
             this.sync = sync;
         }
 
-        public override async Task<bool> InitializeOnLogin()
+        public override async Task<bool> LoadLibraryFromServer()
         {
-            await base.InitializeOnLogin();
+            await base.LoadLibraryFromServer();
 
             LibrarySync.LibraryCheckResult result = new LibrarySync.LibraryCheckResult();
             bool success = await sync.CheckLibraryOnStart(Library, result);
@@ -33,14 +31,7 @@ namespace ArkEcho.Maui
             //if (result.FilesMissing)
             //    snack.MusicFilesMissing();
 
-            mauiHelper.SetDragArea(false);
             return success;
-        }
-
-        public override Task LogoutUser()
-        {
-            mauiHelper.SetDragArea(true);
-            return base.LogoutUser();
         }
     }
 }

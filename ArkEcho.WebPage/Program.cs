@@ -17,6 +17,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddBlazoredLocalStorageAsSingleton(); // For WebLocalStorage
 builder.Services.AddSingleton<BrowserCloseActionsController>();
-builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel, JSPlayer>(environment);
+builder.Services.AddArkEchoServices<WebLocalStorage, WebAppModel, JSPlayer, WebPlatformController>(environment);
 
 await builder.Build().RunAsync();
