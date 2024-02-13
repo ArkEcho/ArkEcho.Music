@@ -1,7 +1,7 @@
 ﻿
 @inherits MusicBase
 
-@inject IAppModel model
+@inject Player player
 @inject HTMLHelper helper
 
 <MudDialog DisableSidePadding="true">
@@ -45,7 +45,7 @@
 
     protected void startMusicFile(MusicFile file)
     {
-        model.Player.Start(MusicList, MusicList.IndexOf(file));
+        player.Start(MusicList, MusicList.IndexOf(file));
     }
 
     //void Submit() => MudDialog.Close(DialogResult.Ok(true));

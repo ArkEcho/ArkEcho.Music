@@ -1,16 +1,15 @@
-﻿
-@inject IAppModel model
+﻿@inject AppModelBase model
 
 <MudPaper Class="d-flex" Elevation="0">
     <MudPaper Class="d-flex flex-grow-1 justify-start" Elevation="0">
         <MudText Typo="Typo.button">@model.AppStatus</MudText>
     </MudPaper>
     <MudPaper Class="d-flex flex-grow-0 justify-end" Elevation="0">
-        @if (model.AppStatus == IAppModel.Status.NotConnected)
+            @if (model.AppStatus == AppModelBase.Status.NotConnected)
         {
             <MudIconButton OnClick="reconnect" Icon="@Icons.Material.Rounded.Replay" Color="Color.Tertiary" Size="Size.Small" />
         }
-        else if (model.AppStatus == IAppModel.Status.Connected)
+        else if (model.AppStatus == AppModelBase.Status.Connected)
         {
             <MudIcon Icon="@Icons.Material.Rounded.Check" Color="Color.Tertiary" Size="Size.Small" />
         }

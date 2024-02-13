@@ -9,10 +9,12 @@ namespace ArkEcho.Maui
         private LibVLC libvlc = null;
         private LibVLCSharp.Shared.MediaPlayer mediaplayer = null;
         private Logger logger = null;
+        private IMauiHelper helper;
 
-        public VLCPlayer(Logger logger) : base()
+        public VLCPlayer(Logger logger, IMauiHelper helper) : base()
         {
             this.logger = logger;
+            this.helper = helper;
         }
 
         protected override void log(string Text, Logging.LogLevel Level)
@@ -20,7 +22,7 @@ namespace ArkEcho.Maui
             logger.Log(Text, Level);
         }
 
-        public bool InitPlayer(IMauiHelper helper)
+        public override bool InitializePlayer()
         {
             try
             {

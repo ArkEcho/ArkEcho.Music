@@ -19,7 +19,7 @@ public class MauiProgram
         builder.Services.AddSingleton<IMauiHelper>(mauiHelper);
         builder.Services.AddSingleton<LibrarySync>();
 
-        builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel>(environment);
+        builder.Services.AddArkEchoServices<MauiLocalStorage, MauiAppModel, VLCPlayer>(environment);
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

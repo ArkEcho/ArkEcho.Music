@@ -316,10 +316,13 @@ namespace ArkEcho.Core
 
         public void Dispose()
         {
+            Stop();
             dispose();
             PlayingFile = null;
             listToPlay = null;
         }
+
+        public abstract bool InitializePlayer();
 
         protected abstract void log(string Text, Logging.LogLevel Level);
         protected abstract void loadAudio(bool StartOnLoad);

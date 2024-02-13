@@ -7,9 +7,10 @@ namespace ArkEcho.RazorPage.Data
 {
     public static class ServiceCollectionExtension
     {
-        public static void AddArkEchoServices<StorageImplementation, AppModelImplementation>(this IServiceCollection serviceCollection, AppEnvironment environment)
+        public static void AddArkEchoServices<StorageImplementation, AppModelImplementation, PlayerImplementation>(this IServiceCollection serviceCollection, AppEnvironment environment)
             where StorageImplementation : LocalStorageBase
             where AppModelImplementation : AppModelBase
+            where PlayerImplementation : Player
         {
             serviceCollection.AddMudServices(config =>
             {
@@ -20,12 +21,13 @@ namespace ArkEcho.RazorPage.Data
 
             serviceCollection.AddSingleton(environment);
 
-            serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
             serviceCollection.AddSingleton<Logger, RestLogger>();
             serviceCollection.AddSingleton<Rest>();
             serviceCollection.AddSingleton<Authentication>();
 
-            serviceCollection.AddSingleton<IAppModel, AppModelImplementation>();
+            serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
+            serviceCollection.AddSingleton<Player, PlayerImplementation>();
+            serviceCollection.AddSingleton<AppModelBase, AppModelImplementation>();
 
             //serviceCollection.AddScoped<SnackbarDialogService>();
 

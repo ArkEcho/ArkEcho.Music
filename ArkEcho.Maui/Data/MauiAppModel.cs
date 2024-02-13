@@ -5,8 +5,6 @@ namespace ArkEcho.Maui
 {
     public class MauiAppModel : AppModelBase
     {
-        public override Player Player { get; protected set; }
-
         //private SnackbarDialogService snack;
         private IMauiHelper mauiHelper = null;
         private LibrarySync sync;
@@ -19,13 +17,6 @@ namespace ArkEcho.Maui
             this.sync = sync;
         }
 
-        protected override async Task<bool> initializePlayer()
-        {
-            var player = new VLCPlayer(logger);
-            Player = player;
-            return player.InitPlayer(mauiHelper);
-        }
-
         public override async Task<bool> InitializeOnLogin()
         {
             await base.InitializeOnLogin();
@@ -35,7 +26,7 @@ namespace ArkEcho.Maui
 
             if (!success)
             {
-                SetStatus(IAppModel.Status.Connected);
+                SetStatus(Status.Connected);
                 //snack.CheckingLibraryFailed();
                 return false;
             }

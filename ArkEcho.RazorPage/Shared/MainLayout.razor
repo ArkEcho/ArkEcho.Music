@@ -1,12 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-@inject IAppModel model
+@inject AppModelBase model
 @inject AppEnvironment environment
 @inject ISnackbar snackbar
 @inject Authentication authentication
 @inject NavigationManager NavigationManager
 @* @inject SnackbarDialogService snackbarDialogService // TODO *@ 
-
+@inject Player player
 
 @implements IAsyncDisposable
 
@@ -100,8 +100,10 @@
     {
         //snackbarDialogService.CloseOnLogout();
 
+        player.Dispose();
         await authentication.LogoutUser();
         await model.LogoutUser();
+
         showSidebar = false;
         userPopoverOpen = false;
         NavigationManager.NavigateTo("/");
@@ -109,6 +111,7 @@
 
     public async ValueTask DisposeAsync()
     {
+
         await Logout();
     }
 }

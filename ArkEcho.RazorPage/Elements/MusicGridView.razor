@@ -2,7 +2,8 @@
 @inherits MusicDisplayBase
 
 @inject IDialogService DialogService
-@inject IAppModel model
+@inject Player player
+@inject AppModelBase model
 @inject HTMLHelper helper
 
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
@@ -70,7 +71,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        model.Player.TitleChanged += () => titleChanged();
+        player.TitleChanged += () => titleChanged();
         await base.OnInitializedAsync();
     }
 
@@ -82,7 +83,7 @@
     private string getAlbumCSS(Album album)
     {
         string result = string.Empty;
-        if (model.Player.PlayingFile?.Album == album.GUID)
+        if (player.PlayingFile?.Album == album.GUID)
             result += $"background-color: {Colors.Blue.Darken1};";
         return result;
     }

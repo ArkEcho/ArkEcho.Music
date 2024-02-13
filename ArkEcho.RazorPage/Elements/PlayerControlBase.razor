@@ -1,23 +1,24 @@
-﻿@inject IAppModel Model
+﻿@inject AppModelBase Model
 @inject HTMLHelper helper
+@inject Player player
 
 @code {
-    public string PlayPauseIcon { get { return Model.Player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
-    public string MuteIcon { get { return Model.Player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
-    public string ShuffleIcon { get { return Model.Player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
+    public string PlayPauseIcon { get { return player.Playing ? Icons.Material.Rounded.Pause : Icons.Material.Rounded.PlayArrow; } }
+    public string MuteIcon { get { return player.Mute ? Icons.Material.Rounded.VolumeOff : Icons.Material.Rounded.VolumeUp; } }
+    public string ShuffleIcon { get { return player.Shuffle ? Icons.Material.Rounded.ShuffleOn : Icons.Material.Rounded.Shuffle; } }
     public string PositionTime
     {
         get
         {
-            return Model.Player.Position.ConvertTimeSeconds();
+            return player.Position.ConvertTimeSeconds();
         }
     }
     public string DurationTime
     { 
         get 
         {
-            return Model.Player.PlayingFile != null
-            ? Model.Player.PlayingFile.Duration.ConvertTimeMilliseconds()
+            return player.PlayingFile != null
+            ? player.PlayingFile.Duration.ConvertTimeMilliseconds()
             : 0.ConvertTimeMilliseconds();
         } 
     }
@@ -26,14 +27,14 @@
     {
         get
         {
-            return Model.Player.PlayingFile != null
-            ? Convert.ToInt32(TimeSpan.FromMilliseconds(Model.Player.PlayingFile.Duration).TotalSeconds)
+            return player.PlayingFile != null
+            ? Convert.ToInt32(TimeSpan.FromMilliseconds(player.PlayingFile.Duration).TotalSeconds)
             : Convert.ToInt32(TimeSpan.FromSeconds(0).TotalSeconds);
         }
     }
 
-    public string AlbumName { get { return Model.Player.PlayingFile != null ? playingAlbum.Name : string.Empty; } }
-    public string AlbumArtistName { get { return Model.Player.PlayingFile != null ? playingAlbumArtist.Name : string.Empty; } }
+    public string AlbumName { get { return player.PlayingFile != null ? playingAlbum.Name : string.Empty; } }
+    public string AlbumArtistName { get { return player.PlayingFile != null ? playingAlbumArtist.Name : string.Empty; } }
 
     protected string Image64 = string.Empty;
     protected Album playingAlbum = null;
@@ -41,49 +42,49 @@
 
     protected string getSongTitle(int maxLength)
     {
-        return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Title.Truncate(maxLength) : string.Empty;
+        return player.PlayingFile != null ? player.PlayingFile.Title.Truncate(maxLength) : string.Empty;
     }
     
     protected string getSongPerformer(int maxLength)
     {
-        return Model.Player.PlayingFile != null ? Model.Player.PlayingFile.Performer.Truncate(maxLength) : string.Empty;
+        return player.PlayingFile != null ? player.PlayingFile.Performer.Truncate(maxLength) : string.Empty;
     }
 
     protected void playPause()
     {
-        Model.Player.PlayPause();
+        player.PlayPause();
     }
 
     protected void backward()
     {
-        Model.Player.Backward();
+        player.Backward();
     }
 
     protected void forward()
     {
-        Model.Player.Forward();
+        player.Forward();
     }
 
     protected void stop()
     {
-        Model.Player.Stop();
+        player.Stop();
     }
 
     protected void shuffle()
     {
-        Model.Player.Shuffle = !Model.Player.Shuffle;
+        player.Shuffle = !player.Shuffle;
     }
 
     protected void mute()
     {
-        Model.Player.Mute = !Model.Player.Mute;
+        player.Mute = !player.Mute;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        Model.Player.TitleChanged += () => titleChanged();
-        Model.Player.PositionChanged += () => positionChanged();
-        Model.Player.PlayingChanged += () => playingChanged();
+        player.TitleChanged += () => titleChanged();
+        player.PositionChanged += () => positionChanged();
+        player.PlayingChanged += () => playingChanged();
 
         await loadSongInfo();
 
@@ -97,10 +98,10 @@
 
     private async Task loadSongInfo()
     {
-        if (Model.Player.PlayingFile != null && (playingAlbum == null || playingAlbum.GUID != Model.Player.PlayingFile.GUID))
+        if (player.PlayingFile != null && (playingAlbum == null || playingAlbum.GUID != player.PlayingFile.GUID))
         {
-            playingAlbum = Model.Library.GetAlbum(Model.Player.PlayingFile.Album);
-            playingAlbumArtist = Model.Library.GetAlbumArtist(Model.Player.PlayingFile.AlbumArtist);
+            playingAlbum = Model.Library.GetAlbum(player.PlayingFile.Album);
+            playingAlbumArtist = Model.Library.GetAlbumArtist(player.PlayingFile.AlbumArtist);
 
             if (string.IsNullOrEmpty(playingAlbum.Cover64))
                 Image64 = ArkEcho.Core.Properties.Resources.logo_svg;
@@ -137,7 +138,7 @@
     {
         positionSliderChange = true;
 
-        Model.Player.Position = value;
+        player.Position = value;
         await InvokeAsync(StateHasChanged);
 
         positionSliderChange = false;

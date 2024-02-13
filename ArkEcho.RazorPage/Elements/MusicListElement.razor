@@ -1,6 +1,7 @@
 ﻿
 @inject AppEnvironment environment
-@inject IAppModel model
+@inject AppModelBase model
+@inject Player player
 
 <MudSimpleTable Dense="true" Hover="true" Bordered="false" Striped="false">
     <thead>
@@ -83,13 +84,13 @@
 
     protected override Task OnInitializedAsync()
     {
-        model.Player.TitleChanged += () => titleChanged();
+        player.TitleChanged += () => titleChanged();
         return base.OnInitializedAsync();
     }
 
     protected async Task titleChanged()
     {
-        if (MusicList.Any(x => x == model.Player.PlayingFile))
+        if (MusicList.Any(x => x == player.PlayingFile))
         {
             await InvokeAsync(StateHasChanged);
         }
@@ -102,9 +103,9 @@
 
     private string getRowColor(MusicFile file)
     {
-        if (model.Player.PlayingFile == null)
+        if (player.PlayingFile == null)
             return string.Empty;
-        else if (model.Player.PlayingFile.GUID == file.GUID)
+        else if (player.PlayingFile.GUID == file.GUID)
         {
             playingTitle = true;
             return "playing";

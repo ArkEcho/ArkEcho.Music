@@ -2,7 +2,7 @@
 
 @layout LoginLayout
 
-@inject IAppModel model
+@inject AppModelBase model
 @inject Authentication authentication
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
@@ -18,7 +18,7 @@
         <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
                         Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
         
-        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != IAppModel.Status.Connected)">Login</MudButton>
+        <MudButton Class="mt-2" Variant="Variant.Filled" Color="Color.Tertiary" OnClick="validateUser" Disabled="@(model.AppStatus != AppModelBase.Status.Connected)">Login</MudButton>
         <AppStatus ReconnectClicked="reconnectClicked" />
     </MudStack>
 </MudPaper>
@@ -40,20 +40,20 @@
 
     private async Task inputKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == IAppModel.Status.Connected)
+        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && model.AppStatus == AppModelBase.Status.Connected)
             await validateUser();
     }
 
     private async Task reconnectClicked()
     {
-        await model.InitializeOnLoad();
+        await model.CheckConnection();
     }
 
     protected async override Task OnInitializedAsync()
     {
         model.StatusChanged += () => StateHasChanged();
 
-        await model.InitializeOnLoad();
+        await model.CheckConnection();
 
         if (await authentication.IsUserAuthenticated())
         {

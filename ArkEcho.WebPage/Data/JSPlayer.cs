@@ -9,18 +9,19 @@ namespace ArkEcho.WebPage
 
         private IJSRuntime jsRuntime = null;
         private Logger logger = null;
-        private string apiToken = string.Empty;
+        private AppEnvironment appEnvironment;
+        private Rest rest;
 
-        public JSPlayer(IJSRuntime jsRuntime, Logger logger, string serverAddress) : base()
+        public JSPlayer(IJSRuntime jsRuntime, Logger logger, Rest rest, AppEnvironment appEnvironment) : base()
         {
             this.jsRuntime = jsRuntime;
             this.logger = logger;
-            this.serverAddress = serverAddress;
+            this.appEnvironment = appEnvironment;
+            this.rest = rest;
         }
 
-        public bool InitPlayer(string apiToken)
+        public override bool InitializePlayer()
         {
-            this.apiToken = apiToken;
             try
             {
                 var dotNetReference = DotNetObjectReference.Create(this);
@@ -79,7 +80,7 @@ namespace ArkEcho.WebPage
 
         protected override void loadAudio(bool StartOnLoad)
         {
-            string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={apiToken}"; // Howler doesn't support adding HTML5 Header
+            string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={rest.ApiToken}"; // Howler doesn't support adding HTML5 Header
             string pageTitle = $"{PlayingFile.Title} - {PlayingFile.Performer}";
             jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { pageTitle });
             jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, StartOnLoad, Volume, Mute });

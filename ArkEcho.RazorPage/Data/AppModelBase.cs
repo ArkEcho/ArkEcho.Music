@@ -3,13 +3,23 @@ using System.Diagnostics;
 
 namespace ArkEcho.RazorPage.Data
 {
-    public abstract class AppModelBase : IAppModel
+    public abstract class AppModelBase
     {
+        public enum Status
+        {
+            Started = 0,
+
+            NotConnected = 10,
+            Connected = 20,
+
+            LoadingLibrary = 20,
+
+            Authorized = 50,
+        }
+
         public MusicLibrary Library { get; private set; }
 
-        public abstract Player Player { get; protected set; }
-
-        public IAppModel.Status AppStatus { get; private set; } = IAppModel.Status.Started;
+        public Status AppStatus { get; private set; } = Status.Started;
 
         protected Rest rest = null;
         protected Logger logger;
@@ -26,28 +36,24 @@ namespace ArkEcho.RazorPage.Data
 
         public virtual async Task LogoutUser()
         {
-            if (Player.Playing)
-                Player.Stop();
-            Player.Dispose();
-
-            SetStatus(IAppModel.Status.Started);
+            SetStatus(Status.Started);
         }
 
-        protected void SetStatus(IAppModel.Status status)
+        protected void SetStatus(Status status)
         {
             AppStatus = status;
             StatusChanged?.Invoke();
         }
 
-        public async Task<bool> InitializeOnLoad()
+        public async Task<bool> CheckConnection()
         {
             if (!await rest.CheckConnection())
             {
-                SetStatus(IAppModel.Status.NotConnected);
+                SetStatus(Status.NotConnected);
                 return false;
             }
 
-            SetStatus(IAppModel.Status.Connected);
+            SetStatus(Status.Connected);
             return true;
         }
 
@@ -101,18 +107,13 @@ namespace ArkEcho.RazorPage.Data
 
         public virtual async Task<bool> InitializeOnLogin()
         {
-            if (!await initializePlayer())
-                return false;
-
-            SetStatus(IAppModel.Status.LoadingLibrary);
+            SetStatus(Status.LoadingLibrary);
 
             if (!await LoadLibraryFromServer())
                 return false;
 
-            SetStatus(IAppModel.Status.Authorized);
+            SetStatus(Status.Authorized);
             return true;
         }
-
-        protected abstract Task<bool> initializePlayer();
     }
 }

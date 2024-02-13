@@ -19,6 +19,11 @@ namespace ArkEcho.Core.Test
             timer.Elapsed += Timer_Elapsed;
         }
 
+        public override bool InitializePlayer()
+        {
+            return true;
+        }
+
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             positionTenthSeconds++;

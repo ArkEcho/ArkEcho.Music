@@ -2,13 +2,14 @@
 
 @layout MainLayout
 
-@inject IAppModel Model
+@inject AppModelBase Model
 @inject ISnackbar Snackbar
 @inject AppEnvironment environment
 @inject LibrarySync sync
 @inject IMauiHelper mauiHelper
 @inject Authentication authentication
 @inject Rest rest
+@inject Player player
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper Class="my-4 pa-2" Outlined="true">
@@ -82,7 +83,7 @@
 
     private async void synchronizeMusic()
     {
-        Model.Player.Stop();
+        player.Stop();
 
         status = Resources.Status.Busy;
 

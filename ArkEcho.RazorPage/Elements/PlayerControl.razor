@@ -1,4 +1,4 @@
-﻿@inject IAppModel Model
+﻿@inject Player player
 
 @inherits PlayerControlBase
 
@@ -6,7 +6,7 @@
 
     <MudPaper Class="mx-6 d-none d-md-flex" Height="10px" Elevation="0">
         <MudSlider Size="Size.Small" Min="0" Max="@DurationSeconds" 
-        T="int" Immediate="true" @onmousedown="sliderMouseDown" @onmouseup="sliderMouseUp" ValueChanged="sliderVolumeChanged" Value="@Model.Player.Position" />
+        T="int" Immediate="true" @onmousedown="sliderMouseDown" @onmouseup="sliderMouseUp" ValueChanged="sliderVolumeChanged" Value="@player.Position" />
     </MudPaper>
 
     <MudPaper Class="d-flex" Style="bottom: 0; width: 100%; height: 50px" Elevation="0">
@@ -76,7 +76,7 @@
 
                 <MudIconButton Class="mr-1 d-none d-md-flex" OnClick="mute" Icon="@MuteIcon" Color="Color.Primary" Size="Size.Medium" />
                 <MudPaper Class="mr-4 pt-1 d-none d-md-flex" Width="100px" Elevation="0">
-                    <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="Model.Player.Volume" ValueLabel="true" />
+                    <MudSlider Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="player.Volume" ValueLabel="true" />
                 </MudPaper>
             </MudPaper>
 
