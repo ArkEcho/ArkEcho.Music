@@ -56,6 +56,7 @@ namespace ArkEcho.Core
                 Guid accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
                 await localStorage.RemoveItemAsync(SESSIONTOKEN);
                 await rest.LogoutSession(accessToken);
+                AuthenticatedUser = null;
                 return true;
             }
             catch (Exception)

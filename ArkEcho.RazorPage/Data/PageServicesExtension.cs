@@ -24,6 +24,7 @@ namespace ArkEcho.RazorPage.Data
             serviceCollection.AddSingleton<Logger, RestLogger>();
             serviceCollection.AddSingleton<Rest>();
             serviceCollection.AddSingleton<Authentication>();
+            serviceCollection.AddSingleton<ConnectionStatus>();
 
             serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
             serviceCollection.AddSingleton<Player, PlayerImplementation>();

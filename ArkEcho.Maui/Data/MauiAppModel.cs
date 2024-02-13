@@ -26,7 +26,6 @@ namespace ArkEcho.Maui
 
             if (!success)
             {
-                SetStatus(Status.Connected);
                 //snack.CheckingLibraryFailed();
                 return false;
             }

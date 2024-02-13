@@ -12,7 +12,7 @@
 
 <MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
     <MudPaper Class="d-flex justify-start appbarstyle" Elevation="0">
-        <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(!loggedIn())" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
+        <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(authentication.AuthenticatedUser == null)" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
         <MudStack Row="true" Spacing="0">
             <svg class="mt-1" width="36px" height="36px">
@@ -34,7 +34,7 @@
 
     <MudPaper Class="d-flex flex-grow-1 justify-center appbarstyle" Elevation="0" />
 
-    @if (loggedIn())
+    @if (authentication.AuthenticatedUser != null)
     {
         <MudPaper Class="d-flex justify-end appbarstyle" Elevation="0">
             <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="Z" OnClick="userPopoverToggle" />
@@ -73,11 +73,6 @@
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
 
-    private bool loggedIn()
-    {
-        return (int)model.AppStatus >= 50;
-    }
-
     protected override async Task OnInitializedAsync()
     {
         if (!await authentication.IsUserAuthenticated())
@@ -111,7 +106,6 @@
 
     public async ValueTask DisposeAsync()
     {
-
         await Logout();
     }
 }
