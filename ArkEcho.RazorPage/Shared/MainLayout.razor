@@ -1,11 +1,9 @@
 ﻿@inherits LayoutComponentBase
 
-@inject AppModelBase model
 @inject AppEnvironment environment
-@inject ISnackbar snackbar
 @inject Authentication authentication
 @inject NavigationManager NavigationManager
-@* @inject SnackbarDialogService snackbarDialogService // TODO *@ 
+@inject SnackbarDialogService snackbarDialogService
 @inject Player player
 @inject PlatformControllerBase platformController
 
@@ -94,7 +92,7 @@
 
     public async Task Logout()
     {
-        //snackbarDialogService.CloseOnLogout();
+        snackbarDialogService.CloseOnLogout();
 
         player.Dispose();
         await authentication.LogoutUser();

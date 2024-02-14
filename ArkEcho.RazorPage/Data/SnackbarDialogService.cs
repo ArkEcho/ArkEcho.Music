@@ -9,10 +9,14 @@ namespace ArkEcho.RazorPage.Data
         private NavigationManager navigation;
         private Snackbar musicFilesMissingSnackbar;
 
-        public SnackbarDialogService(ISnackbar snackbar/*, NavigationManager navigation*/) // TODO
+        public SnackbarDialogService()
+        {
+        }
+
+        public void Initialize(ISnackbar snackbar, NavigationManager navigation)
         {
             this.snackbarProvider = snackbar;
-            //this.navigation = navigation;
+            this.navigation = navigation;
         }
 
         public void CloseOnLogout()
@@ -22,6 +26,16 @@ namespace ArkEcho.RazorPage.Data
                 snackbarProvider.Remove(musicFilesMissingSnackbar);
                 musicFilesMissingSnackbar = null;
             }
+        }
+
+        public void WrongUserCredentials()
+        {
+            snackbarProvider.Add($"Username or Password wrong!", Severity.Error, config => { config.ShowCloseIcon = true; });
+        }
+
+        public void MusicFolderChanged()
+        {
+            snackbarProvider.Add("Music Folder changed successfully!", Severity.Success, config => { config.ShowCloseIcon = true; });
         }
 
         public void CheckingLibraryFailed()
@@ -49,7 +63,7 @@ namespace ArkEcho.RazorPage.Data
                 config.ActionVariant = Variant.Filled;
                 config.Onclick = snackbar =>
                 {
-                    //navigation.NavigateTo("/Sync");
+                    navigation.NavigateTo("/Sync");
                     return Task.CompletedTask;
                 };
             });

@@ -33,9 +33,9 @@ namespace ArkEcho.RazorPage.Data
             serviceCollection.AddSingleton<AppModelBase, AppModelImplementation>();
             serviceCollection.AddSingleton<PlatformControllerBase, PlatformControllerImplementation>();
 
-            //serviceCollection.AddScoped<SnackbarDialogService>();
+            serviceCollection.AddSingleton<SnackbarDialogService>();
 
-            serviceCollection.AddScoped<HTMLHelper>();
+            serviceCollection.AddSingleton<HTMLHelper>();
         }
     }
 }

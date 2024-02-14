@@ -20,7 +20,7 @@ namespace ArkEcho.RazorPage.Data
 
         public EventHandler<ProgressEventArgs> SyncProgress;
 
-        public string MusicFolder { get; }
+        public string MusicFolder { get { return getUserMusicFolder(); } }
 
         public class LibraryCheckResult
         {
@@ -224,8 +224,7 @@ namespace ArkEcho.RazorPage.Data
                 return false;
             }
 
-            if (missing.Count == 0)
-                result.FilesMissing = false;
+            result.FilesMissing = missing.Count > 0;
 
             return true;
         }

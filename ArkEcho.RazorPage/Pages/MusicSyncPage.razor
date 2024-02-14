@@ -3,7 +3,7 @@
 @layout MainLayout
 
 @inject AppModelBase Model
-@inject ISnackbar Snackbar
+@inject SnackbarDialogService snackbarDialogService
 @inject AppEnvironment environment
 @inject LibrarySync sync
 @inject IMauiHelper mauiHelper
@@ -75,8 +75,8 @@
 
         bool result = await rest.UpdateUser(authentication.AuthenticatedUser);
 
-        if(result)
-            Snackbar.Add("Music Folder changed successfully!", Severity.Success, config => { config.ShowCloseIcon = true; });
+        if (result)
+            snackbarDialogService.MusicFolderChanged();
 
         await InvokeAsync(StateHasChanged);
     }

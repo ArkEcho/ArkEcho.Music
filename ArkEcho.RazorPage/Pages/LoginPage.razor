@@ -5,9 +5,10 @@
 @inject AppModelBase model
 @inject Authentication authentication
 @inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
+@inject ISnackbar snackbar
 @inject ConnectionStatus status
 @inject PlatformControllerBase platformController
+@inject SnackbarDialogService snackbarDialogService
 
 <MudPaper Class="pa-2" Outlined="true">
     <MudStack>
@@ -52,6 +53,16 @@
             await validateUser();
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Snackbar and Navigationmanager are loaded when page is loaded
+            snackbarDialogService.Initialize(snackbar, NavigationManager);
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     protected async override Task OnInitializedAsync()
     {
         status.ConnectionStatusChanged += () => InvokeAsync(StateHasChanged);
@@ -82,7 +93,7 @@
     {
         if (!await authentication.AuthenticateUser(username, password))
         {
-            Snackbar.Add($"Username or Password wrong!", Severity.Error, config => { config.ShowCloseIcon = true; });
+            snackbarDialogService.WrongUserCredentials();
             return;
         }
 

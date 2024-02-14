@@ -5,13 +5,13 @@ namespace ArkEcho.Maui
 {
     public class MauiAppModel : AppModelBase
     {
-        //private SnackbarDialogService snack;
+        private SnackbarDialogService snack;
         private LibrarySync sync;
 
-        public MauiAppModel( /*SnackbarDialogService snack,*/ LibrarySync sync, Logger logger, Rest rest) // TODO
+        public MauiAppModel(SnackbarDialogService snack, LibrarySync sync, Logger logger, Rest rest)
             : base(logger, rest)
         {
-            //this.snack = snack;
+            this.snack = snack;
             this.sync = sync;
         }
 
@@ -24,12 +24,12 @@ namespace ArkEcho.Maui
 
             if (!success)
             {
-                //snack.CheckingLibraryFailed();
+                snack.CheckingLibraryFailed();
                 return false;
             }
 
-            //if (result.FilesMissing)
-            //    snack.MusicFilesMissing();
+            if (result.FilesMissing)
+                snack.MusicFilesMissing();
 
             return success;
         }
