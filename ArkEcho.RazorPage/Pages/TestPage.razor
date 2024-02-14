@@ -1,6 +1,9 @@
 ﻿@page "/Test"
 
 
+@inject Authentication authentication
+@inject NavigationManager navigationManager
+
 <MudPaper Height="70vh" Class="overflow-auto">
     <Virtualize Items="elements">
         <MudGrid Spacing="2" Justify="Justify.Center">   
@@ -21,6 +24,16 @@
     }
 
     List<TestTest> elements = new List<TestTest>();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (authentication.AuthenticatedUser == null)
+        {
+            navigationManager.NavigateTo("/");
+            return;
+        }
+        base.OnAfterRender(firstRender);
+    }
 
     protected override Task OnInitializedAsync()
     {

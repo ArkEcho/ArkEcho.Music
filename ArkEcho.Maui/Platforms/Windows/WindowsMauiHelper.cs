@@ -137,7 +137,7 @@ namespace ArkEcho.Maui.WinUI
         private void setDragRegion()
         {
             int titleBarHeight = getTitleBarHeight();
-            int navbuttonWidth = fullTitleBar ? 0 : Convert.ToInt32(titleBarHeight * 0.85); // Left Navigation Menu
+            int navbuttonWidth = fullTitleBar ? 0 : Convert.ToInt32(titleBarHeight * 0.85) * 6; // Left Navigation Menu + Top Menu Button
             int avatarButtonWidth = fullTitleBar ? 0 : Convert.ToInt32(titleBarHeight * 1.5); // Right Avatar Button
             int systemButtonWidth = titleBarHeight * 3; // Min/Max/Close
 

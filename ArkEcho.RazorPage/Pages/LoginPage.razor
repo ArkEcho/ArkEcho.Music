@@ -1,6 +1,6 @@
 ﻿@page "/"
 
-@layout LoginLayout
+@layout CenteredLayout
 
 @inject AppModelBase model
 @inject Authentication authentication
@@ -67,14 +67,25 @@
     {
         status.ConnectionStatusChanged += () => InvokeAsync(StateHasChanged);
 
-        if (await authentication.IsUserAuthenticated())
+        if (await authentication.CheckUserAuthenticated())
         {
-            await logIn();
+            await loadMusicPage();
             return;
         }
     }
 
-    private async Task logIn()
+    private async Task validateUser()
+    {
+        if (!await authentication.AuthenticateUser(username, password))
+        {
+            snackbarDialogService.WrongUserCredentials();
+            return;
+        }
+
+        await loadMusicPage();
+    }
+
+    private async Task loadMusicPage()
     {
         showOverlay(true);
 
@@ -87,17 +98,6 @@
 
         await platformController.ProcessUserLogin();
         NavigationManager.NavigateTo("/Music");
-    }
-
-    private async Task validateUser()
-    {
-        if (!await authentication.AuthenticateUser(username, password))
-        {
-            snackbarDialogService.WrongUserCredentials();
-            return;
-        }
-
-        await logIn();
     }
 
     private void showOverlay(bool show)

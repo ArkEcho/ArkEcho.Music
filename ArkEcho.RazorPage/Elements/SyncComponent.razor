@@ -1,0 +1,109 @@
+
+@inject AppModelBase Model
+@inject SnackbarDialogService snackbarDialogService
+@inject AppEnvironment environment
+@inject LibrarySync sync
+@inject IMauiHelper mauiHelper
+@inject Authentication authentication
+@inject Rest rest
+@inject Player player
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudPaper Class="my-4 pa-2" Outlined="true">
+        <MudStack>
+            <MudStack Class="my-1" Row="true">
+                <MudField Label="Music Library Path" Class="overflow-x-auto" Variant="Variant.Filled">@sync.MusicFolder</MudField>
+                    @if (showChangeFolderButton())
+                {
+                    <MudIconButton Class="mt-3" Icon="@Icons.Material.Rounded.FolderOpen" Disabled="@(status == Resources.Status.Busy)"
+                                   Color="Color.Secondary" Size="Size.Medium" OnClick="changeMusicFolder">Sync Music Library</MudIconButton>
+                }
+            </MudStack>
+
+            <MudPaper Class=" my-1 d-flex justify-center" Elevation="0">
+                <MudButton Variant="Variant.Filled" Disabled="@(status == Resources.Status.Busy)" Color="Color.Tertiary" OnClick="synchronizeMusic">Sync Music Library</MudButton>
+            </MudPaper>
+
+            <MudPaper Class=" my-1 d-flex justify-center" Elevation="0">
+                <MudStack Spacing="1">
+                    <MudText Align="Align.Center" Typo="Typo.body1">@(status == Resources.Status.Idle ? "Idle" : "Syncing")</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.body2">@((MarkupString)syncMessage)</MudText>
+                </MudStack>
+            </MudPaper>
+
+            <MudProgressLinear Class="my-1" Color="Color.Success" Rounded="true" Size="Size.Large" Value="@syncProgress" />
+
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code{
+
+    private Resources.Status status = Resources.Status.Idle;
+
+    private string syncMessage = string.Empty;
+    private int syncProgress = 0;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        sync.SyncProgress += OnProgressEvent;
+
+        await base.OnInitializedAsync();
+    }
+
+    private bool showChangeFolderButton()
+    {
+        return environment.Platform == Resources.Platform.Windows;
+    }
+
+    private async void changeMusicFolder()
+    {
+        string newFolder = await mauiHelper.PickFolder();
+
+        if (string.IsNullOrEmpty(newFolder) || !Directory.Exists(newFolder))
+            return;
+
+        UserSettings.MusicPath path = authentication.AuthenticatedUser.Settings.GetLocalUserSettings();
+        if (path == null)
+        {
+            path = new UserSettings.MusicPath() { MachineName = System.Environment.MachineName, Path = new Uri(newFolder) };
+            authentication.AuthenticatedUser.Settings.MusicPathList.Add(path);
+        }
+        else
+            path.Path = new Uri(newFolder);
+
+        bool result = await rest.UpdateUser(authentication.AuthenticatedUser);
+
+        if (result)
+            snackbarDialogService.MusicFolderChanged();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void synchronizeMusic()
+    {
+        player.Stop();
+
+        status = Resources.Status.Busy;
+
+        await InvokeAsync(StateHasChanged);
+
+        if (!await Model.LoadLibraryFromServer())
+            return;
+
+        await sync.StartSyncMusicLibrary(Model.Library);
+
+        status = Resources.Status.Idle;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnProgressEvent(object sender, LibrarySync.ProgressEventArgs args)
+    {
+        syncMessage = args.Message.Replace("\r\n", "<br>");
+        syncProgress = args.ProgressPercent;
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

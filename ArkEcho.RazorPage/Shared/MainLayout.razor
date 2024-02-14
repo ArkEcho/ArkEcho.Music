@@ -36,7 +36,7 @@
     @if (authentication.AuthenticatedUser != null)
     {
         <MudPaper Class="d-flex justify-end appbarstyle" Elevation="0">
-            <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="Z" OnClick="userPopoverToggle" />
+            <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="@(authentication.AuthenticatedUser.UserName[0].ToString().ToUpper())" OnClick="userPopoverToggle" />
             <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                 <MudText Typo="Typo.body2" Class="px-4 py-1">@authentication?.AuthenticatedUser.UserName</MudText>
                 <MudDivider Class="ma-2"/>
@@ -51,7 +51,7 @@
     }
 </MudPaper>
 
-<MudDrawer @bind-Open="@showSidebar" Variant="@DrawerVariant.Responsive" Elevation="2">
+<MudDrawer @bind-Open="@showSidebar" Variant="@DrawerVariant.Temporary" Elevation="2">
     <NavMenu />
 </MudDrawer>
 
@@ -71,14 +71,6 @@
 {
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        if (!await authentication.IsUserAuthenticated())
-            NavigationManager.NavigateTo("/");
-
-        await base.OnInitializedAsync();
-    }
 
     private void userPopoverToggle()
     {

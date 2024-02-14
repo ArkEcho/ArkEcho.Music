@@ -17,13 +17,27 @@ namespace ArkEcho.Core
             this.rest = rest;
         }
 
-        public async Task<bool> IsUserAuthenticated()
+        public async Task<bool> CheckUserAuthenticated()
         {
             try
             {
                 Guid accessToken = await localStorage.GetItemAsync<Guid>(SESSIONTOKEN);
-                if (accessToken != Guid.Empty)
-                    return await rest.CheckSession(accessToken);
+                if (accessToken == Guid.Empty)
+                    return false;
+
+                if (!await rest.CheckSession(accessToken))
+                {
+                    await localStorage.RemoveItemAsync(SESSIONTOKEN);
+                    return false;
+                }
+
+                AuthenticatedUser = await rest.GetUser(accessToken);
+                if (AuthenticatedUser == null)
+                    return false;
+
+                await localStorage.SetItemAsync(SESSIONTOKEN, AuthenticatedUser.SessionToken);
+                rest.ApiToken = await rest.GetApiToken(AuthenticatedUser.SessionToken);
+                return true;
             }
             catch (Exception ex)
             {
@@ -35,9 +49,6 @@ namespace ArkEcho.Core
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return false;
-
-            if (await IsUserAuthenticated())
-                return true;
 
             AuthenticatedUser = await rest.AuthenticateUser(username, Encryption.EncryptSHA256(password));
 
