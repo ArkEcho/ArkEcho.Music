@@ -54,5 +54,16 @@ namespace ArkEcho.Core
         {
             return albumFileMap.GetValueOrDefault(album);
         }
+
+        public object GetArtistAlbumPlaylist(Guid guid)
+        {
+            object result = Album.Find(x => x.GUID == guid);
+            if (result != null)
+                return result;
+            result = AlbumArtists.Find(x => x.GUID == guid);
+            if (result != null)
+                return result;
+            return Playlists.Find(x => x.GUID == guid);
+        }
     }
 }

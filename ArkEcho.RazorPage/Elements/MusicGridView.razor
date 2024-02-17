@@ -1,10 +1,9 @@
 ﻿
 @inherits MusicDisplayBase
 
-@inject IDialogService DialogService
 @inject Player player
-@inject AppModelBase model
 @inject HTMLHelper helper
+@inject NavigationManager navigation
 
 @*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
 
@@ -88,12 +87,9 @@
         return result;
     }
 
-    private async Task albumListClicked(Album album)
+    private void albumListClicked(Album album)
     {
-        // TODO: Eigener Dialog Service
-        DialogParameters parameters = new DialogParameters { ["Header"] = album, ["MusicList"] = model.Library.GetMusicFiles(album) };
-        IDialogReference dialog = await DialogService.ShowAsync<MusicListDialog>(album.Name, parameters, options);
-        DialogResult result = await dialog.Result;
+        navigation.NavigateTo($"/Music/{album.GUID}");
     }
 
     //private List<GridVirtualize> getFilteredAlbumVList()
