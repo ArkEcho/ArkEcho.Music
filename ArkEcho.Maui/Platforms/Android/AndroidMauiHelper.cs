@@ -35,6 +35,17 @@ namespace ArkEcho.Maui.AndroidMaui
         public Task<string> PickFolder() { return Task.FromResult(string.Empty); }
         public bool DarkMode { get; set; }
         public void SetDragArea(bool fullTitlebar) { }
+
+        public string GetServerAddressSetting()
+        {
+            return Preferences.Get(Resources.SERVERADDRESSSETTING, $"http://localhost:{Resources.ARKECHOPORT}");
+        }
+
+        public void SetServerAddressSetting(string setting)
+        {
+            Preferences.Set(Resources.SERVERADDRESSSETTING, setting);
+        }
+
         public string ApplicationTitle { get; set; }
     }
 }
