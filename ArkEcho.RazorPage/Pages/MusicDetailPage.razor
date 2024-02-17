@@ -8,25 +8,29 @@
 @inject Player player
 @inject HTMLHelper helper
 
-<MudElement Class="d-flex justify-center align-center my-2">
-    @if(Header is null)
-    {
-        <MudText Typo="Typo.h6">Oopsy Daisy, something went wrong ¯\_(ツ)_/¯</MudText>
-    }
-    else if (Header is Album)
-    {
-        Album album = (Album)Header;
-        <MudStack Spacing="2">
-            <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
-            <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
-            <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
-        </MudStack>
-    }
+<MudElement Style="top: 0; width: 100%;">
+    <MudElement Class="d-flex justify-center align-center my-2" Style="max-height: 220px;">
+        @if(Header is null)
+        {
+            <MudText Typo="Typo.h6">Oopsy Daisy, something went wrong ¯\_(ツ)_/¯</MudText>
+        }
+        else if (Header is Album)
+        {
+            Album album = (Album)Header;
+            <MudStack Spacing="2">
+                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
+                <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
+                <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
+            </MudStack>
+        }
+    </MudElement>
 </MudElement>
 
-<MudPaper Class="overflow-auto" Height="61.5vh" Width="100%" Elevation="0">
-    <MusicListElement MusicList="MusicList" ListElementDoubleClicked="startMusicFile" />
-</MudPaper>
+<MudElement Class="d-flex">
+    <MudElement Class="overflow-auto" Style="height: 60vh; width: 100%;">
+        <MusicListElement MusicList="MusicList" ListElementDoubleClicked="startMusicFile" />
+    </MudElement>
+</MudElement>
 
 @code {
     [Parameter]

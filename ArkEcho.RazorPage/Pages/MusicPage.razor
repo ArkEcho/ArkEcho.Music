@@ -19,7 +19,7 @@
                 }
             </MudSelect>
 
-            @if(environment.Platform != Resources.Platform.Web)
+            @if(environment.Platform == Resources.Platform.Windows)
             {
                 <MudIconButton Class="ml-2 my-2" Icon="@Icons.Material.Rounded.List" Color="Color.Tertiary" Variant="@(listButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listButtonClicked" />
             }

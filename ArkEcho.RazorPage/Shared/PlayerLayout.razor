@@ -2,16 +2,16 @@
 
 @layout MainLayout
 
-<MudPaper>
-    <MudPaper Class="overflow-hidden" Width="100%" Elevation="0">
+<MudElement>
+    <MudElement Class="overflow-hidden" >
 
         @Body
 
-    </MudPaper>
+    </MudElement>
 
-    <MudPaper Class="fixed" Style="bottom: 0" Width="100%" Elevation="1">
+    <MudElement Class="fixed" Style="bottom: 0; width: 100%;">
         <PlayerControl />
-    </MudPaper>
-</MudPaper>
+    </MudElement>
+</MudElement>
 
 @code {}
