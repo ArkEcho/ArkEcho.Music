@@ -1,3 +1,4 @@
+using ArkEcho;
 using ArkEcho.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,9 +50,8 @@ public class Program
         app.MapControllers();
         app.MapFallbackToFile("index.html");
 
-        string port = ":7236";
-        app.Urls.Add("http://" + server.GetAddress() + port);
-        app.Urls.Add("http://localhost" + port);
+        app.Urls.Add($"http://localhost:{Resources.ARKECHOPORT}");
+        app.Urls.Add($"http://{Resources.GetIpAddress()}:{Resources.ARKECHOPORT}");
         foreach (string url in app.Urls)
             Console.WriteLine($"Listening on: {url}");
 

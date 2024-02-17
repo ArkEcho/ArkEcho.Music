@@ -151,5 +151,15 @@ namespace ArkEcho.Maui.WinUI
 
             appWindow.TitleBar.SetDragRectangles(new RectInt32[] { rect });
         }
+
+        public string GetServerAddressSetting()
+        {
+            return Preferences.Get(Resources.SERVERADDRESSSETTING, $"http://localhost:{Resources.ARKECHOPORT}");
+        }
+
+        public void SetServerAddressSetting(string setting)
+        {
+            Preferences.Set(Resources.SERVERADDRESSSETTING, setting);
+        }
     }
 }

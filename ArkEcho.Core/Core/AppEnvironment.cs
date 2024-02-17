@@ -17,12 +17,11 @@ namespace ArkEcho.Core
 
         public string ServerAddress { get; set; } = string.Empty;
 
-        public AppEnvironment(string appName, bool development, Resources.Platform platform, bool userHttpClientHandler)
+        public AppEnvironment(string appName, string serveraddress, bool development, Resources.Platform platform, bool userHttpClientHandler)
         {
             AppName = appName;
 
-            // TODO: Better Solution
-            ServerAddress = development ? "http://192.168.178.20:7236" : "https://";
+            ServerAddress = serveraddress;
 
             Development = development;
             Platform = platform;

@@ -1,0 +1,44 @@
+
+@inject IMauiHelper mauiHelper
+@inject AppEnvironment environment
+@inject Rest rest
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Rounded.Cast" Class="mr-3 mb-n1" />
+            ChangeServerAddress
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Variant="Variant.Text" @bind-Value=serverAddress Immediate=true Label="Server Address" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" OnClick="Save">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private string serverAddress = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        serverAddress = mauiHelper.GetServerAddressSetting();
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Save()
+    {
+        mauiHelper.SetServerAddressSetting(serverAddress);
+        environment.ServerAddress = serverAddress;
+        rest.Connect();
+        MudDialog.Close();
+    }
+}

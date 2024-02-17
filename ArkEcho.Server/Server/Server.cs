@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,8 +36,7 @@ namespace ArkEcho.Server
 
         public async Task<bool> Init()
         {
-            Environment = new AppEnvironment(Resources.ARKECHOSERVER, Debugger.IsAttached, Resources.Platform.Server, true);
-            Console.WriteLine($"Running in {(Environment.Development ? "Development" : "Production")}, Address={Environment.ServerAddress}");
+            Environment = new AppEnvironment(Resources.ARKECHOSERVER, string.Empty, Debugger.IsAttached, Resources.Platform.Server, true);
 
             serverConfig = new ServerConfig(serverConfigFileName);
             if (!serverConfig.LoadFromFile(AppContext.BaseDirectory, true).Result)
@@ -277,19 +274,6 @@ namespace ArkEcho.Server
         {
             MusicLibrary library = GetUserMusicLibrary(apiToken);
             return library != null ? library.Album.Find(x => x.GUID == guid).Cover64 : null;
-        }
-
-        public string GetAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         private bool disposed;

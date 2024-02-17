@@ -8,6 +8,7 @@ namespace ArkEcho.Core
     public class Rest : RestBase
     {
         private HttpClient client = null;
+        private AppEnvironment environment;
 
         public class HttpResponse : HttpResponseBase
         {
@@ -52,19 +53,35 @@ namespace ArkEcho.Core
 
         public Rest(AppEnvironment environment) : base()
         {
-            if (environment.UserHttpClientHandler)
+            this.environment = environment;
+            Connect();
+        }
+
+        public void Connect()
+        {
+            try
             {
-                // TODO: Disable on Release Build?
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
-                client = new HttpClient(handler) { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
+                if (environment.UserHttpClientHandler)
+                {
+                    // TODO: Disable on Release Build?
+                    HttpClientHandler handler = new HttpClientHandler();
+                    handler.ServerCertificateCustomValidationCallback = (request, cert, chain, errors) => true;
+                    client = new HttpClient(handler) { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
+                }
+                else
+                    client = new HttpClient() { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
             }
-            else
-                client = new HttpClient() { BaseAddress = new Uri(environment.ServerAddress), Timeout = new TimeSpan(0, 0, 10) };
+            catch (Exception ex)
+            {
+                // Server Address wrong
+            }
         }
 
         protected override async Task<HttpResponseBase> makeRequest(HttpMethods method, string path, string httpContent)
         {
+            if (client == null)
+                return null;
+
             HttpMethod httpMethod = null;
             switch (method)
             {

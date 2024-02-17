@@ -9,7 +9,7 @@ public class MauiProgram
 {
     public static MauiApp CreateMauiApp(Resources.Platform executingPlatform, IMauiHelper mauiHelper)
     {
-        AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, Debugger.IsAttached, executingPlatform, true);
+        AppEnvironment environment = new AppEnvironment(Resources.ARKECHOMAUI, mauiHelper.GetServerAddressSetting(), Debugger.IsAttached, executingPlatform, true);
 
         MauiAppBuilder builder = MauiApp.CreateBuilder();
 

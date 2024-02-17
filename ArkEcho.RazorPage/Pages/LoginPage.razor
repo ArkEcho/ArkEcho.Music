@@ -2,7 +2,9 @@
 
 @layout CenteredLayout
 
+@inject IDialogService DialogService
 @inject AppModelBase model
+@inject AppEnvironment environment
 @inject Authentication authentication
 @inject NavigationManager NavigationManager
 @inject ISnackbar snackbar
@@ -29,6 +31,10 @@
             }
         </MudStack>
         
+        @if (showChangeAddress && !status.Connected && (environment.Platform == Resources.Platform.Windows || environment.Platform == Resources.Platform.Android))
+        {
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="changeServerAddressClicked">Change Server Address</MudButton>
+        }
     </MudStack>
 </MudPaper>
 
@@ -47,6 +53,9 @@
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
+    private System.Timers.Timer changeAddressTimer;
+    private bool showChangeAddress = false;
+
     private async Task inputKeyPress(KeyboardEventArgs e)
     {
         if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && status.Connected)
@@ -59,6 +68,13 @@
         {
             // Snackbar and Navigationmanager are loaded when page is loaded
             snackbarDialogService.Initialize(snackbar, NavigationManager);
+
+            changeAddressTimer = new System.Timers.Timer();
+            changeAddressTimer.Elapsed += changeAddressTimer_Elapsed;
+            changeAddressTimer.Interval = 3000;
+            changeAddressTimer.Enabled = true;
+            changeAddressTimer.AutoReset = false;
+            changeAddressTimer.Start();
         }
         return base.OnAfterRenderAsync(firstRender);
     }
@@ -72,6 +88,20 @@
             await loadMusicPage();
             return;
         }
+    }
+
+    private async void changeAddressTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (status.Connected)
+            return;
+
+        showChangeAddress = true; 
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void changeServerAddressClicked()
+    {
+        var dialog = await DialogService.ShowAsync<ChangeAddressDialog>("ChangeAddress");        
     }
 
     private async Task validateUser()

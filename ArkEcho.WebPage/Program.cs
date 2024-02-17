@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-AppEnvironment environment = new AppEnvironment(Resources.ARKECHOWEBPAGE, builder.HostEnvironment.IsDevelopment(), Resources.Platform.Web, false);
+AppEnvironment environment = new AppEnvironment(Resources.ARKECHOWEBPAGE, builder.HostEnvironment.BaseAddress, builder.HostEnvironment.IsDevelopment(), Resources.Platform.Web, false);
 
 builder.RootComponents.Add<ArkEchoApp>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

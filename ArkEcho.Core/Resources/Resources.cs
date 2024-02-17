@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 namespace ArkEcho
 {
     public class Resources
     {
+        public const int ARKECHOPORT = 7236;
+        public const string SERVERADDRESSSETTING = "ServerAddress";
+
         public const string PLAYLISTFOLDER = "Wiedergabelisten";
 
         public static readonly string FilePathDivider = getPathDiv();
@@ -60,6 +65,19 @@ namespace ArkEcho
             "pls",
             "zpl"
         };
+
+        public static string GetIpAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
 
         private static string getPathDiv()
         {
