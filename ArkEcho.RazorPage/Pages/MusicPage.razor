@@ -2,6 +2,7 @@
 
 @layout PlayerLayout
 
+@inject AppEnvironment environment
 @inject Player player
 @inject Authentication authentication
 @inject NavigationManager navigationManager
@@ -17,8 +18,13 @@
                     <MudSelectItem Value="@(mode)" />
                 }
             </MudSelect>
-            <MudIconButton Class="ml-2 my-2" Icon="@Icons.Material.Rounded.List" Color="Color.Tertiary" Variant="@(listButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
-            <MudIconButton Class="ml-1 my-2" Icon="@Icons.Material.Rounded.GridView" Color="Color.Tertiary" Variant="@(gridButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listGridButtonClicked" />
+
+            @if(environment.Platform != Resources.Platform.Web)
+            {
+                <MudIconButton Class="ml-2 my-2" Icon="@Icons.Material.Rounded.List" Color="Color.Tertiary" Variant="@(listButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="listButtonClicked" />
+            }
+            <MudIconButton Class="ml-1 my-2" Icon="@Icons.Material.Rounded.GridView" Color="Color.Tertiary" Variant="@(gridButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="gridButtonClicked" />
+            <MudIconButton Class="ml-1 my-2" Icon="@Icons.Material.Rounded.FormatListBulleted" Color="Color.Tertiary" Variant="@(playlistsButtonActive ? Variant.Filled : Variant.Outlined)" @onclick="playlistsButtonClicked" />
         </MudElement>
         <MudSpacer />
 
@@ -57,8 +63,9 @@
 
     private string searchMusicValue = string.Empty;
 
-    private bool listButtonActive = true;
-    private bool gridButtonActive = false;
+    private bool listButtonActive = false;
+    private bool gridButtonActive = true;
+    private bool playlistsButtonActive = false;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -76,10 +83,22 @@
     }
 
 
-    private void listGridButtonClicked()
+    private void listButtonClicked()
     {
-        listButtonActive = !listButtonActive;
-        gridButtonActive = !gridButtonActive;
+        listButtonActive = true;
+        gridButtonActive = playlistsButtonActive = false;
+    }
+
+    private void gridButtonClicked()
+    {
+        gridButtonActive = true;
+        listButtonActive = playlistsButtonActive = false;
+    }
+
+    private void playlistsButtonClicked()
+    {
+        playlistsButtonActive = true;
+        gridButtonActive = listButtonActive = false;
     }
     
 }
