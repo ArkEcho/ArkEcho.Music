@@ -11,6 +11,7 @@ namespace ArkEcho.WebPage
         private Logger logger = null;
         private AppEnvironment appEnvironment;
         private Rest rest;
+        private bool initialized = false;
 
         public JSPlayer(IJSRuntime jsRuntime, Logger logger, Rest rest, AppEnvironment appEnvironment) : base()
         {
@@ -22,10 +23,14 @@ namespace ArkEcho.WebPage
 
         public override bool InitializePlayer()
         {
+            if (initialized)
+                return true;
+
             try
             {
                 var dotNetReference = DotNetObjectReference.Create(this);
                 jsRuntime.InvokeVoidAsync("Player.Init", new object[] { dotNetReference });
+                initialized = true;
                 return true;
             }
             catch { return false; }

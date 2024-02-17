@@ -10,6 +10,7 @@ namespace ArkEcho.Maui
         private LibVLCSharp.Shared.MediaPlayer mediaplayer = null;
         private Logger logger = null;
         private IMauiHelper helper;
+        private bool initialized = false;
 
         public VLCPlayer(Logger logger, IMauiHelper helper) : base()
         {
@@ -24,6 +25,9 @@ namespace ArkEcho.Maui
 
         public override bool InitializePlayer()
         {
+            if (initialized)
+                return true;
+
             try
             {
                 LibVLCSharp.Shared.Core.Initialize();
@@ -42,7 +46,7 @@ namespace ArkEcho.Maui
                 helper.MediaNextTrackKeyPressed += () => Forward();
 
                 setAudioVolume();
-
+                initialized = true;
                 return true;
             }
             catch (Exception ex)
