@@ -9,8 +9,8 @@
 
 @implements IAsyncDisposable
 
-<MudPaper Class="d-flex appbarstyle" Style="height: 48px" Elevation="1">
-    <MudPaper Class="d-flex justify-start appbarstyle" Elevation="0">
+<MudElement Class="d-flex appbarstyle" Style="height: 48px">
+    <MudElement Class="d-flex justify-start appbarstyle">
         <MudIconButton Class="ml-1" Icon="@Icons.Material.Filled.Menu" Disabled="@(authentication.AuthenticatedUser == null)" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => drawerToggle())" />
 
         <MudStack Row="true" Spacing="0">
@@ -29,27 +29,27 @@
                 <MudText Class="mt-1 d-none d-xxl-flex" Typo="Typo.h4">&nbsp;&nbsp;xxl</MudText>
             }
         </MudStack>
-    </MudPaper>
+    </MudElement>
 
-    <MudPaper Class="d-flex flex-grow-1 justify-center appbarstyle" Elevation="0" />
+    <MudElement Class="d-flex flex-grow-1 justify-center appbarstyle" />
 
     @if (authentication.AuthenticatedUser != null)
     {
-        <MudPaper Class="d-flex justify-end appbarstyle" Elevation="0">
+        <MudElement Class="d-flex justify-end appbarstyle">
             <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="@(authentication.AuthenticatedUser.UserName[0].ToString().ToUpper())" OnClick="userPopoverToggle" />
             <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                 <MudText Typo="Typo.body2" Class="px-4 py-1">@authentication?.AuthenticatedUser.UserName</MudText>
                 <MudDivider Class="ma-2"/>
                 <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
             </MudPopover>
-        </MudPaper>
+        </MudElement>
     }
 
     @if (environment.Platform == Resources.Platform.Windows)
     {
-        <MudPaper Class="d-flex flex-grow-1 justify-end appbarstyle" MaxWidth="144px" Elevation="0" />
+        <MudElement Class="d-flex flex-grow-1 justify-end appbarstyle" MaxWidth="144px" />
     }
-</MudPaper>
+</MudElement>
 
 <MudDrawer @bind-Open="@showSidebar" Variant="@DrawerVariant.Temporary" Elevation="2">
     <NavMenu />
