@@ -1,7 +1,7 @@
 ﻿
 @inherits MusicDisplayBase
 
-@inject AppModelBase model
+@inject LibraryControllerBase model
 
 <MudTable Class="d-flex flex-grow-1" Hover="true" Breakpoint="Breakpoint.Sm" Height="79vh" FixedHeader="true"
             Items="@getFilteredAlbum()" Virtualize="true" GroupBy="@groupDefinition"

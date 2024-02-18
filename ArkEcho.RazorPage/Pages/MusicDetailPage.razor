@@ -4,33 +4,61 @@
 
 @inherits MusicBase
 
-@inject AppModelBase model
+@inject LibraryControllerBase libraryController
 @inject Player player
 @inject HTMLHelper helper
 
-<MudElement Style="top: 0; width: 100%;">
-    <MudElement Class="d-flex justify-center align-center my-2" Style="max-height: 220px;">
-        @if(Header is null)
-        {
-            <MudText Typo="Typo.h6">Oopsy Daisy, something went wrong ¯\_(ツ)_/¯</MudText>
-        }
-        else if (Header is Album)
-        {
-            Album album = (Album)Header;
+@if (libraryController.Library == null)
+{
+    <MudElement Style="top: 48px; width: 100%;">
+        <MudElement Class="d-flex justify-center align-center my-2" Style="max-height: 220px;">
             <MudStack Spacing="2">
-                <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
-                <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
-                <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="150px" Height="150px" />
+                <MudSkeleton Width="150px" Height="20px" />
+                <MudSkeleton Width="150px" Height="20px" />
             </MudStack>
-        }
+        </MudElement>
     </MudElement>
-</MudElement>
+}
+else
+{
+    <MudElement Style="top: 0; width: 100%;">
+        <MudElement Class="d-flex justify-center align-center my-2" Style="max-height: 220px;">
+            @if(Header is null)
+            {
+                Header = libraryController.Library.GetArtistAlbumPlaylist(DisplayGuid);
+                if (Header is Album)
+                {
+                    MusicList = libraryController.Library.GetMusicFiles((Album)Header);
+                }
 
-<MudElement Class="d-flex">
-    <MudElement Class="overflow-auto" Style="height: 60vh; width: 100%;">
-        <MusicListElement MusicList="MusicList" ListElementDoubleClicked="startMusicFile" />
+                if (Header != null)
+                {
+                    StateHasChanged(); // Rerender
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6">Oopsy Daisy, something went wrong ¯\_(ツ)_/¯</MudText>
+                }
+            }
+            else if(Header is Album)
+            {
+                Album album = (Album)Header;
+                <MudStack Spacing="2">
+                    <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
+                    <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
+                    <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
+                </MudStack>
+            }        
+        </MudElement>
     </MudElement>
-</MudElement>
+
+    <MudElement Class="d-flex">
+        <MudElement Class="overflow-auto" Style="height: 60vh; width: 100%;">
+            <MusicListElement MusicList="MusicList" ListElementDoubleClicked="startMusicFile" />
+        </MudElement>
+    </MudElement>
+}
 
 @code {
     [Parameter]
@@ -40,12 +68,14 @@
 
     public List<MusicFile> MusicList { get; set; } = new List<MusicFile>();
 
-    protected override void OnParametersSet()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Header = model.Library.GetArtistAlbumPlaylist(DisplayGuid);
-        if (Header is Album)
-            MusicList = model.Library.GetMusicFiles((Album)Header);
-        base.OnParametersSet();
+        if (firstRender)
+        {
+            libraryController.LibraryLoaded += () => StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected void startMusicFile(MusicFile file)

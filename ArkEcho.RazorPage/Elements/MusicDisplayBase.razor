@@ -1,7 +1,7 @@
 ﻿
 @inherits MusicBase
 
-@inject AppModelBase model
+@inject LibraryControllerBase model
 @inject Player player
 
 @code {
@@ -43,6 +43,9 @@
 
     protected List<Album> getFilteredAlbum()
     {
+        if (model.Library == null)
+            return new List<Album>();
+
         if (string.IsNullOrEmpty(SearchContent))        
             displayedData = model.Library.Album;        
         else

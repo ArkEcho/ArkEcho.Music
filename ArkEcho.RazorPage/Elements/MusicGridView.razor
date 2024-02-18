@@ -5,11 +5,7 @@
 @inject HTMLHelper helper
 @inject NavigationManager navigation
 
-@*<h3>MusicGridView  @Display.DisplayName, @Sorting.DisplayName</h3>*@
-
 <MudElement Class="overflow-auto px-4" Style="height: 79vh; width: 100vw;">
-    @*<Virtualize Items="getFilteredAlbumVList()">
-        <ItemContent>*@
     <MudGrid Spacing="2" Justify="Justify.Center">
         @foreach (Album album in getFilteredAlbum())
         {
@@ -36,6 +32,7 @@
 </MudElement>
 
 @code {
+
     DialogOptions options = new DialogOptions() { FullWidth=true, MaxWidth= MaxWidth.ExtraExtraLarge, CloseButton = true, CloseOnEscapeKey = true };
 
     public class GridVirtualize
@@ -66,16 +63,4 @@
     {
         navigation.NavigateTo($"/Music/{album.GUID}");
     }
-
-    //private List<GridVirtualize> getFilteredAlbumVList()
-    //{
-    //    List<GridVirtualize> result = new List<GridVirtualize>();
-
-    //    IEnumerable<Album[]> test = getFilteredAlbum().Chunk(56); // Put max twelve Albums in each virtualized MudGrid
-
-    //    foreach(Album[] sub in test)        
-    //        result.Add(new GridVirtualize() { Elements = sub.ToList() });
-        
-    //    return result;
-    //}
 }

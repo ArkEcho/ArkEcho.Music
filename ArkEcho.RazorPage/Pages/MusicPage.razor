@@ -3,6 +3,7 @@
 @layout PlayerLayout
 
 @inject AppEnvironment environment
+@inject LibraryControllerBase libraryController
 @inject Player player
 @inject Authentication authentication
 @inject NavigationManager navigationManager
@@ -55,9 +56,9 @@
 
 </MudStack>
 
-
 @code
 {
+
     private DisplayMode selectedDisplayMode = DisplayMode.displayModes.FirstOrDefault();
     private SortingMode selectedSortingMode = SortingMode.sortModes.FirstOrDefault();
 
@@ -67,21 +68,15 @@
     private bool gridButtonActive = true;
     private bool playlistsButtonActive = false;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (authentication.AuthenticatedUser == null)
-        {
-            navigationManager.NavigateTo("/");
-            return;
-        }
-
         if(firstRender)
         {
-            player.InitializePlayer();
+            libraryController.LibraryLoaded += () => StateHasChanged();
         }
-        base.OnAfterRender(firstRender);
-    }
 
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     private void listButtonClicked()
     {

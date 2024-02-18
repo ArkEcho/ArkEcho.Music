@@ -3,9 +3,9 @@ using ArkEcho.RazorPage.Data;
 
 namespace ArkEcho.WebPage
 {
-    public class WebAppModel : AppModelBase
+    public class WebLibraryController : LibraryControllerBase
     {
-        public WebAppModel(Rest rest, Logger logger)
+        public WebLibraryController(Rest rest, Logger logger)
             : base(logger, rest)
         {
         }

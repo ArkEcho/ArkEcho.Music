@@ -25,16 +25,6 @@
 
     List<TestTest> elements = new List<TestTest>();
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (authentication.AuthenticatedUser == null)
-        {
-            navigationManager.NavigateTo("/");
-            return;
-        }
-        base.OnAfterRender(firstRender);
-    }
-
     protected override Task OnInitializedAsync()
     {
         for (int i = 0; i < 1000; i++)

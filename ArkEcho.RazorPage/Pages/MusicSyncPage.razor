@@ -15,15 +15,4 @@ else
     <MudText Typo="Typo.h5">Use this page on Android or Windows to Sync your Music locally.</MudText>
 }
 
-@code {
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (authentication.AuthenticatedUser == null)
-        {
-            navigationManager.NavigateTo("/");
-            return;
-        }
-        base.OnAfterRender(firstRender);
-    }
-
-}
+@code {}

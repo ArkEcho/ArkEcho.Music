@@ -102,5 +102,15 @@
     [Parameter]
     public MudBlazor.Color ControlColor { get; set; }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            player.InitializePlayer();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private int maxSongInfoLength = 27;
 }

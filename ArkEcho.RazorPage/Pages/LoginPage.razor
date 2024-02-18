@@ -3,13 +3,10 @@
 @layout CenteredLayout
 
 @inject IDialogService DialogService
-@inject AppModelBase model
 @inject AppEnvironment environment
 @inject Authentication authentication
-@inject NavigationManager NavigationManager
-@inject ISnackbar snackbar
+@inject NavigationManager navigation
 @inject ConnectionStatus status
-@inject PlatformControllerBase platformController
 @inject SnackbarDialogService snackbarDialogService
 
 <MudPaper Class="pa-2" Outlined="true">
@@ -38,14 +35,8 @@
     </MudStack>
 </MudPaper>
 
-<MudOverlay @bind-Visible="overlayVisible" DarkBackground="true" ZIndex="9999">
-    <MudProgressCircular Color="Color.Tertiary" Size="Size.Large" Indeterminate="true" />
-</MudOverlay>
-
 @code
 {
-    private bool overlayVisible = false;
-
     private string username = string.Empty;
     private string password = string.Empty;
 
@@ -66,9 +57,6 @@
     {
         if (firstRender)
         {
-            // Snackbar and Navigationmanager are loaded when page is loaded
-            snackbarDialogService.Initialize(snackbar, NavigationManager);
-
             changeAddressTimer = new System.Timers.Timer();
             changeAddressTimer.Elapsed += changeAddressTimer_Elapsed;
             changeAddressTimer.Interval = 3000;
@@ -83,9 +71,10 @@
     {
         status.ConnectionStatusChanged += () => InvokeAsync(StateHasChanged);
 
+        // Reroute to music if logged in
         if (await authentication.CheckUserAuthenticated())
         {
-            await loadMusicPage();
+            loadMusicPage();
             return;
         }
     }
@@ -112,28 +101,12 @@
             return;
         }
 
-        await loadMusicPage();
+        loadMusicPage();
     }
 
-    private async Task loadMusicPage()
+    private void loadMusicPage()
     {
-        showOverlay(true);
-
-        bool result = await model.LoadLibraryFromServer();
-
-        showOverlay(false);
-
-        if (!result)
-            return;
-
-        await platformController.ProcessUserLogin();
-        NavigationManager.NavigateTo("/Music");
-    }
-
-    private void showOverlay(bool show)
-    {
-        overlayVisible = show;
-        StateHasChanged();
+        navigation.NavigateTo("/Music");
     }
 
     private void passwordAdornmentClick()

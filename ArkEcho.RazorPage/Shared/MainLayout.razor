@@ -1,12 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
 @inject AppEnvironment environment
+@inject LibraryControllerBase model
 @inject Authentication authentication
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigation
 @inject SnackbarDialogService snackbarDialogService
 @inject Player player
 @inject PlatformControllerBase platformController
 @inject ConnectionStatus status
+@inject ISnackbar snackbar
 
 @implements IAsyncDisposable
 
@@ -41,7 +43,7 @@
             <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
                 <MudText Typo="Typo.body2" Class="px-4 py-1">@authentication?.AuthenticatedUser.UserName</MudText>
                 <MudDivider Class="ma-2"/>
-                <MudButton FullWidth="true" DisableElevation="true" OnClick="Logout">Logout</MudButton>
+                <MudButton FullWidth="true" DisableElevation="true" OnClick="logoutButtonClicked">Logout</MudButton>
             </MudPopover>
         </MudElement>
     }
@@ -61,6 +63,15 @@
 </MudElement>
 
 <MudOverlay Class="mud-overlay-popover" Visible="userPopoverOpen" OnClick="userPopoverToggle" DarkBackground="false" />
+
+@* Get darker Overlay by applying multiple of them... *@
+<MudOverlay @bind-Visible="loadApplicationOverlayVisible" DarkBackground="true" ZIndex="9999">
+<MudOverlay @bind-Visible="loadApplicationOverlayVisible" DarkBackground="true" ZIndex="9999">
+<MudOverlay @bind-Visible="loadApplicationOverlayVisible" DarkBackground="true" ZIndex="9999">
+    <MudProgressCircular Color="Color.Tertiary" Size="Size.Large" Indeterminate="true" />
+</MudOverlay>
+</MudOverlay>
+</MudOverlay>
 
 @* Get darker Overlay by applying multiple of them... *@
 <MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
@@ -86,16 +97,85 @@
 
 @code
 {
-    protected override void OnInitialized()
-    {
-        status.ConnectionStatusChanged += connectionStatusChanged;
-
-        base.OnInitialized();
-    }
 
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
+    private bool loadApplicationOverlayVisible = false;
     private bool logoutOverlayvisible = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Snackbar and Navigationmanager are loaded when page is loaded
+            snackbarDialogService.Initialize(snackbar, navigation);
+
+            navigation.LocationChanged += onLocationChanged;
+            await checkAuthentificationAndLibrary();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async void onLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await checkAuthentificationAndLibrary();
+    }
+
+    private async Task checkAuthentificationAndLibrary()
+    {
+        string page = navigation.Uri.Substring(navigation.BaseUri.Length - 1);
+        //Console.WriteLine("Checking on " + page);
+
+        if (string.IsNullOrEmpty(page) || page.Equals("/"))
+        {
+            //Console.WriteLine("Not navigating");
+            return;
+        }
+
+        if (authentication.AuthenticatedUser == null)
+        {
+            await showLoadApplicationOverlay(true);
+
+            if (!await authentication.CheckUserAuthenticated())
+            {
+                await showLoadApplicationOverlay(false);
+                navigation.NavigateTo("/");
+                return;
+            }
+        }
+
+        if (model.Library == null)
+        {
+            await showLoadApplicationOverlay(true);
+
+            bool result = await model.LoadLibraryFromServer();
+
+            if (!result)
+            {
+                await showLoadApplicationOverlay(false);
+
+                navigation.NavigateTo("/");
+                return;
+            }
+        }
+
+        await platformController.ProcessUserLogin();
+        await showLoadApplicationOverlay(false);
+    }
+
+    private async Task showLoadApplicationOverlay(bool show)
+    {
+        loadApplicationOverlayVisible = show;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        status.ConnectionStatusChanged += connectionStatusChanged;
+        base.OnInitialized();
+    }
 
     private void userPopoverToggle()
     {
@@ -109,23 +189,30 @@
 
     private async void connectionStatusChanged()
     {
-        if (authentication.AuthenticatedUser == null)
+        if (status.Connected || authentication.AuthenticatedUser == null)
             return;
 
-        await showOverlay(true);
+        //Console.WriteLine($"Logout on connection lost!");
+        await showLogoutOverlay(true);
 
-        await Logout();
+        await logout(true);
 
-        await showOverlay(false);
+        await showLogoutOverlay(false);
     }
 
-    private async Task showOverlay(bool show)
+    private async Task showLogoutOverlay(bool show)
     {
         logoutOverlayvisible = show;
         await InvokeAsync(StateHasChanged);
     }
 
-    public async Task Logout()
+    private async Task logoutButtonClicked()
+    {
+        //Console.WriteLine($"Logout on User action");
+        await logout(true);
+    }
+
+    private async Task logout(bool navigateToLogin)
     {
         snackbarDialogService.CloseOnLogout();
 
@@ -135,11 +222,12 @@
 
         showSidebar = false;
         userPopoverOpen = false;
-        NavigationManager.NavigateTo("/");
+        if(navigateToLogin)
+            navigation.NavigateTo("/");
     }
 
     public async ValueTask DisposeAsync()
     {
-        await Logout();
+        await logout(false);
     }
 }

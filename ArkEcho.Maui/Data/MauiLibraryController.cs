@@ -3,12 +3,12 @@ using ArkEcho.RazorPage.Data;
 
 namespace ArkEcho.Maui
 {
-    public class MauiAppModel : AppModelBase
+    public class MauiLibraryController : LibraryControllerBase
     {
         private SnackbarDialogService snack;
         private LibrarySync sync;
 
-        public MauiAppModel(SnackbarDialogService snack, LibrarySync sync, Logger logger, Rest rest)
+        public MauiLibraryController(SnackbarDialogService snack, LibrarySync sync, Logger logger, Rest rest)
             : base(logger, rest)
         {
             this.snack = snack;

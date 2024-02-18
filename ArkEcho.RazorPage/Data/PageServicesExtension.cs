@@ -10,7 +10,7 @@ namespace ArkEcho.RazorPage.Data
         public static void AddArkEchoServices<StorageImplementation, AppModelImplementation, PlayerImplementation, PlatformControllerImplementation>
             (this IServiceCollection serviceCollection, AppEnvironment environment)
             where StorageImplementation : LocalStorageBase
-            where AppModelImplementation : AppModelBase
+            where AppModelImplementation : LibraryControllerBase
             where PlayerImplementation : Player
             where PlatformControllerImplementation : PlatformControllerBase
         {
@@ -30,7 +30,7 @@ namespace ArkEcho.RazorPage.Data
 
             serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
             serviceCollection.AddSingleton<Player, PlayerImplementation>();
-            serviceCollection.AddSingleton<AppModelBase, AppModelImplementation>();
+            serviceCollection.AddSingleton<LibraryControllerBase, AppModelImplementation>();
             serviceCollection.AddSingleton<PlatformControllerBase, PlatformControllerImplementation>();
 
             serviceCollection.AddSingleton<SnackbarDialogService>();

@@ -33,7 +33,10 @@ namespace ArkEcho.Core
 
                 AuthenticatedUser = await rest.GetUser(accessToken);
                 if (AuthenticatedUser == null)
+                {
+                    await localStorage.RemoveItemAsync(SESSIONTOKEN);
                     return false;
+                }
 
                 await localStorage.SetItemAsync(SESSIONTOKEN, AuthenticatedUser.SessionToken);
                 rest.ApiToken = await rest.GetApiToken(AuthenticatedUser.SessionToken);
@@ -41,6 +44,7 @@ namespace ArkEcho.Core
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
             }
             return false;
         }
@@ -70,8 +74,9 @@ namespace ArkEcho.Core
                 AuthenticatedUser = null;
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }
