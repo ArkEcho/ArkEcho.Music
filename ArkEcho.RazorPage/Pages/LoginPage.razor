@@ -33,7 +33,7 @@
         
         @if (showChangeAddress && !status.Connected && (environment.Platform == Resources.Platform.Windows || environment.Platform == Resources.Platform.Android))
         {
-            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="changeServerAddressClicked">Change Server Address</MudButton>
+            <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="changeServerAddressClicked">Change Server Address</MudButton>
         }
     </MudStack>
 </MudPaper>
