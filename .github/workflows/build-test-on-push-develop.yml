@@ -42,6 +42,11 @@ jobs:
       
       - name: Install Workloads
         run: dotnet workload restore
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3.13.0
+        with:
+         distribution: 'microsoft'
+         java-version: '17'
       - name: Restore Maui
         run: dotnet restore ${{ env.MauiSLN }}
       - name: Build Maui
