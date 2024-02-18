@@ -6,6 +6,7 @@
 @inject SnackbarDialogService snackbarDialogService
 @inject Player player
 @inject PlatformControllerBase platformController
+@inject ConnectionStatus status
 
 @implements IAsyncDisposable
 
@@ -61,6 +62,22 @@
 
 <MudOverlay Class="mud-overlay-popover" Visible="userPopoverOpen" OnClick="userPopoverToggle" DarkBackground="false" />
 
+@* Get darker Overlay by applying multiple of them... *@
+<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
+<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
+<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
+    <MudStack>
+        <MudStack Row=true>
+            <MudSpacer />
+            <MudProgressCircular Color="Color.Error" Size="Size.Large" Indeterminate="true" />
+            <MudSpacer />
+        </MudStack>
+        <MudText Typo="Typo.h6">Connection lost, Logout!</MudText>
+    </MudStack>
+</MudOverlay>
+</MudOverlay>
+</MudOverlay>
+
 <style>
     .appbarstyle{
         background-color: var(--mud-palette-background-grey);
@@ -69,8 +86,16 @@
 
 @code
 {
+    protected override void OnInitialized()
+    {
+        status.ConnectionStatusChanged += connectionStatusChanged;
+
+        base.OnInitialized();
+    }
+
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
+    private bool logoutOverlayvisible = false;
 
     private void userPopoverToggle()
     {
@@ -80,6 +105,24 @@
     public void drawerToggle()
     {
         showSidebar = !showSidebar;
+    }
+
+    private async void connectionStatusChanged()
+    {
+        if (authentication.AuthenticatedUser == null)
+            return;
+
+        await showOverlay(true);
+
+        await Logout();
+
+        await showOverlay(false);
+    }
+
+    private async Task showOverlay(bool show)
+    {
+        logoutOverlayvisible = show;
+        await InvokeAsync(StateHasChanged);
     }
 
     public async Task Logout()
