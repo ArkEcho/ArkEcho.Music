@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 @inject AppEnvironment environment
-@inject LibraryControllerBase model
+@inject LibraryControllerBase libraryController
 @inject Authentication authentication
 @inject NavigationManager navigation
 @inject SnackbarDialogService snackbarDialogService
@@ -38,10 +38,11 @@
 
     @if (authentication.AuthenticatedUser != null)
     {
+        string username = authentication.AuthenticatedUser.UserName;
         <MudElement Class="d-flex justify-end appbarstyle">
-            <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="@(authentication.AuthenticatedUser.UserName[0].ToString().ToUpper())" OnClick="userPopoverToggle" />
+            <MudFab Class="mx-2 mt-1" Size="Size.Medium" Color="Color.Tertiary" Label="@(username[0].ToString().ToUpper())" OnClick="userPopoverToggle" />
             <MudPopover Class="pa-2" Open="@userPopoverOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopRight">
-                <MudText Typo="Typo.body2" Class="px-4 py-1">@authentication?.AuthenticatedUser.UserName</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 py-1">@username</MudText>
                 <MudDivider Class="ma-2"/>
                 <MudButton FullWidth="true" DisableElevation="true" OnClick="logoutButtonClicked">Logout</MudButton>
             </MudPopover>
@@ -50,7 +51,7 @@
 
     @if (environment.Platform == Resources.Platform.Windows)
     {
-        <MudElement Class="d-flex flex-grow-1 justify-end appbarstyle" MaxWidth="144px" />
+        <MudElement Class="d-flex flex-grow-1 justify-end appbarstyle" Style="max-width: 144px;" />
     }
 </MudElement>
 
@@ -146,11 +147,11 @@
             }
         }
 
-        if (model.Library == null)
+        if (libraryController.Library == null)
         {
             await showLoadApplicationOverlay(true);
 
-            bool result = await model.LoadLibraryFromServer();
+            bool result = await libraryController.LoadLibraryFromServer();
 
             if (!result)
             {
@@ -219,6 +220,7 @@
         player.Dispose();
         await authentication.LogoutUser();
         await platformController.ProcessUserLogout();
+        libraryController.Dispose();
 
         showSidebar = false;
         userPopoverOpen = false;

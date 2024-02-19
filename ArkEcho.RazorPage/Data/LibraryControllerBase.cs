@@ -64,5 +64,10 @@ namespace ArkEcho.RazorPage.Data
         {
             return await rest.UpdateMusicRating(musicFileGuid, rating);
         }
+
+        public virtual async void Dispose()
+        {
+            Library = null;
+        }
     }
 }

@@ -144,6 +144,8 @@ namespace ArkEcho.Maui
 
             mediaplayer?.Dispose();
             libvlc = null;
+
+            initialized = false;
         }
     }
 }
