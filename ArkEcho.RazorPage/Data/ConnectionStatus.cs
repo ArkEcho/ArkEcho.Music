@@ -17,13 +17,13 @@ namespace ArkEcho.RazorPage.Data
 
             timer = new System.Timers.Timer();
             timer.Elapsed += Timer_Elapsed;
-            timer.Interval = 1000;
+            timer.Interval = 5000;
             timer.Enabled = true;
             timer.AutoReset = true;
             timer.Start();
         }
 
-        private async void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        public async Task<bool> CheckConnectionAsync()
         {
             bool result = await rest.CheckConnection();
             if (result != Connected)
@@ -31,6 +31,12 @@ namespace ArkEcho.RazorPage.Data
                 Connected = result;
                 ConnectionStatusChanged?.Invoke();
             }
+            return result;
+        }
+
+        private async void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            await CheckConnectionAsync();
         }
     }
 }
