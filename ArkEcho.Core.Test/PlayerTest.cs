@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -275,15 +276,18 @@ namespace ArkEcho.Core.Test
             getPlayer(out Player testPlayer);
             getFileList(7, out List<MusicFile> files);
 
+            Random rng = new Random(DateTime.Now.Millisecond);
+
             testPlayer.Shuffle = true;
             testPlayer.Start(files, 0);
 
-            for (int i = 0; i <= files.Count - 1; i++)
+            for (int i = 0; i < 100; i++)
             {
-                bool started = testPlayer.Start(files, i);
+                int index = rng.Next(0, files.Count - 1);
+                bool started = testPlayer.Start(files, index);
 
                 Assert.IsTrue(started);
-                Assert.IsTrue(files[i].Track == testPlayer.PlayingFile.Track);
+                Assert.IsTrue(files[index].Track == testPlayer.PlayingFile.Track);
             }
         }
 

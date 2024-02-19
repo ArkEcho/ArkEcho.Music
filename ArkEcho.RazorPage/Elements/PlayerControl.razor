@@ -10,7 +10,7 @@
 
     <MudElement Class="d-flex" Style="bottom: 0; width: 100%; height: 50px;">
 
-        <MudElement Class="pb-1 d-flex flex-none justify-start" Style="width: 250px;">
+        <MudElement Class="pb-1 d-flex flex-none justify-start" Style="width: 300px;">
             <MudElement Class="pa-1 d-flex" Style="max-height: 100%; max-width: 50px;">
                 <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
             </MudElement>
@@ -76,19 +76,25 @@
                 <MudIconButton Class="d-md-none d-flex" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Small" />
 
                 <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="mute" Icon="@MuteIcon" Size="Size.Medium" />
-                <MudElement Class="mr-4 pt-2 d-none d-md-flex" Style="width: 100px;">
-                    <MudSlider Color="ControlColor" Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="player.Volume" ValueLabel="true" />
+                <MudElement Class="mr-4 d-none d-md-flex" Style="width: 100px;">
+                    <MudElement Class="d-flex flex-grow-1 justify-start" />
+
+                    <MudElement Class="d-flex flex-grow-0 justify-center" >
+                        <MudSlider Color="ControlColor" Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="player.Volume" ValueLabel="true" />
+                    </MudElement>
+                    
+                    <MudElement Class="d-flex flex-grow-1 justify-end" />
                 </MudElement>
             </MudElement>
         </MudElement>
 
-        <MudElement Class="pb-4 mr-2 d-none d-md-flex flex-none justify-center" Style="width: 84px;">
+        <MudElement Class="pb-4 d-none d-md-flex flex-none justify-center" Style="width: 84px;">
         </MudElement>
 
         <MudElement Class="pb-4 d-flex flex-grow-1 justify-center">
         </MudElement>
 
-        <MudElement Class="pb-4 d-flex flex-grow-1 justify-end" Style="max-width: 250px;">
+        <MudElement Class="pb-4 d-flex flex-grow-1 justify-end" Style="max-width: 300px;">
             <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Medium" />
             <MudIconButton Class="mr-1 d-md-none d-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Small" />
         </MudElement>
@@ -112,5 +118,5 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private int maxSongInfoLength = 27;
+    private int maxSongInfoLength = 30;
 }

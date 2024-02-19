@@ -154,6 +154,7 @@ namespace ArkEcho.Core
                 createShuffledIndexList();
                 shuffledIndexList.Remove(startingIndex);
                 shuffledIndexList.Insert(0, startingIndex);
+                songIndex = 0; // Start with first
             }
             else if (lastPlayingGuid != Guid.Empty) // Given by caller Forward/BackWard, last played Guid must not be next song
             {
