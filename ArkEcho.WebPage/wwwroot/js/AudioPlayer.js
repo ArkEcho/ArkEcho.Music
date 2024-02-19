@@ -1,6 +1,6 @@
 ﻿
 
-let audio = document.createElement('audio');
+//let audio = document.createElement('audio');
 
 class AudioPlayer {
     constructor() {
@@ -17,7 +17,7 @@ class AudioPlayer {
 
     /* Called by .NET */
     InitAudio(source, directPlay, volume, mute) {
-
+        this.directPlay = directPlay;
         navigator.mediaSession.playbackState = "paused";
         if ("mediaSession" in navigator) {
 
@@ -51,7 +51,7 @@ class AudioPlayer {
         //this.audioSrc.setAttribute('src', source);
         //this.audioSrc.setAttribute('type', 'audio/mpeg');
 
-        this.audio.src = source;
+        //this.audio.src = source;
 
         //this.audio.append(this.audioSrc);
 
@@ -71,13 +71,30 @@ class AudioPlayer {
             Player.netObject.invokeMethodAsync('AudioEndedJS');
             navigator.mediaSession.playbackState = "none";
         };
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", source, true);
+        xhr.responseType = "blob";
 
-        if (directPlay) {
-            this.PlayAudio();
-        }
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var blob = xhr.response;
+                var objectUrl = URL.createObjectURL(blob);
+                Player.SetAudioSourceAndPlay(objectUrl);
+            }
+        };
+
+        xhr.send();
+
         //this.log("Initialized");
     }
 
+    SetAudioSourceAndPlay(objectUrl) {
+        this.audio.src = objectUrl;
+        if (this.directPlay) {
+            this.PlayAudio();
+        }
+    }
 
     /* Called by .NET */
     SetDocumentTitle(pageTitle) {
@@ -104,8 +121,10 @@ class AudioPlayer {
     DisposeAudio() {
         this.audio.pause();
         this.stopProgress = true;
+        
+        this.audio = document.createElement('audio');
 
-        this.audio.src = '';
+        //this.audio.src = '';
         //this.audioSrc.removeAttribute('src');
 
         //const parentAudio = this.audio.parentNode;
