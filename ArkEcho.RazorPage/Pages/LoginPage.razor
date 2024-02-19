@@ -28,7 +28,7 @@
             }
         </MudStack>
         
-        @if (showChangeAddress && !status.Connected && (environment.Platform == Resources.Platform.Windows || environment.Platform == Resources.Platform.Android))
+        @if (environment.Platform == Resources.Platform.Windows || environment.Platform == Resources.Platform.Android)
         {
             <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="changeServerAddressClicked">Change Server Address</MudButton>
         }
@@ -44,9 +44,6 @@
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
-    private System.Timers.Timer changeAddressTimer;
-    private bool showChangeAddress = false;
-
     private async Task inputKeyPress(KeyboardEventArgs e)
     {
         if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && status.Connected)
@@ -58,13 +55,6 @@
         if (firstRender)
         {
             status.ConnectionStatusChanged += () => InvokeAsync(StateHasChanged);
-
-            changeAddressTimer = new System.Timers.Timer();
-            changeAddressTimer.Elapsed += changeAddressTimer_Elapsed;
-            changeAddressTimer.Interval = 3000;
-            changeAddressTimer.Enabled = true;
-            changeAddressTimer.AutoReset = false;
-            changeAddressTimer.Start();
 
             await status.CheckConnectionAsync();
         }
@@ -79,15 +69,6 @@
             loadMusicPage();
             return;
         }
-    }
-
-    private async void changeAddressTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-        if (status.Connected)
-            return;
-
-        showChangeAddress = true; 
-        await InvokeAsync(StateHasChanged);
     }
 
     private async void changeServerAddressClicked()
