@@ -75,16 +75,17 @@
 </MudOverlay>
 
 @* Get darker Overlay by applying multiple of them... *@
-<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
-<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
-<MudOverlay @bind-Visible="logoutOverlayvisible" DarkBackground=true ZIndex="9999">
+<MudOverlay @bind-Visible="connectionLostOverlayvisible" DarkBackground=true ZIndex="9999">
+<MudOverlay @bind-Visible="connectionLostOverlayvisible" DarkBackground=true ZIndex="9999">
+<MudOverlay @bind-Visible="connectionLostOverlayvisible" DarkBackground=true ZIndex="9999">
     <MudStack>
         <MudStack Row=true>
             <MudSpacer />
             <MudProgressCircular Color="Color.Error" Size="Size.Large" Indeterminate="true" />
             <MudSpacer />
         </MudStack>
-        <MudText Typo="Typo.h6">Connection lost, Logout!</MudText>
+        <MudText Typo="Typo.h6">Connection lost!</MudText>
+        <MudButton Disabled=logoutByOverlayButtonDisabled Variant="Variant.Text" Color="Color.Info" OnClick="logoutByOverlay">Logout</MudButton>
     </MudStack>
 </MudOverlay>
 </MudOverlay>
@@ -102,8 +103,9 @@
     private bool showSidebar = false;
     private bool userPopoverOpen = false;
     private bool loadApplicationOverlayVisible = false;
-    private bool logoutOverlayvisible = false;
+    private bool connectionLostOverlayvisible = false;
 
+    private bool logoutByOverlayButtonDisabled = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -131,6 +133,11 @@
 
         if (string.IsNullOrEmpty(page) || page.Equals("/"))
         {
+            if(connectionLostOverlayvisible) // Connection lost and user navigated to start
+            {
+                logout(false);
+                await showDisconnectedOverlay(false);
+            }
             //Console.WriteLine("Not navigating");
             return;
         }
@@ -190,20 +197,34 @@
 
     private async void connectionStatusChanged()
     {
-        if (status.Connected || authentication.AuthenticatedUser == null)
+        if (status.Connected)
+        {
+            if (connectionLostOverlayvisible)
+                await showDisconnectedOverlay(false);
             return;
-
-        //Console.WriteLine($"Logout on connection lost!");
-        await showLogoutOverlay(true);
-
-        await logout(true);
-
-        await showLogoutOverlay(false);
+        }
+        else if (authentication.AuthenticatedUser == null) // On Login Page
+        {
+            return;
+        }
+        else
+        {
+            logoutByOverlayButtonDisabled = false;
+            await showDisconnectedOverlay(true);
+        }
     }
 
-    private async Task showLogoutOverlay(bool show)
+    private async void logoutByOverlay()
     {
-        logoutOverlayvisible = show;
+        logoutByOverlayButtonDisabled = true;
+        await logout(true);
+
+        await showDisconnectedOverlay(false);
+    }
+
+    private async Task showDisconnectedOverlay(bool show)
+    {
+        connectionLostOverlayvisible = show;
         await InvokeAsync(StateHasChanged);
     }
 

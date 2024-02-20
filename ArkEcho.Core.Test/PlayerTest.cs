@@ -288,6 +288,8 @@ namespace ArkEcho.Core.Test
 
                 Assert.IsTrue(started);
                 Assert.IsTrue(files[index].Track == testPlayer.PlayingFile.Track);
+
+                testPlayer.Forward();
             }
         }
 
