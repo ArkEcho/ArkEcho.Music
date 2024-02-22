@@ -212,6 +212,13 @@ namespace ArkEcho.Core
                 return response != null && response.Success;
         }
 
+        public async Task<byte[]> GetFilePart(Guid musicFile, Guid chunk)
+        {
+            using (HttpResponseBase response = await makeRequest(HttpMethods.Get,
+                        $"/api/File/ChunkTransfer?{Resources.UrlParamMusicFile}={musicFile}&{Resources.UrlParamFileChunk}={chunk}&{getApiTokenParam()}", string.Empty))
+                return response != null ? response.Success ? await response.GetResultByteArrayAsync() : null : null;
+        }
+
         public async Task<MemoryStream> GetFile(TransferFileBase tfb)
         {
             MemoryStream stream = null;
@@ -221,19 +228,14 @@ namespace ArkEcho.Core
 
                 foreach (TransferFileBase.FileChunk chunk in tfb.Chunks)
                 {
-                    using (HttpResponseBase response = await makeRequest(HttpMethods.Get,
-                        $"/api/File/ChunkTransfer?{Resources.UrlParamMusicFile}={tfb.GUID}&{Resources.UrlParamFileChunk}={chunk.GUID}&{getApiTokenParam()}", string.Empty))
+                    byte[] chunkByte = await GetFilePart(tfb.GUID, chunk.GUID);
+                    if (chunkByte == null)
                     {
-                        if (response == null || !response.Success)
-                        {
-                            stream?.Dispose();
-                            return null;
-                        }
-
-                        stream.Position = chunk.Position;
-
-                        await response.CopyContentToStreamAsync(stream);
+                        stream?.Dispose();
+                        return null;
                     }
+
+                    await stream.WriteAsync(chunkByte, 0, chunkByte.Length);
                 }
 
                 return stream;

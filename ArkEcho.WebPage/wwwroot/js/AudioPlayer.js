@@ -16,8 +16,12 @@ class AudioPlayer {
     }
 
     /* Called by .NET */
-    InitAudio(source, directPlay, volume, mute) {
-        this.directPlay = directPlay;
+    InitAudio(sources, mimetype, directPlay, volume, mute) {
+
+        this.directPlay = directPlay;        
+        this.audio.muted = mute;
+        this.audio.volume = volume / 100;
+
         navigator.mediaSession.playbackState = "paused";
         if ("mediaSession" in navigator) {
 
@@ -45,19 +49,6 @@ class AudioPlayer {
                 this.netObject.invokeMethodAsync('BrowserNextTrack');
             });
         }
-
-        //this.audioSrc = document.createElement('source');
-
-        //this.audioSrc.setAttribute('src', source);
-        //this.audioSrc.setAttribute('type', 'audio/mpeg');
-
-        //this.audio.src = source;
-
-        //this.audio.append(this.audioSrc);
-
-        this.audio.muted = mute;
-        this.audio.volume = volume / 100;
-
         this.audio.onplaying = function () {
             Player.netObject.invokeMethodAsync('AudioPlayingJS', true);
             navigator.mediaSession.playbackState = "playing";
@@ -71,50 +62,64 @@ class AudioPlayer {
             Player.netObject.invokeMethodAsync('AudioEndedJS');
             navigator.mediaSession.playbackState = "none";
         };
-        
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", source, true);
-        xhr.responseType = "blob";
+                
 
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                var blob = xhr.response;
-                var objectUrl = URL.createObjectURL(blob);
-                Player.SetAudioSourceAndPlay(objectUrl);
+        // Function to fetch each audio file and concatenate them
+        function fetchAndConcatenateAudio(sources, mimetype) {
+            var xhr = new XMLHttpRequest();
+            var blobs = [];
+            var errorcounter = 0;
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    blobs.push(xhr.response);
+                    if (blobs.length === sources.length) {
+
+                        // Concatenate all blobs
+                        var concatenatedBlob = new Blob(blobs, { type: mimetype });
+                        blobs = [];
+                        // Create object URL and set it as the source for the audio element
+                        Player.SetAudioSourceAndPlay(concatenatedBlob);
+
+                    } else {
+                        // If there are more URLs, fetch the next one
+                        fetchBlob();
+                    }
+                } else { // Error
+                    if (errorcounter < 3) {
+                        errorcounter++;
+                        fetchBlob(); // Try again
+                    }
+                }                
+            };
+
+            function fetchBlob() {
+                xhr.open("GET", sources[blobs.length], true);
+                xhr.responseType = "blob";
+                xhr.send();
             }
-        };
 
-        xhr.send();
+            // Start fetching the first blob
+            fetchBlob(sources[blobs.length]);
+        }
 
-        //this.log("Initialized");
+        // Start fetching and concatenating audio files
+        fetchAndConcatenateAudio(sources, mimetype);
     }
-
-    SetAudioSourceAndPlay(objectUrl) {
-        this.audio.src = objectUrl;
+    
+    SetAudioSourceAndPlay(audioBlob) {
+        this.audioBlob = audioBlob;
+        this.audioUrl = URL.createObjectURL(this.audioBlob);
+        this.audio.src = this.audioUrl;
         if (this.directPlay) {
             this.PlayAudio();
         }
     }
-
+    
     /* Called by .NET */
     SetDocumentTitle(pageTitle) {
         // Change Title in Browser Tab
         document.title = pageTitle;
-    }
-
-    // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
-    Step() {
-        if (this.stopProgress)
-            return;
-
-        if (this.stepCount >= 20) {
-            this.stepCount = 0;                
-            if (!this.audio.paused) {
-                this.netObject.invokeMethodAsync('AudioPositionChangedJS', this.GetAudioPosition());
-            }
-        }
-        this.stepCount++;
-        requestAnimationFrame(this.Step.bind(this));
     }
 
     /* Called by .NET */
@@ -123,19 +128,8 @@ class AudioPlayer {
         this.stopProgress = true;
         
         this.audio = document.createElement('audio');
-
-        //this.audio.src = '';
-        //this.audioSrc.removeAttribute('src');
-
-        //const parentAudio = this.audio.parentNode;
-        //if (parentAudio) {
-        //    parentAudio.removeChild(this.audio);
-        //}
-
-        //this.audio = null;
-        //this.audioSrc = null;
-
-        //this.log("Audio is " + this.audio);
+        URL.revokeObjectURL(this.audioUrl);
+        this.audioBlob = null;
 
         if ("mediaSession" in navigator) {
             navigator.mediaSession.setActionHandler("play", null);
@@ -185,6 +179,21 @@ class AudioPlayer {
     GetAudioPosition() {
         let pos = Math.round(this.audio.currentTime);
         return pos;
+    }
+
+    // requestAnimationFrame calls this 60/s, limit by Property to invoke "SetPosition" 3/s
+    Step() {
+        if (this.stopProgress)
+            return;
+
+        if (this.stepCount >= 20) {
+            this.stepCount = 0;                
+            if (!this.audio.paused) {
+                this.netObject.invokeMethodAsync('AudioPositionChangedJS', this.GetAudioPosition());
+            }
+        }
+        this.stepCount++;
+        requestAnimationFrame(this.Step.bind(this));
     }
 
     log(text) {

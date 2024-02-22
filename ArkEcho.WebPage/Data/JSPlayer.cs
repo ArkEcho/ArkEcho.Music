@@ -83,12 +83,19 @@ namespace ArkEcho.WebPage
             logger.Log(text, level);
         }
 
-        protected override void loadAudio(bool StartOnLoad)
+        protected override async void loadAudio(bool StartOnLoad)
         {
-            string source = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={rest.ApiToken}"; // Howler doesn't support adding HTML5 Header
-            string pageTitle = $"{PlayingFile.Title} - {PlayingFile.Performer}";
-            jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { pageTitle });
-            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { source, StartOnLoad, Volume, Mute });
+            jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { $"{PlayingFile.Title} - {PlayingFile.Performer}" });
+
+            // Load Audio in Chunks in js File (FASTER)
+            string[] sources = new string[PlayingFile.Chunks.Count];
+
+            for (int i = 0; i < PlayingFile.Chunks.Count; i++)
+            {
+                string source = $"{serverAddress}/api/File/ChunkTransfer?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamFileChunk}={PlayingFile.Chunks[i].GUID}&{Resources.UrlParamApiToken}={rest.ApiToken}";
+                sources[i] = source;
+            }
+            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { sources, PlayingFile.MimeType, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeAudio()
