@@ -46,10 +46,10 @@ else
                 Album album = (Album)Header;
                 <MudStack Spacing="2">
                     <MudImage Class="rounded-lg" Src="@(helper.GetBase64PngImg(album.Cover64))" Width="150" Height="150" ObjectFit="ObjectFit.Fill" />
-                    <MudText Typo="Typo.body2">@album.Name.Truncate(40)</MudText>
-                    <MudText Typo="Typo.overline">@(getAlbumArtistNameTruncated(album,40))</MudText>
+                    <MudText Typo="Typo.body2">@album.Name</MudText>
+                    <MudText Typo="Typo.overline">@(getAlbumArtistName(album))</MudText>
                 </MudStack>
-            }        
+            }
         </MudElement>
     </MudElement>
 

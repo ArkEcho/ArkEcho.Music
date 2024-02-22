@@ -26,7 +26,7 @@ namespace ArkEcho.Core.Test
 
             public override Task<byte[]> GetResultByteArrayAsync()
             {
-                throw new NotImplementedException();
+                return Task.FromResult(data);
             }
 
             public override Task<Guid> GetResultGuidAsync()

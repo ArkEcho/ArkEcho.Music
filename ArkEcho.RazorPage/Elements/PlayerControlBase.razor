@@ -40,14 +40,14 @@
     protected Album playingAlbum = null;
     protected AlbumArtist playingAlbumArtist = null;
 
-    protected string getSongTitle(int maxLength)
+    protected string getSongTitle()
     {
-        return player.PlayingFile != null ? player.PlayingFile.Title.Truncate(maxLength) : string.Empty;
+        return player.PlayingFile != null ? player.PlayingFile.Title : string.Empty;
     }
     
-    protected string getSongPerformer(int maxLength)
+    protected string getSongPerformer()
     {
-        return player.PlayingFile != null ? player.PlayingFile.Performer.Truncate(maxLength) : string.Empty;
+        return player.PlayingFile != null ? player.PlayingFile.Performer : string.Empty;
     }
 
     protected void playPause()

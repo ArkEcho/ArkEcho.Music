@@ -2,8 +2,8 @@
 
 @code {
 
-    protected string getAlbumArtistNameTruncated(Album album, int truncation)
+    protected string getAlbumArtistName(Album album)
     {
-        return model.Library.GetAlbumArtist(album.AlbumArtist).Name.Truncate(truncation);
+        return model.Library.GetAlbumArtist(album.AlbumArtist).Name;
     }
 }

@@ -18,8 +18,8 @@
             <MudTooltip Arrow="true" Placement="Placement.Top" Delay="0.5">
                 <ChildContent>
                     <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                        <MudText Typo="Typo.body2">@getSongTitle(maxSongInfoLength)</MudText>
-                        <MudText Typo="Typo.caption">@getSongPerformer(maxSongInfoLength)</MudText>
+                        <MudText Typo="Typo.body2">@getSongTitle()</MudText>
+                        <MudText Typo="Typo.caption">@getSongPerformer()</MudText>
                     </MudStack>
                 </ChildContent>
 
@@ -29,11 +29,11 @@
                             <MudImage Class="rounded-lg" Width="100" Height="100" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
                         </MudContainer>
 
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongTitle(100)</MudText>
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongTitle()</MudText>
                         <MudDivider />
                         <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Titel</MudText>
 
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongPerformer(100)</MudText>
+                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongPerformer()</MudText>
                         <MudDivider />
                         <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Performer</MudText>
 
@@ -53,7 +53,7 @@
         <MudElement Class="pb-4 d-flex flex-grow-1 justify-center">
         </MudElement>
 
-        <MudElement Class="pt-2 mr-2 d-none d-md-flex justify-center" Style="width: 84px;">
+        <MudElement Class="pt-2 mr-2 d-none d-lg-flex justify-center" Style="width: 120px;">
             <MudText Typo="Typo.body2">@PositionTime / @DurationTime</MudText>
         </MudElement>
 
@@ -76,7 +76,7 @@
                 <MudIconButton Class="d-md-none d-flex" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Small" />
 
                 <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="mute" Icon="@MuteIcon" Size="Size.Medium" />
-                <MudElement Class="mr-4 d-none d-md-flex" Style="width: 100px;">
+                <MudElement Class="mr-4 d-none d-md-flex flex-column" Style="width: 100px;">
                     <MudElement Class="d-flex flex-grow-1 justify-start" />
 
                     <MudElement Class="d-flex flex-grow-0 justify-center" >
@@ -88,7 +88,7 @@
             </MudElement>
         </MudElement>
 
-        <MudElement Class="pb-4 d-none d-md-flex flex-none justify-center" Style="width: 84px;">
+        <MudElement Class="pb-4 d-none d-md-flex flex-none justify-center" Style="width: 120px;">
         </MudElement>
 
         <MudElement Class="pb-4 d-flex flex-grow-1 justify-center">
