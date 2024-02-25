@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -45,6 +46,7 @@ namespace ArkEcho.Core
                 foreach (Album album in Album)
                 {
                     List<MusicFile> files = MusicFiles.FindAll(x => x.Album == album.GUID);
+                    files = files.OrderBy(x => x.Track).ThenBy(x => x.Title).ToList(); // Default sorting
                     albumFileMap.Add(album, files);
                 }
             });

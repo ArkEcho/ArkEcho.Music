@@ -56,34 +56,38 @@ namespace ArkEcho.Server
                 return;
             }
 
-            startWorker();
-        }
-
-        private void startWorker()
-        {
             lock (libraryData)
             {
-                LibraryData data = libraryData.First(x => !x.InProgress && x.Library == null);
-                if (data == null)
-                    return;
-
-                MusicLibraryWorker worker = workerPool.First(x => !x.IsBusy);
-                if (worker == null)
-                    return;
-
-                logger.LogDebug($"Starting Worker ID={worker.ID} on Path={data.Path}");
-                data.InProgress = true;
-                worker.RunWorkerAsync(data);
+                foreach (MusicLibraryWorker worker in workerPool)
+                    startWorker(worker);
             }
+        }
+
+        private void startWorker(MusicLibraryWorker worker)
+        {
+            LibraryData data = libraryData.Find(x => !x.InProgress && x.Library == null);
+            if (data == null)
+                return;
+
+            logger.LogDebug($"Starting Worker ID={worker.ID} on Path={data.Path}");
+            data.InProgress = true;
+            worker.Busy = true;
+            worker.RunWorkerAsync(data);
         }
 
         private void Worker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             lock (libraryData)
             {
-                if (libraryData.Any(x => !x.InProgress && x.Library == null))
-                    startWorker();
-                else
+                MusicLibraryWorker worker = (MusicLibraryWorker)sender;
+                if (libraryData.Any(x => !x.InProgress && x.Library == null)) // Restart finished Worker
+                {
+                    startWorker(worker);
+                    return;
+                }
+
+                worker.Busy = false;
+                if (!workerPool.Any(x => x.Busy))
                 {
                     logger.LogDebug($"All workers finished and libraries loaded");
                     Finished?.Invoke(this, null);
