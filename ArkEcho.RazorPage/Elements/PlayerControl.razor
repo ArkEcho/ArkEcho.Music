@@ -1,106 +1,170 @@
-﻿@inject Player player
+﻿
+@inject Player player
+@inject AppEnvironment environment
 
 @inherits PlayerControlBase
 
-<MudStack>
-    <MudElement Class="mx-4 d-none d-md-flex" Style="height: 10px;">
-        <MudSlider Color="ControlColor" Size="Size.Small" Min="0" Max="@DurationSeconds"
-                   T="int" Immediate="true" @onmousedown="sliderMouseDown" @onmouseup="sliderMouseUp" ValueChanged="sliderVolumeChanged" Value="@player.Position" />
-    </MudElement>
+<style>
+    .cut-text-player-control {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: inline-block !important;
+        text-align: left;
+    }
 
-    <MudElement Class="d-flex" Style="bottom: 0; width: 100%; height: 50px;">
+    .playercontrolstyle {
+        /* background-color: @(Colors.BlueGrey.Darken4); */
+        background-color: var(--mud-palette-background-grey);
+    }
 
-        <MudElement Class="pb-1 d-flex flex-none justify-start" Style="width: 300px;">
-            <MudElement Class="pa-1 d-flex" Style="max-height: 100%; max-width: 50px;">
-                <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
+    .player-buttons{
+        padding: 0px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .player-button-fab{
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .player-buttons-android{
+        padding: 0px !important;
+    }
+</style>
+
+@if(environment.Platform != Resources.Platform.Android)
+{
+    <MudElement Class="fixed playercontrolstyle" Style="bottom: 0; width: 100%;">
+        <MudStack>
+            <MudElement Class="mx-4" Style="height: 10px;">
+                <MudSlider Color="ControlColor" Size="Size.Small" Min="0" Max="@DurationSeconds"
+                            T="int" Immediate="true" @onmousedown="sliderMouseDown" @onmouseup="sliderMouseUp" ValueChanged="sliderVolumeChanged" Value="@player.Position" />
             </MudElement>
 
-            <MudTooltip Arrow="true" Placement="Placement.Top" Delay="0.5">
-                <ChildContent>
-                    <MudStack Class="ml-1 mt-1 pointer-events-none" Spacing="0">
-                        <MudText Typo="Typo.body2">@getSongTitle()</MudText>
-                        <MudText Typo="Typo.caption">@getSongPerformer()</MudText>
-                    </MudStack>
-                </ChildContent>
+            <MudElement Class="d-flex" Style="bottom: 0; width: 100%; height: 50px;">
 
-                <TooltipContent>
-                    <MudStack Spacing="0">
-                        <MudContainer MaxWidth="MaxWidth.Small">
-                            <MudImage Class="rounded-lg" Width="100" Height="100" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
-                        </MudContainer>
-
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongTitle()</MudText>
-                        <MudDivider />
-                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Titel</MudText>
-
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@getSongPerformer()</MudText>
-                        <MudDivider />
-                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Song Performer</MudText>
-
-
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@AlbumName</MudText>
-                        <MudDivider />
-                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Album Name</MudText>
-
-                        <MudText Class="mt-3" Align="Align.Left" Typo="Typo.body2">@AlbumArtistName</MudText>
-                        <MudDivider />
-                        <MudText Class="mt-n2 grey-text" Align="Align.Left" Typo="Typo.overline">Album Interpret</MudText>
-                    </MudStack>
-                </TooltipContent>
-            </MudTooltip>
-        </MudElement>
-
-        <MudElement Class="pb-4 d-flex flex-grow-1 justify-center">
-        </MudElement>
-
-        <MudElement Class="pt-2 mr-2 d-none d-lg-flex justify-center" Style="width: 120px;">
-            <MudText Typo="Typo.body2">@PositionTime / @DurationTime</MudText>
-        </MudElement>
-
-        <MudElement Class="pb-4 d-flex justify-center">
-
-            <MudElement Class="d-flex border border-solid mud-border-info">
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="shuffle" Icon="@ShuffleIcon" Size="Size.Medium" />
-            
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.Repeat" Size="Size.Medium" />
-
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Size="Size.Medium" />
-
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Size="Size.Medium" />
-                <MudIconButton Class="mr-1 d-md-none d-flex" Color="ControlColor" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Size="Size.Small" />
-
-                <MudFab Class="mr-1 mt-n1 d-none d-md-flex" Color="ControlColor" OnClick="playPause" Icon="@PlayPauseIcon" Size="Size.Small" />
-                <MudIconButton Class="mr-1 d-md-none d-flex" Color="ControlColor" OnClick="playPause" Icon="@PlayPauseIcon" Size="Size.Small" />
-
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Medium" />
-                <MudIconButton Class="d-md-none d-flex" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Small" />
-
-                <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" OnClick="mute" Icon="@MuteIcon" Size="Size.Medium" />
-                <MudElement Class="mr-4 d-none d-md-flex flex-column" Style="width: 100px;">
-                    <MudElement Class="d-flex flex-grow-1 justify-start" />
-
-                    <MudElement Class="d-flex flex-grow-0 justify-center" >
-                        <MudSlider Color="ControlColor" Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="player.Volume" ValueLabel="true" />
+                @* Image *@
+                <MudElement Class="d-flex justify-start pl-1 pb-1" Style="width: 50px;">
+                    <MudElement Class="d-flex flex-column">
+                        <MudElement Class="d-flex flex-grow-1 justify-start" />
+                        <MudElement Class="d-flex flex-grow-0 justify-center">
+                            <MudElement Class="d-flex" Style="max-width: 45px; max-height: 45px;">
+                                <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
+                            </MudElement>
+                        </MudElement>
+                        <MudElement Class="d-flex flex-grow-1 justify-end" />
                     </MudElement>
-                    
+                </MudElement>
+
+                @* Playing Song Text and Tooltip *@
+				<MudElement Class="d-flex justify-start flex-column pb-1 pl-2 pr-1 pointer-events-none" Style="width: 300px; min-width: 0px;">
+                    <MudElement Class="d-flex flex-grow-1 justify-start" />
+                    <MudElement Class="d-flex flex-grow-0 justify-center flex-column">
+                        <MudText Class="cut-text-player-control" Typo="Typo.body2">@getSongTitle()</MudText>
+                        <MudText Class="cut-text-player-control" Typo="Typo.caption">@getSongPerformer()</MudText>
+                    </MudElement>
                     <MudElement Class="d-flex flex-grow-1 justify-end" />
                 </MudElement>
+
+                <MudElement Class="d-flex flex-grow-1 justify-center">
+                </MudElement>
+
+                <MudElement Class="pb-4 pr-2 d-none d-sm-flex justify-center flex-column" Style="width: 120px;">
+                    <MudElement Class="d-flex flex-grow-1 justify-start" />
+                    <MudElement Class="d-flex flex-grow-0 justify-center">
+                        <MudText Typo="Typo.body2">@PositionTime / @DurationTime</MudText>
+                    </MudElement>
+                    <MudElement Class="d-flex flex-grow-1 justify-end" />
+                </MudElement>
+
+                <MudElement Class="pb-4 d-flex justify-center">
+
+                    <MudElement Class="d-flex border border-solid mud-border-info">
+                        <MudIconButton Class="mr-1 d-none d-lg-flex player-buttons" Color="ControlColor" OnClick="shuffle" Icon="@ShuffleIcon" Size="Size.Medium" />
+            
+                        <MudIconButton Class="mr-1 d-none d-lg-flex player-buttons" Color="ControlColor" Icon="@Icons.Material.Rounded.Repeat" Size="Size.Medium" />
+
+                        <MudIconButton Class="mr-1 d-none d-lg-flex player-buttons" Color="ControlColor" OnClick="stop" Icon="@Icons.Material.Rounded.Stop" Size="Size.Medium" />
+
+                        <MudIconButton Class="mr-1 player-buttons" Color="ControlColor" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Size="Size.Medium" />
+
+                        <MudFab Class="mr-1 mt-n1 player-button-fab" Color="ControlColor" OnClick="playPause" Icon="@PlayPauseIcon" Size="Size.Small" />
+
+                        <MudIconButton Class="mr-1 player-buttons" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Medium" />
+
+                        <MudIconButton Class="mr-1 d-none d-lg-flex player-buttons" Color="ControlColor" OnClick="mute" Icon="@MuteIcon" Size="Size.Medium" />
+                        <MudElement Class="mr-4 d-none d-lg-flex flex-column" Style="width: 100px;">
+                            <MudElement Class="d-flex flex-grow-1 justify-start" />
+
+                            <MudElement Class="d-flex flex-grow-0 justify-center" >
+                                <MudSlider Color="ControlColor" Size="Size.Medium" Min="0" Max="100" Step="5" @bind-Value="player.Volume" ValueLabel="true" />
+                            </MudElement>
+                    
+                            <MudElement Class="d-flex flex-grow-1 justify-end" />
+                        </MudElement>
+                    </MudElement>
+                </MudElement>
+
+                <MudElement Class="d-none d-md-flex flex-none justify-center" Style="width: 120px;">
+                </MudElement>
+
+                <MudElement Class="d-none d-lg-flex flex-grow-1 justify-center">
+                </MudElement>
+
+                <MudElement Class="pb-2 d-none d-lg-flex flex-grow-1 justify-end flex-column" Style="min-width: 350px;">
+                    <MudElement Class="d-flex flex-grow-1 justify-start" />
+                    <MudElement Class="d-flex flex-grow-0 justify-end">
+                        <MudIconButton Class="pr-4 d-none d-md-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Medium" />
+                    </MudElement>
+                    <MudElement Class="d-flex flex-grow-1 justify-end" />
+                </MudElement>
+
+            </MudElement>
+        </MudStack>
+    </MudElement>
+}
+else
+{
+    <MudElement Class="fixed playercontrolstyle d-flex rounded-xl" Style="bottom: 0; width: 100%; height: 50px;">
+
+        <MudElement Class="d-flex justify-start ml-2">
+            <MudElement Class="d-flex flex-column">
+                <MudElement Class="d-flex flex-grow-1 justify-start" />
+                <MudElement Class="d-flex flex-grow-0 justify-center">
+                    <MudElement Class="d-flex" Style="width: 40px; height: 40px;">
+                        <MudImage Class="rounded-circle" Fluid="true" ObjectFit="ObjectFit.ScaleDown" Src="@Image64" />
+                    </MudElement>
+                </MudElement>
+                <MudElement Class="d-flex flex-grow-1 justify-end" />
             </MudElement>
         </MudElement>
 
-        <MudElement Class="pb-4 d-none d-md-flex flex-none justify-center" Style="width: 120px;">
+        <MudElement Class="d-flex flex-grow-1 justify-start flex-column ml-2 mr-1" Style="min-width: 0px;"> @* Prevent Box from pushing others out of view *@
+            <MudElement Class="d-flex flex-grow-1 justify-start" />
+            <MudElement Class="d-flex flex-grow-0 justify-center flex-column">
+                <MudText Class="cut-text-player-control" Typo="Typo.body2">@getSongTitle()</MudText>
+                <MudText Class="cut-text-player-control" Typo="Typo.caption">@getSongPerformer()</MudText>
+            </MudElement>
+            <MudElement Class="d-flex flex-grow-1 justify-end" />
         </MudElement>
 
-        <MudElement Class="pb-4 d-flex flex-grow-1 justify-center">
+        <MudElement Class="d-flex justify-end" Style="width: 150px;">
+            <MudElement Class="d-flex flex-column">
+                <MudElement Class="d-flex flex-grow-1 justify-start" />
+                <MudElement Class="d-flex flex-grow-0 justify-center">
+                    <MudIconButton Class="player-buttons-android mr-3" Color="ControlColor" OnClick="backward" Icon="@Icons.Material.Rounded.FastRewind" Size="Size.Medium" />
+                    <MudIconButton Class="player-buttons-android mr-3" Color="ControlColor" OnClick="playPause" Icon="@PlayPauseIcon" Size="Size.Medium" />
+                    <MudIconButton Class="player-buttons-android mr-3" Color="ControlColor" OnClick="forward" Icon="@Icons.Material.Rounded.FastForward" Size="Size.Medium" />
+                    <MudIconButton Class="player-buttons-android mr-4" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Medium" />
+                </MudElement>
+                <MudElement Class="d-flex flex-grow-1 justify-end" />
+            </MudElement>
         </MudElement>
 
-        <MudElement Class="pb-4 d-flex flex-grow-1 justify-end" Style="max-width: 300px;">
-            <MudIconButton Class="mr-1 d-none d-md-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Medium" />
-            <MudIconButton Class="mr-1 d-md-none d-flex" Color="ControlColor" Icon="@Icons.Material.Rounded.QueueMusic" Size="Size.Small" />
-        </MudElement>
-    
     </MudElement>
-</MudStack>
+}
 
 
 @code
@@ -117,6 +181,4 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
-    private int maxSongInfoLength = 30;
 }

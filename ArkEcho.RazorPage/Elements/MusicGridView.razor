@@ -6,7 +6,7 @@
 @inject NavigationManager navigation
 
 <style>
-	.cut-text {
+	.cut-text-grid-view {
 		text-overflow: ellipsis;
 		overflow: hidden;
 		width: 165px;
@@ -32,13 +32,13 @@
 
                         <MudElement Class="d-flex">                            
                             <MudElement Class="d-flex flex-grow-1 justify-start" />
-                            <MudText Class="mb-n1 d-flex flex-grow-1 justify-center cut-text" Typo="Typo.body2">@album.Name</MudText>
+                            <MudText Class="mb-n1 d-flex flex-grow-1 justify-center cut-text-grid-view" Typo="Typo.body2">@album.Name</MudText>
                             <MudElement Class="d-flex flex-grow-1 justify-end" />
                         </MudElement>
 
                         <MudElement Class="d-flex">                            
                             <MudElement Class="d-flex flex-grow-1 justify-start" />
-                            <MudText Class="my-n1 d-flex flex-grow-1 justify-center cut-text" Typo="Typo.overline">@(getAlbumArtistName(album))</MudText>
+                            <MudText Class="my-n1 d-flex flex-grow-1 justify-center cut-text-grid-view" Typo="Typo.overline">@(getAlbumArtistName(album))</MudText>
                             <MudElement Class="d-flex flex-grow-1 justify-end" />
                         </MudElement>
 
