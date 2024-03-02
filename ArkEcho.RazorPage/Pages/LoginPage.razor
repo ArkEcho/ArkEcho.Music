@@ -15,9 +15,9 @@
             @((MarkupString)ArkEcho.Core.Properties.Resources.logo_svg)
         </svg>
 
-        <MudTextField Class="mt-2" Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="inputKeyPress">Username</MudTextField>
+        <MudTextField Class="mt-2" Label="Username" Variant="Variant.Outlined" Immediate="true" @bind-Value="username" @onkeypress="userNameInputKeyPress">Username</MudTextField>
 
-        <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" Immediate="true" InputType="@PasswordInput" @onkeypress="inputKeyPress"
+        <MudTextField Class="mt-2" Label="Password" Variant="Variant.Outlined" @bind-Value="password" @ref=passwordInputRef Immediate="true" InputType="@PasswordInput" @onkeypress="passwordInputKeyPress"
                         Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="passwordAdornmentClick" AdornmentAriaLabel="Show Password" />
         
         <MudStack Row=true>
@@ -40,11 +40,18 @@
     private string username = string.Empty;
     private string password = string.Empty;
 
-    bool isShow;
+    MudTextField<string> passwordInputRef;
+    bool showPasswordAdornment;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
 
-    private async Task inputKeyPress(KeyboardEventArgs e)
+    private async Task userNameInputKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
+            await passwordInputRef.FocusAsync();
+    }
+
+    private async Task passwordInputKeyPress(KeyboardEventArgs e)
     {
         if (e.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase) && status.Connected)
             await validateUser();
@@ -94,15 +101,15 @@
 
     private void passwordAdornmentClick()
     {
-        @if (isShow)
+        @if (showPasswordAdornment)
         {
-            isShow = false;
+            showPasswordAdornment = false;
             PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
             PasswordInput = InputType.Password;
         }
         else
         {
-            isShow = true;
+            showPasswordAdornment = true;
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
         }
