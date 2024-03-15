@@ -5,6 +5,7 @@
 @inject HTMLHelper helper
 @inject NavigationManager navigation
 @inject AppEnvironment environment
+@inject ScrollPositionService scrollPositionService
 
 <style>
 	.cut-text-grid-view {
@@ -32,7 +33,7 @@
 
 </style>
 
-<MudElement Class="overflow-auto px-4" Style="height: 79vh; width: 100vw;">
+<MudElement id="@musicGridViewDomId" Class="overflow-auto px-4" Style="height: 79vh; width: 100vw;">
     <MudGrid Spacing="2" Justify="Justify.Center">
         @foreach (Album album in getFilteredAlbum())
         {
@@ -113,11 +114,18 @@
 </MudElement>
 
 @code {
+    private string musicGridViewDomId = "MUSICGRIDVIEW_DOM_ID";
 
     protected override async Task OnInitializedAsync()
     {
         player.TitleChanged += () => titleChanged();
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await scrollPositionService.LoadScrollPosition(musicGridViewDomId);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected async Task titleChanged()
@@ -133,8 +141,9 @@
         return result;
     }
 
-    private void albumListClicked(Album album)
+    private async void albumListClicked(Album album)
     {
+        await scrollPositionService.SaveScrollPosition(musicGridViewDomId);
         navigation.NavigateTo($"/Music/{album.GUID}");
     }
 }

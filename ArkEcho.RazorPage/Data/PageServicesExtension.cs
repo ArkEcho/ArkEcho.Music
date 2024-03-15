@@ -7,10 +7,10 @@ namespace ArkEcho.RazorPage.Data
 {
     public static class ServiceCollectionExtension
     {
-        public static void AddArkEchoServices<StorageImplementation, AppModelImplementation, PlayerImplementation, PlatformControllerImplementation>
+        public static void AddArkEchoServices<StorageImplementation, LibraryControllerImplementation, PlayerImplementation, PlatformControllerImplementation>
             (this IServiceCollection serviceCollection, AppEnvironment environment)
             where StorageImplementation : LocalStorageBase
-            where AppModelImplementation : LibraryControllerBase
+            where LibraryControllerImplementation : LibraryControllerBase
             where PlayerImplementation : Player
             where PlatformControllerImplementation : PlatformControllerBase
         {
@@ -30,11 +30,12 @@ namespace ArkEcho.RazorPage.Data
 
             serviceCollection.AddSingleton<ILocalStorage, StorageImplementation>();
             serviceCollection.AddSingleton<Player, PlayerImplementation>();
-            serviceCollection.AddSingleton<LibraryControllerBase, AppModelImplementation>();
+            serviceCollection.AddSingleton<LibraryControllerBase, LibraryControllerImplementation>();
             serviceCollection.AddSingleton<PlatformControllerBase, PlatformControllerImplementation>();
 
             serviceCollection.AddSingleton<SnackbarDialogService>();
 
+            serviceCollection.AddSingleton<ScrollPositionService>();
             serviceCollection.AddSingleton<HTMLHelper>();
         }
     }
