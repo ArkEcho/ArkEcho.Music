@@ -4,62 +4,110 @@
 @inject Player player
 @inject HTMLHelper helper
 @inject NavigationManager navigation
+@inject AppEnvironment environment
 
 <style>
 	.cut-text-grid-view {
 		text-overflow: ellipsis;
 		overflow: hidden;
-		width: 165px;
         white-space: nowrap;
         display: inline-block !important;
         text-align: center;
     }
+
+    .grid-buttons{
+        padding: 0px !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+
+    .noselection {
+        user-select: none; /* standard syntax */
+        -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+        -moz-user-select: none; /* mozilla browsers */
+        -khtml-user-select: none; /* webkit (konqueror) browsers */
+        -ms-user-select: none; /* IE10+ */
+    }
+
 </style>
 
 <MudElement Class="overflow-auto px-4" Style="height: 79vh; width: 100vw;">
     <MudGrid Spacing="2" Justify="Justify.Center">
         @foreach (Album album in getFilteredAlbum())
         {
-            <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
-                <MudPaper Class="pa-2" Style=@getAlbumCSS(album) Elevation="1">
+            @if (environment.Platform != Resources.Platform.Android)
+            {
+                <MudItem xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 220px;">
+                    <MudPaper Class="pa-2" Style=@getAlbumCSS(album) Elevation="1">
+                        <MudStack>
+                            <MudElement Class="d-flex">                            
+                                <MudElement Class="d-flex flex-grow-1 justify-start" />
+                                <MudImage Class="rounded-lg flex-grow-0 justify-center" Src="@(helper.GetBase64PngImg(album.Cover64))"
+                                          Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
+                                <MudElement Class="d-flex flex-grow-1 justify-end" />
+                            </MudElement>
+
+                            <MudElement Class="d-flex my-n1">
+                                <MudElement Class="d-flex flex-grow-1 justify-start" />
+                                <MudText Class="d-flex flex-grow-1 justify-center cut-text-grid-view" Style="width: 165px;" Typo="Typo.body2">@album.Name</MudText>
+                                <MudElement Class="d-flex flex-grow-1 justify-end" />
+                            </MudElement>
+
+                            <MudElement Class="d-flex my-n2">                            
+                                <MudElement Class="d-flex flex-grow-1 justify-start" />
+                                <MudText Class="d-flex flex-grow-1 justify-center cut-text-grid-view" Style="width: 165px;" Typo="Typo.overline">@(getAlbumArtistName(album))</MudText>
+                                <MudElement Class="d-flex flex-grow-1 justify-end" />
+                            </MudElement>
+
+                            <MudElement Class="d-flex my-n1">
+							    <MudElement Class="d-flex flex-grow-1 justify-start" />
+                                <MudElement Class="d-flex flex-grow-0 justify-center">
+                                    <MudText Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
+                                    <MudIconButton Class="grid-buttons" Icon="@Icons.Material.Rounded.PlayArrow" OnClick="() => startMusicAlbum(album)" Color="Color.Default" />
+                                    <MudIconButton Class="grid-buttons" Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
+                                </MudElement>
+                                <MudElement Class="d-flex flex-grow-1 justify-end" />
+                            </MudElement>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+            else
+            {
+                <MudItem Class="noselection" xs="6" sm="4" md="3" lg="2" xl="1" Style="max-width: 160;" @onclick="() => albumListClicked(album)">
                     <MudStack>
-                        <MudElement Class="d-flex">                            
+                        <MudElement Class="d-flex">
                             <MudElement Class="d-flex flex-grow-1 justify-start" />
-                            <MudImage Class="rounded-lg flex-grow-0 justify-center" Src="@(helper.GetBase64PngImg(album.Cover64))" 
-                            Width="Resources.ImageSize" Height="Resources.ImageSize" ObjectFit="ObjectFit.Fill" />
+                            <MudImage Class="rounded-lg flex-grow-0 justify-center" Src="@(helper.GetBase64PngImg(album.Cover64))"
+                                        Width="Resources.ImageSize - 20" Height="Resources.ImageSize - 20" ObjectFit="ObjectFit.Fill" />
                             <MudElement Class="d-flex flex-grow-1 justify-end" />
                         </MudElement>
 
-                        <MudElement Class="d-flex">                            
+                        <MudElement Class="d-flex">
                             <MudElement Class="d-flex flex-grow-1 justify-start" />
                             <MudText Class="mb-n1 d-flex flex-grow-1 justify-center cut-text-grid-view" Typo="Typo.body2">@album.Name</MudText>
                             <MudElement Class="d-flex flex-grow-1 justify-end" />
                         </MudElement>
 
-                        <MudElement Class="d-flex">                            
-                            <MudElement Class="d-flex flex-grow-1 justify-start" />
-                            <MudText Class="my-n1 d-flex flex-grow-1 justify-center cut-text-grid-view" Typo="Typo.overline">@(getAlbumArtistName(album))</MudText>
-                            <MudElement Class="d-flex flex-grow-1 justify-end" />
-                        </MudElement>
-
                         <MudElement Class="d-flex">
+                            <MudElement Class="d-flex flex-grow-1 justify-start" />
 
-							<MudElement Class="d-flex flex-grow-1 justify-start" />
-							<MudStack Row="true">
-                                <MudStack>
-                                    <MudSpacer />
-                                    <MudText Class="my-n4" Typo="Typo.overline">@(album.MusicFiles.Count) Titel</MudText>
-                                    <MudSpacer />
-                                </MudStack>
-                                <MudIconButton Class="my-n4" OnClick="() => startMusicAlbum(album)" Icon="@Icons.Material.Rounded.PlayArrow" Color="Color.Default" />
-                                <MudIconButton Class="my-n4" Icon="@Icons.Material.Rounded.List" OnClick="() => albumListClicked(album)" Color="Color.Default" />
-                            </MudStack>
-                        
+                            <MudElement Class="d-flex flex-grow-0 justify-center">
+                                <MudText Class="cut-text-grid-view" Style="max-width: 100px;" Typo="Typo.caption">
+                                    @(getAlbumArtistName(album))
+                                </MudText>
+                            </MudElement>
+
+                            <MudElement Class="d-flex flex-grow-0 justify-center" >
+                                <MudText Typo="Typo.caption">&nbsp;| @(album.MusicFiles.Count) Titel</MudText>
+                            </MudElement>
+
                             <MudElement Class="d-flex flex-grow-1 justify-end" />
                         </MudElement>
                     </MudStack>
-                </MudPaper>
-            </MudItem>
+                </MudItem>
+            }
         }
     </MudGrid>
 </MudElement>
