@@ -16,7 +16,7 @@ class AudioPlayer {
     }
 
     /* Called by .NET */
-    InitAudio(sources, mimetype, directPlay, volume, mute) {
+    InitAudio(chunkSources, completeSource, mimetype, directPlay, volume, mute) {
 
         this.directPlay = directPlay;        
         this.audio.muted = mute;
@@ -62,49 +62,82 @@ class AudioPlayer {
             Player.netObject.invokeMethodAsync('AudioEndedJS');
             navigator.mediaSession.playbackState = "none";
         };
-                
 
         // Function to fetch each audio file and concatenate them
-        function fetchAndConcatenateAudio(sources, mimetype) {
+        function fetchAndConcatenateAudio(chunkSources, completeSource, mimetype) {
             var xhr = new XMLHttpRequest();
             var blobs = [];
             var errorcounter = 0;
+            var loadComplete = false;
 
             xhr.onload = function () {
                 if (xhr.status === 200) {
-                    blobs.push(xhr.response);
-                    if (blobs.length === sources.length) {
+                    if (!loadComplete) {
+                        blobs.push(xhr.response);
+                        if (blobs.length === chunkSources.length) {
 
-                        // Concatenate all blobs
-                        var concatenatedBlob = new Blob(blobs, { type: mimetype });
-                        blobs = [];
-                        // Create object URL and set it as the source for the audio element
-                        Player.SetAudioSourceAndPlay(concatenatedBlob);
-
-                    } else {
-                        // If there are more URLs, fetch the next one
-                        fetchBlob();
+                            // Concatenate all blobs
+                            var concatenatedBlob = new Blob(blobs, { type: mimetype });
+                            blobs = [];
+                            // Create object URL and set it as the source for the audio element
+                            Player.SetAudioSourceAndPlay(concatenatedBlob);
+                        }
+                        else {
+                            // If there are more URLs, fetch the next one
+                            fetchChunkBlob();
+                        }
                     }
-                } else { // Error
-                    if (errorcounter < 3) {
-                        errorcounter++;
-                        fetchBlob(); // Try again
+                    else {
+                        Player.SetAudioSourceAndPlay(xhr.response);
+                    }
+                }
+                else if (xhr.status === 403) { // Forbidden, Anti Virus etc.
+                    errorcounter++;
+                    if (!loadComplete) { // Try loading the whole Audio as one
+                        loadComplete = true;
+                        fetchComplete();
+                    }
+                    else { // Chunk and whole Audio failed
+                        Player.FatalError("Loading of audio failed!");
+                    }
+                }
+                else { // Error
+                    errorcounter++;
+                    if (errorcounter < 1) { // Try again
+                        fetchChunkBlob(); 
+                    }
+                    else if (errorcounter < 2) { // If failed twice, try loading the whole Audio as one
+                        loadComplete = true;
+                        fetchComplete();
+                    }
+                    else { // Chunk and whole Audio failed
+                        Player.FatalError("Loading of audio failed!");
                     }
                 }                
             };
 
-            function fetchBlob() {
-                xhr.open("GET", sources[blobs.length], true);
+            function fetchComplete() {
+                xhr.open("GET", completeSource, true);
+                xhr.responseType = mimetype;
+                xhr.send();
+            }
+
+            function fetchChunkBlob() {
+                xhr.open("GET", chunkSources[blobs.length], true);
                 xhr.responseType = "blob";
                 xhr.send();
             }
 
             // Start fetching the first blob
-            fetchBlob(sources[blobs.length]);
+            fetchChunkBlob();
         }
 
         // Start fetching and concatenating audio files
-        fetchAndConcatenateAudio(sources, mimetype);
+        fetchAndConcatenateAudio(chunkSources, completeSource, mimetype);
+    }
+
+    FatalError(error) {
+        Player.netObject.invokeMethodAsync('AudioFatalErrorJS', error);
     }
     
     SetAudioSourceAndPlay(audioBlob) {

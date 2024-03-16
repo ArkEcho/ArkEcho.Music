@@ -43,6 +43,13 @@ namespace ArkEcho.WebPage
         }
 
         [JSInvokable]
+        public void AudioFatalErrorJS(string error)
+        {
+            // TODO
+            Console.WriteLine("JSPlayer: " + error);
+        }
+
+        [JSInvokable]
         public void AudioEndedJS()
         {
             AudioEnd();
@@ -88,14 +95,17 @@ namespace ArkEcho.WebPage
             jsRuntime.InvokeVoidAsync("Player.SetDocumentTitle", new object[] { $"{PlayingFile.Title} - {PlayingFile.Performer}" });
 
             // Load Audio in Chunks in js File (FASTER)
-            string[] sources = new string[PlayingFile.Chunks.Count];
+            string[] chunkSources = new string[PlayingFile.Chunks.Count];
+
+            // Also set complete Audio Source, in case Chunk loading fail... (Anti Virus)
+            string completeSource = $"{serverAddress}/api/Music?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamApiToken}={rest.ApiToken}";
 
             for (int i = 0; i < PlayingFile.Chunks.Count; i++)
             {
                 string source = $"{serverAddress}/api/File/ChunkTransfer?{Resources.UrlParamMusicFile}={PlayingFile.GUID}&{Resources.UrlParamFileChunk}={PlayingFile.Chunks[i].GUID}&{Resources.UrlParamApiToken}={rest.ApiToken}";
-                sources[i] = source;
+                chunkSources[i] = source;
             }
-            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { sources, PlayingFile.MimeType, StartOnLoad, Volume, Mute });
+            jsRuntime.InvokeVoidAsync("Player.InitAudio", new object[] { chunkSources, completeSource, PlayingFile.MimeType, StartOnLoad, Volume, Mute });
         }
 
         protected override void disposeAudio()
