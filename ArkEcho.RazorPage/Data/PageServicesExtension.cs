@@ -35,8 +35,10 @@ namespace ArkEcho.RazorPage.Data
 
             serviceCollection.AddSingleton<SnackbarDialogService>();
 
-            serviceCollection.AddSingleton<ScrollPositionService>();
             serviceCollection.AddSingleton<HTMLHelper>();
+
+            // Maui JSInterop must be Scoped
+            serviceCollection.AddScoped<ScrollPositionService>();
         }
     }
 }
