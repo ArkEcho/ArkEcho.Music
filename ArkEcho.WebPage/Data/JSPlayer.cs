@@ -68,12 +68,6 @@ namespace ArkEcho.WebPage
         }
 
         [JSInvokable]
-        public void BrowserStop()
-        {
-            Stop();
-        }
-
-        [JSInvokable]
         public void BrowserPreviousTrack()
         {
             Backward();
@@ -121,11 +115,6 @@ namespace ArkEcho.WebPage
         protected override void pauseAudio()
         {
             jsRuntime.InvokeVoidAsync("Player.PauseAudio", new object[] { });
-        }
-
-        protected override void stopAudio()
-        {
-            //jsRuntime.InvokeVoidAsync("Player.StopAudio", new object[] { });
         }
 
         protected override void setAudioMute()

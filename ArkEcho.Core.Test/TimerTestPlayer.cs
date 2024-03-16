@@ -89,13 +89,6 @@ namespace ArkEcho.Core.Test
         {
         }
 
-        protected override void stopAudio()
-        {
-            timer.Stop();
-            positionTenthSeconds = 0;
-            playingChanged(false);
-        }
-
         protected override void dispose()
         {
             timer?.Dispose();

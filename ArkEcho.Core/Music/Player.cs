@@ -246,14 +246,6 @@ namespace ArkEcho.Core
                 Play();
         }
 
-        public void Stop()
-        {
-            if (PlayingFile == null)
-                return;
-
-            loadPlayingFile(false);
-        }
-
         public void Forward()
         {
             if (listToPlay.IsNullOrEmpty())
@@ -286,7 +278,8 @@ namespace ArkEcho.Core
 
             if (position > 5)
             {
-                Stop();
+                Pause();
+                Position = 0;
                 Play();
             }
             else if (songIndex == 0)
@@ -299,7 +292,8 @@ namespace ArkEcho.Core
                 }
                 else
                 {
-                    Stop();
+                    Pause();
+                    Position = 0;
                     Play();
                 }
             }
@@ -317,7 +311,7 @@ namespace ArkEcho.Core
 
         public void Dispose()
         {
-            Stop();
+            Pause();
             dispose();
             PlayingFile = null;
             listToPlay = null;
@@ -330,7 +324,6 @@ namespace ArkEcho.Core
         protected abstract void disposeAudio();
         protected abstract void playAudio();
         protected abstract void pauseAudio();
-        protected abstract void stopAudio();
         protected abstract void setAudioMute();
         protected abstract void setAudioVolume();
         protected abstract void setAudioPosition();

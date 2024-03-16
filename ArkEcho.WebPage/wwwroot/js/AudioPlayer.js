@@ -34,12 +34,6 @@ class AudioPlayer {
                 //this.log("Browser Pause");
                 this.netObject.invokeMethodAsync('BrowserPlayPause');
             });
-            navigator.mediaSession.setActionHandler("stop", () => {
-                // Stop is kinda buggy? After pressing Stop you can't control the audio anymore via the MediaSession UNTIL the user makes an Input
-                // It works perfectly fine if Stop is pressed via the HTML Button....
-                //this.log("Browser Stop");
-                this.netObject.invokeMethodAsync('BrowserStop');
-            });
             navigator.mediaSession.setActionHandler("previoustrack", () => {
                 //this.log("Browser Previous");
                 this.netObject.invokeMethodAsync('BrowserPreviousTrack');
@@ -167,7 +161,6 @@ class AudioPlayer {
         if ("mediaSession" in navigator) {
             navigator.mediaSession.setActionHandler("play", null);
             navigator.mediaSession.setActionHandler("pause", null);
-            navigator.mediaSession.setActionHandler("stop",null);
             navigator.mediaSession.setActionHandler("previoustrack", null);
             navigator.mediaSession.setActionHandler("nexttrack",null);
         }

@@ -33,7 +33,6 @@ namespace ArkEcho.Core.Test
             player.Pause();
             player.Play();
             player.PlayPause();
-            player.Stop();
 
             player.Volume = 5;
             player.Volume = 500;
@@ -78,22 +77,6 @@ namespace ArkEcho.Core.Test
 
             testPlayer.PlayPause();
             Assert.IsTrue(testPlayer.Playing);
-        }
-
-        [TestMethod]
-        public void Stop()
-        {
-            getPlayer(out Player testPlayer);
-            getFileList(7, out List<MusicFile> files);
-
-            testPlayer.Start(files, 0);
-
-            Thread.Sleep(200);
-
-            testPlayer.Stop();
-
-            Assert.IsFalse(testPlayer.Playing);
-            Assert.IsTrue(testPlayer.Position == 0);
         }
 
         [TestMethod]

@@ -38,10 +38,8 @@ namespace ArkEcho.Maui
                 mediaplayer.EndReached += Mediaplayer_EndReached;
                 mediaplayer.Playing += Mediaplayer_Playing;
                 mediaplayer.Paused += Mediaplayer_Paused;
-                mediaplayer.Stopped += Mediaplayer_Stopped;
 
                 helper.MediaPlayPauseKeyPressed += () => PlayPause();
-                helper.MediaStopKeyPressed += () => Stop();
                 helper.MediaPreviousTrackKeyPressed += () => Backward();
                 helper.MediaNextTrackKeyPressed += () => Forward();
 
@@ -54,12 +52,6 @@ namespace ArkEcho.Maui
                 log(ex.Message, Logging.LogLevel.Error);
                 return false;
             }
-        }
-
-        private void Mediaplayer_Stopped(object? sender, EventArgs e)
-        {
-            playingChanged(false);
-            audioPositionChanged(0);
         }
 
         private void Mediaplayer_Paused(object? sender, EventArgs e)
@@ -114,11 +106,6 @@ namespace ArkEcho.Maui
         protected override void pauseAudio()
         {
             mediaplayer.Pause();
-        }
-
-        protected override void stopAudio()
-        {
-            mediaplayer.Stop();
         }
 
         protected override void setAudioMute()
