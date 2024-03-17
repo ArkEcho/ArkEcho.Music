@@ -124,7 +124,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await scrollPositionService.LoadScrollPosition(musicGridViewDomId);
+        if (firstRender) // e.g. after Navigation (back from Album Detail Page)
+        {
+            await scrollPositionService.LoadScrollPosition(musicGridViewDomId);
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
 
